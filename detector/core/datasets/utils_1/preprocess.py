@@ -1,12 +1,71 @@
 import numpy as np
 import math
-import torch
-import torch
-import numpy as np
-from shapely.geometry import Polygon
-import json
 
-import torch.nn.functional as F
+
+def _grid_shape(geometry):
+    shape = []
+    for axis in "xyz":
+        lower = float(geometry[f"{axis}_min"])
+        upper = float(geometry[f"{axis}_max"])
+        resolution = float(geometry[f"{axis}_res"])
+        cells = (upper - lower) / resolution
+        if not np.isfinite([lower, upper, resolution, cells]).all() or resolution <= 0 or cells <= 0:
+            raise ValueError(f"invalid {axis}-axis geometry")
+        if not np.isclose(cells, round(cells), atol=1e-6):
+            raise ValueError(f"{axis}-axis range must be divisible by its resolution")
+        shape.append(int(round(cells)))
+    return tuple(shape)
+
+
+def encode_bev(points, geometry, bev_encoding=None):
+    """Encode KITTI ``(x, y, z, intensity)`` points as legacy or RichBEV."""
+    encoding = bev_encoding or {"name": "binary_slices"}
+    name = encoding.get("name", "binary_slices")
+    if name == "binary_slices":
+        return voxelize(points, geometry)
+    if name != "rich8":
+        raise ValueError(f"unsupported BEV encoding: {name!r}")
+    if points.ndim != 2 or points.shape[1] < 4:
+        raise ValueError("rich8 expects points shaped (N, >=4)")
+
+    density_norm = float(encoding.get("density_norm", 32.0))
+    intensity_scale = float(encoding.get("intensity_scale", 1.0))
+    if not np.isfinite(density_norm) or density_norm <= 1:
+        raise ValueError("density_norm must be finite and greater than 1")
+    if not np.isfinite(intensity_scale) or intensity_scale <= 0:
+        raise ValueError("intensity_scale must be finite and greater than 0")
+
+    x_size, y_size, _ = _grid_shape(geometry)
+    output = np.zeros((8, y_size * x_size), dtype=np.float32)
+    eps = 0.001
+    keep = np.isfinite(points[:, :4]).all(axis=1)
+    for column, axis in enumerate("xyz"):
+        keep &= points[:, column] > float(geometry[f"{axis}_min"]) + eps
+        keep &= points[:, column] < float(geometry[f"{axis}_max"]) - eps
+    pts = points[keep]
+    if not pts.size:
+        return output.reshape(8, y_size, x_size).transpose(1, 2, 0)
+
+    x_index = ((pts[:, 0] - geometry["x_min"]) // geometry["x_res"]).astype(np.int32)
+    y_index = ((pts[:, 1] - geometry["y_min"]) // geometry["y_res"]).astype(np.int32)
+    flat = y_index * x_size + x_index
+    count = np.bincount(flat, minlength=y_size * x_size).astype(np.float32)
+
+    z_norm = np.clip(
+        (pts[:, 2] - geometry["z_min"]) / (geometry["z_max"] - geometry["z_min"]),
+        0.0,
+        1.0,
+    ).astype(np.float32)
+    band = np.minimum((z_norm * 3).astype(np.int32), 2)
+    output[band, flat] = 1.0
+    np.maximum.at(output[3], flat, z_norm)
+    output[4] = np.bincount(flat, weights=z_norm, minlength=output.shape[1]) / np.maximum(count, 1)
+
+    intensity = np.clip(pts[:, 3] * intensity_scale, 0.0, 1.0).astype(np.float32)
+    np.maximum.at(output[5], flat, intensity)
+    output[6] = np.bincount(flat, weights=intensity, minlength=output.shape[1]) / np.maximum(count, 1)
+    output[7] = np.minimum(1.0, np.log1p(count) / np.log1p(density_norm))
+    return output.reshape(8, y_size, x_size).transpose(1, 2, 0).astype(np.float32, copy=False)
 
 def voxelize(points, geometry):
     x_min = geometry["x_min"]
@@ -183,6 +242,8 @@ def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
 
 
 def voxel_to_img(voxel):
+    import torch
+
     voxel = voxel.permute(1, 2, 0)
     max_inds = torch.argmax(voxel, axis = 2)
     img = np.zeros((voxel.shape[0], voxel.shape[1]))

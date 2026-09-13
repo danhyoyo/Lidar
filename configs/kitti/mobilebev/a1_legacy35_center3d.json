@@ -1,0 +1,98 @@
+{
+  "augmentation": {
+    "p": 0.5,
+    "rotation": {
+      "limit_angle": 20,
+      "p": 1,
+      "use": true
+    },
+    "scaling": {
+      "p": 1,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "use": true
+    },
+    "translation": {
+      "p": 1,
+      "scale": 0.4,
+      "use": true
+    }
+  },
+  "data": {
+    "gaussian_overlap": 0.1,
+    "kitti": {
+      "geometry": {
+        "x_max": 70.4,
+        "x_min": 0,
+        "x_res": 0.1,
+        "y_max": 40,
+        "y_min": -40,
+        "y_res": 0.1,
+        "z_max": 1,
+        "z_min": -2.5,
+        "z_res": 0.1
+      },
+      "location": "data/kitti/processed",
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      }
+    },
+    "min_radius": 4,
+    "num_classes": 3,
+    "out_size_factor": 4,
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "binary_slices"
+    }
+  },
+  "date": "reproducible",
+  "device": "cuda",
+  "loss": {
+    "epsilon": 0.0001,
+    "geometric_weight": 0.2,
+    "initial_log_scales": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "max_abs_log_size": 10,
+    "name": "uwag"
+  },
+  "model": {
+    "backbone": "mobilepixor_coordatt",
+    "backbone_out_dim": 16,
+    "cls_encoding": "gaussian",
+    "box_encoding": "center3d",
+    "scale_gated_fpn": false
+  },
+  "multi_gpu": false,
+  "note": "mobilebev_lightweight_ablation",
+  "seed": 42,
+  "train": {
+    "accumulation_steps": 2,
+    "data": "splits/kitti/train.txt",
+    "epochs": 100,
+    "learning_rate": 0.0003,
+    "lr_decay_at": [
+      40,
+      80
+    ],
+    "momentum": 0.9,
+    "physical_batch_size": 2,
+    "precision": "bf16",
+    "save_every": 5,
+    "weight_decay": 0.0005
+  },
+  "val": {
+    "data": "splits/kitti/val.txt",
+    "physical_batch_size": 2,
+    "val_every": 1
+  },
+  "ver": 1
+}

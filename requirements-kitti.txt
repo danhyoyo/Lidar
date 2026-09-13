@@ -3,5 +3,6 @@ matplotlib>=3.7
 shapely>=2.0
 torch>=2.1
 tqdm>=4.66
+onnx>=1.16
 
 # TensorRT is optional and must match the local CUDA/TensorRT installation.

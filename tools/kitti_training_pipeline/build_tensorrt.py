@@ -7,7 +7,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from common import sha256, write_json
+from common import read_json, sha256, write_json
 
 
 def find_trtexec(explicit: Path | None) -> str | None:
@@ -143,11 +143,14 @@ def main(argv=None) -> None:
             args.workspace_mib, not args.skip_runtime_smoke_test)
     if not args.engine.is_file() or args.engine.stat().st_size == 0:
         raise RuntimeError(f"TensorRT did not create a valid engine: {args.engine}")
+    onnx_metadata_path = args.onnx.with_suffix(args.onnx.suffix + ".json")
+    onnx_metadata = read_json(onnx_metadata_path) if onnx_metadata_path.is_file() else None
     write_json(args.engine.with_suffix(args.engine.suffix + ".json"), {
         "onnx": str(args.onnx.resolve()), "onnx_sha256": sha256(args.onnx),
         "engine": str(args.engine.resolve()), "engine_sha256": sha256(args.engine),
         "precision": args.precision, "trtexec": trtexec,
         "builder": builder_description,
+        "io_contract": onnx_metadata,
         "note": "TensorRT plans are specific to GPU architecture and TensorRT/CUDA versions."
     })
     print(f"TensorRT engine: {args.engine.resolve()}")

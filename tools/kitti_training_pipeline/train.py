@@ -50,6 +50,12 @@ def loader_kwargs(num_workers: int, pin_memory: bool) -> Dict[str, Any]:
     return result
 
 
+def gradients_are_finite(parameters) -> bool:
+    checks = [torch.isfinite(parameter.grad).all()
+              for parameter in parameters if parameter.grad is not None]
+    return not checks or bool(torch.stack(checks).all())
+
+
 def autocast_context(device: torch.device, precision: str):
     if precision == "fp32":
         return torch.amp.autocast(device_type=device.type, enabled=False)
@@ -105,6 +111,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--detector-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--run-name")
+    parser.add_argument("--seed", type=int)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--physical-batch-size", type=int)
@@ -125,7 +132,8 @@ def main(argv=None) -> None:
     from core.losses.loss_fn import LossFunction
 
     config = read_json(args.config)
-    seed = int(config.get("seed", 42))
+    seed = int(args.seed if args.seed is not None else config.get("seed", 42))
+    config["seed"] = seed
     seed_everything(seed)
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -156,10 +164,12 @@ def main(argv=None) -> None:
     epochs = int(args.epochs or config["train"]["epochs"])
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "train")
+        config["augmentation"], config["model"]["cls_encoding"], "train",
+        box_encoding=config["model"].get("box_encoding", "bev"))
     # A non-special task name disables augmentation and list-valued visualisation data.
     val_dataset = Dataset(config["val"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "validation")
+        config["augmentation"], config["model"]["cls_encoding"], "validation",
+        box_encoding=config["model"].get("box_encoding", "bev"))
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
     train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
@@ -201,10 +211,14 @@ def main(argv=None) -> None:
         f"seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     )
     run_dir = args.output_root.expanduser().resolve() / (args.run_name or default_name)
-    checkpoints_dir, best_dir, selected_dir = (run_dir / "checkpoints",
-                                                run_dir / "best_checkpoints",
-                                                run_dir / "selected")
-    for path in (checkpoints_dir, best_dir, selected_dir):
+    checkpoints_dir = run_dir / "checkpoints"
+    best_dir = run_dir / "best_checkpoints"
+    loss_selection_dir = run_dir / (
+        "provisional_best_loss"
+        if config["model"].get("box_encoding", "bev") == "center3d"
+        else "selected"
+    )
+    for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
     write_json(run_dir / "config.resolved.json", config)
 
@@ -251,6 +265,10 @@ def main(argv=None) -> None:
                 objective = losses["loss"]
                 backward_objective = objective / accumulation_steps
             scaler.scale(backward_objective).backward()
+            if not gradients_are_finite(model_parameters + criterion_parameters):
+                raise FloatingPointError(
+                    f"non-finite gradient at epoch={epoch}, batch={batch_index}"
+                )
             should_update = batch_index % accumulation_steps == 0 or batch_index == total_batches
             if should_update:
                 previous_scale = scaler.get_scale()
@@ -295,8 +313,8 @@ def main(argv=None) -> None:
         if retained:
             retained_path = best_dir / f"{epoch}epoch.pt"
             atomic_torch_save(payload, retained_path)
-            atomic_torch_save(payload, selected_dir / "best.pt")
-            write_json(selected_dir / "selection.json", {
+            atomic_torch_save(payload, loss_selection_dir / "best.pt")
+            write_json(loss_selection_dir / "selection.json", {
                 "epoch": epoch, "validation_objective": current_val,
                 "checkpoint": str(retained_path),
                 "criterion": "minimum mean validation loss"
@@ -311,8 +329,10 @@ def main(argv=None) -> None:
               f"val={current_val:.6f} retained={retained} "
               f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
 
-    print(f"Selected checkpoint: {selected_dir / 'best.pt'}")
-    print(f"Selection record: {selected_dir / 'selection.json'}")
+    label = "Provisional minimum-loss checkpoint" if config["model"].get(
+        "box_encoding", "bev") == "center3d" else "Selected checkpoint"
+    print(f"{label}: {loss_selection_dir / 'best.pt'}")
+    print(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
 
 if __name__ == "__main__":

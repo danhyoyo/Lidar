@@ -13,7 +13,7 @@ import sys
 sys.path.append(os.getcwd())
 
 
-from utils_1.preprocess import trasform_label2metric, get_points_in_a_rotated_box
+from utils_1.preprocess import encode_bev, get_points_in_a_rotated_box
 from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Random_Translation
 from utils_1.gaussian import gaussian_radius, draw_heatmap_gaussian
 
@@ -124,11 +124,17 @@ def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
     return pixels
 
 class Dataset(Dataset):
-    def __init__(self, data_file, config, aug_config, cls_encoding, task = "train") -> None:
+    def __init__(
+        self, data_file, config, aug_config, cls_encoding, task="train", box_encoding="bev"
+    ) -> None:
         self.data_file = data_file
         # stores fine names and data types in self.data_list and self.data_type_list
         self.create_data_list()
         self.config = config
+        self.bev_encoding = config.get("bev_encoding", {"name": "binary_slices"})
+        if box_encoding not in {"bev", "center3d"}:
+            raise ValueError(f"Unsupported box encoding: {box_encoding!r}")
+        self.box_encoding = box_encoding
         # depending on this task, we decide whether we want to load certain info (i.e. labels not available for testing sometimes)
         self.task = task
         # what kind of encoding we want to use for classification. Available options are : gaussian, inverse_distance, binary
@@ -202,38 +208,7 @@ class Dataset(Dataset):
         return np.fromfile(lidar_path, dtype=np.float32).reshape(-1, 4)
 
     def voxelize(self, points, geometry):
-        x_min = geometry["x_min"]
-        x_max = geometry["x_max"]
-        y_min = geometry["y_min"]
-        y_max = geometry["y_max"]
-        z_min = geometry["z_min"]
-        z_max = geometry["z_max"]
-        x_res = geometry["x_res"]
-        y_res = geometry["y_res"]
-        z_res = geometry["z_res"]
-
-        x_size = int((x_max - x_min) / x_res)
-        y_size = int((y_max - y_min) / y_res)
-        z_size = int((z_max - z_min) / z_res)
-
-        eps = 0.001
-
-        #clip points
-        x_indexes = np.logical_and(points[:, 0] > x_min + eps, points[:, 0] < x_max - eps)
-        y_indexes = np.logical_and(points[:, 1] > y_min + eps, points[:, 1] < y_max - eps)
-        z_indexes = np.logical_and(points[:, 2] > z_min + eps, points[:, 2] < z_max - eps)
-        pts = points[np.logical_and(np.logical_and(x_indexes, y_indexes), z_indexes)]
-
-        occupancy_mask = np.zeros((pts.shape[0], 3), dtype = np.int32)
-        voxels = np.zeros((x_size, y_size, z_size), dtype = np.float32)
-        occupancy_mask[:, 0] = (pts[:, 0] - x_min) // x_res
-        occupancy_mask[:, 1] = (pts[:, 1] - y_min) // y_res
-        occupancy_mask[:, 2] = (pts[:, 2] - z_min) // z_res
-
-        idxs = np.array([occupancy_mask[:, 0].reshape(-1), occupancy_mask[:, 1].reshape(-1), occupancy_mask[:, 2].reshape( -1)])
-
-        voxels[idxs[0], idxs[1], idxs[2]] = 1
-        return np.swapaxes(voxels, 0, 1)
+        return encode_bev(points, geometry, self.bev_encoding)
 
 
     def get_boxes(self, idx):
@@ -272,8 +247,13 @@ class Dataset(Dataset):
                 a tensor of shape 200 * 175 * 6 representing the expected output
         '''
 
-        offset_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
-        size_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
+        regression_channels = 3 if self.box_encoding == "center3d" else 2
+        offset_map = torch.zeros(
+            (self.output_shape[0], self.output_shape[1], regression_channels)
+        )
+        size_map = torch.zeros(
+            (self.output_shape[0], self.output_shape[1], regression_channels)
+        )
         yaw_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
         reg_mask = torch.zeros(self.output_shape)
 
@@ -416,9 +396,13 @@ class Dataset(Dataset):
 
                     offset_map[p_x][p_y][0] = x - metric_x
                     offset_map[p_x][p_y][1] = y - metric_y
+                    if self.box_encoding == "center3d":
+                        offset_map[p_x][p_y][2] = z + h / 2
 
                     size_map[p_x][p_y][0] = math.log(w)
                     size_map[p_x][p_y][1] = math.log(l)
+                    if self.box_encoding == "center3d":
+                        size_map[p_x][p_y][2] = math.log(h)
 
                     yaw_map[p_x][p_y][0] = math.cos(yaw2)
                     yaw_map[p_x][p_y][1] = math.sin(yaw2)
