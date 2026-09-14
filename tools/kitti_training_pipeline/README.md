@@ -82,3 +82,23 @@ submission to KITTI's hidden official test server. The reproduced report is in
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+## ProbGeo-UQ
+
+`configs/kitti/probgeo_uq/` contains the fixed B0--B3 Center3D factorial.
+Use `splits/kitti/uq_calibration.txt` only for checkpoint selection and the
+variance-scale fit; reserve `splits/kitti/uq_test.txt` for the final report.
+UQ decoding appends six raw log-variance columns after the stable nine-column
+Center3D prefix. Evaluate saved 15-column predictions with:
+
+```bash
+python3 tools/kitti_training_pipeline/evaluate_uncertainty.py \
+  --predictions artifacts/kitti/b3.predictions.npz \
+  --config configs/kitti/probgeo_uq/b3_probgeo_uq.json \
+  --kitti-root /path/to/KITTI/object \
+  --split splits/kitti/uq_test.txt \
+  --output artifacts/kitti/b3_uq.json
+```
+
+This reports aleatoric localization diagnostics only; it does not rescore or
+alter NMS, and does not claim heading or epistemic uncertainty.

@@ -10,6 +10,25 @@ from pathlib import Path
 from common import read_json, sha256, write_json
 
 
+def validate_output_metadata(metadata):
+    """Return fixed raw-head output shapes, rejecting incomplete ONNX contracts."""
+    outputs = (metadata or {}).get("outputs")
+    if outputs is None:
+        return {name: None for name in ("cls", "offset", "size", "yaw")}
+    names = set(outputs)
+    allowed = {"cls", "offset", "size", "yaw", "log_var"}
+    if names not in ({"cls", "offset", "size", "yaw"}, allowed):
+        raise ValueError(f"ONNX metadata has unexpected outputs: {sorted(names)}")
+    result = {}
+    for name, shape in outputs.items():
+        if not isinstance(shape, list) or len(shape) != 4 or any(not isinstance(value, int) or value <= 0 for value in shape):
+            raise ValueError(f"ONNX metadata has invalid output shape for {name}: {shape!r}")
+        result[name] = tuple(shape)
+    if "log_var" in result and result["log_var"][1] != 6:
+        raise ValueError("ONNX log_var output must have six channels")
+    return result
+
+
 def find_trtexec(explicit: Path | None) -> str | None:
     import shutil
 
@@ -30,7 +49,7 @@ def run(command) -> None:
 
 
 def build_with_python(onnx_path: Path, engine_path: Path, precision: str,
-                      workspace_mib: int, smoke_test: bool) -> str:
+                      workspace_mib: int, smoke_test: bool, expected_outputs) -> str:
     try:
         import tensorrt as trt
     except ImportError as error:
@@ -93,9 +112,33 @@ def build_with_python(onnx_path: Path, engine_path: Path, precision: str,
         torch.cuda.synchronize()
         output_names = [engine.get_tensor_name(i) for i in range(engine.num_io_tensors)
                         if engine.get_tensor_mode(engine.get_tensor_name(i)) == trt.TensorIOMode.OUTPUT]
-        if set(output_names) != {"cls", "offset", "size", "yaw"}:
+        if set(output_names) != set(expected_outputs):
             raise RuntimeError(f"Unexpected TensorRT outputs: {output_names}")
+        for name, expected_shape in expected_outputs.items():
+            if expected_shape is not None and tuple(buffers[name].shape) != expected_shape:
+                raise RuntimeError(f"TensorRT output {name} {tuple(buffers[name].shape)} != metadata {expected_shape}")
     return f"TensorRT Python {trt.__version__}"
+
+
+def validate_engine_metadata(engine_path: Path, expected_outputs) -> str | None:
+    """Inspect a trtexec-built engine when the Python runtime is available."""
+    try:
+        import tensorrt as trt
+    except ImportError:
+        return None
+    runtime = trt.Runtime(trt.Logger(trt.Logger.WARNING))
+    engine = runtime.deserialize_cuda_engine(engine_path.read_bytes())
+    if engine is None:
+        raise RuntimeError("TensorRT could not deserialize the built engine")
+    actual = {engine.get_tensor_name(index): tuple(engine.get_tensor_shape(engine.get_tensor_name(index)))
+              for index in range(engine.num_io_tensors)
+              if engine.get_tensor_mode(engine.get_tensor_name(index)) == trt.TensorIOMode.OUTPUT}
+    if set(actual) != set(expected_outputs):
+        raise RuntimeError(f"TensorRT engine outputs {sorted(actual)} != metadata {sorted(expected_outputs)}")
+    for name, shape in expected_outputs.items():
+        if shape is not None and actual[name] != shape:
+            raise RuntimeError(f"TensorRT output {name} {actual[name]} != metadata {shape}")
+    return f"TensorRT Python {trt.__version__} contract validated"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -113,6 +156,9 @@ def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
     if not args.onnx.is_file():
         raise FileNotFoundError(args.onnx)
+    onnx_metadata_path = args.onnx.with_suffix(args.onnx.suffix + ".json")
+    onnx_metadata = read_json(onnx_metadata_path) if onnx_metadata_path.is_file() else None
+    expected_outputs = validate_output_metadata(onnx_metadata)
     trtexec = find_trtexec(args.trtexec)
     args.engine.parent.mkdir(parents=True, exist_ok=True)
     if trtexec:
@@ -140,11 +186,14 @@ def main(argv=None) -> None:
         print("trtexec not found; using TensorRT Python builder", flush=True)
         builder_description = build_with_python(
             args.onnx.resolve(), args.engine.resolve(), args.precision,
-            args.workspace_mib, not args.skip_runtime_smoke_test)
+            args.workspace_mib, not args.skip_runtime_smoke_test, expected_outputs)
     if not args.engine.is_file() or args.engine.stat().st_size == 0:
         raise RuntimeError(f"TensorRT did not create a valid engine: {args.engine}")
-    onnx_metadata_path = args.onnx.with_suffix(args.onnx.suffix + ".json")
-    onnx_metadata = read_json(onnx_metadata_path) if onnx_metadata_path.is_file() else None
+    inspection = validate_engine_metadata(args.engine, expected_outputs)
+    if inspection is None:
+        print("TensorRT Python unavailable; trtexec engine output contract could not be introspected", flush=True)
+    else:
+        print(inspection, flush=True)
     write_json(args.engine.with_suffix(args.engine.suffix + ".json"), {
         "onnx": str(args.onnx.resolve()), "onnx_sha256": sha256(args.onnx),
         "engine": str(args.engine.resolve()), "engine_sha256": sha256(args.engine),

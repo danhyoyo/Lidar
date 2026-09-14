@@ -6,6 +6,41 @@ from core.losses.focal_loss import modified_focal_loss, focal_loss
 from core.losses.l1_loss import l1_loss
 
 
+def heteroscedastic_nll(residual, log_var, mask, log_var_min, log_var_max):
+    """Masked diagonal Gaussian NLL, averaged over positive cells and six dims."""
+    if not (torch.isfinite(residual).all() and torch.isfinite(log_var).all() and torch.isfinite(mask).all()):
+        raise FloatingPointError("non-finite heteroscedastic NLL input")
+    used = log_var.float().clamp(log_var_min, log_var_max)
+    terms = 0.5 * (torch.exp(-used) * residual.float().square() + used)
+    return (terms * mask.float().unsqueeze(1)).sum() / (mask.sum().clamp_min(1.0) * terms.shape[1])
+
+
+def _footprint_covariance(size, yaw, max_abs_log_size, eps):
+    width, length = torch.exp(size[:, 0].float().clamp(-max_abs_log_size, max_abs_log_size)), torch.exp(size[:, 1].float().clamp(-max_abs_log_size, max_abs_log_size))
+    unit_yaw = F.normalize(yaw.float(), dim=1, eps=eps)
+    theta = 0.5 * torch.atan2(unit_yaw[:, 1], unit_yaw[:, 0])
+    c, s = torch.cos(theta), torch.sin(theta)
+    l2, w2 = length.square() / 4, width.square() / 4
+    return l2 * c.square() + w2 * s.square(), (l2 - w2) * c * s, l2 * s.square() + w2 * c.square()
+
+
+def gwd_footprint_loss(pred, target, eps=1e-4, max_abs_log_size=10.0):
+    """Closed-form, FP32 squared 2-D Gaussian Wasserstein footprint loss."""
+    pa, pb, pd = _footprint_covariance(pred["size"], pred["yaw"], max_abs_log_size, eps)
+    ta, tb, td = _footprint_covariance(target["size"], target["yaw"], max_abs_log_size, eps)
+    det_p = (pa * pd - pb.square()).clamp_min(0.0)
+    det_t = (ta * td - tb.square()).clamp_min(0.0)
+    trace_product = pa * ta + 2.0 * pb * tb + pd * td
+    covariance_term = pa + pd + ta + td - 2.0 * torch.sqrt(
+        (trace_product + 2.0 * torch.sqrt((det_p * det_t).clamp_min(0.0))).clamp_min(0.0)
+    )
+    center_term = (pred["offset"][:, :2].float() - target["offset"][:, :2].float()).square().sum(1)
+    distance2 = (center_term + covariance_term).clamp_min(0.0)
+    values = 1.0 - 1.0 / (1.0 + torch.log1p(distance2))
+    mask = target["reg_mask"].float()
+    return (values * mask).sum() / (mask.sum() + eps)
+
+
 class LossFunction(nn.Module):
     """Baseline loss or the thesis UWAG composite objective.
 
@@ -22,14 +57,19 @@ class LossFunction(nn.Module):
         self.cls_encoding = cls_encoding
         config = config or {}
         self.name = str(config.get("name", "baseline")).lower()
-        if self.name not in {"baseline", "uwag"}:
+        if self.name not in {"baseline", "uwag", "deterministic", "gwd", "heteroscedastic", "probgeo_uq"}:
             raise ValueError(f"Unsupported loss name: {self.name!r}")
 
         self.geometric_weight = float(config.get("geometric_weight", 0.2))
+        self.gwd_weight = float(config.get("gwd_weight", 0.2))
         self.eps = float(config.get("epsilon", 1e-4))
         self.max_abs_log_size = float(config.get("max_abs_log_size", 10.0))
-        if self.geometric_weight < 0:
-            raise ValueError("geometric_weight must be non-negative")
+        self.log_var_min = float(config.get("log_var_min", -7.0))
+        self.log_var_max = float(config.get("log_var_max", 4.0))
+        if self.geometric_weight < 0 or self.gwd_weight < 0:
+            raise ValueError("geometric_weight and gwd_weight must be non-negative")
+        if self.log_var_min >= self.log_var_max:
+            raise ValueError("log_var_min must be less than log_var_max")
 
         if self.name == "uwag":
             initial = config.get("initial_log_scales", [0.0] * len(self.TASKS))
@@ -117,15 +157,33 @@ class LossFunction(nn.Module):
         )
         if not torch.isfinite(components).all():
             raise FloatingPointError("non-finite loss component")
+        if self.name in {"heteroscedastic", "probgeo_uq"}:
+            if pred["offset"].shape[1] != 3 or pred.get("log_var", torch.empty(0)).shape != torch.cat((pred["offset"], pred["size"]), dim=1).shape:
+                raise ValueError("heteroscedastic loss requires Center3D log_var with six channels")
+            residual = torch.cat((pred["offset"] - target["offset"], pred["size"] - target["size"]), dim=1)
+            reg_loss = heteroscedastic_nll(residual, pred["log_var"], target["reg_mask"], self.log_var_min, self.log_var_max)
+            offset_loss = heteroscedastic_nll(residual[:, :3], pred["log_var"][:, :3], target["reg_mask"], self.log_var_min, self.log_var_max)
+            size_loss = heteroscedastic_nll(residual[:, 3:], pred["log_var"][:, 3:], target["reg_mask"], self.log_var_min, self.log_var_max)
+            positive = target["reg_mask"].bool().unsqueeze(1).expand_as(pred["log_var"])
+            used_log_var = pred["log_var"].float()[positive]
+        else:
+            reg_loss = offset_loss + size_loss
         if self.name == "uwag":
             task_loss = (
                 torch.exp(-self.log_scales) * components + self.log_scales
             ).sum()
             geometric_loss = self._yaw_aware_bev_iou_loss(pred, target)
             loss = task_loss + geometric_loss
+        elif self.name in {"gwd", "probgeo_uq"}:
+            if pred["offset"].shape[1] != 3:
+                raise ValueError("GWD requires Center3D regression channels")
+            geometric_loss = self.gwd_weight * gwd_footprint_loss(
+                pred, target, self.eps, self.max_abs_log_size
+            )
+            loss = cls_loss.float() + reg_loss.float() + yaw_loss.float() + geometric_loss
         else:
             geometric_loss = components.new_zeros(())
-            loss = components.sum()
+            loss = components.sum() if self.name in {"baseline", "deterministic"} else (cls_loss.float() + reg_loss.float() + yaw_loss.float())
         if not torch.isfinite(loss):
             raise FloatingPointError("non-finite total loss")
 
@@ -142,5 +200,8 @@ class LossFunction(nn.Module):
                 loss_dict[f"weight_{task}"] = torch.exp(
                     -log_scale.detach()
                 ).item()
+        if self.name in {"heteroscedastic", "probgeo_uq"}:
+            loss_dict["log_var_saturation_min"] = (used_log_var <= self.log_var_min).float().mean().item() if used_log_var.numel() else 0.0
+            loss_dict["log_var_saturation_max"] = (used_log_var >= self.log_var_max).float().mean().item() if used_log_var.numel() else 0.0
 
         return loss_dict

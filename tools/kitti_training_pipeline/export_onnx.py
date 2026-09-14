@@ -19,10 +19,11 @@ class RawHeadWrapper(nn.Module):
     def __init__(self, model):
         super().__init__()
         self.model = model
+        self.output_names = self.OUTPUT_NAMES + (("log_var",) if model.header.predict_log_variance else ())
 
     def forward(self, voxel):
         outputs = self.model(voxel)
-        return tuple(outputs[name] for name in self.OUTPUT_NAMES)
+        return tuple(outputs[name] for name in self.output_names)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -52,7 +53,7 @@ def main(argv=None) -> None:
     with torch.no_grad():
         reference = wrapper(sample)
     torch.onnx.export(wrapper, sample, str(args.output), input_names=["voxel"],
-        output_names=list(RawHeadWrapper.OUTPUT_NAMES), opset_version=args.opset,
+        output_names=list(wrapper.output_names), opset_version=args.opset,
         do_constant_folding=True, dynamo=False)
     try:
         import onnx
@@ -61,7 +62,7 @@ def main(argv=None) -> None:
     graph = onnx.load(str(args.output))
     onnx.checker.check_model(graph)
     graph_outputs = [output.name for output in graph.graph.output]
-    if graph_outputs != list(RawHeadWrapper.OUTPUT_NAMES):
+    if graph_outputs != list(wrapper.output_names):
         raise RuntimeError(f"Unexpected ONNX outputs: {graph_outputs}")
     metadata = {
         "checkpoint": str(args.checkpoint.resolve()), "checkpoint_sha256": sha256(args.checkpoint),
@@ -72,7 +73,12 @@ def main(argv=None) -> None:
         "input_name": "voxel",
         "input_shape": list(sample_shape), "input_dtype": "float32",
         "outputs": {name: list(tensor.shape) for name, tensor in
-                    zip(RawHeadWrapper.OUTPUT_NAMES, reference)},
+                    zip(wrapper.output_names, reference)},
+        "prediction_schema": {
+            "version": 2 if "log_var" in wrapper.output_names else 1,
+            "decoded_columns": ["class", "score", "x", "y", "z", "w", "l", "h", "yaw"] + (["log_var_dx", "log_var_dy", "log_var_z", "log_var_logw", "log_var_logl", "log_var_logh"] if "log_var" in wrapper.output_names else []),
+            "log_var_units": ["log(m^2)", "log(m^2)", "log(m^2)", "dimensionless", "dimensionless", "dimensionless"] if "log_var" in wrapper.output_names else [],
+        },
         "opset": args.opset, "onnx_sha256": sha256(args.output)
     }
     write_json(args.output.with_suffix(args.output.suffix + ".json"), metadata)

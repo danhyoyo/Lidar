@@ -34,6 +34,8 @@ class CustomModel(nn.Module):
             self.num_classes,
             cfg["backbone_out_dim"],
             box_encoding=cfg.get("box_encoding", "bev"),
+            predict_log_variance=cfg.get("predict_log_variance", False),
+            initial_log_variance=cfg.get("initial_log_variance", -2.0),
         )
 
     def forward(self, x):

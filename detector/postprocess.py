@@ -75,15 +75,21 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     offset_pred = pred["offset"].squeeze().detach()
     size_pred = pred["size"].squeeze().detach()
     yaw_pred = pred["yaw"].squeeze().detach()
+    log_var_pred = pred.get("log_var")
+    if log_var_pred is not None:
+        log_var_pred = log_var_pred.squeeze().detach()
     if not torch.stack([
         torch.isfinite(value).all()
         for value in (cls_pred, offset_pred, size_pred, yaw_pred)
+        + (() if log_var_pred is None else (log_var_pred,))
     ]).all():
         raise FloatingPointError("non-finite detector output")
 
     if offset_pred.shape[0] not in {2, 3} or size_pred.shape[0] != offset_pred.shape[0]:
         raise ValueError("offset and size must both have 2 or 3 channels")
     is_3d = offset_pred.shape[0] == 3
+    if log_var_pred is not None and (not is_3d or log_var_pred.shape[0] != 6):
+        raise ValueError("log_var requires six Center3D channels")
     cos_t, sin_t = yaw_pred[0:1], yaw_pred[1:2]
     dx, dy = offset_pred[0:1], offset_pred[1:2]
     log_w, log_l = size_pred[0:1], size_pred[1:2]
@@ -122,12 +128,12 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         pooled = F.max_pool2d(cls_probs.unsqueeze(0), 3, 1, 1).squeeze()
         selected_idxs = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not selected_idxs.any():
-            return np.empty((0, 9 if is_3d else 7), dtype=np.float32)
+            return np.empty((0, 15 if log_var_pred is not None else (9 if is_3d else 7)), dtype=np.float32)
     else:
         pooled = F.max_pool2d(cls_probs.unsqueeze(0), 3, 1, 1).squeeze()
         candidate_mask = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not candidate_mask.any():
-            return np.empty((0, 9 if is_3d else 7), dtype=np.float32)
+            return np.empty((0, 15 if log_var_pred is not None else (9 if is_3d else 7)), dtype=np.float32)
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -174,6 +180,8 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         if is_3d:
             center_z = center_z[candidate_mask]
             h = h[candidate_mask]
+        if log_var_pred is not None:
+            log_var_pred = log_var_pred[:, candidate_mask]
 
 
     fields = [cls_ids[selected_idxs].cpu().numpy(),
@@ -189,6 +197,8 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         fields.extend([l[selected_idxs].cpu().numpy(),
                        w[selected_idxs].cpu().numpy()])
     fields.append(yaw[selected_idxs].cpu().numpy())
+    if log_var_pred is not None:
+        fields.extend(log_var_pred[index][selected_idxs].cpu().numpy() for index in range(6))
     boxes = np.stack(fields)
 
     boxes = np.swapaxes(boxes, 0, 1)
