@@ -1,12 +1,6 @@
 import numpy as np
 import math
 import torch
-import torch
-import numpy as np
-from shapely.geometry import Polygon
-import json
-
-import torch.nn.functional as F
 
 def voxelize(points, geometry):
     x_min = geometry["x_min"]
@@ -44,24 +38,15 @@ def voxelize(points, geometry):
 
 
 def voxel_to_points(voxel, geometry):
-    x_min = geometry["x_min"]
-    x_max = geometry["x_max"]
-    y_min = geometry["y_min"]
-    y_max = geometry["y_max"]
-    z_min = geometry["z_min"]
-    z_max = geometry["z_max"]
     x_res = geometry["x_res"]
     y_res = geometry["y_res"]
     z_res = geometry["z_res"]
 
-    xs, ys, zs = np.where(voxel.astype(int) == 1)
-    points_x = xs + x_res / 2
-    points_y = ys + y_res / 2
-    points_z = zs + z_res / 2
-
-    points_x = points_x * x_res + x_min
-    points_y = points_y * y_res + y_min
-    points_z = points_z * z_res + z_min
+    # voxelize() returns axes in Y, X, Z order.
+    ys, xs, zs = np.where(voxel.astype(bool))
+    points_x = (xs + 0.5) * x_res + geometry["x_min"]
+    points_y = (ys + 0.5) * y_res + geometry["y_min"]
+    points_z = (zs + 0.5) * z_res + geometry["z_min"]
     #centers = np.array(np.where(voxel.astype(int) == 1)) + np.array([[x_res / 2], [y_res / 2], [z_res / 2]])
     return np.transpose(np.array([points_x, points_y, points_z]))
 

@@ -34,7 +34,6 @@ So vß╗¢i bß║ún micro-level tr╞░ß╗¢c:
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor
 from typing import Callable, List, Optional
 

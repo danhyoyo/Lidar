@@ -1,4 +1,3 @@
-import torch
 from torch import nn
 
 def conv3x3(in_planes, out_planes, stride=1, bias=False):

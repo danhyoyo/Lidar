@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor
-from typing import Callable, Any, Optional, List
+from typing import Callable, Optional, List
 
 
 def conv3x3(in_planes, out_planes, stride=1, bias=False):
@@ -13,7 +12,7 @@ def conv3x3(in_planes, out_planes, stride=1, bias=False):
 def conv3x3_dw(in_planes, out_planes, stride = 1, bias = False):
     return nn.Sequential(
         # dw
-        nn.Conv2d(in_planes, out_planes, 3, stride, 1, groups=in_planes, bias=bias),
+        nn.Conv2d(in_planes, in_planes, 3, stride, 1, groups=in_planes, bias=bias),
         nn.BatchNorm2d(in_planes),
         nn.ReLU(inplace=True),
 

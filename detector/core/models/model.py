@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 from core.models.backbones.rpn import RPN

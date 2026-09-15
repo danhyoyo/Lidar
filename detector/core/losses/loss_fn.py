@@ -30,6 +30,10 @@ class LossFunction(nn.Module):
         self.max_abs_log_size = float(config.get("max_abs_log_size", 10.0))
         if self.geometric_weight < 0:
             raise ValueError("geometric_weight must be non-negative")
+        if self.eps <= 0:
+            raise ValueError("epsilon must be positive")
+        if self.max_abs_log_size <= 0:
+            raise ValueError("max_abs_log_size must be positive")
 
         if self.name == "uwag":
             initial = config.get("initial_log_scales", [0.0] * len(self.TASKS))

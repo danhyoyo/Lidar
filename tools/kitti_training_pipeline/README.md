@@ -1,7 +1,7 @@
 # Reproduce UWAG + CoordAtt + geometric augmentation
 
 This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for the MobilePIXOR detector in `launch/core`.
+TensorRT utilities for the MobilePIXOR detector in `detector/core`.
 
 ## Environment
 
@@ -12,7 +12,8 @@ NVIDIA RTX 5060 Ti. Install a CUDA-compatible PyTorch build first, then run:
 python3 -m pip install -r requirements-kitti.txt
 ```
 
-TensorRT is optional and is only required for engine export/evaluation.
+The ONNX package is included for export validation. TensorRT is optional and is
+only required for engine export/evaluation.
 
 ## Download KITTI
 
@@ -74,6 +75,9 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --output artifacts/kitti/evaluation_best_val.json \
   --device cuda
 ```
+
+PyTorch evaluation also supports `--device cpu` for functional checks, although
+CPU and CUDA latency numbers should not be compared directly.
 
 This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
 submission to KITTI's hidden official test server. The reproduced report is in

@@ -53,9 +53,16 @@ class GroundTruth:
 
 
 def read_ids(path: Path) -> List[str]:
-    values = [line.strip().split(";", 1)[0]
-              for line in path.read_text(encoding="utf-8").splitlines()
-              if line.strip()]
+    values = []
+    for line_number, line in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1):
+        value = line.strip()
+        if not value:
+            continue
+        frame_id = value.split(";", 1)[0].strip()
+        if not frame_id:
+            raise ValueError(f"Missing frame ID in {path}:{line_number}")
+        values.append(frame_id)
     if len(values) != len(set(values)):
         raise ValueError(f"Duplicate frame IDs in {path}")
     return values
@@ -226,32 +233,39 @@ def timing_summary(values) -> Dict[str, Any]:
             "fps": 1000.0 / mean if mean else None}
 
 
-def cuda_timed(function):
-    start = torch.cuda.Event(enable_timing=True)
-    end = torch.cuda.Event(enable_timing=True)
-    start.record()
-    value = function()
-    end.record()
-    end.synchronize()
-    return value, float(start.elapsed_time(end))
+def device_timed(function, device: torch.device):
+    if device.type != "cuda":
+        started = time.perf_counter()
+        value = function()
+        return value, (time.perf_counter() - started) * 1000.0
+    with torch.cuda.device(device):
+        start = torch.cuda.Event(enable_timing=True)
+        end = torch.cuda.Event(enable_timing=True)
+        start.record()
+        value = function()
+        end.record()
+        end.synchronize()
+        return value, float(start.elapsed_time(end))
 
 
 class PyTorchRunner:
     def __init__(self, path: Path, config, device: str):
         self.device = torch.device(device)
-        if self.device.type != "cuda":
-            raise ValueError("CUDA is required for comparable timings")
+        if self.device.type == "cuda" and not torch.cuda.is_available():
+            raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
         self.model = build_model(config)
         checkpoint = torch.load(path, map_location="cpu")
         self.model.load_state_dict(normalize_state_dict(checkpoint), strict=True)
         self.model = self.model.to(self.device).eval()
 
     def transfer(self, voxel):
-        return cuda_timed(lambda: voxel.unsqueeze(0).contiguous().to(self.device))
+        return device_timed(
+            lambda: voxel.unsqueeze(0).contiguous().to(self.device), self.device
+        )
 
     def infer(self, tensor):
         with torch.inference_mode():
-            return cuda_timed(lambda: self.model(tensor))
+            return device_timed(lambda: self.model(tensor), self.device)
 
     def metadata(self):
         return {"framework": f"PyTorch {torch.__version__}",
@@ -260,8 +274,13 @@ class PyTorchRunner:
 
 class TensorRTRunner:
     def __init__(self, path: Path, config, device: str):
-        if not device.startswith("cuda"):
+        del config
+        self.device = torch.device(device)
+        if self.device.type != "cuda":
             raise ValueError("TensorRT requires CUDA")
+        if not torch.cuda.is_available():
+            raise RuntimeError("TensorRT requires an available CUDA device")
+        torch.cuda.set_device(self.device)
         try:
             import tensorrt as trt
         except ImportError as error:
@@ -288,7 +307,7 @@ class TensorRTRunner:
             dtype = dtypes.get(self.engine.get_tensor_dtype(name))
             if dtype is None:
                 raise RuntimeError(f"Unsupported TensorRT dtype: {name}")
-            self.buffers[name] = torch.empty(shape, dtype=dtype, device="cuda")
+            self.buffers[name] = torch.empty(shape, dtype=dtype, device=self.device)
             mode = self.engine.get_tensor_mode(name)
             (self.inputs if mode == trt.TensorIOMode.INPUT else self.outputs).append(name)
             self.context.set_tensor_address(name, self.buffers[name].data_ptr())
@@ -300,18 +319,19 @@ class TensorRTRunner:
         source = voxel.unsqueeze(0).contiguous()
         if source.shape != target.shape:
             raise ValueError(f"Input {tuple(source.shape)} != engine {tuple(target.shape)}")
-        _, elapsed = cuda_timed(lambda: target.copy_(source))
+        _, elapsed = device_timed(lambda: target.copy_(source), self.device)
         return target, elapsed
 
     def infer(self, tensor):
         def execute():
-            if not self.context.execute_async_v3(torch.cuda.current_stream().cuda_stream):
+            stream = torch.cuda.current_stream(self.device).cuda_stream
+            if not self.context.execute_async_v3(stream):
                 raise RuntimeError("TensorRT execute_async_v3 returned false")
             return {name: self.buffers[name] for name in self.outputs}
-        return cuda_timed(execute)
+        return device_timed(execute, self.device)
 
     def metadata(self):
-        return {"framework": f"TensorRT {self.trt.__version__}", "device": "cuda",
+        return {"framework": f"TensorRT {self.trt.__version__}", "device": str(self.device),
                 "input": self.inputs[0], "outputs": sorted(self.outputs)}
 
 
@@ -323,6 +343,20 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    warmup_frames: int = 10, max_frames: int | None = None,
                    progress_every: int = 50) -> Dict[str, Any]:
     started = time.time()
+    if backend not in {"pytorch", "tensorrt"}:
+        raise ValueError(f"Unsupported backend: {backend!r}")
+    if not 0.0 <= score_threshold <= 1.0:
+        raise ValueError("score_threshold must be between 0 and 1")
+    if not 0.0 <= nms_threshold <= 1.0:
+        raise ValueError("nms_threshold must be between 0 and 1")
+    if max_detections < 1:
+        raise ValueError("max_detections must be positive")
+    if warmup_frames < 0:
+        raise ValueError("warmup_frames must be non-negative")
+    if max_frames is not None and max_frames < 1:
+        raise ValueError("max_frames must be positive when provided")
+    if progress_every < 0:
+        raise ValueError("progress_every must be non-negative")
     for path in (model_path, config_path, split_path):
         if not path.is_file():
             raise FileNotFoundError(path)
@@ -333,15 +367,17 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     config = read_json(config_path)
     geom = config["data"]["kitti"]["geometry"]
     all_ids = read_ids(split_path)
-    frame_ids = all_ids[:max_frames] if max_frames else all_ids
+    frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
         raise ValueError("Evaluation split is empty")
     dataset = Dataset(str(split_path), config["data"], config["augmentation"],
                       config["model"]["cls_encoding"], task="test")
     runner = (PyTorchRunner(model_path, config, device) if backend == "pytorch"
               else TensorRTRunner(model_path, config, device))
-    torch.cuda.synchronize()
-    torch.cuda.reset_peak_memory_stats()
+    uses_cuda = runner.device.type == "cuda"
+    if uses_cuda:
+        torch.cuda.synchronize(runner.device)
+        torch.cuda.reset_peak_memory_stats(runner.device)
     predictions, labels = {}, {}
     timings = {key: [] for key in
                ("preprocess", "host_to_device", "model", "decode_nms",
@@ -359,7 +395,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         boxes = filter_pred(output, config["data"]["kitti"],
                             config["data"]["out_size_factor"],
                             score_threshold, nms_threshold)
-        torch.cuda.synchronize()
+        if uses_cuda:
+            torch.cuda.synchronize(runner.device)
         decode_ms = (time.perf_counter() - part_start) * 1000
         if boxes.size:
             boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, 7)
@@ -380,6 +417,18 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                                or index + 1 == len(frame_ids)):
             print(f"[{name}] {index + 1}/{len(frame_ids)}, "
                   f"detections={detection_count}", flush=True)
+
+    runtime = {
+        "python": platform.python_version(),
+        "torch": torch.__version__,
+        "cuda": torch.version.cuda,
+        "gpu": torch.cuda.get_device_name(runner.device) if uses_cuda else None,
+        "torch_peak_memory_mb": (
+            torch.cuda.max_memory_allocated(runner.device) / 1048576.0
+            if uses_cuda else None
+        ),
+        "elapsed_seconds": time.time() - started,
+    }
 
     result = {
         "status": "ok", "name": name,
@@ -405,10 +454,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         },
         "accuracy": evaluate_accuracy(predictions, labels),
         "latency": {key: timing_summary(value) for key, value in timings.items()},
-        "runtime": {"python": platform.python_version(), "torch": torch.__version__,
-                    "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(),
-                    "torch_peak_memory_mb": torch.cuda.max_memory_allocated() / 1048576.0,
-                    "elapsed_seconds": time.time() - started},
+        "runtime": runtime,
         "counts": {"detections": detection_count,
                    "detections_per_frame": detection_count / len(frame_ids)},
     }

@@ -34,7 +34,7 @@ def main(argv=None) -> None:
     backup = None
     if destination.exists():
         backup = destination.with_name(destination.name +
-            f".backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            f".backup_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}")
         shutil.copy2(destination, backup)
     temporary = destination.with_name(destination.name + ".new")
     shutil.copy2(source, temporary)

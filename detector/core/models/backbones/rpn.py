@@ -3,7 +3,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from core.torchplus import Sequential, Empty, change_default_args
+from core.torchplus import Empty, change_default_args
 
 def conv3x3(in_planes, out_planes, stride=1, bias=False):
     """3x3 convolution with padding"""

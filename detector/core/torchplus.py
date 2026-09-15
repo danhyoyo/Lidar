@@ -1,4 +1,3 @@
-import functools
 import inspect
 import sys
 from collections import OrderedDict

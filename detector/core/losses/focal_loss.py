@@ -56,7 +56,7 @@ def focal_loss(
     alpha: float = 4.0,
     gamma: float = 2.0,
     reduction: str = 'mean',
-    alphas = [1, 1, 1, 1, 1]
+    alphas = (1, 1, 1, 1, 1)
 ) -> torch.Tensor:
 
     if not isinstance(input, torch.Tensor):
@@ -89,9 +89,13 @@ def focal_loss(
     focal = -alpha * weight * log_input_soft
     #focal = -log_input_soft
 
-    if int(alphas[0]) != 1:
-        for i in range(len(alphas)):
-            focal[:, i, ...] *= alphas[i]
+    if any(value != 1 for value in alphas):
+        if len(alphas) != input.shape[1]:
+            raise ValueError(
+                f"Expected {input.shape[1]} class weights, got {len(alphas)}"
+            )
+        for index, value in enumerate(alphas):
+            focal[:, index, ...] *= value
 
     #print(target_one_hot)
     loss_tmp = torch.einsum('bc...,bc...->b...', (target_one_hot, focal))
