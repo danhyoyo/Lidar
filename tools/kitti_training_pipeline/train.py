@@ -250,6 +250,15 @@ def main(argv=None) -> None:
                 losses = criterion(outputs, batch)
                 objective = losses["loss"]
                 backward_objective = objective / accumulation_steps
+            if not torch.isfinite(objective):
+                components = {
+                    name: float(value.item() if torch.is_tensor(value) else value)
+                    for name, value in losses.items()
+                }
+                raise FloatingPointError(
+                    f"Non-finite loss at epoch {epoch}, batch {batch_index}: "
+                    f"{components}"
+                )
             scaler.scale(backward_objective).backward()
             should_update = batch_index % accumulation_steps == 0 or batch_index == total_batches
             if should_update:

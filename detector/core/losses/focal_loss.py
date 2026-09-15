@@ -9,8 +9,9 @@ def modified_focal_loss(pred, gt):
     # https://www.kaggle.com/code/kyoshioka47/centernet-starterkit-pytorch
     # https://www.programcreek.com/python/example/90318/tensorflow.pow
 
-    #pred = torch.clamp(pred.sigmoid(), min = 1e-4, max = 1 - 1e-4)
-    pred = pred.sigmoid()
+    # Compute probabilities and logarithms in FP32. In FP16/BF16, values
+    # close to one can round to exactly 1 and make log(1 - pred) infinite.
+    pred = pred.float().sigmoid().clamp(min=1e-4, max=1.0 - 1e-4)
     pos_inds = gt.eq(1) # sử dụng như boolean mask để xác định vị trí pos_inds inds(y=1) foreground gt = torch.tensor([0, 1, 1, 0, 1])
                         # tensor([False,  True,  True, False,  True])
     neg_inds = gt.lt(1) # sử dụng như boolean mask để xác định vị trí neg_inds inds(y=0) background gt = torch.tensor([0, 1, 1, 0, 1])
@@ -21,9 +22,6 @@ def modified_focal_loss(pred, gt):
     loss = 0
     pos_pred = pred[pos_inds]
     neg_pred = pred[neg_inds]
-
-    neg_pred[neg_pred == 1] = 1 - 1e-7
-    pos_pred[pos_pred == 0] = 1e-7
 
     #print ("pos_pred",pos_pred)
     #print ("neg_pred",neg_pred)
