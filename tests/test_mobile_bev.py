@@ -231,6 +231,7 @@ def check_targets():
 def check_loss():
     torch, _, _ = load_torch_modules()
     from core.losses.loss_fn import LossFunction
+    from core.losses.focal_loss import modified_focal_loss
 
     criterion = LossFunction("gaussian", {"name": "uwag", "geometric_weight": 0.2})
     target = {
@@ -267,6 +268,12 @@ def check_loss():
     }
     binary_pred["offset"].nan_to_num_(0)
     assert torch.isfinite(LossFunction("binary")(binary_pred, binary_target)["loss"])
+
+    saturated = torch.full((1, 3, 2, 2), 100.0, dtype=torch.bfloat16, requires_grad=True)
+    saturated_loss = modified_focal_loss(saturated, torch.zeros_like(saturated))
+    assert torch.isfinite(saturated_loss)
+    saturated_loss.backward()
+    assert torch.isfinite(saturated.grad).all()
 
 
 def check_decode():

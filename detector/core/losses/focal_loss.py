@@ -10,7 +10,9 @@ def modified_focal_loss(pred, gt):
     # https://www.programcreek.com/python/example/90318/tensorflow.pow
 
     #pred = torch.clamp(pred.sigmoid(), min = 1e-4, max = 1 - 1e-4)
-    pred = pred.sigmoid()
+    # Compute probabilities in FP32: in FP16/BF16, ``1 - 1e-7`` rounds to
+    # exactly 1, making log(1 - p) become -inf for saturated logits.
+    pred = pred.float().sigmoid().clamp(1e-4, 1.0 - 1e-4)
     pos_inds = gt.eq(1) # sử dụng như boolean mask để xác định vị trí pos_inds inds(y=1) foreground gt = torch.tensor([0, 1, 1, 0, 1])
                         # tensor([False,  True,  True, False,  True])
     neg_inds = gt.lt(1) # sử dụng như boolean mask để xác định vị trí neg_inds inds(y=0) background gt = torch.tensor([0, 1, 1, 0, 1])
