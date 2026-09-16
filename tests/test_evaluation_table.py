@@ -56,7 +56,7 @@ def main():
 
         markdown = prefix.with_suffix(".md").read_text(encoding="utf-8")
         assert "| bev_run | 600,337 | 92.00 | 77.28 | 91.95 | 64.75 | 75.15 | 76.87 |" in markdown
-        assert "| center3d_run | 600,337 | 92.00 | 70.00 | 71.00 | 72.00 | 73.00 | 74.00 |" in markdown
+        assert "| center3d_run | 600,337 | 92.00 | 60.00 | 61.00 | 62.00 | 63.00 | 64.00 |" in markdown
 
         with prefix.with_suffix(".csv").open(newline="", encoding="utf-8") as stream:
             rows = list(csv.DictReader(stream))
@@ -70,7 +70,26 @@ def main():
             "Cyc": "75.15",
             "KITTI mAP@Moderate": "76.874",
         }
-        assert rows[1]["Mean AP-9"] == "70"
+        assert rows[1]["Mean AP-9"] == "60"
+
+        three_d_markdown = prefix.with_name("table22_3d").with_suffix(".md").read_text(
+            encoding="utf-8"
+        )
+        assert "| center3d_run | 600,337 | 92.00 | 70.00 | 71.00 | 72.00 | 73.00 | 74.00 |" in three_d_markdown
+        with prefix.with_name("table22_3d").with_suffix(".csv").open(
+            newline="", encoding="utf-8"
+        ) as stream:
+            three_d_rows = list(csv.DictReader(stream))
+        assert three_d_rows == [{
+            "Method": "center3d_run",
+            "Number of parameters": "600337",
+            "FPS": "92.00085611926869",
+            "Mean 3D AP-9": "70",
+            "3D Car": "71",
+            "3D Ped": "72",
+            "3D Cyc": "73",
+            "3D KITTI mAP@Moderate": "74",
+        }]
 
     print("PASS evaluation_table")
 
