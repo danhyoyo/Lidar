@@ -48,15 +48,15 @@ class LossFunction(nn.Module):
     def _yaw_aware_bev_iou_loss(self, pred, target):
         """Differentiable footprint IoU multiplied by doubled-yaw agreement."""
         mask = target["reg_mask"].float()
-        pred_offset = pred["offset"].float()
-        target_offset = target["offset"].float()
+        pred_offset = pred["offset"][:, :2].float()
+        target_offset = target["offset"][:, :2].float()
         pred_size = torch.exp(
-            pred["size"].float().clamp(
+            pred["size"][:, :2].float().clamp(
                 -self.max_abs_log_size, self.max_abs_log_size
             )
         )
         target_size = torch.exp(
-            target["size"].float().clamp(
+            target["size"][:, :2].float().clamp(
                 -self.max_abs_log_size, self.max_abs_log_size
             )
         )
@@ -88,6 +88,26 @@ class LossFunction(nn.Module):
         )
 
     def forward(self, pred, target):
+        for name in ("offset", "size", "yaw"):
+            if pred[name].shape != target[name].shape:
+                raise ValueError(
+                    f"{name} prediction/target shape mismatch: "
+                    f"{tuple(pred[name].shape)} != {tuple(target[name].shape)}"
+                )
+        expected_cls_shape = (
+            pred["cls"].shape[:1] + pred["cls"].shape[2:]
+            if self.cls_encoding == "binary" else pred["cls"].shape
+        )
+        if target["cls"].shape != expected_cls_shape:
+            raise ValueError(
+                f"cls prediction/target shape mismatch: {tuple(pred['cls'].shape)} "
+                f"is incompatible with {tuple(target['cls'].shape)}"
+            )
+        if pred["offset"].shape[1] not in {2, 3} or pred["size"].shape[1] != pred["offset"].shape[1]:
+            raise ValueError("offset and size must both have 2 or 3 channels")
+        if pred["yaw"].shape[1] != 2:
+            raise ValueError("yaw must have 2 channels")
+
         if self.cls_encoding == "binary":
             cls_loss = focal_loss(pred["cls"], target["cls"])
         else:
@@ -99,6 +119,8 @@ class LossFunction(nn.Module):
         components = torch.stack(
             [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
         )
+        if not torch.isfinite(components).all():
+            raise FloatingPointError("non-finite loss component")
         if self.name == "uwag":
             task_loss = (
                 torch.exp(-self.log_scales) * components + self.log_scales
@@ -108,6 +130,8 @@ class LossFunction(nn.Module):
         else:
             geometric_loss = components.new_zeros(())
             loss = components.sum()
+        if not torch.isfinite(loss):
+            raise FloatingPointError("non-finite total loss")
 
         loss_dict = {
             "loss": loss,

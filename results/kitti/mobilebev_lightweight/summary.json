@@ -1,0 +1,39 @@
+{
+  "acceptance_gate": "not_evaluated",
+  "implementation": {
+    "a4_parameters": 593075,
+    "box_encoding": "center3d",
+    "checks_passed": [
+      "legacy_voxelization",
+      "rich8_encoder",
+      "input_shapes",
+      "sgfpn_initial_equivalence",
+      "center3d_head",
+      "center3d_targets",
+      "finite_loss_guard",
+      "center3d_decode",
+      "bev_and_3d_iou",
+      "checkpoint_tie_break",
+      "finite_gradient_guard"
+    ],
+    "rich8_input_bytes_fp32": 18022400,
+    "status": "implemented",
+    "verification": {
+      "command": "MPLCONFIGDIR=/tmp/mobilebev-mpl /home/duyennh/miniconda3/envs/AI_env/bin/python tests/test_mobile_bev.py",
+      "python": "3.14.4",
+      "shapely": "2.1.2",
+      "torch": "2.11.0"
+    }
+  },
+  "not_evaluated": {
+    "a1_a4_smoke_training": "KITTI data and CUDA device are unavailable in the current workspace",
+    "a1_a4_three_seed_ablation": "requires 12 full GPU training runs after smoke validation",
+    "accuracy_and_bootstrap": "requires the completed A1-A4 prediction artifacts",
+    "official_kitti_test": "no hidden-test submission was requested or available",
+    "onnx_validation": "the active environment does not currently provide the onnx package",
+    "tensorrt_fp16": "CUDA/TensorRT and trtexec are unavailable",
+    "edge_hardware": "no edge target was provided"
+  },
+  "research_results": null,
+  "schema_version": 1
+}

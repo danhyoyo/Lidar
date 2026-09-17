@@ -68,8 +68,8 @@ def non_max_suppression(boxes, scores, threshold):
     return np.array(pick, dtype=np.int32)
 
 
-def _empty_detections():
-    return np.empty((0, 7), dtype=np.float32)
+def _empty_detections(is_3d=False):
+    return np.empty((0, 9 if is_3d else 7), dtype=np.float32)
 
 
 def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
@@ -88,11 +88,12 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         raise ValueError("geometry resolutions must be positive")
     if any(pred[name].shape[-2:] != spatial_shape for name in required):
         raise ValueError("All prediction heads must have the same spatial shape")
-    for name in ("offset", "size", "yaw"):
-        if pred[name].shape[1] != 2:
-            raise ValueError(f"{name} head must contain exactly two channels")
     if pred["cls"].shape[1] < 1:
         raise ValueError("cls head must contain at least one class")
+    if pred["offset"].shape[1] not in {2, 3} or pred["size"].shape[1] != pred["offset"].shape[1]:
+        raise ValueError("offset and size must both have 2 or 3 channels")
+    if pred["yaw"].shape[1] != 2:
+        raise ValueError("yaw head must contain exactly two channels")
 
     if not 0.0 <= thres <= 1.0:
         raise ValueError("score threshold must be between 0 and 1")
@@ -105,10 +106,19 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     offset_pred = pred["offset"].squeeze(0).detach()
     size_pred = pred["size"].squeeze(0).detach()
     yaw_pred = pred["yaw"].squeeze(0).detach()
+    if not torch.stack([
+        torch.isfinite(value).all()
+        for value in (cls_pred, offset_pred, size_pred, yaw_pred)
+    ]).all():
+        raise FloatingPointError("non-finite detector output")
 
+    is_3d = offset_pred.shape[0] == 3
     cos_t, sin_t = yaw_pred.unbind(dim=0)
-    dx, dy = offset_pred.unbind(dim=0)
-    log_w, log_l = size_pred.unbind(dim=0)
+    dx, dy = offset_pred[:2]
+    log_w, log_l = size_pred[:2]
+    if is_3d:
+        center_z = offset_pred[2]
+        h = torch.exp(size_pred[2])
 
     cls_pred = torch.sigmoid(cls_pred)
     cls_probs, cls_ids = torch.max(cls_pred, dim = 0)
@@ -132,19 +142,24 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     w = torch.exp(log_w)
     yaw2 = torch.atan2(sin_t, cos_t)
     yaw = yaw2 / 2
+    decoded = [center_x, center_y, l, w, yaw]
+    if is_3d:
+        decoded.extend([center_z, h])
+    if not torch.stack([torch.isfinite(value).all() for value in decoded]).all():
+        raise FloatingPointError("non-finite decoded box")
 
     if nms_thres is None:
         pooled = F.max_pool2d(
             cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
         selected_idxs = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not selected_idxs.any():
-            return _empty_detections()
+            return _empty_detections(is_3d)
     else:
         pooled = F.max_pool2d(
             cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
         candidate_mask = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not candidate_mask.any():
-            return _empty_detections()
+            return _empty_detections(is_3d)
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -207,15 +222,24 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         l = l[candidate_mask]
         w = w[candidate_mask]
         yaw = yaw[candidate_mask]
+        if is_3d:
+            center_z = center_z[candidate_mask]
+            h = h[candidate_mask]
 
 
-
-    boxes = np.stack([cls_ids[selected_idxs].cpu().numpy(),
-                      cls_probs[selected_idxs].cpu().numpy(),
-                      center_x[selected_idxs].cpu().numpy(),
-                      center_y[selected_idxs].cpu().numpy(),
-                      l[selected_idxs].cpu().numpy(),
-                      w[selected_idxs].cpu().numpy(),
-                      yaw[selected_idxs].cpu().numpy()], axis=1)
+    fields = [cls_ids[selected_idxs].cpu().numpy(),
+              cls_probs[selected_idxs].cpu().numpy(),
+              center_x[selected_idxs].cpu().numpy(),
+              center_y[selected_idxs].cpu().numpy()]
+    if is_3d:
+        fields.extend([center_z[selected_idxs].cpu().numpy(),
+                       w[selected_idxs].cpu().numpy(),
+                       l[selected_idxs].cpu().numpy(),
+                       h[selected_idxs].cpu().numpy()])
+    else:
+        fields.extend([l[selected_idxs].cpu().numpy(),
+                       w[selected_idxs].cpu().numpy()])
+    fields.append(yaw[selected_idxs].cpu().numpy())
+    boxes = np.stack(fields, axis=1)
 
     return boxes.astype(np.float32, copy=False)

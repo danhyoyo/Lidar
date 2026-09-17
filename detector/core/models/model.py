@@ -9,12 +9,15 @@ from core.models.backbones.pixor import PixorBackBone
 from core.models.heads.cnn import Header
 
 class CustomModel(nn.Module):
-    def __init__(self, cfg, num_classes = 4):
+    def __init__(self, cfg, num_classes=4, input_channels=35):
         super(CustomModel, self).__init__()
         if cfg["backbone"] == "mobilepixor":
             self.backbone = MobilePixorBackBone()
         elif cfg["backbone"] == "mobilepixor_coordatt":
-            self.backbone = MobilePixorCoordAttBackBone()
+            self.backbone = MobilePixorCoordAttBackBone(
+                input_channels=input_channels,
+                scale_gated_fpn=cfg.get("scale_gated_fpn", False),
+            )
         elif cfg["backbone"] == "pixor":
             self.backbone = PixorBackBone()
         elif cfg["backbone"] == "rpn":
@@ -26,7 +29,11 @@ class CustomModel(nn.Module):
         if cfg["cls_encoding"] == "binary":
             self.num_classes += 1
 
-        self.header = Header(self.num_classes, cfg["backbone_out_dim"])
+        self.header = Header(
+            self.num_classes,
+            cfg["backbone_out_dim"],
+            box_encoding=cfg.get("box_encoding", "bev"),
+        )
 
     def forward(self, x):
         features = self.backbone(x)

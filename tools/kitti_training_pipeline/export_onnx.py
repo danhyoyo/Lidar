@@ -72,7 +72,11 @@ def main(argv=None) -> None:
         raise RuntimeError(f"Unexpected ONNX outputs: {graph_outputs}")
     metadata = {
         "checkpoint": str(args.checkpoint.resolve()), "checkpoint_sha256": sha256(args.checkpoint),
-        "config": str(args.config.resolve()), "input_name": "voxel",
+        "config": str(args.config.resolve()), "config_sha256": sha256(args.config),
+        "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),
+        "box_encoding": config["model"].get("box_encoding", "bev"),
+        "scale_gated_fpn": config["model"].get("scale_gated_fpn", False),
+        "input_name": "voxel",
         "input_shape": list(sample_shape), "input_dtype": "float32",
         "outputs": {name: list(tensor.shape) for name, tensor in
                     zip(RawHeadWrapper.OUTPUT_NAMES, reference)},
