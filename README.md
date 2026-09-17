@@ -86,3 +86,50 @@ submission to KITTI's hidden official test server. The reproduced report is in
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+## MobileBEV-Lite
+
+The frozen design and experiment protocol are in
+`docs/mobile_bev_lightweight/SPEC.md` and `docs/mobile_bev_lightweight/PLAN.md`.
+The four controlled variants are under `configs/kitti/mobilebev/`; A1 is the
+35-channel Center3D baseline and A4 enables RichBEV-8 plus SG-FPN.
+
+Run the dependency-free encoder checks with system Python and the full model
+checks with the environment that contains PyTorch and Shapely:
+
+```bash
+python3 tests/test_mobile_bev.py --encoder
+python3 tests/test_mobile_bev.py
+```
+
+Smoke-train A4 after preparing KITTI:
+
+```bash
+python3 tools/kitti_training_pipeline/train.py \
+  --config configs/kitti/mobilebev/a4_rich8_sgfpn_center3d.json \
+  --detector-root detector \
+  --output-root artifacts/kitti \
+  --run-name mobilebev_a4_smoke_seed42 \
+  --epochs 1 --max-train-batches 8 --max-val-batches 4 --num-workers 2
+```
+
+For a full run, omit the three smoke limits. Select from checkpoints saved
+every five epochs using the pre-registered 3D metric:
+
+Use `--seed 42`, `--seed 43` and `--seed 44` with each A1-A4 config for the
+final twelve runs; the resolved seed is stored in each run config/checkpoint.
+
+```bash
+python3 tools/kitti_training_pipeline/select_checkpoint.py \
+  --checkpoint-dir artifacts/kitti/mobilebev_a4_seed42/checkpoints \
+  --config configs/kitti/mobilebev/a4_rich8_sgfpn_center3d.json \
+  --detector-root detector \
+  --kitti-root /path/to/KITTI/object \
+  --split splits/kitti/val.txt \
+  --output-dir artifacts/kitti/mobilebev_a4_seed42/selected_3d
+```
+
+The Center3D evaluator writes both `accuracy.bev` and `accuracy.3d`, distance
+bands for Pedestrian/Cyclist, input/config/split hashes, and compressed
+per-frame predictions. Legacy configs keep the original flat BEV result
+schema.

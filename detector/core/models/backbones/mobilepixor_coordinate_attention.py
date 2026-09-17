@@ -326,12 +326,19 @@ class MobilePixorBackBone(nn.Module):
       lat_c4(64->32) + deconv2 -> p4(16)   <- output
     """
 
-    def __init__(self, block=InvertedResidual, use_bn: bool = True) -> None:
+    def __init__(
+        self,
+        block=InvertedResidual,
+        use_bn: bool = True,
+        input_channels: int = 35,
+        scale_gated_fpn: bool = False,
+    ) -> None:
         super().__init__()
         self.use_bn = use_bn
+        self.scale_gated_fpn = scale_gated_fpn
 
         # ---- Stem --------------------------------------------------
-        self.conv1 = conv3x3(35, 32)
+        self.conv1 = conv3x3(input_channels, 32)
         self.conv2 = conv3x3(32, 32)
         self.bn1   = nn.BatchNorm2d(32)
         self.bn2   = nn.BatchNorm2d(32)
@@ -360,6 +367,13 @@ class MobilePixorBackBone(nn.Module):
         self.deconv2 = nn.ConvTranspose2d(
             32, 16, kernel_size=3, stride=2, padding=1, output_padding=(1, 1),
         )
+        if scale_gated_fpn:
+            self.gate_c4 = nn.Conv2d(32, 32, 3, padding=1, groups=32, bias=True)
+            self.gate_c3 = nn.Conv2d(16, 16, 3, padding=1, groups=16, bias=True)
+            nn.init.zeros_(self.gate_c4.weight)
+            nn.init.zeros_(self.gate_c4.bias)
+            nn.init.zeros_(self.gate_c3.weight)
+            nn.init.zeros_(self.gate_c3.bias)
 
     # ----------------------------------------------------------------
     def forward(self, x: Tensor) -> Tensor:
@@ -387,10 +401,14 @@ class MobilePixorBackBone(nn.Module):
         # FPN top-down
         l5 = self.lat_c5(c5)           # (B, 64, H/16, W/16)
         l4 = self.lat_c4(c4)           # (B, 32, H/8,  W/8 )
-        p5 = l4 + self.deconv1(l5)     # (B, 32, H/8,  W/8 )
+        u4 = self.deconv1(l5)
+        p5 = u4 + 2 * torch.sigmoid(self.gate_c4(l4 + u4)) * l4 \
+            if self.scale_gated_fpn else l4 + u4
 
         l3 = self.lat_c3(c3)           # (B, 16, H/4,  W/4 )
-        p4 = l3 + self.deconv2(p5)     # (B, 16, H/4,  W/4 )
+        u3 = self.deconv2(p5)
+        p4 = u3 + 2 * torch.sigmoid(self.gate_c3(l3 + u3)) * l3 \
+            if self.scale_gated_fpn else l3 + u3
 
         return p4
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, Tuple
@@ -67,7 +68,11 @@ def build_model(config: Dict[str, Any]):
     validate_backbone(config)
     from core.models.model import CustomModel
 
-    return CustomModel(config["model"], config["data"]["num_classes"])
+    return CustomModel(
+        config["model"],
+        config["data"]["num_classes"],
+        input_channels=input_shape(config)[1],
+    )
 
 
 def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[int, ...]:
@@ -81,8 +86,12 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
             )
         )
 
-    # Dataset.voxelize returns Y,X,Z and then permutes it to N,Z,Y,X.
-    return (1, bins("z"), bins("y"), bins("x"))
+    encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
+    name = encoding.get("name", "binary_slices")
+    if name not in {"binary_slices", "rich8"}:
+        raise ValueError(f"unsupported BEV encoding: {name!r}")
+    channels = 8 if name == "rich8" else bins("z")
+    return (1, channels, bins("y"), bins("x"))
 
 
 def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:
@@ -116,3 +125,19 @@ def sha256(path: Path | str) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def git_metadata(path: Path | str) -> Dict[str, Any]:
+    try:
+        root = Path(path).resolve()
+        commit = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        status = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain"],
+            check=True, capture_output=True, text=True,
+        ).stdout
+        return {"commit": commit, "dirty": bool(status.strip())}
+    except (OSError, subprocess.CalledProcessError):
+        return {"commit": None, "dirty": None}
