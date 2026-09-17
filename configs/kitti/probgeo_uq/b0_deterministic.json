@@ -89,7 +89,7 @@
     "weight_decay": 0.0005
   },
   "val": {
-    "data": "splits/kitti/val.txt",
+    "data": "splits/kitti/uq_calibration.txt",
     "physical_batch_size": 2,
     "val_every": 1
   },

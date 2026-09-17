@@ -22,7 +22,7 @@ def parse_model(value: str) -> Tuple[str, str, Path]:
     name, remainder = value.split("=", 1)
     if ":" not in remainder:
         raise argparse.ArgumentTypeError("model must be NAME=BACKEND:PATH")
-    backend, path = remainder.split(":", 1)
+    backend, path = (part.strip() for part in remainder.split(":", 1))
     if not name.strip() or backend not in {"pytorch", "tensorrt"} or not path:
         raise argparse.ArgumentTypeError("backend must be pytorch or tensorrt")
     return name.strip(), backend, Path(path)
@@ -88,6 +88,10 @@ def fmt(value, decimals=2) -> str:
     return "n/a" if value is None else f"{value:.{decimals}f}"
 
 
+def markdown_cell(value: Any) -> str:
+    return str(value).replace("\n", " ").replace("|", "\\|")
+
+
 def markdown_table(results) -> str:
     lines = [
         "# KITTI MobileBEV model comparison",
@@ -99,10 +103,10 @@ def markdown_table(results) -> str:
     ]
     for result in results:
         if result.get("status") != "ok":
-            lines.append(f"| {result.get('name')} | error: {result.get('error')} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |")
+            lines.append(f"| {markdown_cell(result.get('name'))} | error: {markdown_cell(result.get('error'))} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |")
             continue
         lines.append(
-            f"| {result['name']} | ok | "
+            f"| {markdown_cell(result['name'])} | ok | "
             f"{fmt(nested(result, 'accuracy', '3d', 'map_moderate_percent'))} | "
             f"{fmt(nested(result, 'accuracy', '3d', 'mean_ap_9_percent'))} | "
             f"{fmt(nested(result, 'latency', 'model', 'mean_ms'))} | "
@@ -146,9 +150,12 @@ def main(argv=None):
     names = [model[0] for model in args.model]
     if len(names) != len(set(names)):
         raise ValueError("Every --model NAME must be unique")
-    args.output_dir.mkdir(parents=True, exist_ok=True)
     started = time.time()
+    safe_names = [safe_name(name) for name in names]
+    if len(safe_names) != len(set(safe_names)):
+        raise ValueError("Model names must produce unique output filenames")
     results = []
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     for name, backend, path in args.model:
         output = args.output_dir / f"{safe_name(name)}.json"
         print(f"\n=== Evaluating {name} ({backend}) ===", flush=True)

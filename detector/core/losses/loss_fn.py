@@ -68,6 +68,10 @@ class LossFunction(nn.Module):
         self.log_var_max = float(config.get("log_var_max", 4.0))
         if self.geometric_weight < 0 or self.gwd_weight < 0:
             raise ValueError("geometric_weight and gwd_weight must be non-negative")
+        if self.eps <= 0:
+            raise ValueError("epsilon must be positive")
+        if self.max_abs_log_size <= 0:
+            raise ValueError("max_abs_log_size must be positive")
         if self.log_var_min >= self.log_var_max:
             raise ValueError("log_var_min must be less than log_var_max")
 

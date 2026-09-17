@@ -225,20 +225,24 @@ class Dataset(Dataset):
         object_list = self.config[data_type]["objects"]
         boxes = []
 
-        with open(label_path, 'r') as f:
-            lines = f.readlines() # get rid of \n symbol
-            for line in lines:
-                bbox = []
-                entry = line.split(' ')
+        with open(label_path, "r", encoding="utf-8") as stream:
+            for line_number, line in enumerate(stream, start=1):
+                entry = line.split()
+                if not entry:
+                    continue
                 name = entry[0]
-                if name in list(object_list.keys()):
+                if name in object_list:
+                    if len(entry) != 8:
+                        raise ValueError(
+                            f"Malformed detector label {label_path}:{line_number}; "
+                            "expected CLASS H W L X Y Z YAW"
+                        )
+                    bbox = []
                     bbox.append(object_list[name])
                     bbox.extend([float(e) for e in entry[1:]])
-
                     boxes.append(bbox)
 
-
-        return np.array(boxes)
+        return np.asarray(boxes, dtype=np.float32).reshape(-1, 8)
 
     def get_label(self, boxes, geometry):
         '''
@@ -311,8 +315,8 @@ class Dataset(Dataset):
         # box has a form [cls, h, w, l, x, y, z, yaw]
         width = box[2]
         length = box[3]
-        width = width / geometry["x_res"] / self.out_size_factor
-        length = length / geometry["y_res"] / self.out_size_factor
+        width = width / geometry["y_res"] / self.out_size_factor
+        length = length / geometry["x_res"] / self.out_size_factor
         radius = 0
         if width > 0 and length > 0:
             radius = gaussian_radius((length, width), min_overlap=self.config['gaussian_overlap'])
@@ -422,16 +426,16 @@ class Dataset(Dataset):
         return (class_list, corner_list)
 
     def filter_boxes(self, boxes, data_type):
-        filtered_boxes = []
         geometry = self.config[data_type]["geometry"]
-        for i in range(boxes.shape[0]):
-            box = boxes[i]
+        filtered_boxes = []
+        for box in boxes:
             x, y = box[4:6]
 
             if (x > geometry["x_min"]) and (x < geometry["x_max"]) and (y > geometry["y_min"]) and (y < geometry["y_max"]):
                 filtered_boxes.append(box)
 
-        return torch.from_numpy(np.array(filtered_boxes))
+        values = np.asarray(filtered_boxes, dtype=np.float32).reshape(-1, 8)
+        return torch.from_numpy(values)
 
 
     def get3D_corners(self, bbox):
@@ -488,13 +492,23 @@ class Dataset(Dataset):
     def create_data_list(self):
         data_list = []
         data_type_list = []
-        with open(self.data_file, "r") as f:
-            for line in f:
+        with open(self.data_file, "r", encoding="utf-8") as stream:
+            for line_number, line in enumerate(stream, start=1):
                 line = line.strip()
-                data, data_type = line.split(";")
+                if not line:
+                    continue
+                parts = line.split(";")
+                if len(parts) != 2 or not all(part.strip() for part in parts):
+                    raise ValueError(
+                        f"Malformed manifest {self.data_file}:{line_number}; "
+                        "expected FRAME_ID;DATASET"
+                    )
+                data, data_type = (part.strip() for part in parts)
                 data_list.append(data)
                 data_type_list.append(data_type)
 
+        if not data_list:
+            raise ValueError(f"Dataset manifest is empty: {self.data_file}")
         self.data_list = data_list
         self.data_type_list = data_type_list
 

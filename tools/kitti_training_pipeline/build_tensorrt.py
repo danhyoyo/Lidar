@@ -94,8 +94,9 @@ def build_with_python(onnx_path: Path, engine_path: Path, precision: str,
             trt.float16: torch.float16,
             trt.int32: torch.int32,
             trt.int8: torch.int8,
-            trt.bool: torch.bool,
         }
+        if hasattr(trt, "bool"):
+            torch_dtypes[trt.bool] = torch.bool
         for index in range(engine.num_io_tensors):
             name = engine.get_tensor_name(index)
             shape = tuple(engine.get_tensor_shape(name))
@@ -154,6 +155,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
+    if args.workspace_mib < 1:
+        raise ValueError("workspace_mib must be positive")
     if not args.onnx.is_file():
         raise FileNotFoundError(args.onnx)
     onnx_metadata_path = args.onnx.with_suffix(args.onnx.suffix + ".json")

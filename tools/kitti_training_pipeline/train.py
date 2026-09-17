@@ -132,6 +132,16 @@ def main(argv=None) -> None:
     from core.losses.loss_fn import LossFunction
 
     config = read_json(args.config)
+    if args.num_workers < 0:
+        raise ValueError("num_workers must be non-negative")
+    if args.max_train_batches < 0 or args.max_val_batches < 0:
+        raise ValueError("max batch limits must be non-negative")
+    if args.epochs is not None and args.epochs < 1:
+        raise ValueError("epochs must be positive")
+    if args.physical_batch_size is not None and args.physical_batch_size < 1:
+        raise ValueError("physical_batch_size must be positive")
+    if args.accumulation_steps is not None and args.accumulation_steps < 1:
+        raise ValueError("accumulation_steps must be positive")
     seed = int(args.seed if args.seed is not None else config.get("seed", 42))
     config["seed"] = seed
     seed_everything(seed)
@@ -155,13 +165,18 @@ def main(argv=None) -> None:
     config["train"]["precision"] = precision
     scaler_enabled = precision == "fp16"
 
-    physical_batch_size = int(args.physical_batch_size or
+    physical_batch_size = int(args.physical_batch_size if args.physical_batch_size is not None else
         config["train"].get("physical_batch_size") or config["train"].get("batch_size", 2))
-    accumulation_steps = int(args.accumulation_steps or
+    accumulation_steps = int(args.accumulation_steps if args.accumulation_steps is not None else
         config["train"].get("accumulation_steps", 1))
     if physical_batch_size < 1 or accumulation_steps < 1:
         raise ValueError("Batch size and accumulation steps must be positive")
-    epochs = int(args.epochs or config["train"]["epochs"])
+    epochs = int(args.epochs if args.epochs is not None else config["train"]["epochs"])
+    if epochs < 1:
+        raise ValueError("epochs must be positive")
+    save_every = int(config["train"].get("save_every", 5))
+    if save_every < 1:
+        raise ValueError("save_every must be positive")
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
         config["augmentation"], config["model"]["cls_encoding"], "train",
@@ -174,8 +189,12 @@ def main(argv=None) -> None:
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
     train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
         shuffle=True, generator=generator, **common_loader)
-    val_loader = DataLoader(val_dataset,
-        batch_size=int(config["val"].get("physical_batch_size", physical_batch_size)),
+    validation_batch_size = int(
+        config["val"].get("physical_batch_size", physical_batch_size)
+    )
+    if validation_batch_size < 1:
+        raise ValueError("validation physical_batch_size must be positive")
+    val_loader = DataLoader(val_dataset, batch_size=validation_batch_size,
         shuffle=False, **common_loader)
 
     model = build_model(config).to(device)
@@ -233,7 +252,11 @@ def main(argv=None) -> None:
                   "log-scales start from configured initial values")
         if isinstance(resume, dict) and "optimizer_state_dict" in resume:
             optimizer.load_state_dict(resume["optimizer_state_dict"])
-            scheduler.load_state_dict(resume["scheduler_state_dict"])
+            if "scheduler_state_dict" in resume:
+                scheduler.load_state_dict(resume["scheduler_state_dict"])
+            else:
+                print("WARNING: resume checkpoint has no scheduler state; "
+                      "the learning-rate schedule restarts")
             if resume.get("scaler_state_dict"):
                 scaler.load_state_dict(resume["scaler_state_dict"])
             start_epoch = int(resume.get("epoch", 0))
@@ -256,6 +279,12 @@ def main(argv=None) -> None:
         training_samples = update_count = 0
         started = time.perf_counter()
         total_batches = len(train_loader)
+        batches_this_epoch = (
+            min(total_batches, args.max_train_batches)
+            if args.max_train_batches else total_batches
+        )
+        if batches_this_epoch == 0:
+            raise RuntimeError("Training loader produced no batches")
         for batch_index, batch in enumerate(train_loader, start=1):
             batch = move_tensor_batch(batch, device)
             batch_size = int(batch["voxel"].shape[0])
@@ -263,13 +292,25 @@ def main(argv=None) -> None:
                 outputs = model(batch["voxel"])
                 losses = criterion(outputs, batch)
                 objective = losses["loss"]
-                backward_objective = objective / accumulation_steps
+                group_start = ((batch_index - 1) // accumulation_steps) * accumulation_steps
+                group_size = min(accumulation_steps, batches_this_epoch - group_start)
+                backward_objective = objective / group_size
+            if not torch.isfinite(objective):
+                components = {
+                    name: float(value.item() if torch.is_tensor(value) else value)
+                    for name, value in losses.items()
+                }
+                raise FloatingPointError(
+                    f"non-finite loss at epoch={epoch}, batch={batch_index}: "
+                    f"{components}"
+                )
             scaler.scale(backward_objective).backward()
             if not gradients_are_finite(model_parameters + criterion_parameters):
                 raise FloatingPointError(
                     f"non-finite gradient at epoch={epoch}, batch={batch_index}"
                 )
-            should_update = batch_index % accumulation_steps == 0 or batch_index == total_batches
+            should_update = (batch_index % accumulation_steps == 0
+                             or batch_index == batches_this_epoch)
             if should_update:
                 previous_scale = scaler.get_scale()
                 scaler.step(optimizer)
@@ -281,14 +322,7 @@ def main(argv=None) -> None:
                     update_count += 1
             training_sum += float(objective.detach().item()) * batch_size
             training_samples += batch_size
-            if args.max_train_batches and batch_index >= args.max_train_batches:
-                if not should_update:
-                    previous_scale = scaler.get_scale()
-                    scaler.step(optimizer)
-                    scaler.update()
-                    optimizer.zero_grad(set_to_none=True)
-                    if not scaler_enabled or scaler.get_scale() >= previous_scale:
-                        update_count += 1
+            if batch_index >= batches_this_epoch:
                 break
 
         training_seconds = time.perf_counter() - started
@@ -307,7 +341,6 @@ def main(argv=None) -> None:
             model, criterion, optimizer, scheduler, scaler, epoch,
             validation, best_val, config
         )
-        save_every = int(config["train"].get("save_every", 5))
         if epoch % save_every == 0 or epoch == epochs:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
         if retained:

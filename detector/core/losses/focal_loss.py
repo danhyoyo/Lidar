@@ -10,7 +10,8 @@ def modified_focal_loss(pred, gt):
     # https://www.programcreek.com/python/example/90318/tensorflow.pow
 
     #pred = torch.clamp(pred.sigmoid(), min = 1e-4, max = 1 - 1e-4)
-    pred = pred.sigmoid()
+    # FP16/BF16 rounds 1 - 1e-7 to 1, so compute and clamp probabilities in FP32.
+    pred = pred.float().sigmoid().clamp(1e-4, 1.0 - 1e-4)
     pos_inds = gt.eq(1) # sử dụng như boolean mask để xác định vị trí pos_inds inds(y=1) foreground gt = torch.tensor([0, 1, 1, 0, 1])
                         # tensor([False,  True,  True, False,  True])
     neg_inds = gt.lt(1) # sử dụng như boolean mask để xác định vị trí neg_inds inds(y=0) background gt = torch.tensor([0, 1, 1, 0, 1])
@@ -21,9 +22,6 @@ def modified_focal_loss(pred, gt):
     loss = 0
     pos_pred = pred[pos_inds]
     neg_pred = pred[neg_inds]
-
-    neg_pred[neg_pred == 1] = 1 - 1e-7
-    pos_pred[pos_pred == 0] = 1e-7
 
     #print ("pos_pred",pos_pred)
     #print ("neg_pred",neg_pred)
@@ -58,7 +56,7 @@ def focal_loss(
     alpha: float = 4.0,
     gamma: float = 2.0,
     reduction: str = 'mean',
-    alphas = [1, 1, 1, 1, 1]
+    alphas = (1, 1, 1, 1, 1)
 ) -> torch.Tensor:
 
     if not isinstance(input, torch.Tensor):
@@ -91,9 +89,13 @@ def focal_loss(
     focal = -alpha * weight * log_input_soft
     #focal = -log_input_soft
 
-    if int(alphas[0]) != 1:
-        for i in range(len(alphas)):
-            focal[:, i, ...] *= alphas[i]
+    if any(value != 1 for value in alphas):
+        if len(alphas) != input.shape[1]:
+            raise ValueError(
+                f"Expected {input.shape[1]} class weights, got {len(alphas)}"
+            )
+        for index, value in enumerate(alphas):
+            focal[:, index, ...] *= value
 
     #print(target_one_hot)
     loss_tmp = torch.einsum('bc...,bc...->b...', (target_one_hot, focal))

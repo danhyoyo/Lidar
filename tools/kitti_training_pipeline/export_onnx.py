@@ -39,9 +39,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
+    for path in (args.config, args.checkpoint):
+        if not path.is_file():
+            raise FileNotFoundError(path)
+    if args.opset < 1:
+        raise ValueError("opset must be positive")
+    device = torch.device(args.device)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
     configure_detector_imports(args.detector_root)
     config = read_json(args.config)
-    device = torch.device(args.device)
     model = build_model(config)
     checkpoint = torch.load(args.checkpoint, map_location="cpu")
     model.load_state_dict(normalize_state_dict(checkpoint), strict=True)

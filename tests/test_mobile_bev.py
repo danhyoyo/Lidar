@@ -265,7 +265,36 @@ def check_probgeo_review():
         expected = json.loads(json.dumps(base))
         expected["loss"].pop("name")
         expected.pop("note", None)
+        expected["val"]["data"] = "splits/kitti/uq_calibration.txt"
         assert candidate == expected
+
+    notebook = json.loads(
+        (ROOT / "3D_Lidar_Object_Detection_Notebook_optimized.ipynb").read_text()
+    )
+    code = "\n".join(
+        "".join(cell.get("source", []))
+        for cell in notebook["cells"]
+        if cell["cell_type"] == "code"
+    )
+    assert 'BRANCH = "Proposal2-Loss-Function"' in code
+    assert 'PRECISION = "bf16"' in code
+    assert "EPOCHS = 100" in code
+    assert "RESUME = False" in code
+    assert "EPOCHS <= RESUME_EPOCH" in code
+    assert "passed_tests != EXPECTED_TESTS" in code
+    assert "python3 -m tqdm --bytes" in code
+    assert "mbuffer" not in code
+    for variant, filename in {
+        "B0": "b0_deterministic.json",
+        "B1": "b1_gwd.json",
+        "B2": "b2_heteroscedastic.json",
+        "B3": "b3_probgeo_uq.json",
+    }.items():
+        assert f'"{variant}": "configs/kitti/probgeo_uq/{filename}"' in code
+    assert "--split splits/kitti/uq_calibration.txt" in code
+    assert "--split splits/kitti/uq_test.txt" in code
+    assert "--calibration-split splits/kitti/uq_calibration.txt" in code
+    assert "evaluate_uncertainty.py" in code
 
 
 def load_torch_modules():
@@ -371,6 +400,7 @@ def check_targets():
 def check_loss():
     torch, _, _ = load_torch_modules()
     from core.losses.loss_fn import LossFunction
+    from core.losses.focal_loss import modified_focal_loss
 
     criterion = LossFunction("gaussian", {"name": "uwag", "geometric_weight": 0.2})
     target = {
@@ -407,6 +437,14 @@ def check_loss():
     }
     binary_pred["offset"].nan_to_num_(0)
     assert torch.isfinite(LossFunction("binary")(binary_pred, binary_target)["loss"])
+
+    saturated = torch.full(
+        (1, 3, 2, 2), 100.0, dtype=torch.bfloat16, requires_grad=True
+    )
+    saturated_loss = modified_focal_loss(saturated, torch.zeros_like(saturated))
+    assert torch.isfinite(saturated_loss)
+    saturated_loss.backward()
+    assert torch.isfinite(saturated.grad).all()
 
 
 def check_gwd():

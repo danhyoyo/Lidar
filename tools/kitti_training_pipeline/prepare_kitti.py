@@ -76,10 +76,14 @@ def convert_labels(label_path: Path, calibration_path: Path) -> Tuple[List[str],
 
 def read_ids(path: Path) -> List[str]:
     identifiers: List[str] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line_number, line in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1):
         value = line.strip()
         if value:
-            identifiers.append(value.split(";", 1)[0])
+            identifier = value.split(";", 1)[0].strip()
+            if not identifier:
+                raise ValueError(f"Missing frame ID in {path}:{line_number}")
+            identifiers.append(identifier)
     return identifiers
 
 
@@ -97,6 +101,8 @@ def make_split(all_ids: Sequence[str], train_count: int, seed: int,
         source = "provided manifests"
     else:
         shuffled = list(all_ids)
+        if not 0 < train_count < len(all_ids):
+            raise ValueError("train_count must leave at least one frame in each split")
         random.Random(seed).shuffle(shuffled)
         train_ids, val_ids = sorted(shuffled[:train_count]), sorted(shuffled[train_count:])
         source = f"deterministic random split, seed={seed}"
@@ -179,6 +185,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
+    if args.expected_total < 1:
+        raise ValueError("expected_total must be positive")
+    if args.train_count < 1:
+        raise ValueError("train_count must be positive")
     training_root = args.kitti_root.expanduser().resolve() / "training"
     velodyne_root, calibration_root = training_root / "velodyne", training_root / "calib"
     source_label_root = training_root / "label_2"
@@ -193,6 +203,9 @@ def main(argv=None) -> None:
             raise FileNotFoundError(calibration_root / f"{identifier}.txt")
         if not (source_label_root / f"{identifier}.txt").is_file():
             raise FileNotFoundError(source_label_root / f"{identifier}.txt")
+
+    train_ids, val_ids, split_source = make_split(
+        all_ids, args.train_count, args.seed, args.train_ids, args.val_ids)
 
     output_root = args.output_root.expanduser().resolve()
     pointcloud_root, target_label_root = output_root / "pointcloud", output_root / "label"
@@ -211,8 +224,6 @@ def main(argv=None) -> None:
         if index % 500 == 0 or index == len(all_ids):
             print(f"Converted {index}/{len(all_ids)} frames")
 
-    train_ids, val_ids, split_source = make_split(
-        all_ids, args.train_count, args.seed, args.train_ids, args.val_ids)
     train_manifest, val_manifest = output_root / "train.txt", output_root / "val.txt"
     write_manifest(train_manifest, train_ids)
     write_manifest(val_manifest, val_ids)
