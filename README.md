@@ -1,4 +1,4 @@
-# Proposal 3 (draft): calibrated 3D detection on a lightweight dense-BEV LiDAR detector
+# Proposal 2.5 (draft): calibrated 3D detection on a lightweight dense-BEV LiDAR detector
 
 Status: **prototype implemented, not yet validated.** All changes below are
 backward-compatible: existing A0–A4 and B0–B3 configs load and train exactly as
