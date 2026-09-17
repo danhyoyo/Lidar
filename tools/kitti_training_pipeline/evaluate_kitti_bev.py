@@ -18,7 +18,7 @@ import numpy as np
 import torch
 from shapely.geometry import Polygon
 
-from common import build_model, configure_detector_imports, normalize_state_dict
+from common import build_model, configure_detector_imports, git_metadata, input_shape, normalize_state_dict
 from common import read_json, sha256, write_json
 from prepare_kitti import normalize_yaw, parse_calibration
 
@@ -41,8 +41,10 @@ class GroundTruth:
     bbox_height: float
     x: float
     y: float
+    z_center: float
     length: float
     width: float
+    height: float
     yaw: float
 
     def passes(self, difficulty: str) -> bool:
@@ -96,7 +98,7 @@ def load_ground_truth(frame_id: str, root: Path,
             continue
         truncation, occlusion = float(fields[1]), int(fields[2])
         bbox_height = max(0.0, float(fields[7]) - float(fields[5]))
-        _, width, length = map(float, fields[8:11])
+        height, width, length = map(float, fields[8:11])
         cx, cy, cz = map(float, fields[11:14])
         rotation_y = float(fields[14])
         center = rect_to_velo @ np.array([cx, cy, cz, 1.0])
@@ -104,9 +106,10 @@ def load_ground_truth(frame_id: str, root: Path,
             [math.cos(rotation_y), 0.0, -math.sin(rotation_y)])
         yaw = normalize_yaw(math.atan2(heading[1], heading[0]))
         x, y = float(center[0]), float(center[1])
+        z_center = float(center[2]) + height / 2
         if inside_roi(x, y, geom):
             result.append(GroundTruth(name, truncation, occlusion, bbox_height,
-                                      x, y, length, width, yaw))
+                                      x, y, z_center, length, width, height, yaw))
     return result
 
 
@@ -123,6 +126,63 @@ def iou(first: Polygon, second: Polygon) -> float:
     return 0.0 if union <= 0 else float(first.intersection(second).area / union)
 
 
+def iou3d(first, second) -> float:
+    """Exact prism IoU for two upright, yaw-rotated boxes."""
+    if first.height <= 0 or second.height <= 0:
+        return 0.0
+    first_bev = polygon(first.x, first.y, first.length, first.width, first.yaw)
+    second_bev = polygon(second.x, second.y, second.length, second.width, second.yaw)
+    intersection_area = first_bev.intersection(second_bev).area
+    first_bottom, second_bottom = (
+        first.z_center - first.height / 2,
+        second.z_center - second.height / 2,
+    )
+    vertical_overlap = max(
+        0.0,
+        min(first_bottom + first.height, second_bottom + second.height)
+        - max(first_bottom, second_bottom),
+    )
+    intersection = intersection_area * vertical_overlap
+    union = (
+        first.length * first.width * first.height
+        + second.length * second.width * second.height
+        - intersection
+    )
+    return 0.0 if union <= 0 else float(intersection / union)
+
+
+@dataclass(frozen=True)
+class DetectionBox:
+    x: float
+    y: float
+    z_center: float | None
+    length: float
+    width: float
+    height: float | None
+    yaw: float
+
+
+def prediction_box(row: np.ndarray, space: str) -> DetectionBox:
+    if len(row) in {9, 15}:
+        return DetectionBox(float(row[2]), float(row[3]), float(row[4]),
+                            float(row[6]), float(row[5]), float(row[7]), float(row[8]))
+    if len(row) == 7 and space == "bev":
+        return DetectionBox(float(row[2]), float(row[3]), None,
+                            float(row[4]), float(row[5]), None, float(row[6]))
+    raise ValueError(f"{space} evaluation received a prediction with {len(row)} fields")
+
+
+def box_iou(first, second, space: str) -> float:
+    if space == "bev":
+        return iou(
+            polygon(first.x, first.y, first.length, first.width, first.yaw),
+            polygon(second.x, second.y, second.length, second.width, second.yaw),
+        )
+    if space == "3d":
+        return iou3d(first, second)
+    raise ValueError(f"unsupported evaluation space: {space!r}")
+
+
 def ap_r40(recalls: np.ndarray, precisions: np.ndarray) -> float:
     if not recalls.size:
         return 0.0
@@ -136,16 +196,19 @@ def ap_r40(recalls: np.ndarray, precisions: np.ndarray) -> float:
 
 def evaluate_one(predictions: Mapping[str, np.ndarray],
                  labels: Mapping[str, Sequence[GroundTruth]],
-                 class_name: str, difficulty: str) -> Dict[str, Any]:
+                 class_name: str, difficulty: str, space: str = "bev",
+                 distance_band=None) -> Dict[str, Any]:
     valid, ignored, total_gt = {}, {}, 0
     for frame_id, objects in labels.items():
         valid[frame_id], ignored[frame_id] = [], []
         for obj in objects:
-            shape = polygon(obj.x, obj.y, obj.length, obj.width, obj.yaw)
+            distance = math.hypot(obj.x, obj.y)
+            if distance_band and not distance_band[0] <= distance < distance_band[1]:
+                continue
             if obj.name == class_name:
-                (valid if obj.passes(difficulty) else ignored)[frame_id].append(shape)
+                (valid if obj.passes(difficulty) else ignored)[frame_id].append(obj)
             elif obj.name in NEIGHBOURS[class_name]:
-                ignored[frame_id].append(shape)
+                ignored[frame_id].append(obj)
         total_gt += len(valid[frame_id])
 
     ranked = []
@@ -153,15 +216,17 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
     for frame_id, boxes in predictions.items():
         for row in boxes:
             if int(row[0]) == class_id:
-                ranked.append((float(row[1]), frame_id,
-                               polygon(*map(float, row[2:7]))))
+                box = prediction_box(row, space)
+                distance = math.hypot(box.x, box.y)
+                if not distance_band or distance_band[0] <= distance < distance_band[1]:
+                    ranked.append((float(row[1]), frame_id, box))
     ranked.sort(reverse=True, key=lambda item: item[0])
     used_valid = {frame_id: set() for frame_id in labels}
     used_ignored = {frame_id: set() for frame_id in labels}
     tp, fp, ignored_count = [], [], 0
 
     for _, frame_id, prediction in ranked:
-        candidates = [(iou(prediction, box), index)
+        candidates = [(box_iou(prediction, box, space), index)
                       for index, box in enumerate(valid[frame_id])
                       if index not in used_valid[frame_id]]
         best = max(candidates, default=(0.0, -1))
@@ -170,7 +235,7 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
             tp.append(1.0)
             fp.append(0.0)
             continue
-        candidates = [(iou(prediction, box), index)
+        candidates = [(box_iou(prediction, box, space), index)
                       for index, box in enumerate(ignored[frame_id])
                       if index not in used_ignored[frame_id]]
         best = max(candidates, default=(0.0, -1))
@@ -195,12 +260,14 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
     }
 
 
-def evaluate_accuracy(predictions, labels) -> Dict[str, Any]:
+def evaluate_accuracy(predictions, labels, space="bev", include_distance_bands=False) -> Dict[str, Any]:
+    if space not in {"bev", "3d"}:
+        raise ValueError(f"unsupported evaluation space: {space!r}")
     per_class, all_values, moderate_values = {}, [], []
     for class_name in CLASSES:
         difficulty_results = {}
         for difficulty in DIFFICULTIES:
-            value = evaluate_one(predictions, labels, class_name, difficulty)
+            value = evaluate_one(predictions, labels, class_name, difficulty, space)
             difficulty_results[difficulty] = value
             if value["ap_r40_percent"] is not None:
                 all_values.append(value["ap_r40_percent"])
@@ -212,6 +279,15 @@ def evaluate_accuracy(predictions, labels) -> Dict[str, Any]:
             "difficulties": difficulty_results,
             "mean_ap_r40_percent": float(np.mean(values)) if values else None,
         }
+        if include_distance_bands and class_name in {"Pedestrian", "Cyclist"}:
+            per_class[class_name]["moderate_distance_bands"] = {
+                name: evaluate_one(predictions, labels, class_name, "Moderate", space, bounds)
+                for name, bounds in {
+                    "0_30m": (0.0, 30.0),
+                    "30_50m": (30.0, 50.0),
+                    "50_70.4m": (50.0, math.nextafter(70.4, math.inf)),
+                }.items()
+            }
     return {
         "per_class": per_class,
         "mean_ap_9_percent": float(np.mean(all_values)) if all_values else None,
@@ -269,12 +345,12 @@ class PyTorchRunner:
 
     def metadata(self):
         return {"framework": f"PyTorch {torch.__version__}",
-                "device": str(self.device), "precision": "fp32"}
+                "device": str(self.device), "precision": "fp32",
+                "parameters": sum(parameter.numel() for parameter in self.model.parameters())}
 
 
 class TensorRTRunner:
     def __init__(self, path: Path, config, device: str):
-        del config
         self.device = torch.device(device)
         if self.device.type != "cuda":
             raise ValueError("TensorRT requires CUDA")
@@ -311,8 +387,36 @@ class TensorRTRunner:
             mode = self.engine.get_tensor_mode(name)
             (self.inputs if mode == trt.TensorIOMode.INPUT else self.outputs).append(name)
             self.context.set_tensor_address(name, self.buffers[name].data_ptr())
-        if len(self.inputs) != 1 or set(self.outputs) != {"cls", "offset", "size", "yaw"}:
+        expected_names = {"cls", "offset", "size", "yaw"}
+        if config["model"].get("predict_log_variance", False):
+            expected_names.add("log_var")
+        if len(self.inputs) != 1 or set(self.outputs) != expected_names:
             raise RuntimeError(f"Unexpected TensorRT IO: {self.inputs}, {self.outputs}")
+        expected_input = input_shape(config)
+        input_name = self.inputs[0]
+        if tuple(self.buffers[input_name].shape) != expected_input:
+            raise RuntimeError(
+                f"Engine input {tuple(self.buffers[input_name].shape)} != config {expected_input}"
+            )
+        output_height = expected_input[2] // config["data"]["out_size_factor"]
+        output_width = expected_input[3] // config["data"]["out_size_factor"]
+        regression_channels = 3 if config["model"].get("box_encoding", "bev") == "center3d" else 2
+        class_channels = config["data"]["num_classes"] + (
+            1 if config["model"]["cls_encoding"] == "binary" else 0
+        )
+        expected_outputs = {
+            "cls": (1, class_channels, output_height, output_width),
+            "offset": (1, regression_channels, output_height, output_width),
+            "size": (1, regression_channels, output_height, output_width),
+            "yaw": (1, 2, output_height, output_width),
+        }
+        if "log_var" in expected_names:
+            expected_outputs["log_var"] = (1, 6, output_height, output_width)
+        for name, shape in expected_outputs.items():
+            if tuple(self.buffers[name].shape) != shape:
+                raise RuntimeError(
+                    f"Engine output {name} {tuple(self.buffers[name].shape)} != config {shape}"
+                )
 
     def transfer(self, voxel):
         target = self.buffers[self.inputs[0]]
@@ -366,12 +470,15 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
 
     config = read_json(config_path)
     geom = config["data"]["kitti"]["geometry"]
+    center3d = config["model"].get("box_encoding", "bev") == "center3d"
+    box_fields = 15 if config["model"].get("predict_log_variance", False) else (9 if center3d else 7)
     all_ids = read_ids(split_path)
     frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
         raise ValueError("Evaluation split is empty")
     dataset = Dataset(str(split_path), config["data"], config["augmentation"],
-                      config["model"]["cls_encoding"], task="test")
+                      config["model"]["cls_encoding"], task="test",
+                      box_encoding=config["model"].get("box_encoding", "bev"))
     runner = (PyTorchRunner(model_path, config, device) if backend == "pytorch"
               else TensorRTRunner(model_path, config, device))
     uses_cuda = runner.device.type == "cuda"
@@ -399,10 +506,10 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             torch.cuda.synchronize(runner.device)
         decode_ms = (time.perf_counter() - part_start) * 1000
         if boxes.size:
-            boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, 7)
+            boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, box_fields)
             boxes = boxes[np.argsort(boxes[:, 1])[::-1][:max_detections]]
         else:
-            boxes = np.empty((0, 7), dtype=np.float32)
+            boxes = np.empty((0, box_fields), dtype=np.float32)
         total_ms = (time.perf_counter() - total_start) * 1000
         predictions[frame_id] = boxes
         labels[frame_id] = load_ground_truth(frame_id, kitti_root, geom)
@@ -418,6 +525,13 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             print(f"[{name}] {index + 1}/{len(frame_ids)}, "
                   f"detections={detection_count}", flush=True)
 
+    accuracy = (
+        {
+            "bev": evaluate_accuracy(predictions, labels, "bev", True),
+            "3d": evaluate_accuracy(predictions, labels, "3d", True),
+        }
+        if center3d else evaluate_accuracy(predictions, labels)
+    )
     runtime = {
         "python": platform.python_version(),
         "torch": torch.__version__,
@@ -429,19 +543,29 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         ),
         "elapsed_seconds": time.time() - started,
     }
-
     result = {
         "status": "ok", "name": name,
         "model": {"backend": backend, "path": str(model_path.resolve()),
                   "bytes": model_path.stat().st_size, "sha256": sha256(model_path),
                   **runner.metadata()},
         "data": {"config": str(config_path.resolve()),
+                 "config_sha256": sha256(config_path),
                  "detector_root": str(detector_root.resolve()),
                  "kitti_root": str(kitti_root.resolve()),
-                 "split": str(split_path.resolve()), "frames": len(frame_ids),
+                 "split": str(split_path.resolve()), "split_sha256": sha256(split_path),
+                 "input_channels": int(input_shape(config)[1]),
+                 "input_bytes_fp32": int(np.prod(input_shape(config)) * 4),
+                 "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),
+                 "box_encoding": config["model"].get("box_encoding", "bev"),
+                 "seed": config.get("seed"),
+                 "source": git_metadata(detector_root.parent),
+                 "frames": len(frame_ids),
                  "full_split_frames": len(all_ids)},
         "protocol": {
-            "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+            "name": (
+                "local loader-aligned KITTI-style rotated BEV and 3D AP R40"
+                if center3d else "local loader-aligned KITTI-style rotated BEV AP R40"
+            ),
             "official_hidden_test_submission": False,
             "classes": list(CLASSES), "difficulty_rules": DIFFICULTIES,
             "iou_thresholds": IOU_THRESHOLDS,
@@ -452,13 +576,21 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),
             "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
         },
-        "accuracy": evaluate_accuracy(predictions, labels),
+        "accuracy": accuracy,
         "latency": {key: timing_summary(value) for key, value in timings.items()},
         "runtime": runtime,
         "counts": {"detections": detection_count,
                    "detections_per_frame": detection_count / len(frame_ids)},
     }
     if output_path:
+        predictions_path = output_path.with_suffix(".predictions.npz")
+        predictions_path.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(predictions_path, **predictions)
+        result["predictions"] = {
+            "path": str(predictions_path.resolve()),
+            "sha256": sha256(predictions_path),
+            "format": "one float32 array per frame; Center3D columns are class,score,x,y,z,w,l,h,yaw" + (",log_var_dx,log_var_dy,log_var_z,log_var_logw,log_var_logl,log_var_logh" if box_fields == 15 else ""),
+        }
         write_json(output_path, result)
         print(f"Wrote {output_path.resolve()}", flush=True)
     return result
@@ -504,8 +636,9 @@ def main(argv=None):
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
         max_frames=args.max_frames, progress_every=args.progress_every)
-    print(f"mAP Moderate={optional(result['accuracy']['map_moderate_percent'])}%, "
-          f"Mean AP-9={optional(result['accuracy']['mean_ap_9_percent'])}%, "
+    accuracy = result["accuracy"].get("3d", result["accuracy"])
+    print(f"mAP Moderate={optional(accuracy['map_moderate_percent'])}%, "
+          f"Mean AP-9={optional(accuracy['mean_ap_9_percent'])}%, "
           f"model FPS={optional(result['latency']['model']['fps'])}")
 
 

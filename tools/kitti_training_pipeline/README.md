@@ -1,7 +1,7 @@
 # Reproduce UWAG + CoordAtt + geometric augmentation
 
 This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for the MobilePIXOR detector in `detector/core`.
+TensorRT utilities for the MobilePIXOR detector in `launch/core`.
 
 ## Environment
 
@@ -12,8 +12,7 @@ NVIDIA RTX 5060 Ti. Install a CUDA-compatible PyTorch build first, then run:
 python3 -m pip install -r requirements-kitti.txt
 ```
 
-The ONNX package is included for export validation. TensorRT is optional and is
-only required for engine export/evaluation.
+TensorRT is optional and is only required for engine export/evaluation.
 
 ## Download KITTI
 
@@ -76,9 +75,6 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --device cuda
 ```
 
-PyTorch evaluation also supports `--device cpu` for functional checks, although
-CPU and CUDA latency numbers should not be compared directly.
-
 This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
 submission to KITTI's hidden official test server. The reproduced report is in
 `results/kitti/uwag_coordatt_aug_bf16_seed42/`.
@@ -86,3 +82,23 @@ submission to KITTI's hidden official test server. The reproduced report is in
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+## ProbGeo-UQ
+
+`configs/kitti/probgeo_uq/` contains the fixed B0--B3 Center3D factorial.
+Use `splits/kitti/uq_calibration.txt` only for checkpoint selection and the
+variance-scale fit; reserve `splits/kitti/uq_test.txt` for the final report.
+UQ decoding appends six raw log-variance columns after the stable nine-column
+Center3D prefix. Evaluate saved 15-column predictions with:
+
+```bash
+python3 tools/kitti_training_pipeline/evaluate_uncertainty.py \
+  --predictions artifacts/kitti/b3.predictions.npz \
+  --config configs/kitti/probgeo_uq/b3_probgeo_uq.json \
+  --kitti-root /path/to/KITTI/object \
+  --split splits/kitti/uq_test.txt \
+  --output artifacts/kitti/b3_uq.json
+```
+
+This reports aleatoric localization diagnostics only; it does not rescore or
+alter NMS, and does not claim heading or epistemic uncertainty.

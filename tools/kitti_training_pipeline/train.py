@@ -50,6 +50,12 @@ def loader_kwargs(num_workers: int, pin_memory: bool) -> Dict[str, Any]:
     return result
 
 
+def gradients_are_finite(parameters) -> bool:
+    checks = [torch.isfinite(parameter.grad).all()
+              for parameter in parameters if parameter.grad is not None]
+    return not checks or bool(torch.stack(checks).all())
+
+
 def autocast_context(device: torch.device, precision: str):
     if precision == "fp32":
         return torch.amp.autocast(device_type=device.type, enabled=False)
@@ -57,6 +63,58 @@ def autocast_context(device: torch.device, precision: str):
     return torch.amp.autocast(
         device_type=device.type, dtype=dtype, enabled=True
     )
+
+
+@torch.no_grad()
+def gate_diagnostics(model, loader, device, precision, max_batches=4):
+    """Per-epoch mean/std/saturation of the SG-FPN gate responses.
+
+    Returns an empty dict when scale-gated fusion is not enabled. Saturation is
+    reported as the fraction of gate values within 5% of the formulation's
+    achievable extremes (legacy [0, 2] or bounded [1-scale, 1+scale]).
+    """
+    backbone = getattr(model, "backbone", None)
+    if backbone is None or not getattr(backbone, "scale_gated_fpn", False):
+        return {}
+    if backbone.gate_scale is not None:
+        low, high = 1.0 - backbone.gate_scale, 1.0 + backbone.gate_scale
+    else:
+        low, high = 0.0, 2.0
+    margin = 0.05 * (high - low)
+    recorded = {"gate_c4": [], "gate_c3": []}
+    handles = []
+    for name in recorded:
+        module = getattr(backbone, name, None)
+        if module is None:
+            continue
+        def make_hook(key):
+            def hook(_module, _inp, out):
+                recorded[key].append(
+                    backbone._gate(out.float()).reshape(-1)
+                )
+            return hook
+        handles.append(module.register_forward_hook(make_hook(name)))
+    model.eval()
+    try:
+        for batch_index, batch in enumerate(loader, start=1):
+            batch = move_tensor_batch(batch, device)
+            with autocast_context(device, precision):
+                model(batch["voxel"])
+            if max_batches and batch_index >= max_batches:
+                break
+    finally:
+        for handle in handles:
+            handle.remove()
+    stats = {}
+    for name, values in recorded.items():
+        if not values:
+            continue
+        gates = torch.cat(values)
+        stats[f"{name}_gate_mean"] = float(gates.mean())
+        stats[f"{name}_gate_std"] = float(gates.std())
+        stats[f"{name}_gate_sat_low"] = float((gates < low + margin).float().mean())
+        stats[f"{name}_gate_sat_high"] = float((gates > high - margin).float().mean())
+    return stats
 
 
 def checkpoint_payload(model, criterion, optimizer, scheduler, scaler, epoch: int,
@@ -105,6 +163,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--detector-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--run-name")
+    parser.add_argument("--seed", type=int)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--physical-batch-size", type=int)
@@ -115,6 +174,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--amp", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-train-batches", type=int, default=0)
     parser.add_argument("--max-val-batches", type=int, default=0)
+    parser.add_argument("--gate-diag-batches", type=int, default=4)
     return parser
 
 
@@ -129,11 +189,16 @@ def main(argv=None) -> None:
         raise ValueError("num_workers must be non-negative")
     if args.max_train_batches < 0 or args.max_val_batches < 0:
         raise ValueError("max batch limits must be non-negative")
+    if args.gate_diag_batches < 0:
+        raise ValueError("--gate-diag-batches must be non-negative")
     if args.epochs is not None and args.epochs < 1:
         raise ValueError("epochs must be positive")
     if args.physical_batch_size is not None and args.physical_batch_size < 1:
         raise ValueError("physical_batch_size must be positive")
-    seed = int(config.get("seed", 42))
+    if args.accumulation_steps is not None and args.accumulation_steps < 1:
+        raise ValueError("accumulation_steps must be positive")
+    seed = int(args.seed if args.seed is not None else config.get("seed", 42))
+    config["seed"] = seed
     seed_everything(seed)
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -169,10 +234,12 @@ def main(argv=None) -> None:
         raise ValueError("save_every must be positive")
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "train")
+        config["augmentation"], config["model"]["cls_encoding"], "train",
+        box_encoding=config["model"].get("box_encoding", "bev"))
     # A non-special task name disables augmentation and list-valued visualisation data.
     val_dataset = Dataset(config["val"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "validation")
+        config["augmentation"], config["model"]["cls_encoding"], "validation",
+        box_encoding=config["model"].get("box_encoding", "bev"))
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
     train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
@@ -218,10 +285,14 @@ def main(argv=None) -> None:
         f"seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     )
     run_dir = args.output_root.expanduser().resolve() / (args.run_name or default_name)
-    checkpoints_dir, best_dir, selected_dir = (run_dir / "checkpoints",
-                                                run_dir / "best_checkpoints",
-                                                run_dir / "selected")
-    for path in (checkpoints_dir, best_dir, selected_dir):
+    checkpoints_dir = run_dir / "checkpoints"
+    best_dir = run_dir / "best_checkpoints"
+    loss_selection_dir = run_dir / (
+        "provisional_best_loss"
+        if config["model"].get("box_encoding", "bev") == "center3d"
+        else "selected"
+    )
+    for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
     write_json(run_dir / "config.resolved.json", config)
 
@@ -285,10 +356,14 @@ def main(argv=None) -> None:
                     for name, value in losses.items()
                 }
                 raise FloatingPointError(
-                    f"Non-finite loss at epoch {epoch}, batch {batch_index}: "
+                    f"non-finite loss at epoch={epoch}, batch={batch_index}: "
                     f"{components}"
                 )
             scaler.scale(backward_objective).backward()
+            if not gradients_are_finite(model_parameters + criterion_parameters):
+                raise FloatingPointError(
+                    f"non-finite gradient at epoch={epoch}, batch={batch_index}"
+                )
             should_update = (batch_index % accumulation_steps == 0
                              or batch_index == batches_this_epoch)
             if should_update:
@@ -308,6 +383,12 @@ def main(argv=None) -> None:
         training_seconds = time.perf_counter() - started
         validation = validate(model, criterion, val_loader, device, precision,
                               args.max_val_batches)
+        if args.gate_diag_batches:
+            gate_stats = gate_diagnostics(
+                model, val_loader, device, precision, args.gate_diag_batches
+            )
+            if gate_stats:
+                validation = {**validation, **gate_stats}
         if update_count:
             scheduler.step()
         else:
@@ -321,13 +402,14 @@ def main(argv=None) -> None:
             model, criterion, optimizer, scheduler, scaler, epoch,
             validation, best_val, config
         )
+        atomic_torch_save(payload, checkpoints_dir / "last.pt")
         if epoch % save_every == 0 or epoch == epochs:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
         if retained:
             retained_path = best_dir / f"{epoch}epoch.pt"
             atomic_torch_save(payload, retained_path)
-            atomic_torch_save(payload, selected_dir / "best.pt")
-            write_json(selected_dir / "selection.json", {
+            atomic_torch_save(payload, loss_selection_dir / "best.pt")
+            write_json(loss_selection_dir / "selection.json", {
                 "epoch": epoch, "validation_objective": current_val,
                 "checkpoint": str(retained_path),
                 "criterion": "minimum mean validation loss"
@@ -342,8 +424,10 @@ def main(argv=None) -> None:
               f"val={current_val:.6f} retained={retained} "
               f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
 
-    print(f"Selected checkpoint: {selected_dir / 'best.pt'}")
-    print(f"Selection record: {selected_dir / 'selection.json'}")
+    label = "Provisional minimum-loss checkpoint" if config["model"].get(
+        "box_encoding", "bev") == "center3d" else "Selected checkpoint"
+    print(f"{label}: {loss_selection_dir / 'best.pt'}")
+    print(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
 
 if __name__ == "__main__":

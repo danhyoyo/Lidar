@@ -1,0 +1,43 @@
+{
+  "baseline": {
+    "accuracy": {
+      "map_moderate_bev_percent": 79.78718157042245,
+      "mean_ap_9_bev_percent": 80.30209979855844,
+      "pedestrian_moderate_bev_ap_r40_percent": 65.72682172178403
+    },
+    "commit": "24deca8cb9f5acca02776b05ae22cf43304aebd4",
+    "config": "configs/kitti/kitti_uwag_coordatt_aug.json",
+    "latency_ms": {
+      "host_to_device_mean": 30.202226012844967,
+      "input_to_detections_mean": 63.98069159925025,
+      "model_mean": 12.651641996418299,
+      "model_p95": 13.141122913360595
+    },
+    "result": "results/kitti/uwag_coordatt_aug_bf16_seed42/evaluation_best_val.json",
+    "validation_frames": 1497
+  },
+  "checkpoint_selection": {
+    "primary": "map_3d_moderate_percent",
+    "tie_breakers": [
+      "mean_3d_ap_9_percent",
+      "earlier_epoch"
+    ]
+  },
+  "hashes": {
+    "config_sha256": "881ee996a679e04df2df6716344fa7d88af89ab1eacab1885d73e0bc83bc0dae",
+    "result_sha256": "8c69df7a9234b0b7ec54085d143ea2b848095b282127b35e632edb7e7a689e97",
+    "train_split_sha256": "bda0e3fbce5cb31d07593d3997e52b2ae33fcbc57479e262ec86eedabfaf3db7",
+    "val_split_sha256": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a"
+  },
+  "metric_contract": {
+    "iou_thresholds": {
+      "Car": 0.7,
+      "Cyclist": 0.5,
+      "Pedestrian": 0.5
+    },
+    "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+    "metric": "local loader-aligned KITTI-style AP R40",
+    "official_hidden_test_submission": false
+  },
+  "schema_version": 1
+}

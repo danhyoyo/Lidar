@@ -5,13 +5,40 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
 
 SUPPORTED_BACKBONES = {"mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
+
+
+def validate_probgeo_config(config: Dict[str, Any]) -> None:
+    """Validate the small cross-section between Center3D and ProbGeo-UQ."""
+    model, loss = config.get("model", {}), config.get("loss", {})
+    name = str(loss.get("name", "baseline")).lower()
+    predicts = bool(model.get("predict_log_variance", False))
+    uq_modes = {"heteroscedastic", "probgeo_uq"}
+    if predicts != (name in uq_modes):
+        raise ValueError("predict_log_variance must be enabled exactly for heteroscedastic/probgeo_uq")
+    if predicts:
+        if model.get("box_encoding", "bev") != "center3d":
+            raise ValueError("predict_log_variance requires model.box_encoding='center3d'")
+        minimum, initial, maximum = (float(loss.get("log_var_min", -7.0)),
+                                     float(model.get("initial_log_variance", -2.0)),
+                                     float(loss.get("log_var_max", 4.0)))
+        if not all(math.isfinite(value) for value in (minimum, initial, maximum)) or not minimum < initial < maximum:
+            raise ValueError("log_var_min < initial_log_variance < log_var_max is required")
+    if name in {"gwd", *uq_modes} and model.get("box_encoding", "bev") != "center3d":
+        raise ValueError(f"loss.name={name!r} requires model.box_encoding='center3d'")
+    epsilon, gwd_weight = float(loss.get("epsilon", 1e-4)), float(loss.get("gwd_weight", 0.2))
+    if not math.isfinite(epsilon) or epsilon <= 0:
+        raise ValueError("epsilon must be finite and positive")
+    if not math.isfinite(gwd_weight) or gwd_weight < 0:
+        raise ValueError("gwd_weight must be non-negative")
 
 
 def read_json(path: Path | str) -> Dict[str, Any]:
@@ -65,9 +92,14 @@ def validate_backbone(config: Dict[str, Any]) -> None:
 
 def build_model(config: Dict[str, Any]):
     validate_backbone(config)
+    validate_probgeo_config(config)
     from core.models.model import CustomModel
 
-    return CustomModel(config["model"], config["data"]["num_classes"])
+    return CustomModel(
+        config["model"],
+        config["data"]["num_classes"],
+        input_channels=input_shape(config)[1],
+    )
 
 
 def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[int, ...]:
@@ -81,8 +113,18 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
             )
         )
 
-    # Dataset.voxelize returns Y,X,Z and then permutes it to N,Z,Y,X.
-    return (1, bins("z"), bins("y"), bins("x"))
+    encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
+    name = encoding.get("name", "binary_slices")
+    if name not in {"binary_slices", "rich8", "rich11"}:
+        raise ValueError(f"unsupported BEV encoding: {name!r}")
+    if name == "binary_slices":
+        channels = bins("z")
+    else:
+        n_bands = int(encoding.get("n_bands", 6 if name == "rich11" else 3))
+        if n_bands < 1:
+            raise ValueError("n_bands must be a positive integer")
+        channels = n_bands + 5
+    return (1, channels, bins("y"), bins("x"))
 
 
 def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:
@@ -116,3 +158,19 @@ def sha256(path: Path | str) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def git_metadata(path: Path | str) -> Dict[str, Any]:
+    try:
+        root = Path(path).resolve()
+        commit = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        status = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain"],
+            check=True, capture_output=True, text=True,
+        ).stdout
+        return {"commit": commit, "dirty": bool(status.strip())}
+    except (OSError, subprocess.CalledProcessError):
+        return {"commit": None, "dirty": None}

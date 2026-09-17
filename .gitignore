@@ -23,6 +23,3 @@ tempCodeRunnerFile.py
 
 # Node.js dependencies (optional tooling only)
 node_modules/
-
-*.pdf
-*.xlsx
