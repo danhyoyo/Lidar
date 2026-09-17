@@ -3,6 +3,7 @@
 
 import argparse
 import importlib
+import inspect
 import json
 import sys
 from pathlib import Path
@@ -279,8 +280,15 @@ def check_probgeo_review():
     assert 'BRANCH = "Proposal2-Loss-Function"' in code
     assert 'PRECISION = "bf16"' in code
     assert "EPOCHS = 100" in code
-    assert "RESUME = False" in code
-    assert "EPOCHS <= RESUME_EPOCH" in code
+    train_cell = next(
+        "".join(cell.get("source", []))
+        for cell in notebook["cells"]
+        if "subprocess.Popen" in "".join(cell.get("source", []))
+    )
+    assert "subprocess.Popen" in train_cell
+    assert "start_new_session=True" in train_cell
+    assert 'RUN_DIR / "checkpoints" / "last.pt"' in train_cell
+    assert 'RUN_DIR / "train.log"' in train_cell
     assert "passed_tests != EXPECTED_TESTS" in code
     assert "python3 -m tqdm --bytes" in code
     assert "mbuffer" not in code
@@ -625,6 +633,7 @@ def check_training_guard():
     torch, _, _ = load_torch_modules()
     sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
     training = importlib.import_module("train")
+    assert 'checkpoints_dir / "last.pt"' in inspect.getsource(training.main)
     layer = torch.nn.Linear(2, 1)
     layer(torch.ones(1, 2)).sum().backward()
     assert training.gradients_are_finite(layer.parameters())
