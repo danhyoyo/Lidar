@@ -23,3 +23,9 @@ tempCodeRunnerFile.py
 
 # Node.js dependencies (optional tooling only)
 node_modules/
+
+# Local training artifacts
+outputs/
+
+*.pdf
+*.xlsx
