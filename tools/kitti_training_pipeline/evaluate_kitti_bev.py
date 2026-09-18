@@ -20,7 +20,8 @@ from shapely.geometry import Polygon
 
 from common import build_model, configure_detector_imports, git_metadata, input_shape, normalize_state_dict
 from common import read_json, sha256, write_json
-from prepare_kitti import normalize_yaw, parse_calibration
+from prepare_kitti import (invert_affine_transform, multiply_3x3_vector,
+                           normalize_yaw, parse_calibration)
 
 CLASSES = ("Car", "Pedestrian", "Cyclist")
 CLASS_IDS = {"Car": 0, "Pedestrian": 1, "Cyclist": 2}
@@ -75,7 +76,7 @@ def load_ground_truth(frame_id: str, root: Path,
         raise FileNotFoundError(label_path)
     if not calib_path.is_file():
         raise FileNotFoundError(calib_path)
-    rect_to_velo = np.linalg.inv(parse_calibration(calib_path))
+    rect_to_velo = invert_affine_transform(parse_calibration(calib_path))
     rotation = rect_to_velo[:3, :3]
     accepted = set(CLASSES).union(*NEIGHBOURS.values())
     result = []
@@ -94,9 +95,12 @@ def load_ground_truth(frame_id: str, root: Path,
         height, width, length = map(float, fields[8:11])
         cx, cy, cz = map(float, fields[11:14])
         rotation_y = float(fields[14])
-        center = rect_to_velo @ np.array([cx, cy, cz, 1.0])
-        heading = rotation @ np.array(
-            [math.cos(rotation_y), 0.0, -math.sin(rotation_y)])
+        center = (
+            multiply_3x3_vector(rotation, (cx, cy, cz))
+            + rect_to_velo[:3, 3]
+        )
+        heading = multiply_3x3_vector(
+            rotation, (math.cos(rotation_y), 0.0, -math.sin(rotation_y)))
         yaw = normalize_yaw(math.atan2(heading[1], heading[0]))
         x, y = float(center[0]), float(center[1])
         z_center = float(center[2]) + height / 2

@@ -20,6 +20,27 @@ from common import write_json
 ACTIVE_CLASSES = ("Car", "Pedestrian", "Cyclist")
 
 
+def multiply_3x3_vector(matrix: np.ndarray, vector) -> np.ndarray:
+    """Multiply a small rotation matrix and vector without invoking BLAS."""
+    return np.sum(matrix * np.asarray(vector)[None, :], axis=1)
+
+
+def invert_affine_transform(transform: np.ndarray) -> np.ndarray:
+    """Invert the 4x4 KITTI affine calibration without BLAS."""
+    matrix = transform[:3, :3]
+    cross0 = np.cross(matrix[1], matrix[2])
+    cross1 = np.cross(matrix[2], matrix[0])
+    cross2 = np.cross(matrix[0], matrix[1])
+    determinant = float(np.sum(matrix[0] * cross0))
+    if not math.isfinite(determinant) or abs(determinant) < 1e-12:
+        raise ValueError("KITTI calibration transform is singular")
+    inverse = np.eye(4, dtype=np.float64)
+    inverse[:3, :3] = np.column_stack((cross0, cross1, cross2)) / determinant
+    inverse[:3, 3] = -multiply_3x3_vector(
+        inverse[:3, :3], transform[:3, 3])
+    return inverse
+
+
 def parse_calibration(path: Path) -> np.ndarray:
     values: Dict[str, np.ndarray] = {}
     for raw_line in path.read_text(encoding="utf-8").splitlines():
@@ -32,11 +53,13 @@ def parse_calibration(path: Path) -> np.ndarray:
     transform_key = "Tr_velo_to_cam" if "Tr_velo_to_cam" in values else "Tr_velo_cam"
     if rect_key not in values or transform_key not in values:
         raise ValueError(f"Missing R0_rect/Tr_velo_to_cam in {path}")
-    rectification = np.eye(4, dtype=np.float64)
-    rectification[:3, :3] = values[rect_key].reshape(3, 3)
-    velo_to_camera = np.eye(4, dtype=np.float64)
-    velo_to_camera[:3, :] = values[transform_key].reshape(3, 4)
-    return rectification @ velo_to_camera
+    rectification = values[rect_key].reshape(3, 3)
+    velo_to_camera = values[transform_key].reshape(3, 4)
+    result = np.eye(4, dtype=np.float64)
+    result[:3, :3] = np.sum(
+        rectification[:, :, None] * velo_to_camera[None, :, :3], axis=1)
+    result[:3, 3] = multiply_3x3_vector(rectification, velo_to_camera[:, 3])
+    return result
 
 
 def normalize_yaw(value: float) -> float:
@@ -45,7 +68,7 @@ def normalize_yaw(value: float) -> float:
 
 def convert_labels(label_path: Path, calibration_path: Path) -> Tuple[List[str], Counter]:
     velo_to_rect = parse_calibration(calibration_path)
-    rect_to_velo = np.linalg.inv(velo_to_rect)
+    rect_to_velo = invert_affine_transform(velo_to_rect)
     rect_rotation_to_velo = rect_to_velo[:3, :3]
     converted: List[str] = []
     counts: Counter = Counter()
@@ -59,11 +82,14 @@ def convert_labels(label_path: Path, calibration_path: Path) -> Tuple[List[str],
         height, width, length = map(float, fields[8:11])
         camera_x, camera_y, camera_z = map(float, fields[11:14])
         rotation_y = float(fields[14])
-        bottom_center_rect = np.array([camera_x, camera_y, camera_z, 1.0], dtype=np.float64)
-        bottom_center_velo = rect_to_velo @ bottom_center_rect
+        bottom_center_velo = (
+            multiply_3x3_vector(rect_rotation_to_velo,
+                                (camera_x, camera_y, camera_z))
+            + rect_to_velo[:3, 3]
+        )
         # Transform the object's length direction exactly from rect-camera to Velodyne.
-        heading_rect = np.array([math.cos(rotation_y), 0.0, -math.sin(rotation_y)])
-        heading_velo = rect_rotation_to_velo @ heading_rect
+        heading_rect = (math.cos(rotation_y), 0.0, -math.sin(rotation_y))
+        heading_velo = multiply_3x3_vector(rect_rotation_to_velo, heading_rect)
         yaw_velo = normalize_yaw(math.atan2(heading_velo[1], heading_velo[0]))
         x, y, z = bottom_center_velo[:3]
         converted.append(
