@@ -33,25 +33,24 @@ def _footprint_covariance(size, yaw, max_abs_log_size, eps):
         length2 * cosine.square() + width2 * sine.square(),
         (length2 - width2) * cosine * sine,
         length2 * sine.square() + width2 * cosine.square(),
+        length2 * width2,
     )
 
 
 def gwd_footprint_loss(pred, target, eps=1e-4, max_abs_log_size=10.0):
     """Closed-form FP32 squared 2-D Gaussian Wasserstein footprint loss."""
-    pa, pb, pd = _footprint_covariance(
+    pa, pb, pd, det_p = _footprint_covariance(
         pred["size"], pred["yaw"], max_abs_log_size, eps
     )
-    ta, tb, td = _footprint_covariance(
+    ta, tb, td, det_t = _footprint_covariance(
         target["size"], target["yaw"], max_abs_log_size, eps
     )
-    det_p = (pa * pd - pb.square()).clamp_min(0.0)
-    det_t = (ta * td - tb.square()).clamp_min(0.0)
     trace_product = pa * ta + 2.0 * pb * tb + pd * td
     covariance_term = pa + pd + ta + td - 2.0 * torch.sqrt(
         (
             trace_product
-            + 2.0 * torch.sqrt((det_p * det_t).clamp_min(0.0))
-        ).clamp_min(0.0)
+            + 2.0 * torch.sqrt((det_p * det_t).clamp_min(eps * eps))
+        ).clamp_min(eps)
     )
     center_term = (
         pred["offset"][:, :2].float() - target["offset"][:, :2].float()

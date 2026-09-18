@@ -490,6 +490,14 @@ def check_gwd():
     assert torch.isfinite(shifted["offset"].grad).all()
     assert torch.isfinite(shifted["size"].grad).all()
 
+    extreme = maps(np.pi / 4)
+    with torch.no_grad():
+        extreme["size"][0, :2, 0, 0] = torch.tensor([10.0, -10.0])
+        extreme["yaw"][0, :, 0, 0] = torch.tensor([0.0, 1.0])
+    gwd_footprint_loss(extreme, target, 1e-4).backward()
+    assert torch.isfinite(extreme["size"].grad).all()
+    assert torch.isfinite(extreme["yaw"].grad).all()
+
 
 def check_uncertainty_loss():
     torch, _, _ = load_torch_modules()
