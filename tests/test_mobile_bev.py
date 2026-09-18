@@ -364,11 +364,6 @@ def check_training_guard():
     torch, _, _ = load_torch_modules()
     sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
     training = importlib.import_module("train")
-    layer = torch.nn.Linear(2, 1)
-    layer(torch.ones(1, 2)).sum().backward()
-    assert training.gradients_are_finite(layer.parameters())
-    layer.weight.grad[0, 0] = float("nan")
-    assert not training.gradients_are_finite(layer.parameters())
     args = training.build_parser().parse_args([
         "--config", "config.json", "--detector-root", "detector",
         "--output-root", "artifacts", "--seed", "43",

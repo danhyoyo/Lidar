@@ -60,6 +60,15 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         )
         self.assertIn('atomic_torch_save(payload, checkpoints_dir / "last.pt")', source)
 
+    def test_fp16_grad_scaler_can_recover_from_a_scaled_gradient_overflow(self):
+        source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn(
+            "if not gradients_are_finite(model_parameters + criterion_parameters):",
+            source,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
