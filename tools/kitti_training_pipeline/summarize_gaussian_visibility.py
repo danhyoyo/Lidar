@@ -24,6 +24,8 @@ def extract(report):
         "frames": report["data"]["frames"],
         "split_sha256": report["data"]["split_sha256"],
         "score_threshold": report["protocol"]["score_threshold"],
+        "backbone": report["data"]["backbone"],
+        "loss": report["data"]["loss"],
     }
     for class_name in CLASSES:
         prefix = class_name.lower()
@@ -32,6 +34,7 @@ def extract(report):
         row[f"{prefix}_precision"] = metric["precision_at_score_threshold"]
         row[f"{prefix}_recall"] = metric["max_recall"]
         row[f"{prefix}_false_positives_per_frame"] = metric["false_positives_per_frame"]
+        row[f"{prefix}_observed_free_false_positives_per_frame"] = metric["observed_free_false_positives_per_frame"]
         for band, value in accuracy["per_class"][class_name].get(
                 "moderate_distance_bands", {}).items():
             row[f"{prefix}_ap_3d_moderate_{band}_percent"] = value["ap_r40_percent"]
@@ -43,19 +46,21 @@ def main():
     parser.add_argument("--results-root", type=Path, default=Path("artifacts/kitti"))
     parser.add_argument("--seeds", nargs="+", type=int, default=[42, 43, 44])
     parser.add_argument("--output", type=Path,
-                        default=Path("artifacts/kitti/gaussian_visibility_summary.csv"))
+                        default=Path("artifacts/kitti/gaussian_visibility_irb_summary.csv"))
     parser.add_argument("--allow-incomplete", action="store_true")
     args = parser.parse_args()
     rows, missing = [], []
     for variant in ("a0", "a1", "a2", "a3", "a4"):
         for seed in args.seeds:
-            path = args.results_root / f"gaussian_visibility_{variant}_seed{seed}" / "report.json"
+            path = args.results_root / f"gaussian_visibility_irb_{variant}_seed{seed}" / "report.json"
             if not path.is_file():
                 missing.append(str(path))
                 continue
             report = json.loads(path.read_text(encoding="utf-8"))
             if report.get("status") != "ok" or report["data"]["frames"] != 997:
                 raise ValueError(f"Expected complete 997-frame report: {path}")
+            if not report["protocol"]["observed_free_diagnostic"]["enabled"]:
+                raise ValueError(f"Missing observed-free diagnostic: {path}")
             rows.append({"variant": variant, "seed": seed, **extract(report)})
     if missing and not args.allow_incomplete:
         raise FileNotFoundError("Missing reports:\n  " + "\n  ".join(missing))
@@ -65,6 +70,10 @@ def main():
         raise ValueError("Reports use different splits")
     if len({row["score_threshold"] for row in rows}) != 1:
         raise ValueError("Reports use different score thresholds")
+    if {row["backbone"] for row in rows} != {"mobilepixor"}:
+        raise ValueError("Expected IRB MobilePIXOR reports")
+    if {row["loss"] for row in rows} != {"baseline"}:
+        raise ValueError("Expected standard focal/L1 loss reports")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as stream:

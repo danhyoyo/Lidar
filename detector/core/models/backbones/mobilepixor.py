@@ -167,13 +167,13 @@ class InvertedResidual(nn.Module):
 
 class MobilePixorBackBone(nn.Module):
 
-    def __init__(self, block = InvertedResidual, use_bn=True):
+    def __init__(self, block = InvertedResidual, use_bn=True, input_channels=35):
         super(MobilePixorBackBone, self).__init__()
 
         self.use_bn = use_bn
 
         # Block 1
-        self.conv1 = conv3x3(35, 32)
+        self.conv1 = conv3x3(input_channels, 32)
         self.conv2 = conv3x3(32, 32)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(32)
