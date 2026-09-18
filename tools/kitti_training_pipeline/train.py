@@ -339,6 +339,7 @@ def main(argv=None) -> None:
             model, criterion, optimizer, scheduler, scaler, epoch,
             validation, best_val, config
         )
+        atomic_torch_save(payload, checkpoints_dir / "last.pt")
         if epoch % save_every == 0 or epoch == epochs:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
         if retained:
