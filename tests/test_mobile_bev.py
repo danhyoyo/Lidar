@@ -283,10 +283,10 @@ def check_probgeo_review():
     train_cell = next(
         "".join(cell.get("source", []))
         for cell in notebook["cells"]
-        if "subprocess.Popen" in "".join(cell.get("source", []))
+        if "tee -a" in "".join(cell.get("source", []))
     )
-    assert "subprocess.Popen" in train_cell
-    assert "start_new_session=True" not in train_cell
+    assert "!set -o pipefail" in train_cell
+    assert "subprocess" not in train_cell
     assert "PID_PATH" not in train_cell
     assert 'CHECKPOINT_DIR / "last.pt"' in train_cell
     assert "TRAIN_LOG" in train_cell
