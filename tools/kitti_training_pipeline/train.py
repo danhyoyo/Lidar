@@ -17,7 +17,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from common import (atomic_torch_save, build_model, configure_detector_imports,
-                    normalize_state_dict, read_json, write_json)
+                    normalize_state_dict, optimizer_name, read_json, write_json)
 
 
 def seed_everything(seed: int) -> None:
@@ -231,7 +231,11 @@ def main(argv=None) -> None:
         optimizer_groups.append(
             {"params": criterion_parameters, "weight_decay": 0.0}
         )
-    optimizer = torch.optim.Adam(
+    optimizer_class = {
+        "adam": torch.optim.Adam,
+        "adamw": torch.optim.AdamW,
+    }[optimizer_name(config)]
+    optimizer = optimizer_class(
         optimizer_groups, lr=float(config["train"]["learning_rate"])
     )
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,

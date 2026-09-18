@@ -85,10 +85,11 @@
     "epochs": 50,
     "learning_rate": 0.0003,
     "lr_decay_at": [
-      40,
-      80
+      35,
+      45
     ],
     "momentum": 0.9,
+    "optimizer": "adamw",
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,

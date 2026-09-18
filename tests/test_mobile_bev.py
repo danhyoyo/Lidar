@@ -143,6 +143,25 @@ def check_shapes():
 def check_probgeo_config():
     sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
     common = importlib.import_module("common")
+    assert common.optimizer_name({"train": {}}) == "adam"
+    assert common.optimizer_name({"train": {"optimizer": "AdamW"}}) == "adamw"
+    try:
+        common.optimizer_name({"train": {"optimizer": "sgd"}})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsupported optimizer was accepted")
+
+    config_dir = ROOT / "configs" / "kitti" / "probgeo_uq"
+    for filename in (
+        "c0_a1_probgeo_uq.json",
+        "c1_a3_probgeo_uq.json",
+        "c2_a4_probgeo_uq.json",
+    ):
+        train = json.loads((config_dir / filename).read_text(encoding="utf-8"))["train"]
+        assert train["optimizer"] == "adamw"
+        assert train["lr_decay_at"] == [35, 45]
+
     valid = {
         "model": {
             "box_encoding": "center3d",

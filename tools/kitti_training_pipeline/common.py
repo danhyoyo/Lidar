@@ -16,6 +16,13 @@ from typing import Any, Dict, Tuple
 SUPPORTED_BACKBONES = {"mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
 
 
+def optimizer_name(config: Dict[str, Any]) -> str:
+    name = str(config.get("train", {}).get("optimizer", "adam")).lower()
+    if name not in {"adam", "adamw"}:
+        raise ValueError(f"unsupported optimizer: {name!r}")
+    return name
+
+
 def validate_probgeo_config(config: Dict[str, Any]) -> None:
     """Validate the shared Center3D/ProbGeo-UQ config contract."""
     model = config.get("model", {})
