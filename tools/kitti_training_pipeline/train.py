@@ -308,6 +308,7 @@ def main(argv=None) -> None:
             validation, best_val, config
         )
         save_every = int(config["train"].get("save_every", 5))
+        atomic_torch_save(payload, checkpoints_dir / "last.pt")
         if epoch % save_every == 0 or epoch == epochs:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
         if retained:
