@@ -163,7 +163,7 @@ class DetectionBox:
 
 
 def prediction_box(row: np.ndarray, space: str) -> DetectionBox:
-    if len(row) == 9:
+    if len(row) in {9, 15}:
         return DetectionBox(float(row[2]), float(row[3]), float(row[4]),
                             float(row[6]), float(row[5]), float(row[7]), float(row[8]))
     if len(row) == 7 and space == "bev":
@@ -351,7 +351,6 @@ class PyTorchRunner:
 
 class TensorRTRunner:
     def __init__(self, path: Path, config, device: str):
-        del config
         self.device = torch.device(device)
         if self.device.type != "cuda":
             raise ValueError("TensorRT requires CUDA")
@@ -388,7 +387,10 @@ class TensorRTRunner:
             mode = self.engine.get_tensor_mode(name)
             (self.inputs if mode == trt.TensorIOMode.INPUT else self.outputs).append(name)
             self.context.set_tensor_address(name, self.buffers[name].data_ptr())
-        if len(self.inputs) != 1 or set(self.outputs) != {"cls", "offset", "size", "yaw"}:
+        expected_names = {"cls", "offset", "size", "yaw"}
+        if config["model"].get("predict_log_variance", False):
+            expected_names.add("log_var")
+        if len(self.inputs) != 1 or set(self.outputs) != expected_names:
             raise RuntimeError(f"Unexpected TensorRT IO: {self.inputs}, {self.outputs}")
         expected_input = input_shape(config)
         input_name = self.inputs[0]
@@ -408,6 +410,8 @@ class TensorRTRunner:
             "size": (1, regression_channels, output_height, output_width),
             "yaw": (1, 2, output_height, output_width),
         }
+        if "log_var" in expected_names:
+            expected_outputs["log_var"] = (1, 6, output_height, output_width)
         for name, shape in expected_outputs.items():
             if tuple(self.buffers[name].shape) != shape:
                 raise RuntimeError(
@@ -467,7 +471,10 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     config = read_json(config_path)
     geom = config["data"]["kitti"]["geometry"]
     center3d = config["model"].get("box_encoding", "bev") == "center3d"
-    box_fields = 9 if center3d else 7
+    box_fields = (
+        15 if config["model"].get("predict_log_variance", False)
+        else (9 if center3d else 7)
+    )
     all_ids = read_ids(split_path)
     frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
@@ -586,7 +593,15 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         result["predictions"] = {
             "path": str(predictions_path.resolve()),
             "sha256": sha256(predictions_path),
-            "format": "one float32 array per frame; Center3D columns are class,score,x,y,z,w,l,h,yaw",
+            "format": (
+                "one float32 array per frame; Center3D columns are "
+                "class,score,x,y,z,w,l,h,yaw"
+                + (
+                    ",log_var_dx,log_var_dy,log_var_z,log_var_logw,"
+                    "log_var_logl,log_var_logh"
+                    if box_fields == 15 else ""
+                )
+            ),
         }
         write_json(output_path, result)
         print(f"Wrote {output_path.resolve()}", flush=True)

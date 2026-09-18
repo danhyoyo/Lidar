@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -13,6 +14,44 @@ from typing import Any, Dict, Tuple
 
 
 SUPPORTED_BACKBONES = {"mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
+
+
+def validate_probgeo_config(config: Dict[str, Any]) -> None:
+    """Validate the shared Center3D/ProbGeo-UQ config contract."""
+    model = config.get("model", {})
+    loss = config.get("loss", {})
+    name = str(loss.get("name", "baseline")).lower()
+    predicts_variance = bool(model.get("predict_log_variance", False))
+    uq_modes = {"heteroscedastic", "probgeo_uq"}
+
+    if predicts_variance != (name in uq_modes):
+        raise ValueError(
+            "predict_log_variance must be enabled exactly for "
+            "heteroscedastic/probgeo_uq"
+        )
+    if predicts_variance:
+        if model.get("box_encoding", "bev") != "center3d":
+            raise ValueError(
+                "predict_log_variance requires model.box_encoding='center3d'"
+            )
+        minimum = float(loss.get("log_var_min", -7.0))
+        initial = float(model.get("initial_log_variance", -2.0))
+        maximum = float(loss.get("log_var_max", 4.0))
+        if not all(math.isfinite(value) for value in (minimum, initial, maximum)):
+            raise ValueError("log-variance bounds must be finite")
+        if not minimum < initial < maximum:
+            raise ValueError(
+                "log_var_min < initial_log_variance < log_var_max is required"
+            )
+    if name in {"gwd", *uq_modes} and model.get("box_encoding", "bev") != "center3d":
+        raise ValueError(f"loss.name={name!r} requires model.box_encoding='center3d'")
+
+    epsilon = float(loss.get("epsilon", 1e-4))
+    gwd_weight = float(loss.get("gwd_weight", 0.2))
+    if not math.isfinite(epsilon) or epsilon <= 0:
+        raise ValueError("epsilon must be finite and positive")
+    if not math.isfinite(gwd_weight) or gwd_weight < 0:
+        raise ValueError("gwd_weight must be finite and non-negative")
 
 
 def read_json(path: Path | str) -> Dict[str, Any]:
@@ -66,6 +105,7 @@ def validate_backbone(config: Dict[str, Any]) -> None:
 
 def build_model(config: Dict[str, Any]):
     validate_backbone(config)
+    validate_probgeo_config(config)
     from core.models.model import CustomModel
 
     return CustomModel(

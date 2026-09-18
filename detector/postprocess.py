@@ -68,25 +68,27 @@ def non_max_suppression(boxes, scores, threshold):
     return np.array(pick, dtype=np.int32)
 
 
-def _empty_detections(is_3d=False):
-    return np.empty((0, 9 if is_3d else 7), dtype=np.float32)
+def _empty_detections(is_3d=False, has_log_var=False):
+    columns = 15 if has_log_var else (9 if is_3d else 7)
+    return np.empty((0, columns), dtype=np.float32)
 
 
-def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
+def filter_pred(pred, config, out_size_factor, thres, nms_thres=None):
     geom = config["geometry"]
 
     required = {"cls", "offset", "size", "yaw"}
     missing = required.difference(pred)
     if missing:
         raise KeyError(f"Missing prediction heads: {sorted(missing)}")
-    if any(pred[name].ndim != 4 or pred[name].shape[0] != 1 for name in required):
+    checked = required | ({"log_var"} if "log_var" in pred else set())
+    if any(pred[name].ndim != 4 or pred[name].shape[0] != 1 for name in checked):
         raise ValueError("filter_pred expects prediction heads with shape [1, C, H, W]")
     spatial_shape = pred["cls"].shape[-2:]
     if out_size_factor <= 0:
         raise ValueError("out_size_factor must be positive")
     if geom["x_res"] <= 0 or geom["y_res"] <= 0:
         raise ValueError("geometry resolutions must be positive")
-    if any(pred[name].shape[-2:] != spatial_shape for name in required):
+    if any(pred[name].shape[-2:] != spatial_shape for name in checked):
         raise ValueError("All prediction heads must have the same spatial shape")
     if pred["cls"].shape[1] < 1:
         raise ValueError("cls head must contain at least one class")
@@ -106,13 +108,19 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     offset_pred = pred["offset"].squeeze(0).detach()
     size_pred = pred["size"].squeeze(0).detach()
     yaw_pred = pred["yaw"].squeeze(0).detach()
+    log_var_pred = pred.get("log_var")
+    if log_var_pred is not None:
+        log_var_pred = log_var_pred.squeeze(0).detach()
     if not torch.stack([
         torch.isfinite(value).all()
         for value in (cls_pred, offset_pred, size_pred, yaw_pred)
+        + (() if log_var_pred is None else (log_var_pred,))
     ]).all():
         raise FloatingPointError("non-finite detector output")
 
     is_3d = offset_pred.shape[0] == 3
+    if log_var_pred is not None and (not is_3d or log_var_pred.shape[0] != 6):
+        raise ValueError("log_var requires six Center3D channels")
     cos_t, sin_t = yaw_pred.unbind(dim=0)
     dx, dy = offset_pred[:2]
     log_w, log_l = size_pred[:2]
@@ -153,13 +161,13 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
             cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
         selected_idxs = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not selected_idxs.any():
-            return _empty_detections(is_3d)
+            return _empty_detections(is_3d, log_var_pred is not None)
     else:
         pooled = F.max_pool2d(
             cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
         candidate_mask = torch.logical_and(cls_probs == pooled, cls_probs > thres)
         if not candidate_mask.any():
-            return _empty_detections(is_3d)
+            return _empty_detections(is_3d, log_var_pred is not None)
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -225,6 +233,8 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         if is_3d:
             center_z = center_z[candidate_mask]
             h = h[candidate_mask]
+        if log_var_pred is not None:
+            log_var_pred = log_var_pred[:, candidate_mask]
 
 
     fields = [cls_ids[selected_idxs].cpu().numpy(),
@@ -240,6 +250,11 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         fields.extend([l[selected_idxs].cpu().numpy(),
                        w[selected_idxs].cpu().numpy()])
     fields.append(yaw[selected_idxs].cpu().numpy())
+    if log_var_pred is not None:
+        fields.extend(
+            log_var_pred[index][selected_idxs].cpu().numpy()
+            for index in range(6)
+        )
     boxes = np.stack(fields, axis=1)
 
     return boxes.astype(np.float32, copy=False)

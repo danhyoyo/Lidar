@@ -46,6 +46,10 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
     accuracy = result.get("accuracy", {})
     primary = accuracy.get("3d", {})
     bev = accuracy.get("bev", accuracy)
+    uncertainty = result.get("uncertainty", {})
+    raw_uq = uncertainty.get("raw", {})
+    calibrated_uq = uncertainty.get("calibrated", {})
+    coverage_gaps = raw_uq.get("coverage_1sigma_gap_per_dim", [])
     row = {
         "name": result.get("name"),
         "status": result.get("status"),
@@ -63,6 +67,13 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
         "elapsed_seconds": nested(result, "runtime", "elapsed_seconds"),
         "error_type": result.get("error_type"),
         "error": result.get("error"),
+        "uq_raw_nll": raw_uq.get("nll"),
+        "uq_calibrated_nll": calibrated_uq.get("nll"),
+        "uq_raw_coverage_1sigma_gap_mean": (
+            sum(coverage_gaps) / len(coverage_gaps) if coverage_gaps else None
+        ),
+        "uq_raw_aurc": raw_uq.get("aurc"),
+        "uq_matched_samples": uncertainty.get("matched_samples"),
     }
     for class_name in CLASSES:
         for difficulty in DIFFICULTIES:

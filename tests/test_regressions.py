@@ -80,6 +80,21 @@ class PostprocessTests(unittest.TestCase):
         self.assertEqual(empty.shape, (0, 7))
         self.assertEqual(empty.dtype, np.float32)
 
+    def test_uncertainty_empty_shape_keeps_six_variance_columns(self):
+        pred = predictions(classes=1, height=1, width=1)
+        pred["offset"] = torch.zeros((1, 3, 1, 1))
+        pred["size"] = torch.zeros((1, 3, 1, 1))
+        pred["log_var"] = torch.zeros((1, 6, 1, 1))
+        geometry = dict(GEOMETRY)
+        geometry.update(x_max=1.0, y_max=1.0)
+
+        boxes = filter_pred(
+            pred, {"geometry": geometry}, 1, thres=0.8, nms_thres=0.1
+        )
+
+        self.assertEqual(boxes.shape, (0, 15))
+        self.assertEqual(boxes.dtype, np.float32)
+
 
 class DataUtilityTests(unittest.TestCase):
     def test_voxel_centres_round_trip_with_axis_order(self):

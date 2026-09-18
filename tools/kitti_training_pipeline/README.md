@@ -86,3 +86,35 @@ submission to KITTI's hidden official test server. The reproduced report is in
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+## Round C: MobileBEV + ProbGeo-UQ
+
+The locked configs are `c0_a1_probgeo_uq.json`, `c1_a3_probgeo_uq.json` and
+`c2_a4_probgeo_uq.json` under `configs/kitti/probgeo_uq/`. Run each with seeds
+42, 43 and 44. They all use BF16, 50 epochs, physical batch 16, accumulation 1,
+checkpoint selection on `uq_calibration.txt`, and final evaluation on
+`uq_test.txt`.
+
+After all nine run directories are complete, create
+`results/kitti/probabilistic_geometry_uq/round_c/runs.json`:
+
+```json
+{
+  "kitti_root": "/path/to/KITTI/object",
+  "runs": [
+    {"profile": "C0", "seed": 42, "run_dir": "/path/to/c0_seed42"}
+  ]
+}
+```
+
+Include one entry for every profile/seed pair. Each directory must contain
+`run.json`, `config.resolved.json`, `selected_3d/{best.pt,selection.json}`,
+`evaluation_test{.json,.predictions.npz}` and `uncertainty_test.json`. Then run:
+
+```bash
+python3 tools/kitti_training_pipeline/summarize_round_c.py
+```
+
+The summarizer rejects protocol/hash mismatches, performs the locked 2,000-draw
+paired frame bootstrap with RNG 42, and writes byte-stable `summary.json` and
+`summary.md`.

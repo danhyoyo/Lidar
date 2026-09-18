@@ -1,0 +1,18 @@
+{
+  "baseline_commit": "f9c31e6024b23ae5920b5b8caf4bf1d916f2a133",
+  "proposal_sha256": "bb63f36b9106a01749cda1317779377737c1626b0706293bc3091937367d6276",
+  "a1_config_sha256": "f57fc858d15070e32aa7d575faef081233984a71a6bd20368e697db5e5c4b040",
+  "train_split_sha256": "bda0e3fbce5cb31d07593d3997e52b2ae33fcbc57479e262ec86eedabfaf3db7",
+  "val_split_sha256": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a",
+  "calibration_split_sha256": "cc629c3e6f2e642ec70a18efe444c689fe33efa6ef8759cdafbf189318bbe5cf",
+  "test_split_sha256": "937964b3ed19239980570fffdf54bb1ce848b77967d549b6da67493eb958f37f",
+  "calibration_frames": 500,
+  "test_frames": 997,
+  "split_seed": 42,
+  "score_threshold": 0.05,
+  "nms_threshold": 0.1,
+  "max_detections_per_frame": 500,
+  "iou_thresholds": {"Car": 0.7, "Pedestrian": 0.5, "Cyclist": 0.5},
+  "prediction_schema_version": 2,
+  "prediction_columns": ["class", "score", "x", "y", "z", "w", "l", "h", "yaw", "log_var_dx", "log_var_dy", "log_var_z", "log_var_logw", "log_var_logl", "log_var_logh"]
+}

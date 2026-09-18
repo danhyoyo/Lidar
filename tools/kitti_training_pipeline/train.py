@@ -73,6 +73,21 @@ def checkpoint_payload(model, criterion, optimizer, scheduler, scaler, epoch: in
     }
 
 
+def record_training_settings(config: Dict[str, Any], *, seed: int, device: str,
+                             precision: str, epochs: int,
+                             physical_batch_size: int,
+                             accumulation_steps: int) -> None:
+    """Persist the effective CLI/config training protocol in every artifact."""
+    config["seed"] = seed
+    config["device"] = device
+    config["train"].update(
+        precision=precision,
+        epochs=epochs,
+        physical_batch_size=physical_batch_size,
+        accumulation_steps=accumulation_steps,
+    )
+
+
 @torch.no_grad()
 def validate(model, criterion, loader, device, precision, max_batches=0):
     model.eval()
@@ -134,6 +149,8 @@ def main(argv=None) -> None:
         raise ValueError("epochs must be positive")
     if args.physical_batch_size is not None and args.physical_batch_size < 1:
         raise ValueError("physical_batch_size must be positive")
+    if args.accumulation_steps is not None and args.accumulation_steps < 1:
+        raise ValueError("accumulation_steps must be positive")
     seed = int(args.seed if args.seed is not None else config.get("seed", 42))
     config["seed"] = seed
     seed_everything(seed)
@@ -169,6 +186,11 @@ def main(argv=None) -> None:
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
+    record_training_settings(
+        config, seed=seed, device=str(device), precision=precision,
+        epochs=epochs, physical_batch_size=physical_batch_size,
+        accumulation_steps=accumulation_steps,
+    )
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
         config["augmentation"], config["model"]["cls_encoding"], "train",

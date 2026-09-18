@@ -3,6 +3,7 @@
 
 import argparse
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -139,6 +140,146 @@ def check_shapes():
     assert common.input_shape(config) == (1, 8, 4, 4)
 
 
+def check_probgeo_config():
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    common = importlib.import_module("common")
+    valid = {
+        "model": {
+            "box_encoding": "center3d",
+            "predict_log_variance": True,
+            "initial_log_variance": -2.0,
+        },
+        "loss": {
+            "name": "probgeo_uq",
+            "log_var_min": -7.0,
+            "log_var_max": 4.0,
+            "gwd_weight": 0.2,
+        },
+    }
+    common.validate_probgeo_config(valid)
+    invalid = {
+        **valid,
+        "model": {**valid["model"], "predict_log_variance": False},
+    }
+    try:
+        common.validate_probgeo_config(invalid)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("UQ loss without variance output was accepted")
+    common.validate_probgeo_config({"model": {}, "loss": {}})
+    for replacement in (
+        {"epsilon": 0.0},
+        {"gwd_weight": float("nan")},
+        {"log_var_min": float("nan")},
+    ):
+        broken = {
+            "model": {**valid["model"]},
+            "loss": {**valid["loss"], **replacement},
+        }
+        try:
+            common.validate_probgeo_config(broken)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid config accepted: {replacement}")
+
+
+def check_export_contract():
+    torch, _, Header = load_torch_modules()
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    exporter = importlib.import_module("export_onnx")
+
+    class Model(torch.nn.Module):
+        def __init__(self, header):
+            super().__init__()
+            self.header = header
+
+        def forward(self, value):
+            return self.header(value)
+
+    legacy = exporter.RawHeadWrapper(
+        Model(Header(3, 16, box_encoding="center3d"))
+    )
+    uq = exporter.RawHeadWrapper(
+        Model(
+            Header(
+                3,
+                16,
+                box_encoding="center3d",
+                predict_log_variance=True,
+            )
+        )
+    )
+    assert legacy.output_names == ("cls", "offset", "size", "yaw")
+    assert uq.output_names == ("cls", "offset", "size", "yaw", "log_var")
+    assert len(uq(torch.zeros(1, 16, 2, 2))) == 5
+    assert len(exporter.prediction_columns("bev", False)) == 7
+    assert len(exporter.prediction_columns("center3d", False)) == 9
+    assert len(exporter.prediction_columns("center3d", True)) == 15
+
+
+def check_uncertainty_evaluator():
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    evaluator = importlib.import_module("evaluate_uncertainty")
+    errors = np.ones((40, 6), dtype=np.float64)
+    log_vars = np.zeros_like(errors)
+    metrics = evaluator.evaluate_arrays(errors, log_vars)
+    np.testing.assert_allclose(metrics["nll_per_dim"], 0.5)
+    np.testing.assert_allclose(metrics["coverage_1sigma_per_dim"], 1.0)
+    alpha = evaluator.fit_variance_scale(errors, log_vars)
+    np.testing.assert_allclose(alpha, 1.0)
+    assert evaluator.binary_auroc([0.1, 0.2, 0.8, 0.9], [0, 0, 1, 1]) == 1.0
+
+
+def check_round_c_configs():
+    load_torch_modules()
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    common = importlib.import_module("common")
+    config_dir = ROOT / "configs" / "kitti" / "probgeo_uq"
+    expected = {
+        "c0_a1_probgeo_uq.json": ("binary_slices", False, 35, 600473),
+        "c1_a3_probgeo_uq.json": ("binary_slices", True, 35, 600953),
+        "c2_a4_probgeo_uq.json": ("rich8", True, 8, 593177),
+    }
+    loaded = {}
+    for filename, (encoding, gated, channels, parameters) in expected.items():
+        value = json.loads((config_dir / filename).read_text(encoding="utf-8"))
+        assert value["data"]["bev_encoding"]["name"] == encoding
+        assert value["model"]["scale_gated_fpn"] is gated
+        assert value["model"]["predict_log_variance"] is True
+        assert value["loss"]["name"] == "probgeo_uq"
+        assert value["train"]["epochs"] == 50
+        assert value["train"]["physical_batch_size"] == 16
+        assert value["train"]["accumulation_steps"] == 1
+        assert value["val"]["data"] == "splits/kitti/uq_calibration.txt"
+        assert common.input_shape(value)[1] == channels
+        assert sum(parameter.numel() for parameter in common.build_model(value).parameters()) == parameters
+        loaded[filename] = value
+    ignored = {
+        ("data", "bev_encoding", "name"),
+        ("model", "scale_gated_fpn"),
+        ("note",),
+    }
+
+    def flatten(value, prefix=()):
+        if isinstance(value, dict):
+            return {
+                key: item
+                for child, child_value in value.items()
+                for key, item in flatten(child_value, prefix + (child,)).items()
+            }
+        return {prefix: value}
+
+    baseline = flatten(loaded["c0_a1_probgeo_uq.json"])
+    for candidate in loaded.values():
+        differences = {
+            key for key, value in flatten(candidate).items()
+            if baseline.get(key) != value
+        }
+        assert differences <= ignored
+
+
 def load_torch_modules():
     import torch
 
@@ -181,6 +322,28 @@ def check_head():
     assert {key: value.shape[1] for key, value in output_3d.items()} == {
         "cls": 3, "offset": 3, "size": 3, "yaw": 2
     }
+    uq = Header(
+        3,
+        16,
+        box_encoding="center3d",
+        predict_log_variance=True,
+        initial_log_variance=-2.0,
+    )
+    uq_output = uq(sample)
+    assert {key: value.shape[1] for key, value in uq_output.items()} == {
+        "cls": 3,
+        "offset": 3,
+        "size": 3,
+        "yaw": 2,
+        "log_var": 6,
+    }
+    np.testing.assert_allclose(uq.offset.head.bias.detach().numpy()[3:], -2.0)
+    np.testing.assert_allclose(uq.size.head.bias.detach().numpy()[3:], -2.0)
+    assert (
+        sum(parameter.numel() for parameter in uq.parameters())
+        - sum(parameter.numel() for parameter in center3d.parameters())
+        == 102
+    )
 
 
 def check_targets():
@@ -276,6 +439,74 @@ def check_loss():
     assert torch.isfinite(saturated.grad).all()
 
 
+def check_gwd():
+    torch, _, _ = load_torch_modules()
+    from core.losses.loss_fn import gwd_footprint_loss
+
+    def maps(yaw=0.0, width=2.0, length=4.0):
+        return {
+            "offset": torch.zeros(1, 3, 1, 1, requires_grad=True),
+            "size": torch.tensor(
+                [[[[np.log(width)]], [[np.log(length)]], [[0.0]]]],
+                requires_grad=True,
+            ),
+            "yaw": torch.tensor(
+                [[[[np.cos(2 * yaw)]], [[np.sin(2 * yaw)]]]],
+                requires_grad=True,
+            ),
+        }
+
+    target = {**maps(), "reg_mask": torch.ones(1, 1, 1)}
+    assert gwd_footprint_loss(maps(), target, 1e-4).item() == 0.0
+    assert gwd_footprint_loss(maps(np.pi), target, 1e-4).item() < 1e-6
+    assert gwd_footprint_loss(
+        maps(np.pi / 2, width=4.0, length=2.0), target, 1e-4
+    ).item() < 1e-5
+    shifted = maps()
+    with torch.no_grad():
+        shifted["offset"][0, 0, 0, 0] = 10.0
+    loss = gwd_footprint_loss(shifted, target, 1e-4)
+    assert 0.0 < loss.item() < 1.0
+    loss.backward()
+    assert torch.isfinite(shifted["offset"].grad).all()
+    assert torch.isfinite(shifted["size"].grad).all()
+
+
+def check_uncertainty_loss():
+    torch, _, _ = load_torch_modules()
+    from core.losses.loss_fn import LossFunction, heteroscedastic_nll
+
+    residual = torch.full((1, 6, 1, 1), 2.0)
+    log_var = torch.zeros_like(residual)
+    mask = torch.ones(1, 1, 1)
+    assert heteroscedastic_nll(residual, log_var, mask, -7, 4).item() == 2.0
+    np.testing.assert_allclose(
+        heteroscedastic_nll(
+            residual, torch.full_like(log_var, 99), mask, -7, 4
+        ).item(),
+        0.5 * (4 * np.exp(-4) + 4),
+        rtol=1e-6,
+    )
+    target = {
+        "cls": torch.zeros(1, 3, 1, 1),
+        "offset": torch.zeros(1, 3, 1, 1),
+        "size": torch.zeros(1, 3, 1, 1),
+        "yaw": torch.tensor([[[[1.0]], [[0.0]]]]),
+        "reg_mask": mask,
+    }
+    pred = {key: value.clone() for key, value in target.items() if key != "reg_mask"}
+    pred["log_var"] = torch.zeros(1, 6, 1, 1)
+    result = LossFunction("gaussian", {"name": "heteroscedastic"})(pred, target)
+    assert result["offset"] == 0.0 and result["size"] == 0.0
+    pred["log_var"][0, 0, 0, 0] = float("nan")
+    try:
+        LossFunction("gaussian", {"name": "heteroscedastic"})(pred, target)
+    except FloatingPointError:
+        pass
+    else:
+        raise AssertionError("non-finite log variance was accepted")
+
+
 def check_decode():
     torch, _, _ = load_torch_modules()
     from postprocess import filter_pred
@@ -306,6 +537,24 @@ def check_decode():
         pred, {"geometry": geometry}, out_size_factor=1, thres=0.5, nms_thres=0.1
     )
     np.testing.assert_allclose(nms_boxes, boxes, rtol=0, atol=1e-6)
+    uq_pred = {name: value.clone() for name, value in pred.items()}
+    uq_pred["log_var"] = torch.zeros(1, 6, 2, 2)
+    uq_pred["log_var"][0, :, 0, 0] = torch.arange(6)
+    uq_boxes = filter_pred(
+        uq_pred, {"geometry": geometry}, out_size_factor=1, thres=0.5
+    )
+    assert uq_boxes.shape == (1, 15)
+    np.testing.assert_array_equal(uq_boxes[:, :9], boxes)
+    np.testing.assert_array_equal(uq_boxes[0, 9:], np.arange(6))
+    np.testing.assert_allclose(
+        filter_pred(
+            uq_pred, {"geometry": geometry}, out_size_factor=1,
+            thres=0.5, nms_thres=0.1,
+        ),
+        uq_boxes,
+        rtol=0,
+        atol=1e-6,
+    )
     invalid = {name: value.clone() for name, value in pred.items()}
     invalid["size"][0, 2, 0, 0] = float("inf")
     try:
@@ -340,12 +589,66 @@ def check_metrics():
     assert evaluator.evaluate_accuracy(
         legacy_predictions, labels, space="bev"
     )["map_moderate_percent"] == 100.0
+    uq_predictions = {
+        "000001": np.array(
+            [[0, 0.99, 10, 0, 0, 2, 2, 2, 0, -2, -2, -2, -2, -2, -2]],
+            dtype=np.float32,
+        )
+    }
+    assert evaluator.evaluate_accuracy(uq_predictions, labels, space="3d") == accuracy
     comparison = importlib.import_module("compare_models")
     flat = comparison.flatten({
         "accuracy": {"map_moderate_percent": 12.0, "mean_ap_9_percent": 13.0}
     })
     assert flat["map_3d_moderate_percent"] is None
     assert flat["map_bev_moderate_percent"] == 12.0
+    uq_flat = comparison.flatten({
+        "uncertainty": {
+            "raw": {
+                "nll": 1.5,
+                "coverage_1sigma_gap_per_dim": [0.1] * 6,
+                "aurc": 0.2,
+            },
+            "calibrated": {"nll": 1.0},
+            "matched_samples": 99,
+        }
+    })
+    assert uq_flat["uq_raw_nll"] == 1.5
+    assert uq_flat["uq_calibrated_nll"] == 1.0
+    assert np.isclose(uq_flat["uq_raw_coverage_1sigma_gap_mean"], 0.1)
+    assert uq_flat["uq_matched_samples"] == 99
+
+
+def check_probgeo_review():
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    evaluator = importlib.import_module("evaluate_kitti_bev")
+    trt_build = importlib.import_module("build_tensorrt")
+    legacy = {
+        "outputs": {
+            "cls": [1, 3, 2, 2],
+            "offset": [1, 3, 2, 2],
+            "size": [1, 3, 2, 2],
+            "yaw": [1, 2, 2, 2],
+        }
+    }
+    uq = json.loads(json.dumps(legacy))
+    uq["outputs"]["log_var"] = [1, 6, 2, 2]
+    assert set(trt_build.validate_output_metadata(legacy)) == set(legacy["outputs"])
+    assert set(trt_build.validate_output_metadata(uq)) == set(uq["outputs"])
+    broken = json.loads(json.dumps(uq))
+    broken["outputs"]["log_var"][1] = 5
+    try:
+        trt_build.validate_output_metadata(broken)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("five-channel log variance was accepted")
+    try:
+        evaluator.prediction_box(np.zeros(10), "3d")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid prediction schema was accepted")
 
 
 def check_selector():
@@ -369,18 +672,37 @@ def check_training_guard():
         "--output-root", "artifacts", "--seed", "43",
     ])
     assert args.seed == 43
+    config = {"seed": 42, "device": "cpu", "train": {
+        "epochs": 100, "precision": "fp32", "physical_batch_size": 2,
+        "accumulation_steps": 2,
+    }}
+    training.record_training_settings(
+        config, seed=43, device="cuda", precision="bf16", epochs=50,
+        physical_batch_size=16, accumulation_steps=1,
+    )
+    assert config == {"seed": 43, "device": "cuda", "train": {
+        "epochs": 50, "precision": "bf16", "physical_batch_size": 16,
+        "accumulation_steps": 1,
+    }}
 
 
 CHECKS = {
     "legacy": check_legacy,
     "encoder": check_encoder,
     "shapes": check_shapes,
+    "probgeo_config": check_probgeo_config,
+    "export_contract": check_export_contract,
+    "uncertainty_evaluator": check_uncertainty_evaluator,
+    "round_c_configs": check_round_c_configs,
     "gates": check_gates,
     "head": check_head,
     "targets": check_targets,
     "loss": check_loss,
+    "gwd": check_gwd,
+    "uncertainty_loss": check_uncertainty_loss,
     "decode": check_decode,
     "metrics": check_metrics,
+    "probgeo_review": check_probgeo_review,
     "selector": check_selector,
     "training_guard": check_training_guard,
 }
@@ -391,12 +713,19 @@ def main():
     parser.add_argument("--legacy-only", action="store_true")
     parser.add_argument("--encoder", action="store_true")
     parser.add_argument("--shapes", action="store_true")
+    parser.add_argument("--probgeo-config", action="store_true")
+    parser.add_argument("--export-contract", action="store_true")
+    parser.add_argument("--uncertainty-evaluator", action="store_true")
+    parser.add_argument("--round-c-configs", action="store_true")
     parser.add_argument("--gates", action="store_true")
     parser.add_argument("--head", action="store_true")
     parser.add_argument("--targets", action="store_true")
     parser.add_argument("--loss", action="store_true")
+    parser.add_argument("--gwd", action="store_true")
+    parser.add_argument("--uncertainty-loss", action="store_true")
     parser.add_argument("--decode", action="store_true")
     parser.add_argument("--metrics", action="store_true")
+    parser.add_argument("--probgeo-review", action="store_true")
     parser.add_argument("--selector", action="store_true")
     parser.add_argument("--training-guard", action="store_true")
     args = parser.parse_args()
@@ -404,12 +733,19 @@ def main():
         ["legacy"] if args.legacy_only else
         ["encoder"] if args.encoder else
         ["shapes"] if args.shapes else
+        ["probgeo_config"] if args.probgeo_config else
+        ["export_contract"] if args.export_contract else
+        ["uncertainty_evaluator"] if args.uncertainty_evaluator else
+        ["round_c_configs"] if args.round_c_configs else
         ["gates"] if args.gates else
         ["head"] if args.head else
         ["targets"] if args.targets else
         ["loss"] if args.loss else
+        ["gwd"] if args.gwd else
+        ["uncertainty_loss"] if args.uncertainty_loss else
         ["decode"] if args.decode else
         ["metrics"] if args.metrics else
+        ["probgeo_review"] if args.probgeo_review else
         ["selector"] if args.selector else
         ["training_guard"] if args.training_guard else
         list(CHECKS)
