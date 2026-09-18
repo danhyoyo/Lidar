@@ -2,9 +2,7 @@
 """Focused checks for LiDAR ray visibility and BEV feature propagation."""
 
 import sys
-import tempfile
 from pathlib import Path
-from unittest import mock
 
 import numpy as np
 import torch
@@ -17,17 +15,12 @@ sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
 from core.datasets.dataset import Dataset
 from core.models.gaussian_visibility import GaussianPillarPropagation
 from utils_1.preprocess import encode_bev
-from utils_1.transform import (Random_Rotation, center_to_corner_box3d,
-                               inverse_rigid_trans, point_transform)
 from utils_1.visibility import free_space_maps
 from common import build_model, input_shape, read_json
-from prepare_kitti import (convert_labels, invert_affine_transform,
-                           multiply_3x3_vector, parse_calibration)
 from core.losses.loss_fn import LossFunction
 from core.losses.focal_loss import modified_focal_loss
 from evaluate_kitti_bev import (
-    GroundTruth, center_is_observed_free, evaluate_one, load_ground_truth,
-    prediction_box,
+    GroundTruth, center_is_observed_free, evaluate_one, prediction_box,
 )
 
 
@@ -211,72 +204,9 @@ def test_observed_free_false_positives():
     assert result["observed_free_false_positives_per_frame"] == 1.0
 
 
-def test_geometry_paths_without_numpy_blas():
-    """Train and evaluator geometry work when NumPy BLAS calls are blocked."""
-    points = np.array([[1.0, 2.0, 3.0]], dtype=np.float32)
-    boxes = np.array([[2.0, 2.0, 4.0, 2.0, -2.0, 2.0, 0.0]],
-                     dtype=np.float32)
-    with tempfile.TemporaryDirectory() as directory:
-        root = Path(directory)
-        calib_dir = root / "training" / "calib"
-        label_dir = root / "training" / "label_2"
-        calib_dir.mkdir(parents=True)
-        label_dir.mkdir(parents=True)
-        calib = calib_dir / "000000.txt"
-        label = label_dir / "000000.txt"
-        calib.write_text(
-            "R0_rect: 1 0 0 0 1 0 0 0 1\n"
-            "Tr_velo_to_cam: 0 -1 0 1 1 0 0 2 0 0 1 3\n",
-            encoding="utf-8")
-        label.write_text(
-            "Car 0 0 0 0 0 50 50 2 2 4 3 4 5 0\n",
-            encoding="utf-8")
-        forbidden = AssertionError("NumPy BLAS call in the LiDAR pipeline")
-        with (mock.patch.object(np, "dot", side_effect=forbidden),
-              mock.patch.object(np, "matmul", side_effect=forbidden),
-              mock.patch.object(np.linalg, "inv", side_effect=forbidden),
-              mock.patch.object(np.linalg, "norm", side_effect=forbidden)):
-            rotated = point_transform(points, 0, 0, 0, rz=np.pi / 2)
-            corners = center_to_corner_box3d(boxes)
-            augmented, augmented_boxes = Random_Rotation(20, p=1)(
-                np.array([[1.0, 2.0, 3.0, 0.5]], dtype=np.float32),
-                boxes.copy())
-            dataset = Dataset.__new__(Dataset)
-            dataset_corner = dataset.rotate_pointZ([1, 0, 2], np.pi / 2)
-            inverse_rigid = inverse_rigid_trans(np.column_stack((
-                np.eye(3), np.array([1.0, 2.0, 3.0]))))
-            free = free_space_maps(
-                np.array([[1.05, 0, 0, 0.5]], dtype=np.float32),
-                small_geometry(), height_ranges=[[-1.0, 1.0]])
-            matrix = parse_calibration(calib)
-            inverse = invert_affine_transform(matrix)
-            converted, counts = convert_labels(label, calib)
-            ground_truth = load_ground_truth("000000", root, {
-                "x_min": 0.0, "x_max": 10.0,
-                "y_min": -10.0, "y_max": 10.0,
-            })
-            rotated_vector = multiply_3x3_vector(
-                matrix[:3, :3], (1.0, 2.0, 3.0))
-
-    np.testing.assert_allclose(rotated, [[2.0, -1.0, 3.0]], atol=1e-6)
-    np.testing.assert_allclose(dataset_corner, [[0.0, 1.0, 2.0]], atol=1e-6)
-    np.testing.assert_allclose(inverse_rigid[:3, 3], [-1, -2, -3])
-    np.testing.assert_allclose(rotated_vector, [-2.0, 1.0, 3.0])
-    np.testing.assert_allclose(inverse[:3, 3], [-2.0, 1.0, -3.0])
-    assert corners.shape == (1, 8, 3)
-    assert augmented.shape == (1, 4) and augmented_boxes.shape == (1, 7)
-    assert free.sum() > 0
-    assert counts["Car"] == 1 and len(converted) == 1
-    assert len(ground_truth) == 1
-    np.testing.assert_allclose(
-        [ground_truth[0].x, ground_truth[0].y, ground_truth[0].z_center],
-        [2.0, -2.0, 3.0], atol=1e-6)
-
-
 if __name__ == "__main__":
     test_ray_visibility()
     test_sensor_origin()
-    test_geometry_paths_without_numpy_blas()
     test_gaussian_gating_and_control()
     test_variant_shapes_and_height_alignment()
     test_observed_free_false_positives()

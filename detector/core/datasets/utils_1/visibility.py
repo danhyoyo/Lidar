@@ -42,7 +42,7 @@ def free_space_maps(points, geometry, *, height_ranges, ray_length_m=0.7,
     for start in range(0, len(xyz), 32768):
         returns = xyz[start:start + 32768]
         rays = returns - origin
-        lengths = np.sqrt(np.sum(rays * rays, axis=1))
+        lengths = np.linalg.norm(rays, axis=1)
         keep = lengths > range_margin_m
         if not np.any(keep):
             continue

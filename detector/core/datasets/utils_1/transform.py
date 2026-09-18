@@ -3,21 +3,35 @@ import math
 
 
 def center_to_corner_box3d(boxes_center):
-    # (N, 7) -> (N, 8, 3), in Velodyne coordinates.
-    ret = np.zeros((boxes_center.shape[0], 8, 3), dtype=np.float32)
-    for index, box in enumerate(boxes_center):
-        h, w, length, x, y, z, yaw = box
-        local_x = np.array([-length / 2, -length / 2, length / 2,
-                            length / 2, -length / 2, -length / 2,
-                            length / 2, length / 2])
-        local_y = np.array([w / 2, -w / 2, -w / 2, w / 2,
-                            w / 2, -w / 2, -w / 2, w / 2])
-        c, s = np.cos(yaw), np.sin(yaw)
-        ret[index, :, 0] = c * local_x - s * local_y + x
-        ret[index, :, 1] = s * local_x + c * local_y + y
-        ret[index, :, 2] = np.array([0, 0, 0, 0, h, h, h, h]) + z
-    return ret
+    # (N, 7) -> (N, 8, 3)
+    N = boxes_center.shape[0]
+    ret = np.zeros((N, 8, 3), dtype=np.float32)
 
+    for i in range(N):
+        box = boxes_center[i]
+        translation = box[3:6]
+        size = box[0:3]
+        rotation = [0, 0, box[-1]]
+
+        h, w, l = size[0], size[1], size[2]
+        trackletBox = np.array([  # in velodyne coordinates around zero point and without orientation yet
+            [-l / 2, -l / 2, l / 2, l / 2, -l / 2, -l / 2, l / 2, l / 2], \
+            [w / 2, -w / 2, -w / 2, w / 2, w / 2, -w / 2, -w / 2, w / 2], \
+            [0, 0, 0, 0, h, h, h, h]])
+
+
+        # re-create 3D bounding box in velodyne coordinate system
+        yaw = rotation[2]
+        rotMat = np.array([
+            [np.cos(yaw), -np.sin(yaw), 0.0],
+            [np.sin(yaw), np.cos(yaw), 0.0],
+            [0.0, 0.0, 1.0]])
+        cornerPosInVelo = np.dot(rotMat, trackletBox) + \
+                          np.tile(translation, (8, 1)).T
+        box3d = cornerPosInVelo.transpose()
+        ret[i] = box3d
+
+    return ret
 
 def corner_to_center_box3d(boxes_corner):
     # (N, 8, 3) -> (N, 7)
@@ -83,28 +97,49 @@ def corner_to_center_box2d(boxes_corner):
 
 
 def point_transform(points, tx, ty, tz, rx=0, ry=0, rz=0):
-    # Preserve the original row-vector transform order: translation, X, Y, Z.
-    transformed = np.asarray(points, dtype=np.float64).copy()
-    transformed[:, 0] += tx
-    transformed[:, 1] += ty
-    transformed[:, 2] += tz
+    # Input:
+    #   points: (N, 3)
+    #   rx/y/z: in radians
+    # Output:
+    #   points: (N, 3)
+    N = points.shape[0]
+    points = np.hstack([points, np.ones((N, 1))])
+
+    mat1 = np.eye(4)
+    mat1[3, 0:3] = tx, ty, tz
+    points = np.matmul(points, mat1)
 
     if rx != 0:
-        c, s = np.cos(rx), np.sin(rx)
-        y, z = transformed[:, 1].copy(), transformed[:, 2].copy()
-        transformed[:, 1] = c * y + s * z
-        transformed[:, 2] = -s * y + c * z
+        mat = np.zeros((4, 4))
+        mat[0, 0] = 1
+        mat[3, 3] = 1
+        mat[1, 1] = np.cos(rx)
+        mat[1, 2] = -np.sin(rx)
+        mat[2, 1] = np.sin(rx)
+        mat[2, 2] = np.cos(rx)
+        points = np.matmul(points, mat)
+
     if ry != 0:
-        c, s = np.cos(ry), np.sin(ry)
-        x, z = transformed[:, 0].copy(), transformed[:, 2].copy()
-        transformed[:, 0] = c * x - s * z
-        transformed[:, 2] = s * x + c * z
+        mat = np.zeros((4, 4))
+        mat[1, 1] = 1
+        mat[3, 3] = 1
+        mat[0, 0] = np.cos(ry)
+        mat[0, 2] = np.sin(ry)
+        mat[2, 0] = -np.sin(ry)
+        mat[2, 2] = np.cos(ry)
+        points = np.matmul(points, mat)
+
     if rz != 0:
-        c, s = np.cos(rz), np.sin(rz)
-        x, y = transformed[:, 0].copy(), transformed[:, 1].copy()
-        transformed[:, 0] = c * x + s * y
-        transformed[:, 1] = -s * x + c * y
-    return transformed
+        mat = np.zeros((4, 4))
+        mat[2, 2] = 1
+        mat[3, 3] = 1
+        mat[0, 0] = np.cos(rz)
+        mat[0, 1] = -np.sin(rz)
+        mat[1, 0] = np.sin(rz)
+        mat[1, 1] = np.cos(rz)
+        points = np.matmul(points, mat)
+
+    return points[:, 0:3]
 
 
 def box_transform(boxes, tx, ty, tz, r=0):
@@ -127,7 +162,7 @@ def inverse_rigid_trans(Tr):
     '''
     inv_Tr = np.zeros_like(Tr)  # 3x4
     inv_Tr[0:3, 0:3] = np.transpose(Tr[0:3, 0:3])
-    inv_Tr[0:3, 3] = -np.sum(inv_Tr[0:3, 0:3] * Tr[None, 0:3, 3], axis=1)
+    inv_Tr[0:3, 3] = np.dot(-np.transpose(Tr[0:3, 0:3]), Tr[0:3, 3])
     return inv_Tr
 
 
