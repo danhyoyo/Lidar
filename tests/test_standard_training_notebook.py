@@ -50,6 +50,9 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn("--resume", source)
         self.assertIn("last.pt", source)
         self.assertIn("checkpoint_epoch", source)
+        self.assertNotIn("import subprocess", source)
+        self.assertNotIn("subprocess.", source)
+        self.assertIn("!set -o pipefail", source)
 
     def test_trainer_writes_a_last_checkpoint_every_epoch(self):
         source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(
