@@ -12,6 +12,22 @@ NOTEBOOK = ROOT / "3D_Lidar_Object_Detection_Notebook_standard.ipynb"
 
 
 class StandardTrainingNotebookTests(unittest.TestCase):
+    def test_all_training_branches_keep_only_the_standard_notebook(self):
+        expected = {"3D_Lidar_Object_Detection_Notebook_standard.ipynb"}
+        for branch in (
+            "main", "mobileBEV-architecture", "gaussian-lidar-detection",
+            "Proposal2-Loss-Function", "A56_proposal_2.5",
+        ):
+            notebooks = set(subprocess.check_output(
+                ["git", "ls-tree", "-r", "--name-only", branch],
+                cwd=ROOT,
+                text=True,
+            ).splitlines())
+            self.assertEqual(
+                {path for path in notebooks if path.endswith(".ipynb")}, expected,
+                branch,
+            )
+
     def test_supports_all_registered_variants_and_safe_resume(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
         source = "\n".join(
