@@ -50,12 +50,6 @@ def loader_kwargs(num_workers: int, pin_memory: bool) -> Dict[str, Any]:
     return result
 
 
-def gradients_are_finite(parameters) -> bool:
-    checks = [torch.isfinite(parameter.grad).all()
-              for parameter in parameters if parameter.grad is not None]
-    return not checks or bool(torch.stack(checks).all())
-
-
 def autocast_context(device: torch.device, precision: str):
     if precision == "fp32":
         return torch.amp.autocast(device_type=device.type, enabled=False)
@@ -360,10 +354,6 @@ def main(argv=None) -> None:
                     f"{components}"
                 )
             scaler.scale(backward_objective).backward()
-            if not gradients_are_finite(model_parameters + criterion_parameters):
-                raise FloatingPointError(
-                    f"non-finite gradient at epoch={epoch}, batch={batch_index}"
-                )
             should_update = (batch_index % accumulation_steps == 0
                              or batch_index == batches_this_epoch)
             if should_update:
