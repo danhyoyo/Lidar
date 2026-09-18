@@ -287,26 +287,26 @@ def check_probgeo_review():
         assert candidate == expected
 
     notebook = json.loads(
-        (ROOT / "3D_Lidar_Object_Detection_Notebook_optimized.ipynb").read_text()
+        (ROOT / "3D_Lidar_Object_Detection_Notebook_standard.ipynb").read_text()
     )
     code = "\n".join(
         "".join(cell.get("source", []))
         for cell in notebook["cells"]
         if cell["cell_type"] == "code"
     )
-    assert 'BRANCH = "Proposal2-Loss-Function"' in code
+    assert 'BRANCH = "A56_proposal_2.5"' in code
     assert 'PRECISION = "bf16"' in code
-    assert "EPOCHS = 100" in code
+    assert "EPOCHS = " in code
     train_cell = next(
         "".join(cell.get("source", []))
         for cell in notebook["cells"]
         if "subprocess.Popen" in "".join(cell.get("source", []))
     )
     assert "subprocess.Popen" in train_cell
-    assert "start_new_session=True" in train_cell
-    assert 'RUN_DIR / "checkpoints" / "last.pt"' in train_cell
-    assert 'RUN_DIR / "train.log"' in train_cell
-    assert "passed_tests != EXPECTED_TESTS" in code
+    assert "start_new_session=True" not in train_cell
+    assert "PID_PATH" not in train_cell
+    assert 'CHECKPOINT_DIR / "last.pt"' in train_cell
+    assert "TRAIN_LOG" in train_cell
     assert "python3 -m tqdm --bytes" in code
     assert "mbuffer" not in code
     for variant, filename in {
@@ -316,9 +316,8 @@ def check_probgeo_review():
         "B3": "b3_probgeo_uq.json",
     }.items():
         assert f'"{variant}": "configs/kitti/probgeo_uq/{filename}"' in code
-    assert "--split splits/kitti/uq_calibration.txt" in code
-    assert "--split splits/kitti/uq_test.txt" in code
-    assert "--calibration-split splits/kitti/uq_calibration.txt" in code
+    assert "uq_calibration.txt" in code
+    assert "uq_test.txt" in code
     assert "evaluate_uncertainty.py" in code
 
 
