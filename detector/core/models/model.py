@@ -8,15 +8,30 @@ from core.models.backbones.mobilepixor_coordinate_attention import (
 )
 from core.models.backbones.pixor import PixorBackBone
 from core.models.heads.cnn import Header
+from core.models.gaussian_visibility import GaussianPillarPropagation
 
 class CustomModel(nn.Module):
     def __init__(self, cfg, num_classes=4, input_channels=35):
         super(CustomModel, self).__init__()
+        gaussian = cfg.get("gaussian_propagation", {})
+        mode = gaussian.get("mode", "none")
+        if mode != "none" and cfg["backbone"] != "mobilepixor_coordatt":
+            raise ValueError("Gaussian propagation currently supports mobilepixor_coordatt")
+        self.gaussian_propagation = (
+            GaussianPillarPropagation(
+                mode=mode,
+                sigma_cells=float(gaussian.get("sigma_cells", 1.5)),
+                radius_cells=int(gaussian.get("radius_cells", 4)),
+                strength=float(gaussian.get("strength", 1.0)),
+                kernel_type=gaussian.get("kernel_type", "gaussian"),
+            ) if mode != "none" else None
+        )
+        backbone_input_channels = 8 if self.gaussian_propagation else input_channels
         if cfg["backbone"] == "mobilepixor":
             self.backbone = MobilePixorBackBone()
         elif cfg["backbone"] == "mobilepixor_coordatt":
             self.backbone = MobilePixorCoordAttBackBone(
-                input_channels=input_channels,
+                input_channels=backbone_input_channels,
                 scale_gated_fpn=cfg.get("scale_gated_fpn", False),
             )
         elif cfg["backbone"] == "pixor":
@@ -37,6 +52,8 @@ class CustomModel(nn.Module):
         )
 
     def forward(self, x):
+        if self.gaussian_propagation is not None:
+            x = self.gaussian_propagation(x)
         features = self.backbone(x)
         pred = self.header(features)
 

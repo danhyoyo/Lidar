@@ -1,6 +1,8 @@
 import numpy as np
 import math
 
+from utils_1.visibility import free_space_maps
+
 
 def _grid_shape(geometry):
     shape = []
@@ -17,7 +19,8 @@ def _grid_shape(geometry):
     return tuple(shape)
 
 
-def encode_bev(points, geometry, bev_encoding=None):
+def encode_bev(points, geometry, bev_encoding=None,
+               sensor_origin=(0.0, 0.0, 0.0)):
     """Encode KITTI ``(x, y, z, intensity)`` points as legacy or RichBEV."""
     encoding = bev_encoding or {"name": "binary_slices"}
     name = encoding.get("name", "binary_slices")
@@ -44,7 +47,8 @@ def encode_bev(points, geometry, bev_encoding=None):
         keep &= points[:, column] < float(geometry[f"{axis}_max"]) - eps
     pts = points[keep]
     if not pts.size:
-        return output.reshape(8, y_size, x_size).transpose(1, 2, 0)
+        return _with_visibility(output.reshape(8, y_size, x_size).transpose(1, 2, 0),
+                                points, geometry, encoding, sensor_origin)
 
     x_index = ((pts[:, 0] - geometry["x_min"]) // geometry["x_res"]).astype(np.int32)
     y_index = ((pts[:, 1] - geometry["y_min"]) // geometry["y_res"]).astype(np.int32)
@@ -65,7 +69,30 @@ def encode_bev(points, geometry, bev_encoding=None):
     np.maximum.at(output[5], flat, intensity)
     output[6] = np.bincount(flat, weights=intensity, minlength=output.shape[1]) / np.maximum(count, 1)
     output[7] = np.minimum(1.0, np.log1p(count) / np.log1p(density_norm))
-    return output.reshape(8, y_size, x_size).transpose(1, 2, 0).astype(np.float32, copy=False)
+    base = output.reshape(8, y_size, x_size).transpose(1, 2, 0)
+    return _with_visibility(base, points, geometry, encoding, sensor_origin)
+
+
+def _with_visibility(base, points, geometry, encoding, sensor_origin):
+    visibility = encoding.get("visibility")
+    if not visibility:
+        return base
+    mode = visibility.get("mode")
+    ranges = visibility.get("height_ranges")
+    expected = {"global": 1, "height": 3}.get(mode)
+    if expected is None or not isinstance(ranges, list) or len(ranges) != expected:
+        raise ValueError("visibility mode must be global/height with 1/3 height ranges")
+    free = free_space_maps(
+        points, geometry, height_ranges=ranges,
+        ray_length_m=float(visibility.get("ray_length_m", 0.7)),
+        step_m=float(visibility.get("step_m", 0.05)),
+        range_margin_m=float(visibility.get("range_margin_m", 0.1)),
+        sensor_origin=sensor_origin,
+    )
+    occupied = np.max(base[..., :3], axis=-1) > 0
+    free[occupied] = 0.0
+    return np.concatenate((base, free), axis=-1).astype(np.float32, copy=False)
+
 
 def voxelize(points, geometry):
     x_min = geometry["x_min"]

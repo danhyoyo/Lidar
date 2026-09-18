@@ -250,6 +250,14 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
         "true_positives": int(cumulative_tp[-1]) if cumulative_tp.size else 0,
         "false_positives": int(cumulative_fp[-1]) if cumulative_fp.size else 0,
         "max_recall": float(recalls[-1]) if recalls.size else 0.0,
+        "precision_at_score_threshold": (
+            float(cumulative_tp[-1] / (cumulative_tp[-1] + cumulative_fp[-1]))
+            if cumulative_tp.size and cumulative_tp[-1] + cumulative_fp[-1] else 0.0
+        ),
+        "false_positives_per_frame": (
+            float(cumulative_fp[-1] / len(predictions))
+            if cumulative_fp.size and predictions else 0.0
+        ),
     }
 
 

@@ -179,13 +179,20 @@ class Dataset(Dataset):
                 }
 
         boxes = self.get_boxes(idx)
+        sensor_origin = np.zeros(3, dtype=np.float32)
 
         if self.task == "train" and boxes.shape[0] != 0:
-            points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
+            # Transform a temporary sensor marker with the point cloud.
+            marker = np.zeros((1, points.shape[1]), dtype=points.dtype)
+            augmented, boxes[:, 1:] = self.augment(
+                np.concatenate((points, marker), axis=0), boxes[:, 1:8]
+            )
+            sensor_origin = augmented[-1, :3].copy()
+            points = augmented[:-1]
 
         boxes = self.filter_boxes(boxes, data_type)
 
-        scan = self.voxelize(points, self.config[data_type]["geometry"])
+        scan = self.voxelize(points, self.config[data_type]["geometry"], sensor_origin)
         scan = torch.from_numpy(scan)
         scan = scan.permute(2, 0, 1)
 
@@ -207,8 +214,9 @@ class Dataset(Dataset):
     def read_points(self, lidar_path):
         return np.fromfile(lidar_path, dtype=np.float32).reshape(-1, 4)
 
-    def voxelize(self, points, geometry):
-        return encode_bev(points, geometry, self.bev_encoding)
+    def voxelize(self, points, geometry, sensor_origin=(0.0, 0.0, 0.0)):
+        return encode_bev(points, geometry, self.bev_encoding,
+                          sensor_origin=sensor_origin)
 
 
     def get_boxes(self, idx):

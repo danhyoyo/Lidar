@@ -91,6 +91,15 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
     if name not in {"binary_slices", "rich8"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
     channels = 8 if name == "rich8" else bins("z")
+    visibility = encoding.get("visibility")
+    if visibility:
+        if name != "rich8":
+            raise ValueError("visibility masks require rich8")
+        mode = visibility.get("mode")
+        expected = {"global": 1, "height": 3}.get(mode)
+        if expected is None or len(visibility.get("height_ranges", [])) != expected:
+            raise ValueError("visibility mode/ranges must be global/1 or height/3")
+        channels += expected
     return (1, channels, bins("y"), bins("x"))
 
 
