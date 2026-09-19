@@ -153,14 +153,15 @@ def check_probgeo_config():
         raise AssertionError("unsupported optimizer was accepted")
 
     config_dir = ROOT / "configs" / "kitti" / "probgeo_uq"
-    for filename in (
-        "c0_a1_probgeo_uq.json",
-        "c1_a3_probgeo_uq.json",
-        "c2_a4_probgeo_uq.json",
-    ):
+    expected_training = {
+        "c0_a1_probgeo_uq.json": ("adam", [40, 80]),
+        "c1_a3_probgeo_uq.json": ("adam", [40, 80]),
+        "c2_a4_probgeo_uq.json": ("adam", [40, 80]),
+    }
+    for filename, (optimizer, lr_decay_at) in expected_training.items():
         train = json.loads((config_dir / filename).read_text(encoding="utf-8"))["train"]
-        assert train["optimizer"] == "adamw"
-        assert train["lr_decay_at"] == [35, 45]
+        assert train["optimizer"] == optimizer
+        assert train["lr_decay_at"] == lr_decay_at
 
     valid = {
         "model": {

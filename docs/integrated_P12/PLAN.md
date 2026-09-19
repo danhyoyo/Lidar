@@ -56,7 +56,7 @@ Dữ liệu hiện tại ủng hộ lựa chọn A3/A4/B3, nhưng A-series và B
      - C0: `binary_slices`, sum-FPN.
      - C1: `binary_slices`, SG-FPN.
      - C2: `rich8`, SG-FPN.
-     - Cả ba dùng cùng B3 loss/UQ, AdamW + MultiStepLR `[35, 45]`, augmentation, split, 50 epoch và effective batch 16.
+     - Cả ba dùng cùng B3 loss/UQ, Adam + MultiStepLR `[40, 80]`, augmentation, split, 50 epoch và effective batch 16.
    - Verify: expected parameters lần lượt khoảng `600,473`, `600,953`, `593,177`; C0/C1 có 35 input channels, C2 có 8.
 
 6. **Sửa provenance ở điểm dùng chung**
