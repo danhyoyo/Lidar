@@ -120,6 +120,29 @@ def check_encoder():
             raise AssertionError(f"invalid encoding accepted: {invalid}")
 
 
+def check_sampling():
+    preprocess = load_preprocess()
+    points = np.arange(80, dtype=np.float32).reshape(20, 4)
+    dense = preprocess.sample_points(points, 1.0, "000123")
+    half_a = preprocess.sample_points(points, 0.5, "000123")
+    half_b = preprocess.sample_points(points, 0.5, "000123")
+    quarter = preprocess.sample_points(points, 0.25, "000123")
+    assert dense is points
+    np.testing.assert_array_equal(half_a, half_b)
+    assert len(half_a) == 10 and len(quarter) == 5
+    assert {tuple(row) for row in quarter} <= {tuple(row) for row in half_a}
+    source_positions = [np.flatnonzero((points == row).all(axis=1))[0] for row in half_a]
+    assert source_positions == sorted(source_positions)
+    assert preprocess.sample_points(points[:0], 0.25, "empty").shape == (0, 4)
+    for invalid in (0.0, -0.1, 1.01, float("nan")):
+        try:
+            preprocess.sample_points(points, invalid, "000123")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid sampling rate accepted: {invalid}")
+
+
 def check_shapes():
     sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
     common = importlib.import_module("common")
@@ -374,6 +397,7 @@ def check_training_guard():
 CHECKS = {
     "legacy": check_legacy,
     "encoder": check_encoder,
+    "sampling": check_sampling,
     "shapes": check_shapes,
     "gates": check_gates,
     "head": check_head,
@@ -390,6 +414,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--legacy-only", action="store_true")
     parser.add_argument("--encoder", action="store_true")
+    parser.add_argument("--sampling", action="store_true")
     parser.add_argument("--shapes", action="store_true")
     parser.add_argument("--gates", action="store_true")
     parser.add_argument("--head", action="store_true")
@@ -403,6 +428,7 @@ def main():
     selected = (
         ["legacy"] if args.legacy_only else
         ["encoder"] if args.encoder else
+        ["sampling"] if args.sampling else
         ["shapes"] if args.shapes else
         ["gates"] if args.gates else
         ["head"] if args.head else

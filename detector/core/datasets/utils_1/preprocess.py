@@ -1,5 +1,19 @@
+import hashlib
 import numpy as np
 import math
+
+
+def sample_points(points, rate, frame_id, seed=42):
+    rate = float(rate)
+    if not np.isfinite(rate) or not 0.0 < rate <= 1.0:
+        raise ValueError("sampling rate must be finite and in (0, 1]")
+    if rate == 1.0 or not len(points):
+        return points
+    digest = hashlib.sha256(f"{seed}:{frame_id}".encode("utf-8")).digest()
+    rng = np.random.default_rng(int.from_bytes(digest[:8], "little"))
+    count = max(1, int(len(points) * rate))
+    indexes = np.sort(rng.permutation(len(points))[:count])
+    return points[indexes]
 
 
 def _grid_shape(geometry):
