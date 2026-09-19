@@ -105,7 +105,7 @@
     "momentum": 0.9,
     "physical_batch_size": 2,
     "precision": "bf16",
-    "save_every": 10,
+    "save_every": 5,
     "weight_decay": 0.0005
   },
   "val": {

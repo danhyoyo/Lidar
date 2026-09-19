@@ -20,6 +20,39 @@ from common import write_json
 ACTIVE_CLASSES = ("Car", "Pedestrian", "Cyclist")
 
 
+def transform_vector(matrix: np.ndarray, vector: np.ndarray) -> np.ndarray:
+    """Multiply a small matrix by a vector without dispatching to BLAS."""
+    vector = np.asarray(vector)
+    result = np.zeros(matrix.shape[0], dtype=np.result_type(matrix, vector))
+    for column in range(matrix.shape[1]):
+        result += matrix[:, column] * vector[column]
+    return result
+
+
+def _multiply_4x4(first: np.ndarray, second: np.ndarray) -> np.ndarray:
+    """Multiply homogeneous transforms without loading a BLAS runtime."""
+    result = np.zeros((4, 4), dtype=np.result_type(first, second))
+    for row in range(4):
+        for column in range(4):
+            result[row, column] = sum(
+                first[row, inner] * second[inner, column]
+                for inner in range(4)
+            )
+    return result
+
+
+def invert_rigid_transform(transform: np.ndarray) -> np.ndarray:
+    """Invert a 4x4 homogeneous rigid transform without ``np.linalg``."""
+    if transform.shape != (4, 4):
+        raise ValueError(f"Expected a 4x4 transform, got {transform.shape}")
+    inverse = np.eye(4, dtype=transform.dtype)
+    rotation = transform[:3, :3]
+    translation = transform[:3, 3]
+    inverse[:3, :3] = rotation.T
+    inverse[:3, 3] = -transform_vector(rotation.T, translation)
+    return inverse
+
+
 def parse_calibration(path: Path) -> np.ndarray:
     values: Dict[str, np.ndarray] = {}
     for raw_line in path.read_text(encoding="utf-8").splitlines():
@@ -36,7 +69,7 @@ def parse_calibration(path: Path) -> np.ndarray:
     rectification[:3, :3] = values[rect_key].reshape(3, 3)
     velo_to_camera = np.eye(4, dtype=np.float64)
     velo_to_camera[:3, :] = values[transform_key].reshape(3, 4)
-    return rectification @ velo_to_camera
+    return _multiply_4x4(rectification, velo_to_camera)
 
 
 def normalize_yaw(value: float) -> float:
@@ -45,7 +78,7 @@ def normalize_yaw(value: float) -> float:
 
 def convert_labels(label_path: Path, calibration_path: Path) -> Tuple[List[str], Counter]:
     velo_to_rect = parse_calibration(calibration_path)
-    rect_to_velo = np.linalg.inv(velo_to_rect)
+    rect_to_velo = invert_rigid_transform(velo_to_rect)
     rect_rotation_to_velo = rect_to_velo[:3, :3]
     converted: List[str] = []
     counts: Counter = Counter()
@@ -60,10 +93,10 @@ def convert_labels(label_path: Path, calibration_path: Path) -> Tuple[List[str],
         camera_x, camera_y, camera_z = map(float, fields[11:14])
         rotation_y = float(fields[14])
         bottom_center_rect = np.array([camera_x, camera_y, camera_z, 1.0], dtype=np.float64)
-        bottom_center_velo = rect_to_velo @ bottom_center_rect
+        bottom_center_velo = transform_vector(rect_to_velo, bottom_center_rect)
         # Transform the object's length direction exactly from rect-camera to Velodyne.
         heading_rect = np.array([math.cos(rotation_y), 0.0, -math.sin(rotation_y)])
-        heading_velo = rect_rotation_to_velo @ heading_rect
+        heading_velo = transform_vector(rect_rotation_to_velo, heading_rect)
         yaw_velo = normalize_yaw(math.atan2(heading_velo[1], heading_velo[0]))
         x, y, z = bottom_center_velo[:3]
         converted.append(

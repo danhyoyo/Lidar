@@ -468,12 +468,13 @@ class Dataset(Dataset):
 
 
     def rotate_pointZ(self, point, yaw):
-        rotation_matrix = np.array([[np.cos(yaw), -np.sin(yaw), 0],
-                                    [np.sin(yaw), np.cos(yaw), 0],
-                                    [0, 0, 1]])
-
-        rotated_point = np.matmul(rotation_matrix, np.reshape(point, (3, 1)))
-        return np.reshape(rotated_point, (1, 3))
+        x, y, z = point
+        cos_yaw, sin_yaw = np.cos(yaw), np.sin(yaw)
+        return np.array([[
+            x * cos_yaw - y * sin_yaw,
+            x * sin_yaw + y * cos_yaw,
+            z,
+        ]])
 
     def get_transforms(self, config):
         transforms = []

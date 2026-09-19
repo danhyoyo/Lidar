@@ -11,25 +11,21 @@ def center_to_corner_box3d(boxes_center):
         box = boxes_center[i]
         translation = box[3:6]
         size = box[0:3]
-        rotation = [0, 0, box[-1]]
-
         h, w, l = size[0], size[1], size[2]
-        trackletBox = np.array([  # in velodyne coordinates around zero point and without orientation yet
-            [-l / 2, -l / 2, l / 2, l / 2, -l / 2, -l / 2, l / 2, l / 2], \
-            [w / 2, -w / 2, -w / 2, w / 2, w / 2, -w / 2, -w / 2, w / 2], \
-            [0, 0, 0, 0, h, h, h, h]])
+        local_x = np.array([-l / 2, -l / 2, l / 2, l / 2,
+                            -l / 2, -l / 2, l / 2, l / 2])
+        local_y = np.array([w / 2, -w / 2, -w / 2, w / 2,
+                            w / 2, -w / 2, -w / 2, w / 2])
+        local_z = np.array([0, 0, 0, 0, h, h, h, h])
 
-
-        # re-create 3D bounding box in velodyne coordinate system
-        yaw = rotation[2]
-        rotMat = np.array([
-            [np.cos(yaw), -np.sin(yaw), 0.0],
-            [np.sin(yaw), np.cos(yaw), 0.0],
-            [0.0, 0.0, 1.0]])
-        cornerPosInVelo = np.dot(rotMat, trackletBox) + \
-                          np.tile(translation, (8, 1)).T
-        box3d = cornerPosInVelo.transpose()
-        ret[i] = box3d
+        # This is the same z-axis rotation as the previous 3x3 matrix
+        # multiplication.  Keeping it elementwise avoids dispatching these tiny
+        # tensors to NumPy's BLAS backend, which can load a second OpenMP runtime
+        # alongside PyTorch on Windows.
+        cos_yaw, sin_yaw = np.cos(box[-1]), np.sin(box[-1])
+        ret[i, :, 0] = local_x * cos_yaw - local_y * sin_yaw + translation[0]
+        ret[i, :, 1] = local_x * sin_yaw + local_y * cos_yaw + translation[1]
+        ret[i, :, 2] = local_z + translation[2]
 
     return ret
 
@@ -102,44 +98,33 @@ def point_transform(points, tx, ty, tz, rx=0, ry=0, rz=0):
     #   rx/y/z: in radians
     # Output:
     #   points: (N, 3)
-    N = points.shape[0]
-    points = np.hstack([points, np.ones((N, 1))])
-
-    mat1 = np.eye(4)
-    mat1[3, 0:3] = tx, ty, tz
-    points = np.matmul(points, mat1)
+    # The legacy implementation expressed these as homogeneous 4x4 row-vector
+    # matrix products.  These direct formulas preserve that convention exactly
+    # without calling NumPy BLAS/MKL for very small matrices.
+    points = np.asarray(points, dtype=np.float64).copy()
+    points[:, 0] += tx
+    points[:, 1] += ty
+    points[:, 2] += tz
 
     if rx != 0:
-        mat = np.zeros((4, 4))
-        mat[0, 0] = 1
-        mat[3, 3] = 1
-        mat[1, 1] = np.cos(rx)
-        mat[1, 2] = -np.sin(rx)
-        mat[2, 1] = np.sin(rx)
-        mat[2, 2] = np.cos(rx)
-        points = np.matmul(points, mat)
+        y, z = points[:, 1].copy(), points[:, 2].copy()
+        cos_x, sin_x = np.cos(rx), np.sin(rx)
+        points[:, 1] = y * cos_x + z * sin_x
+        points[:, 2] = -y * sin_x + z * cos_x
 
     if ry != 0:
-        mat = np.zeros((4, 4))
-        mat[1, 1] = 1
-        mat[3, 3] = 1
-        mat[0, 0] = np.cos(ry)
-        mat[0, 2] = np.sin(ry)
-        mat[2, 0] = -np.sin(ry)
-        mat[2, 2] = np.cos(ry)
-        points = np.matmul(points, mat)
+        x, z = points[:, 0].copy(), points[:, 2].copy()
+        cos_y, sin_y = np.cos(ry), np.sin(ry)
+        points[:, 0] = x * cos_y - z * sin_y
+        points[:, 2] = x * sin_y + z * cos_y
 
     if rz != 0:
-        mat = np.zeros((4, 4))
-        mat[2, 2] = 1
-        mat[3, 3] = 1
-        mat[0, 0] = np.cos(rz)
-        mat[0, 1] = -np.sin(rz)
-        mat[1, 0] = np.sin(rz)
-        mat[1, 1] = np.cos(rz)
-        points = np.matmul(points, mat)
+        x, y = points[:, 0].copy(), points[:, 1].copy()
+        cos_z, sin_z = np.cos(rz), np.sin(rz)
+        points[:, 0] = x * cos_z + y * sin_z
+        points[:, 1] = -x * sin_z + y * cos_z
 
-    return points[:, 0:3]
+    return points
 
 
 def box_transform(boxes, tx, ty, tz, r=0):
@@ -162,7 +147,13 @@ def inverse_rigid_trans(Tr):
     '''
     inv_Tr = np.zeros_like(Tr)  # 3x4
     inv_Tr[0:3, 0:3] = np.transpose(Tr[0:3, 0:3])
-    inv_Tr[0:3, 3] = np.dot(-np.transpose(Tr[0:3, 0:3]), Tr[0:3, 3])
+    rotation = inv_Tr[0:3, 0:3]
+    translation = Tr[0:3, 3]
+    inv_Tr[0:3, 3] = -(
+        rotation[:, 0] * translation[0]
+        + rotation[:, 1] * translation[1]
+        + rotation[:, 2] * translation[2]
+    )
     return inv_Tr
 
 

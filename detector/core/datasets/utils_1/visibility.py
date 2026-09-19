@@ -42,7 +42,7 @@ def free_space_maps(points, geometry, *, height_ranges, ray_length_m=0.7,
     for start in range(0, len(xyz), 32768):
         returns = xyz[start:start + 32768]
         rays = returns - origin
-        lengths = np.linalg.norm(rays, axis=1)
+        lengths = np.sqrt(np.sum(rays * rays, axis=1))
         keep = lengths > range_margin_m
         if not np.any(keep):
             continue
@@ -58,6 +58,12 @@ def free_space_maps(points, geometry, *, height_ranges, ray_length_m=0.7,
                            / geometry["x_res"]).astype(np.int32)
         y_index = np.floor((samples[..., 1] - geometry["y_min"])
                            / geometry["y_res"]).astype(np.int32)
+        # A point that is numerically just inside the ROI can still round to
+        # the first cell beyond the grid (for example y_index == y_size at the
+        # upper boundary).  Keep only indices that are valid for the allocated
+        # mask before using them for advanced indexing.
+        valid &= (x_index >= 0) & (x_index < x_size)
+        valid &= (y_index >= 0) & (y_index < y_size)
         for band, (low, high) in enumerate(ranges):
             selected = valid & (samples[..., 2] >= low) & (samples[..., 2] < high)
             if np.any(selected):
