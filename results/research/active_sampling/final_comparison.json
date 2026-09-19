@@ -1,0 +1,54 @@
+{
+  "criteria": {
+    "max_class_ap_drop_points": 2.0,
+    "max_class_recall_drop": 0.02,
+    "max_map_drop_points": 1.5,
+    "min_e2e_improvement": 0.08,
+    "min_fps": 20.0
+  },
+  "decision": "retain_dense_a4",
+  "deltas": {
+    "e2e_improvement": 0.09923205385034417,
+    "map_drop_points": 3.012858256769107,
+    "per_class": {
+      "Car": {
+        "ap_drop": 2.9360361877054544,
+        "dense_ap": 82.08138355043101,
+        "dense_recall": 0.9062206939668647,
+        "recall_drop": 0.01750547045951867,
+        "static_ap": 79.14534736272556,
+        "static_recall": 0.888715223507346
+      },
+      "Cyclist": {
+        "ap_drop": 4.431178444865893,
+        "dense_ap": 70.91259696506678,
+        "dense_recall": 0.8287037037037037,
+        "recall_drop": 0.0092592592592593,
+        "static_ap": 66.48141852020089,
+        "static_recall": 0.8194444444444444
+      },
+      "Pedestrian": {
+        "ap_drop": 1.6713601377360092,
+        "dense_ap": 56.8347919827349,
+        "dense_recall": 0.7325905292479109,
+        "recall_drop": 0.016713091922005652,
+        "static_ap": 55.16343184499889,
+        "static_recall": 0.7158774373259053
+      }
+    },
+    "preprocess_improvement": 0.13496957777994278
+  },
+  "dense": {
+    "e2e_mean_ms": 52.01229843375556,
+    "fps": 19.226222068875312,
+    "map_3d_moderate": 69.94292416607756,
+    "preprocess_mean_ms": 28.73334487290078
+  },
+  "deployment_gate_passes": false,
+  "static_r075": {
+    "e2e_mean_ms": 46.851011234696955,
+    "fps": 21.344256476996154,
+    "map_3d_moderate": 66.93006590930845,
+    "preprocess_mean_ms": 24.855217447199877
+  }
+}
