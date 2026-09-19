@@ -435,6 +435,22 @@ def check_training_guard():
     assert args.seed == 43
 
 
+def check_active_sampling_research():
+    sys.path.insert(0, str(ROOT / "tools" / "research"))
+    research = importlib.import_module("active_point_sampling")
+    ids = [f"{index:06d}" for index in range(20)]
+    train_a, dev_a = research.split_ids(ids, seed=42, dev_count=5)
+    train_b, dev_b = research.split_ids(list(reversed(ids)), seed=42, dev_count=5)
+    assert (train_a, dev_a) == (train_b, dev_b)
+    assert len(train_a) == 15 and len(dev_a) == 5
+    assert not set(train_a) & set(dev_a)
+    assert set(train_a) | set(dev_a) == set(ids)
+    rates = np.array([0.25, 0.50, 0.75, 1.00])
+    qualities = np.array([[0.8, 0.8, 0.9, 0.9], [0.5, 0.7, 0.8, 0.9]])
+    np.testing.assert_array_equal(research.choose_actions(qualities, rates, 0.0), [2, 3])
+    np.testing.assert_array_equal(research.choose_actions(qualities, rates, 1.0), [0, 0])
+
+
 CHECKS = {
     "legacy": check_legacy,
     "encoder": check_encoder,
@@ -448,6 +464,7 @@ CHECKS = {
     "metrics": check_metrics,
     "selector": check_selector,
     "training_guard": check_training_guard,
+    "active_sampling_research": check_active_sampling_research,
 }
 
 
@@ -465,6 +482,7 @@ def main():
     parser.add_argument("--metrics", action="store_true")
     parser.add_argument("--selector", action="store_true")
     parser.add_argument("--training-guard", action="store_true")
+    parser.add_argument("--active-sampling-research", action="store_true")
     args = parser.parse_args()
     selected = (
         ["legacy"] if args.legacy_only else
@@ -479,6 +497,7 @@ def main():
         ["metrics"] if args.metrics else
         ["selector"] if args.selector else
         ["training_guard"] if args.training_guard else
+        ["active_sampling_research"] if args.active_sampling_research else
         list(CHECKS)
     )
     for name in selected:
