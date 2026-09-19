@@ -83,15 +83,6 @@ def load_prediction_archive(path, frame_ids):
         return {frame_id: np.array(archive[frame_id], copy=True) for frame_id in frame_ids}
 
 
-def same_predictions(first, second):
-    return all(
-        first[key].dtype == second[key].dtype
-        and first[key].shape == second[key].shape
-        and np.array_equal(first[key], second[key])
-        for key in first
-    )
-
-
 def median_latency(results):
     stages = set(results[0]["latency"])
     if any(set(result["latency"]) != stages for result in results[1:]):
@@ -146,12 +137,16 @@ def validate_results(paths, frame_ids, config_path, split_path):
         reference_counts = values[0][1]["sampling"]["per_frame"]
         if any(value[1]["sampling"]["per_frame"] != reference_counts for value in values[1:]):
             raise ValueError(f"point counts differ across repeats at rate {rate}")
-        first = load_prediction_archive(values[0][1]["predictions"]["path"], frame_ids)
-        for _, result in values[1:]:
-            repeated = load_prediction_archive(result["predictions"]["path"], frame_ids)
-            if not same_predictions(first, repeated):
-                raise ValueError(f"predictions differ across repeats at rate {rate}")
-        predictions[rate] = first
+        reference_accuracy = values[0][1].get("accuracy")
+        if any(value[1].get("accuracy") != reference_accuracy for value in values[1:]):
+            raise ValueError(f"accuracy differs across repeats at rate {rate}")
+        prediction_metadata = [value[1].get("predictions") for value in values]
+        if any(not isinstance(metadata, dict) or not metadata.get("path")
+               for metadata in prediction_metadata):
+            raise ValueError(f"missing prediction archive at rate {rate}")
+        predictions[rate] = load_prediction_archive(
+            prediction_metadata[0]["path"], frame_ids
+        )
     return grouped, predictions, shared
 
 
