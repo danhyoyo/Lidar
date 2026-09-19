@@ -53,23 +53,13 @@
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "epsilon": 0.0001,
-    "geometric_weight": 0.2,
-    "initial_log_scales": [
-      0,
-      0,
-      0,
-      0
-    ],
-    "max_abs_log_size": 10,
-    "name": "uwag"
+    "name": "baseline"
   },
   "model": {
-    "backbone": "mobilepixor_coordatt",
+    "backbone": "mobilepixor",
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
     "box_encoding": "center3d",
-    "scale_gated_fpn": true,
     "gaussian_propagation": {
       "mode": "none",
       "sigma_cells": 1.5,
@@ -87,8 +77,8 @@
     "epochs": 50,
     "learning_rate": 0.0003,
     "lr_decay_at": [
-      40,
-      80
+      30,
+      40
     ],
     "momentum": 0.9,
     "physical_batch_size": 2,

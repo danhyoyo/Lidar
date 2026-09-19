@@ -8,6 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from common import read_json, write_json
+
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools" / "kitti_training_pipeline"
@@ -26,6 +28,8 @@ def main() -> None:
     parser.add_argument("--variant", required=True, choices=VARIANTS)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--kitti-root", required=True, type=Path)
+    parser.add_argument("--processed-root", type=Path,
+                        help="Prepared KITTI directory with pointcloud/ and label/")
     parser.add_argument("--output-root", type=Path, default=ROOT / "artifacts" / "kitti")
     parser.add_argument("--detector-root", type=Path, default=ROOT / "detector")
     parser.add_argument("--stage", choices=("all", "train", "select", "report"),
@@ -39,12 +43,19 @@ def main() -> None:
     parser.add_argument("--score-threshold", type=float, default=0.05)
     parser.add_argument("--resume", type=Path)
     args = parser.parse_args()
-    config = CONFIGS / VARIANTS[args.variant]
-    run_name = f"gaussian_visibility_{args.variant}_seed{args.seed}"
+    config_source = CONFIGS / VARIANTS[args.variant]
+    config = config_source
+    run_name = f"gaussian_visibility_irb_{args.variant}_seed{args.seed}"
     run_dir = args.output_root / run_name
     selected = run_dir / "selected_3d"
     eval_config = run_dir / "config.resolved.json"
     split_root = ROOT / "splits" / "kitti" / "gaussian_visibility"
+    processed = args.processed_root
+    if processed is not None:
+        processed = processed.expanduser().resolve()
+        for subdir in ("pointcloud", "label"):
+            if not (processed / subdir).is_dir():
+                parser.error(f"Prepared KITTI directory missing: {processed / subdir}")
 
     if args.stage in ("all", "select", "report"):
         for subdir in ("label_2", "calib"):
@@ -60,6 +71,15 @@ def main() -> None:
         subprocess.run(command, cwd=ROOT, check=True)
 
     if args.stage in ("all", "train"):
+        source = read_json(config_source)
+        location = processed or Path(source["data"]["kitti"]["location"])
+        if not location.is_absolute():
+            location = ROOT / location
+        if not (location / "pointcloud").is_dir() or not (location / "label").is_dir():
+            parser.error(f"Prepared KITTI missing at {location}; use --processed-root")
+        source["data"]["kitti"]["location"] = str(location.resolve())
+        config = run_dir / "config.input.json"
+        write_json(config, source)
         command = [
             "--config", config, "--detector-root", args.detector_root,
             "--output-root", args.output_root, "--run-name", run_name,
@@ -77,6 +97,14 @@ def main() -> None:
         if args.resume:
             command.extend(("--resume", args.resume))
         invoke("train.py", *command)
+
+    if args.stage in ("all", "select", "report") and processed is not None:
+        if not eval_config.is_file():
+            parser.error(f"Training config missing: {eval_config}")
+        resolved = read_json(eval_config)
+        resolved["data"]["kitti"]["location"] = str(processed)
+        eval_config = run_dir / "config.evaluation.json"
+        write_json(eval_config, resolved)
 
     if args.stage in ("all", "select"):
         invoke(
@@ -104,6 +132,7 @@ def main() -> None:
             "--output", run_dir / "report.json",
             "--device", args.device,
             "--score-threshold", args.score_threshold,
+            "--visibility-diagnostic",
         )
         print("Report:", run_dir / "report.json", flush=True)
 

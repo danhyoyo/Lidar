@@ -166,6 +166,20 @@ def prediction_box(row: np.ndarray, space: str) -> DetectionBox:
     raise ValueError(f"{space} evaluation received a prediction with {len(row)} fields")
 
 
+def center_is_observed_free(box: DetectionBox, free: np.ndarray,
+                            geom: Mapping[str, float]) -> bool:
+    """Check the predicted 3D center against sampled LiDAR free-space rays."""
+    if box.z_center is None or not np.isfinite(
+            [box.x, box.y, box.z_center]).all():
+        return False
+    x = math.floor((box.x - geom["x_min"]) / geom["x_res"])
+    y = math.floor((box.y - geom["y_min"]) / geom["y_res"])
+    z = math.floor((box.z_center - geom["z_min"])
+                   / (geom["z_max"] - geom["z_min"]) * free.shape[2])
+    return (0 <= x < free.shape[1] and 0 <= y < free.shape[0]
+            and 0 <= z < free.shape[2] and bool(free[y, x, z]))
+
+
 def box_iou(first, second, space: str) -> float:
     if space == "bev":
         return iou(
@@ -191,7 +205,7 @@ def ap_r40(recalls: np.ndarray, precisions: np.ndarray) -> float:
 def evaluate_one(predictions: Mapping[str, np.ndarray],
                  labels: Mapping[str, Sequence[GroundTruth]],
                  class_name: str, difficulty: str, space: str = "bev",
-                 distance_band=None) -> Dict[str, Any]:
+                 distance_band=None, free_space=None) -> Dict[str, Any]:
     valid, ignored, total_gt = {}, {}, 0
     for frame_id, objects in labels.items():
         valid[frame_id], ignored[frame_id] = [], []
@@ -208,18 +222,23 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
     ranked = []
     class_id = CLASS_IDS[class_name]
     for frame_id, boxes in predictions.items():
-        for row in boxes:
+        if free_space is not None and len(free_space[frame_id]) != len(boxes):
+            raise ValueError(f"free-space flags have wrong length for {frame_id}")
+        for row_index, row in enumerate(boxes):
             if int(row[0]) == class_id:
                 box = prediction_box(row, space)
                 distance = math.hypot(box.x, box.y)
                 if not distance_band or distance_band[0] <= distance < distance_band[1]:
-                    ranked.append((float(row[1]), frame_id, box))
+                    is_free = (bool(free_space[frame_id][row_index])
+                               if free_space is not None else False)
+                    ranked.append((float(row[1]), frame_id, box, is_free))
     ranked.sort(reverse=True, key=lambda item: item[0])
     used_valid = {frame_id: set() for frame_id in labels}
     used_ignored = {frame_id: set() for frame_id in labels}
     tp, fp, ignored_count = [], [], 0
+    free_fp = 0
 
-    for _, frame_id, prediction in ranked:
+    for _, frame_id, prediction, is_free in ranked:
         candidates = [(box_iou(prediction, box, space), index)
                       for index, box in enumerate(valid[frame_id])
                       if index not in used_valid[frame_id]]
@@ -239,6 +258,8 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
             continue
         tp.append(0.0)
         fp.append(1.0)
+        if free_space is not None and is_free:
+            free_fp += 1
 
     cumulative_tp = np.cumsum(np.asarray(tp))
     cumulative_fp = np.cumsum(np.asarray(fp))
@@ -259,17 +280,26 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
             float(cumulative_fp[-1] / len(predictions))
             if cumulative_fp.size and predictions else 0.0
         ),
+        "observed_free_false_positives": (
+            free_fp if free_space is not None else None
+        ),
+        "observed_free_false_positives_per_frame": (
+            free_fp / len(predictions) if free_space is not None and predictions
+            else None
+        ),
     }
 
 
-def evaluate_accuracy(predictions, labels, space="bev", include_distance_bands=False) -> Dict[str, Any]:
+def evaluate_accuracy(predictions, labels, space="bev", include_distance_bands=False,
+                      free_space=None) -> Dict[str, Any]:
     if space not in {"bev", "3d"}:
         raise ValueError(f"unsupported evaluation space: {space!r}")
     per_class, all_values, moderate_values = {}, [], []
     for class_name in CLASSES:
         difficulty_results = {}
         for difficulty in DIFFICULTIES:
-            value = evaluate_one(predictions, labels, class_name, difficulty, space)
+            value = evaluate_one(predictions, labels, class_name, difficulty, space,
+                                 free_space=free_space)
             difficulty_results[difficulty] = value
             if value["ap_r40_percent"] is not None:
                 all_values.append(value["ap_r40_percent"])
@@ -283,7 +313,8 @@ def evaluate_accuracy(predictions, labels, space="bev", include_distance_bands=F
         }
         if include_distance_bands and class_name in {"Pedestrian", "Cyclist"}:
             per_class[class_name]["moderate_distance_bands"] = {
-                name: evaluate_one(predictions, labels, class_name, "Moderate", space, bounds)
+                name: evaluate_one(predictions, labels, class_name, "Moderate",
+                                   space, bounds, free_space)
                 for name, bounds in {
                     "0_30m": (0.0, 30.0),
                     "30_50m": (30.0, 50.0),
@@ -430,7 +461,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    device: str = "cuda", score_threshold: float = 0.05,
                    nms_threshold: float = 0.10, max_detections: int = 500,
                    warmup_frames: int = 10, max_frames: int | None = None,
-                   progress_every: int = 50) -> Dict[str, Any]:
+                   progress_every: int = 50,
+                   visibility_diagnostic: bool = False) -> Dict[str, Any]:
     started = time.time()
     for path in (model_path, config_path, split_path):
         if not path.is_file():
@@ -442,6 +474,20 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     config = read_json(config_path)
     geom = config["data"]["kitti"]["geometry"]
     center3d = config["model"].get("box_encoding", "bev") == "center3d"
+    if visibility_diagnostic and not center3d:
+        raise ValueError("free-space diagnostic requires center3d boxes")
+    diagnostic_encoding = None
+    if visibility_diagnostic:
+        from utils_1.preprocess import encode_bev
+        edges = np.linspace(geom["z_min"], geom["z_max"], 4)
+        diagnostic_encoding = {
+            "name": "rich8",
+            "visibility": {
+                "mode": "height",
+                "height_ranges": np.column_stack((edges[:-1], edges[1:])).tolist(),
+                "ray_length_m": 0.7, "step_m": 0.05, "range_margin_m": 0.1,
+            },
+        }
     box_fields = 9 if center3d else 7
     all_ids = read_ids(split_path)
     frame_ids = all_ids[:max_frames] if max_frames else all_ids
@@ -455,6 +501,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     torch.cuda.synchronize()
     torch.cuda.reset_peak_memory_stats()
     predictions, labels = {}, {}
+    free_space_flags = {} if visibility_diagnostic else None
     timings = {key: [] for key in
                ("preprocess", "host_to_device", "model", "decode_nms",
                 "input_to_detections")}
@@ -479,6 +526,12 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         else:
             boxes = np.empty((0, box_fields), dtype=np.float32)
         total_ms = (time.perf_counter() - total_start) * 1000
+        if visibility_diagnostic:
+            free = encode_bev(sample["points"], geom, diagnostic_encoding)[..., 8:11]
+            free_space_flags[frame_id] = np.asarray([
+                center_is_observed_free(prediction_box(row, "3d"), free, geom)
+                for row in boxes
+            ], dtype=np.bool_)
         predictions[frame_id] = boxes
         labels[frame_id] = load_ground_truth(frame_id, kitti_root, geom)
         detection_count += len(boxes)
@@ -496,7 +549,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     accuracy = (
         {
             "bev": evaluate_accuracy(predictions, labels, "bev", True),
-            "3d": evaluate_accuracy(predictions, labels, "3d", True),
+            "3d": evaluate_accuracy(predictions, labels, "3d", True,
+                                    free_space=free_space_flags),
         }
         if center3d else evaluate_accuracy(predictions, labels)
     )
@@ -514,6 +568,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                  "input_bytes_fp32": int(np.prod(input_shape(config)) * 4),
                  "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),
                  "box_encoding": config["model"].get("box_encoding", "bev"),
+                 "backbone": config["model"]["backbone"],
+                 "loss": config.get("loss", {}).get("name", "baseline"),
                  "seed": config.get("seed"),
                  "source": git_metadata(detector_root.parent),
                  "frames": len(frame_ids),
@@ -530,6 +586,12 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
             "score_threshold": score_threshold, "nms_threshold": nms_threshold,
             "max_detections_per_frame": max_detections,
+            "observed_free_diagnostic": {
+                "enabled": visibility_diagnostic,
+                "definition": "unmatched 3D prediction center in a sampled, measured-free LiDAR height cell",
+                "encoding": diagnostic_encoding,
+                "excluded_from_latency": True,
+            },
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),
             "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
         },
@@ -573,6 +635,7 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--warmup-frames", type=int, default=10)
     value.add_argument("--max-frames", type=int)
     value.add_argument("--progress-every", type=int, default=50)
+    value.add_argument("--visibility-diagnostic", action="store_true")
     return value
 
 
@@ -595,7 +658,8 @@ def main(argv=None):
         output_path=args.output, device=args.device,
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
-        max_frames=args.max_frames, progress_every=args.progress_every)
+        max_frames=args.max_frames, progress_every=args.progress_every,
+        visibility_diagnostic=args.visibility_diagnostic)
     accuracy = result["accuracy"].get("3d", result["accuracy"])
     print(f"mAP Moderate={optional(accuracy['map_moderate_percent'])}%, "
           f"Mean AP-9={optional(accuracy['mean_ap_9_percent'])}%, "

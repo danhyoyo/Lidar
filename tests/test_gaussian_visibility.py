@@ -16,7 +16,12 @@ from core.datasets.dataset import Dataset
 from core.models.gaussian_visibility import GaussianPillarPropagation
 from utils_1.preprocess import encode_bev
 from utils_1.visibility import free_space_maps
-from common import input_shape, read_json
+from common import build_model, input_shape, read_json
+from core.losses.loss_fn import LossFunction
+from core.losses.focal_loss import modified_focal_loss
+from evaluate_kitti_bev import (
+    GroundTruth, center_is_observed_free, evaluate_one, prediction_box,
+)
 
 
 def small_geometry():
@@ -134,7 +139,23 @@ def test_variant_shapes_and_height_alignment():
     expected = {"a0": 8, "a1": 8, "a2": 9, "a3": 11, "a4": 8}
     for path in sorted(directory.glob("a*.json")):
         cfg = read_json(path)
-        assert input_shape(cfg)[1] == expected[path.name[:2]]
+        channels = expected[path.name[:2]]
+        assert input_shape(cfg)[1] == channels
+        assert cfg["model"]["backbone"] == "mobilepixor"
+        assert "scale_gated_fpn" not in cfg["model"]
+        assert cfg["loss"] == {"name": "baseline"}
+        assert cfg["train"]["epochs"] == 50
+        assert max(cfg["train"]["lr_decay_at"]) < 50
+        assert not list(LossFunction("gaussian", cfg["loss"]).parameters())
+        model = build_model(cfg).eval()
+        torch.testing.assert_close(model.header.cls.head.bias.detach(),
+                                   torch.full_like(model.header.cls.head.bias, -2.19))
+        assert not any("CoordAtt" in type(layer).__name__
+                       for layer in model.modules())
+        with torch.no_grad():
+            pred = model(torch.zeros(1, channels, 32, 32))
+        assert pred["cls"].shape == (1, 3, 8, 8)
+        assert pred["offset"].shape == (1, 3, 8, 8)
         if path.name.startswith("a3"):
             geom = cfg["data"]["kitti"]["geometry"]
             bounds = np.linspace(geom["z_min"], geom["z_max"], 4)
@@ -144,9 +165,50 @@ def test_variant_shapes_and_height_alignment():
             assert cfg["model"]["gaussian_propagation"]["kernel_type"] == "uniform"
 
 
+def test_bf16_heatmap_stability():
+    logits = torch.tensor([[[[80.0, -80.0]]]], dtype=torch.bfloat16,
+                          requires_grad=True)
+    target = torch.tensor([[[[1.0, 0.0]]]])
+    loss = modified_focal_loss(logits, target)
+    assert torch.isfinite(loss)
+    loss.backward()
+    assert torch.isfinite(logits.grad).all()
+
+
+def test_observed_free_false_positives():
+    geometry = {
+        "x_min": 0.0, "x_max": 8.0, "x_res": 1.0,
+        "y_min": -2.0, "y_max": 2.0, "y_res": 1.0,
+        "z_min": -1.0, "z_max": 1.0, "z_res": 1.0,
+    }
+    free = np.zeros((4, 8, 3), dtype=np.float32)
+    free[2, 5, 1] = 1.0
+    boxes = np.asarray([
+        [0, 0.9, 1, 0, 0, 2, 4, 2, 0],
+        [0, 0.8, 5, 0, 0, 2, 4, 2, 0],
+    ], dtype=np.float32)
+    flags = np.asarray([
+        center_is_observed_free(prediction_box(row, "3d"), free, geometry)
+        for row in boxes
+    ], dtype=np.bool_)
+    np.testing.assert_array_equal(flags, [False, True])
+    frame_id = "000001"
+    labels = {frame_id: [GroundTruth(
+        "Car", 0.0, 0, 50.0, 1.0, 0.0, 0.0, 4.0, 2.0, 2.0, 0.0
+    )]}
+    result = evaluate_one({frame_id: boxes}, labels, "Car", "Moderate",
+                          space="3d", free_space={frame_id: flags})
+    assert result["true_positives"] == 1
+    assert result["false_positives"] == 1
+    assert result["observed_free_false_positives"] == 1
+    assert result["observed_free_false_positives_per_frame"] == 1.0
+
+
 if __name__ == "__main__":
     test_ray_visibility()
     test_sensor_origin()
     test_gaussian_gating_and_control()
     test_variant_shapes_and_height_alignment()
+    test_observed_free_false_positives()
+    test_bf16_heatmap_stability()
     print("gaussian_visibility checks passed")

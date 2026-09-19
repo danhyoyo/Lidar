@@ -15,8 +15,8 @@ class CustomModel(nn.Module):
         super(CustomModel, self).__init__()
         gaussian = cfg.get("gaussian_propagation", {})
         mode = gaussian.get("mode", "none")
-        if mode != "none" and cfg["backbone"] != "mobilepixor_coordatt":
-            raise ValueError("Gaussian propagation currently supports mobilepixor_coordatt")
+        if mode != "none" and cfg["backbone"] not in {"mobilepixor", "mobilepixor_coordatt"}:
+            raise ValueError("Gaussian propagation requires a MobilePIXOR backbone")
         self.gaussian_propagation = (
             GaussianPillarPropagation(
                 mode=mode,
@@ -28,7 +28,7 @@ class CustomModel(nn.Module):
         )
         backbone_input_channels = 8 if self.gaussian_propagation else input_channels
         if cfg["backbone"] == "mobilepixor":
-            self.backbone = MobilePixorBackBone()
+            self.backbone = MobilePixorBackBone(input_channels=backbone_input_channels)
         elif cfg["backbone"] == "mobilepixor_coordatt":
             self.backbone = MobilePixorCoordAttBackBone(
                 input_channels=backbone_input_channels,
@@ -50,6 +50,8 @@ class CustomModel(nn.Module):
             cfg["backbone_out_dim"],
             box_encoding=cfg.get("box_encoding", "bev"),
         )
+        if cfg["cls_encoding"] == "gaussian":
+            nn.init.constant_(self.header.cls.head.bias, -2.19)
 
     def forward(self, x):
         if self.gaussian_propagation is not None:
