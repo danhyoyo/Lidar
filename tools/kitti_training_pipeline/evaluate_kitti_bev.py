@@ -261,6 +261,46 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
     }
 
 
+def frame_quality(predictions: np.ndarray, labels: Sequence[GroundTruth],
+                  space: str = "3d") -> float:
+    if space not in {"bev", "3d"}:
+        raise ValueError(f"unsupported evaluation space: {space!r}")
+    scores = []
+    for class_name in CLASSES:
+        valid = [obj for obj in labels
+                 if obj.name == class_name and obj.passes("Moderate")]
+        ignored = [obj for obj in labels
+                   if (obj.name == class_name and not obj.passes("Moderate"))
+                   or obj.name in NEIGHBOURS[class_name]]
+        rows = [row for row in predictions
+                if int(row[0]) == CLASS_IDS[class_name]]
+        rows.sort(key=lambda row: float(row[1]), reverse=True)
+        used_valid, used_ignored = set(), set()
+        tp = fp = 0
+        for row in rows:
+            prediction = prediction_box(row, space)
+            candidates = [(box_iou(prediction, box, space), index)
+                          for index, box in enumerate(valid)
+                          if index not in used_valid]
+            best = max(candidates, default=(0.0, -1))
+            if best[0] >= IOU_THRESHOLDS[class_name]:
+                used_valid.add(best[1])
+                tp += 1
+                continue
+            candidates = [(box_iou(prediction, box, space), index)
+                          for index, box in enumerate(ignored)
+                          if index not in used_ignored]
+            best = max(candidates, default=(0.0, -1))
+            if best[0] >= IOU_THRESHOLDS[class_name]:
+                used_ignored.add(best[1])
+            else:
+                fp += 1
+        fn = len(valid) - tp
+        denominator = 2 * tp + fp + fn
+        scores.append(2 * tp / denominator if denominator else float(not rows))
+    return float(np.mean(scores))
+
+
 def evaluate_accuracy(predictions, labels, space="bev", include_distance_bands=False) -> Dict[str, Any]:
     if space not in {"bev", "3d"}:
         raise ValueError(f"unsupported evaluation space: {space!r}")

@@ -371,6 +371,20 @@ def check_metrics():
     assert flat["map_3d_moderate_percent"] is None
     assert flat["map_bev_moderate_percent"] == 12.0
 
+    gt = evaluator.GroundTruth(
+        "Car", 0.0, 0, 50.0, 10.0, 0.0, 0.0, 4.0, 1.8, 1.6, 0.0
+    )
+    hit = np.array(
+        [[0, 0.9, 10.0, 0.0, 0.0, 1.8, 4.0, 1.6, 0.0]], dtype=np.float32
+    )
+    false_ped = np.array(
+        [[1, 0.8, 20.0, 0.0, 0.0, 0.8, 0.8, 1.7, 0.0]], dtype=np.float32
+    )
+    assert evaluator.frame_quality(hit, [gt]) == 1.0
+    np.testing.assert_allclose(
+        evaluator.frame_quality(np.concatenate([hit, false_ped]), [gt]), 2.0 / 3.0
+    )
+
     args = evaluator.parser().parse_args([
         "--name", "sampled", "--backend", "pytorch", "--model", "model.pt",
         "--config", "config.json", "--detector-root", "detector",
