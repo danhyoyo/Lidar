@@ -4,6 +4,7 @@
 import argparse
 import importlib
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -369,6 +370,32 @@ def check_metrics():
     })
     assert flat["map_3d_moderate_percent"] is None
     assert flat["map_bev_moderate_percent"] == 12.0
+
+    args = evaluator.parser().parse_args([
+        "--name", "sampled", "--backend", "pytorch", "--model", "model.pt",
+        "--config", "config.json", "--detector-root", "detector",
+        "--kitti-root", "kitti", "--split", "split.txt", "--output", "out.json",
+        "--sampling-rate", "0.5", "--sampling-seed", "7",
+    ])
+    assert args.sampling_rate == 0.5 and args.sampling_seed == 7
+
+    geometry = {
+        "x_min": 0.0, "x_max": 2.0, "x_res": 1.0,
+        "y_min": 0.0, "y_max": 2.0, "y_res": 1.0,
+        "z_min": 0.0, "z_max": 3.0, "z_res": 1.0,
+    }
+    with tempfile.TemporaryDirectory() as temporary:
+        evaluator.configure_detector_imports(ROOT / "detector")
+        root = Path(temporary)
+        points = np.arange(80, dtype=np.float32).reshape(20, 4)
+        points.tofile(root / "000123.bin")
+        voxel, timings, counts = evaluator.load_bev_frame(
+            "000123", root, geometry,
+            {"name": "rich8", "density_norm": 32, "intensity_scale": 1}, 0.5, 42,
+        )
+        assert tuple(voxel.shape) == (8, 2, 2)
+        assert counts == {"raw_points": 20, "selected_points": 10}
+        assert set(timings) == {"point_load", "sampling", "bev_encode", "preprocess"}
 
 
 def check_selector():

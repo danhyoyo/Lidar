@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import math
 import platform
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -324,6 +325,35 @@ def device_timed(function, device: torch.device):
         return value, float(start.elapsed_time(end))
 
 
+def load_bev_frame(frame_id, pointcloud_root, geometry, bev_encoding,
+                   sampling_rate, sampling_seed):
+    from utils_1.preprocess import encode_bev, sample_points
+
+    preprocess_start = time.perf_counter()
+    part_start = time.perf_counter()
+    points = np.fromfile(
+        Path(pointcloud_root) / f"{frame_id}.bin", dtype=np.float32
+    ).reshape(-1, 4)
+    point_load_ms = (time.perf_counter() - part_start) * 1000.0
+    part_start = time.perf_counter()
+    sampled = sample_points(points, sampling_rate, frame_id, sampling_seed)
+    sampling_ms = (time.perf_counter() - part_start) * 1000.0
+    part_start = time.perf_counter()
+    bev = encode_bev(sampled, geometry, bev_encoding)
+    voxel = torch.from_numpy(bev).permute(2, 0, 1)
+    bev_encode_ms = (time.perf_counter() - part_start) * 1000.0
+    return (
+        voxel,
+        {
+            "point_load": point_load_ms,
+            "sampling": sampling_ms,
+            "bev_encode": bev_encode_ms,
+            "preprocess": (time.perf_counter() - preprocess_start) * 1000.0,
+        },
+        {"raw_points": len(points), "selected_points": len(sampled)},
+    )
+
+
 class PyTorchRunner:
     def __init__(self, path: Path, config, device: str):
         self.device = torch.device(device)
@@ -441,7 +471,9 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    device: str = "cuda", score_threshold: float = 0.05,
                    nms_threshold: float = 0.10, max_detections: int = 500,
                    warmup_frames: int = 10, max_frames: int | None = None,
-                   progress_every: int = 50) -> Dict[str, Any]:
+                   progress_every: int = 50, sampling_rate: float = 1.0,
+                   sampling_seed: int = 42,
+                   command: Sequence[str] | None = None) -> Dict[str, Any]:
     started = time.time()
     if backend not in {"pytorch", "tensorrt"}:
         raise ValueError(f"Unsupported backend: {backend!r}")
@@ -457,24 +489,24 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         raise ValueError("max_frames must be positive when provided")
     if progress_every < 0:
         raise ValueError("progress_every must be non-negative")
+    if sampling_rate not in (0.25, 0.5, 0.75, 1.0):
+        raise ValueError("sampling_rate must be one of 0.25, 0.5, 0.75, 1.0")
     for path in (model_path, config_path, split_path):
         if not path.is_file():
             raise FileNotFoundError(path)
     configure_detector_imports(detector_root)
-    from core.datasets.dataset import Dataset
     from postprocess import filter_pred
 
     config = read_json(config_path)
     geom = config["data"]["kitti"]["geometry"]
+    pointcloud_root = Path(config["data"]["kitti"]["location"]) / "pointcloud"
+    bev_encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
     center3d = config["model"].get("box_encoding", "bev") == "center3d"
     box_fields = 9 if center3d else 7
     all_ids = read_ids(split_path)
     frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
         raise ValueError("Evaluation split is empty")
-    dataset = Dataset(str(split_path), config["data"], config["augmentation"],
-                      config["model"]["cls_encoding"], task="test",
-                      box_encoding=config["model"].get("box_encoding", "bev"))
     runner = (PyTorchRunner(model_path, config, device) if backend == "pytorch"
               else TensorRTRunner(model_path, config, device))
     uses_cuda = runner.device.type == "cuda"
@@ -483,16 +515,20 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         torch.cuda.reset_peak_memory_stats(runner.device)
     predictions, labels = {}, {}
     timings = {key: [] for key in
-               ("preprocess", "host_to_device", "model", "decode_nms",
-                "input_to_detections")}
+               ("point_load", "sampling", "bev_encode", "preprocess",
+                "host_to_device", "model", "decode_nms", "input_to_detections")}
     detection_count = 0
+    raw_point_total = 0
+    selected_point_total = 0
+    per_frame_point_counts = {}
 
     for index, frame_id in enumerate(frame_ids):
         total_start = time.perf_counter()
-        part_start = time.perf_counter()
-        sample = dataset[index]
-        preprocess_ms = (time.perf_counter() - part_start) * 1000
-        input_tensor, transfer_ms = runner.transfer(sample["voxel"])
+        voxel, preprocess_timings, point_counts = load_bev_frame(
+            frame_id, pointcloud_root, geom, bev_encoding,
+            sampling_rate, sampling_seed,
+        )
+        input_tensor, transfer_ms = runner.transfer(voxel)
         output, model_ms = runner.infer(input_tensor)
         part_start = time.perf_counter()
         boxes = filter_pred(output, config["data"]["kitti"],
@@ -510,9 +546,12 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         predictions[frame_id] = boxes
         labels[frame_id] = load_ground_truth(frame_id, kitti_root, geom)
         detection_count += len(boxes)
+        raw_point_total += point_counts["raw_points"]
+        selected_point_total += point_counts["selected_points"]
+        per_frame_point_counts[frame_id] = point_counts
         if index >= warmup_frames:
             for key, value in (
-                ("preprocess", preprocess_ms), ("host_to_device", transfer_ms),
+                *preprocess_timings.items(), ("host_to_device", transfer_ms),
                 ("model", model_ms), ("decode_nms", decode_ms),
                 ("input_to_detections", total_ms)):
                 timings[key].append(value)
@@ -531,6 +570,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             if uses_cuda else None
         ),
         "elapsed_seconds": time.time() - started,
+        "command": list(command) if command is not None else None,
     }
 
     accuracy = (
@@ -571,11 +611,21 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "score_threshold": score_threshold, "nms_threshold": nms_threshold,
             "max_detections_per_frame": max_detections,
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),
-            "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+            "latency_boundary": "Sequential offline bin load + sampling + BEV encoding + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
         },
         "accuracy": accuracy,
         "latency": {key: timing_summary(value) for key, value in timings.items()},
         "runtime": runtime,
+        "sampling": {
+            "contract_version": 1,
+            "rate": sampling_rate,
+            "seed": sampling_seed,
+            "raw_points": raw_point_total,
+            "selected_points": selected_point_total,
+            "mean_raw_points": raw_point_total / len(frame_ids),
+            "mean_selected_points": selected_point_total / len(frame_ids),
+            "per_frame": per_frame_point_counts,
+        },
         "counts": {"detections": detection_count,
                    "detections_per_frame": detection_count / len(frame_ids)},
     }
@@ -610,6 +660,9 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--warmup-frames", type=int, default=10)
     value.add_argument("--max-frames", type=int)
     value.add_argument("--progress-every", type=int, default=50)
+    value.add_argument("--sampling-rate", type=float,
+                       choices=(0.25, 0.5, 0.75, 1.0), default=1.0)
+    value.add_argument("--sampling-seed", type=int, default=42)
     return value
 
 
@@ -632,7 +685,9 @@ def main(argv=None):
         output_path=args.output, device=args.device,
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
-        max_frames=args.max_frames, progress_every=args.progress_every)
+        max_frames=args.max_frames, progress_every=args.progress_every,
+        sampling_rate=args.sampling_rate, sampling_seed=args.sampling_seed,
+        command=[sys.executable, *sys.argv] if argv is None else None)
     accuracy = result["accuracy"].get("3d", result["accuracy"])
     print(f"mAP Moderate={optional(accuracy['map_moderate_percent'])}%, "
           f"Mean AP-9={optional(accuracy['mean_ap_9_percent'])}%, "
