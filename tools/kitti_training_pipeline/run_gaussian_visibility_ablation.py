@@ -45,7 +45,9 @@ def main() -> None:
     args = parser.parse_args()
     config_source = CONFIGS / VARIANTS[args.variant]
     config = config_source
-    run_name = f"gaussian_visibility_irb_{args.variant}_seed{args.seed}"
+    # Keep the run name stable across train/select/report stages.  Existing
+    # training artifacts use this canonical name without an extra prefix.
+    run_name = f"gaussian_visibility_{args.variant}_seed{args.seed}"
     run_dir = args.output_root / run_name
     selected = run_dir / "selected_3d"
     eval_config = run_dir / "config.resolved.json"

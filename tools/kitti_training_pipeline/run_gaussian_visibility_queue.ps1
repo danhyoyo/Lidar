@@ -28,7 +28,9 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
 
 $runner = Join-Path $repoRoot "tools\kitti_training_pipeline\run_gaussian_visibility_ablation.py"
 $evaluationTable = Join-Path $repoRoot "tools\kitti_training_pipeline\evaluation_table.py"
+$efficiencyTable = Join-Path $repoRoot "tools\kitti_training_pipeline\efficiency_table.py"
 $tablePrefix = Join-Path $repoRoot "evaluation\gaussian_visibility_table"
+$efficiencyPrefix = Join-Path $repoRoot "evaluation\gaussian_visibility_efficiency"
 $variants = @("a0", "a1", "a2", "a3", "a4")
 $startIndex = [Array]::IndexOf($variants, $CurrentVariant)
 $queue = @($variants[$startIndex..($variants.Count - 1)])
@@ -120,6 +122,8 @@ function Update-EvaluationTable {
     }
     $arguments = @($evaluationTable) + $reports + @("--output-prefix", $tablePrefix)
     Invoke-Python $arguments
+    $efficiencyArguments = @($efficiencyTable) + $reports + @("--output-prefix", $efficiencyPrefix)
+    Invoke-Python $efficiencyArguments
 }
 
 Write-Host "Queue: $($queue -join ' -> ')" -ForegroundColor Green
@@ -152,4 +156,4 @@ foreach ($variant in @($queue | Select-Object -Skip 1)) {
     Update-EvaluationTable
 }
 
-Write-Host "`nQueue completed. Final table: $tablePrefix.md and $tablePrefix.csv" -ForegroundColor Green
+Write-Host "`nQueue completed. Final tables: $tablePrefix.md, $tablePrefix.csv, $efficiencyPrefix.md, and $efficiencyPrefix.csv" -ForegroundColor Green
