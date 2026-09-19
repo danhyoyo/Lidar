@@ -112,13 +112,15 @@ def validate_results(paths, frame_ids, config_path, split_path):
         if rate not in grouped:
             raise ValueError(f"unknown sampling rate {rate}: {path}")
         per_frame = sampling.get("per_frame")
-        if not isinstance(per_frame, dict) or list(per_frame) != frame_ids:
+        if (not isinstance(per_frame, dict)
+                or len(per_frame) != len(frame_ids)
+                or set(per_frame) != set(frame_ids)):
             raise ValueError(f"sampling frame IDs do not match controller split: {path}")
         data = result.get("data", {})
         model = result.get("model", {})
         signature = (
             data.get("config_sha256"), data.get("split_sha256"),
-            model.get("sha256"), sampling.get("seed"), tuple(per_frame),
+            model.get("sha256"), sampling.get("seed"), tuple(sorted(per_frame)),
         )
         if data.get("config_sha256") != expected_config or data.get("split_sha256") != expected_split:
             raise ValueError(f"config or split hash mismatch: {path}")

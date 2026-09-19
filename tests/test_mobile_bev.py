@@ -455,14 +455,18 @@ def check_active_sampling_research():
         config = root / "config.json"
         split = root / "split.txt"
         config.write_text("{}\n", encoding="utf-8")
-        split.write_text("000001;kitti\n", encoding="utf-8")
+        frame_ids = ["000002", "000001"]
+        split.write_text("000002;kitti\n000001;kitti\n", encoding="utf-8")
         paths = []
         for rate in rates:
             for repeat in range(3):
                 predictions = np.zeros((1, 9), dtype=np.float32)
                 predictions[0, 1] = 0.9 + (1e-5 if repeat else 0.0)
                 archive = root / f"r{rate}_rep{repeat}.npz"
-                np.savez_compressed(archive, **{"000001": predictions})
+                np.savez_compressed(
+                    archive,
+                    **{frame_id: predictions for frame_id in frame_ids},
+                )
                 result = root / f"r{rate}_rep{repeat}.json"
                 research.write_json(result, {
                     "status": "ok",
@@ -477,14 +481,15 @@ def check_active_sampling_research():
                         "rate": float(rate),
                         "seed": 42,
                         "per_frame": {
-                            "000001": {"raw_points": 4, "selected_points": 1}
+                            frame_id: {"raw_points": 4, "selected_points": 1}
+                            for frame_id in frame_ids
                         },
                     },
                     "predictions": {"path": str(archive)},
                 })
                 paths.append(result)
-        _, predictions, _ = research.validate_results(paths, ["000001"], config, split)
-        assert predictions[0.25]["000001"][0, 1] == np.float32(0.9)
+        _, predictions, _ = research.validate_results(paths, frame_ids, config, split)
+        assert predictions[0.25]["000002"][0, 1] == np.float32(0.9)
 
 
 CHECKS = {
