@@ -24,7 +24,7 @@
     "bev_encoding": {
       "density_norm": 32,
       "intensity_scale": 1,
-      "name": "binary_slices"
+      "name": "rich8"
     },
     "gaussian_overlap": 0.1,
     "kitti": {
@@ -65,7 +65,7 @@
   "model": {
     "backbone": "mobilepixor_coordatt",
     "backbone_out_dim": 16,
-    "box_encoding": "center3d",
+    "box_encoding": "bev",
     "cls_encoding": "gaussian",
     "initial_log_variance": -2.0,
     "predict_log_variance": true,
