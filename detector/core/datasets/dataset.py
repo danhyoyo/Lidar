@@ -117,16 +117,13 @@ def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
 
 class Dataset(Dataset):
     def __init__(
-        self, data_file, config, aug_config, cls_encoding, task="train", box_encoding="bev"
+        self, data_file, config, aug_config, cls_encoding, task="train"
     ) -> None:
         self.data_file = data_file
         # stores fine names and data types in self.data_list and self.data_type_list
         self.create_data_list()
         self.config = config
         self.bev_encoding = config.get("bev_encoding", {"name": "binary_slices"})
-        if box_encoding not in {"bev", "center3d"}:
-            raise ValueError(f"Unsupported box encoding: {box_encoding!r}")
-        self.box_encoding = box_encoding
         # depending on this task, we decide whether we want to load certain info (i.e. labels not available for testing sometimes)
         self.task = task
         # what kind of encoding we want to use for classification. Available options are : gaussian, inverse_distance, binary
@@ -243,13 +240,8 @@ class Dataset(Dataset):
                 a tensor of shape 200 * 175 * 6 representing the expected output
         '''
 
-        regression_channels = 3 if self.box_encoding == "center3d" else 2
-        offset_map = torch.zeros(
-            (self.output_shape[0], self.output_shape[1], regression_channels)
-        )
-        size_map = torch.zeros(
-            (self.output_shape[0], self.output_shape[1], regression_channels)
-        )
+        offset_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
+        size_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
         yaw_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
         reg_mask = torch.zeros(self.output_shape)
 
@@ -392,13 +384,9 @@ class Dataset(Dataset):
 
                     offset_map[p_x][p_y][0] = x - metric_x
                     offset_map[p_x][p_y][1] = y - metric_y
-                    if self.box_encoding == "center3d":
-                        offset_map[p_x][p_y][2] = z + h / 2
 
                     size_map[p_x][p_y][0] = math.log(w)
                     size_map[p_x][p_y][1] = math.log(l)
-                    if self.box_encoding == "center3d":
-                        size_map[p_x][p_y][2] = math.log(h)
 
                     yaw_map[p_x][p_y][0] = math.cos(yaw2)
                     yaw_map[p_x][p_y][1] = math.sin(yaw2)

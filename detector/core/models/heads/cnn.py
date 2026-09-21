@@ -21,15 +21,11 @@ class Head(nn.Module):
         return head
 
 class Header(nn.Module):
-    def __init__(self, num_classes, in_channels, box_encoding="bev"):
+    def __init__(self, num_classes, in_channels):
         super(Header, self).__init__()
-        if box_encoding not in {"bev", "center3d"}:
-            raise ValueError(f"Unsupported box encoding: {box_encoding!r}")
-        regression_channels = 3 if box_encoding == "center3d" else 2
-
         self.cls = Head(in_channels, num_classes)
-        self.offset = Head(in_channels, regression_channels)
-        self.size = Head(in_channels, regression_channels)
+        self.offset = Head(in_channels, 2)
+        self.size = Head(in_channels, 2)
         self.yaw = Head(in_channels, 2)
 
 

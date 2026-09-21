@@ -44,8 +44,6 @@ def nested(value: Dict[str, Any], *keys, default=None):
 
 def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
     accuracy = result.get("accuracy", {})
-    primary = accuracy.get("3d", {})
-    bev = accuracy.get("bev", accuracy)
     row = {
         "name": result.get("name"),
         "status": result.get("status"),
@@ -54,10 +52,8 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
         "bytes": nested(result, "model", "bytes"),
         "sha256": nested(result, "model", "sha256"),
         "frames": nested(result, "data", "frames"),
-        "mean_3d_ap_9_percent": primary.get("mean_ap_9_percent"),
-        "map_3d_moderate_percent": primary.get("map_moderate_percent"),
-        "mean_bev_ap_9_percent": bev.get("mean_ap_9_percent"),
-        "map_bev_moderate_percent": bev.get("map_moderate_percent"),
+        "mean_ap_9_percent": accuracy.get("mean_ap_9_percent"),
+        "map_moderate_percent": accuracy.get("map_moderate_percent"),
         "detections": nested(result, "counts", "detections"),
         "torch_peak_memory_mb": nested(result, "runtime", "torch_peak_memory_mb"),
         "elapsed_seconds": nested(result, "runtime", "elapsed_seconds"),
@@ -66,8 +62,8 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
     }
     for class_name in CLASSES:
         for difficulty in DIFFICULTIES:
-            row[f"{class_name.lower()}_{difficulty.lower()}_3d_ap_r40_percent"] = nested(
-                primary, "per_class", class_name, "difficulties",
+            row[f"{class_name.lower()}_{difficulty.lower()}_ap_r40_percent"] = nested(
+                accuracy, "per_class", class_name, "difficulties",
                 difficulty, "ap_r40_percent")
     for stage in ("preprocess", "host_to_device", "model", "decode_nms",
                   "input_to_detections"):
@@ -90,7 +86,7 @@ def markdown_table(results) -> str:
         "",
         "All successful models used the same frame IDs, decoder, score threshold, NMS, ROI, IoU thresholds and AP R40 implementation.",
         "",
-        "| Model | Status | 3D mAP Moderate (%) | Mean 3D AP-9 (%) | Model mean (ms) | Model p95 (ms) | Model FPS | E2E mean (ms) | E2E p95 (ms) | E2E FPS | Peak MiB |",
+        "| Model | Status | BEV mAP Moderate (%) | Mean BEV AP-9 (%) | Model mean (ms) | Model p95 (ms) | Model FPS | E2E mean (ms) | E2E p95 (ms) | E2E FPS | Peak MiB |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for result in results:
@@ -98,11 +94,10 @@ def markdown_table(results) -> str:
             lines.append(f"| {markdown_cell(result.get('name'))} | error: {markdown_cell(result.get('error'))} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |")
             continue
         accuracy = result.get("accuracy", {})
-        primary = accuracy.get("3d", accuracy.get("bev", accuracy))
         lines.append(
             f"| {markdown_cell(result['name'])} | ok | "
-            f"{fmt(primary.get('map_moderate_percent'))} | "
-            f"{fmt(primary.get('mean_ap_9_percent'))} | "
+            f"{fmt(accuracy.get('map_moderate_percent'))} | "
+            f"{fmt(accuracy.get('mean_ap_9_percent'))} | "
             f"{fmt(nested(result, 'latency', 'model', 'mean_ms'))} | "
             f"{fmt(nested(result, 'latency', 'model', 'p95_ms'))} | "
             f"{fmt(nested(result, 'latency', 'model', 'fps'))} | "

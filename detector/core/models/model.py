@@ -29,11 +29,7 @@ class CustomModel(nn.Module):
         if cfg["cls_encoding"] == "binary":
             self.num_classes += 1
 
-        self.header = Header(
-            self.num_classes,
-            cfg["backbone_out_dim"],
-            box_encoding=cfg.get("box_encoding", "bev"),
-        )
+        self.header = Header(self.num_classes, cfg["backbone_out_dim"])
 
     def forward(self, x):
         features = self.backbone(x)

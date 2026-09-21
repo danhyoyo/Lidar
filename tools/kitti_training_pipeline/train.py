@@ -171,12 +171,10 @@ def main(argv=None) -> None:
         raise ValueError("save_every must be positive")
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "train",
-        box_encoding=config["model"].get("box_encoding", "bev"))
+        config["augmentation"], config["model"]["cls_encoding"], "train")
     # A non-special task name disables augmentation and list-valued visualisation data.
     val_dataset = Dataset(config["val"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "validation",
-        box_encoding=config["model"].get("box_encoding", "bev"))
+        config["augmentation"], config["model"]["cls_encoding"], "validation")
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
     train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
@@ -224,11 +222,7 @@ def main(argv=None) -> None:
     run_dir = args.output_root.expanduser().resolve() / (args.run_name or default_name)
     checkpoints_dir = run_dir / "checkpoints"
     best_dir = run_dir / "best_checkpoints"
-    loss_selection_dir = run_dir / (
-        "provisional_best_loss"
-        if config["model"].get("box_encoding", "bev") == "center3d"
-        else "selected"
-    )
+    loss_selection_dir = run_dir / "selected"
     for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
     write_json(run_dir / "config.resolved.json", config)
@@ -351,9 +345,7 @@ def main(argv=None) -> None:
               f"val={current_val:.6f} retained={retained} "
               f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
 
-    label = "Provisional minimum-loss checkpoint" if config["model"].get(
-        "box_encoding", "bev") == "center3d" else "Selected checkpoint"
-    print(f"{label}: {loss_selection_dir / 'best.pt'}")
+    print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
     print(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
 

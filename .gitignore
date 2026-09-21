@@ -27,5 +27,15 @@ node_modules/
 # Local training artifacts
 outputs/
 
+# Local datasets, reports, and experiment results
+/artifacts/
+/data/
+/docs/
+/evaluation/
+/outputs/
+/result/
+/results/
+/splits/
+
 *.pdf
 *.xlsx

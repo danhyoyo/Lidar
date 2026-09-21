@@ -1,6 +1,0 @@
-{
-  "checkpoint": "best_checkpoints/55epoch.pt",
-  "criterion": "minimum mean validation loss",
-  "epoch": 55,
-  "validation_objective": -5.450648467333299
-}

@@ -2,7 +2,6 @@
 
 import json
 import re
-import subprocess
 import unittest
 from pathlib import Path
 
@@ -12,21 +11,12 @@ NOTEBOOK = ROOT / "3D_Lidar_Object_Detection_Notebook_standard.ipynb"
 
 
 class StandardTrainingNotebookTests(unittest.TestCase):
-    def test_all_training_branches_keep_only_the_standard_notebook(self):
+    def test_repository_keeps_only_the_standard_notebook(self):
         expected = {"3D_Lidar_Object_Detection_Notebook_standard.ipynb"}
-        for branch in (
-            "main", "mobileBEV-architecture", "gaussian-lidar-detection",
-            "Proposal2-Loss-Function", "A56_proposal_2.5",
-        ):
-            notebooks = set(subprocess.check_output(
-                ["git", "ls-tree", "-r", "--name-only", branch],
-                cwd=ROOT,
-                text=True,
-            ).splitlines())
-            self.assertEqual(
-                {path for path in notebooks if path.endswith(".ipynb")}, expected,
-                branch,
-            )
+        notebooks = {
+            path.relative_to(ROOT).as_posix() for path in ROOT.rglob("*.ipynb")
+        }
+        self.assertEqual(notebooks, expected)
 
     def test_supports_all_registered_variants_and_safe_resume(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
@@ -34,18 +24,17 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "A56_proposal_2.5"', source)
+        self.assertIn('BRANCH = "main"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
-        branch_files = set(subprocess.check_output(
-            ["git", "ls-tree", "-r", "--name-only", "A56_proposal_2.5", "--", "configs"],
-            cwd=ROOT,
-            text=True,
-        ).splitlines())
-        for variant in (*[f"A{i}" for i in range(7)], *[f"B{i}" for i in range(4)]):
+        config_files = {
+            path.relative_to(ROOT).as_posix()
+            for path in (ROOT / "configs").rglob("*.json")
+        }
+        for variant in (f"A{i}" for i in range(5)):
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
-            self.assertIn(match.group(1), branch_files)
+            self.assertIn(match.group(1), config_files)
         self.assertIn("run.json", source)
         self.assertIn("--resume", source)
         self.assertIn("last.pt", source)

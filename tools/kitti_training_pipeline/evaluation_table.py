@@ -12,9 +12,6 @@ COMMON_HEADERS = ("Method", "Number of parameters", "FPS")
 HEADERS = COMMON_HEADERS + (
     "Mean AP-9", "Car", "Ped", "Cyc", "KITTI mAP@Moderate",
 )
-THREE_D_HEADERS = COMMON_HEADERS + (
-    "Mean 3D AP-9", "3D Car", "3D Ped", "3D Cyc", "3D KITTI mAP@Moderate",
-)
 DEFAULT_OUTPUT_PREFIX = (
     Path(__file__).resolve().parents[2] / "evaluation" / "evaluation_table"
 )
@@ -48,19 +45,9 @@ def metric_row(result: dict, path: Path, primary: dict, headers: tuple[str, ...]
     }
 
 
-def evaluation_rows(path: Path) -> tuple[dict, dict | None]:
-    result = json.loads(path.read_text(encoding="utf-8"))
-    accuracy = result["accuracy"]
-    bev = accuracy.get("bev", accuracy)
-    three_d = accuracy.get("3d")
-    return (
-        metric_row(result, path, bev, HEADERS),
-        metric_row(result, path, three_d, THREE_D_HEADERS) if three_d else None,
-    )
-
-
 def evaluation_row(path: Path) -> dict:
-    return evaluation_rows(path)[0]
+    result = json.loads(path.read_text(encoding="utf-8"))
+    return metric_row(result, path, result["accuracy"], HEADERS)
 
 
 def display(value, integer=False) -> str:
@@ -97,14 +84,9 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv=None):
     args = parser().parse_args(argv)
-    bev_rows, three_d_rows = [], []
-    for path in find_json_files(args.inputs):
-        bev, three_d = evaluation_rows(path)
-        bev_rows.append(bev)
-        if three_d:
-            three_d_rows.append(three_d)
+    rows = [evaluation_row(path) for path in find_json_files(args.inputs)]
 
-    markdown = markdown_table(bev_rows)
+    markdown = markdown_table(rows)
     markdown_path = args.output_prefix.with_suffix(".md")
     csv_path = args.output_prefix.with_suffix(".csv")
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
@@ -112,25 +94,10 @@ def main(argv=None):
     with csv_path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=HEADERS)
         writer.writeheader()
-        writer.writerows(bev_rows)
+        writer.writerows(rows)
     print(markdown, end="")
     print(f"Wrote {markdown_path.resolve()}")
     print(f"Wrote {csv_path.resolve()}")
-
-    if three_d_rows:
-        three_d_prefix = args.output_prefix.with_name(f"{args.output_prefix.name}_3d")
-        three_d_markdown = markdown_table(three_d_rows, THREE_D_HEADERS)
-        three_d_markdown_path = three_d_prefix.with_suffix(".md")
-        three_d_csv_path = three_d_prefix.with_suffix(".csv")
-        three_d_markdown_path.write_text(three_d_markdown, encoding="utf-8")
-        with three_d_csv_path.open("w", newline="", encoding="utf-8") as stream:
-            writer = csv.DictWriter(stream, fieldnames=THREE_D_HEADERS)
-            writer.writeheader()
-            writer.writerows(three_d_rows)
-        print(three_d_markdown, end="")
-        print(f"Wrote {three_d_markdown_path.resolve()}")
-        print(f"Wrote {three_d_csv_path.resolve()}")
-
 
 if __name__ == "__main__":
     main()
