@@ -27,6 +27,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn('BRANCH = "main"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
+        self.assertIn("model.scale_gated_fpn", source)
         config_files = {
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / "configs").rglob("*.json")
@@ -68,6 +69,8 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             self.assertEqual(c2psa[key], baseline[key], key)
         self.assertEqual(baseline["model"]["c5_attention"], "none")
         self.assertEqual(c2psa["model"]["c5_attention"], "c2psa")
+        self.assertIs(baseline["model"]["scale_gated_fpn"], False)
+        self.assertIs(c2psa["model"]["scale_gated_fpn"], False)
         self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
         self.assertEqual(c2psa["loss"]["name"], "baseline")
         self.assertEqual(c2psa["augmentation"]["p"], 0.5)

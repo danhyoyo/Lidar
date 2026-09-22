@@ -236,12 +236,14 @@ def main(argv=None) -> None:
 
     loss_name = config.get("loss", {}).get("name", "baseline")
     c5_attention = config["model"].get("c5_attention", "none")
+    scale_gated_fpn = config["model"].get("scale_gated_fpn", False)
     backbone_name = config["model"]["backbone"]
-    experiment_name = (
-        backbone_name
-        if c5_attention == "none"
-        else f"{backbone_name}_{c5_attention}"
-    )
+    experiment_parts = [backbone_name]
+    if c5_attention != "none":
+        experiment_parts.append(c5_attention)
+    if scale_gated_fpn:
+        experiment_parts.append("scale_gated_fpn")
+    experiment_name = "_".join(experiment_parts)
     default_name = (
         f"{experiment_name}_{loss_name}_{precision}_"
         f"seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -292,6 +294,7 @@ def main(argv=None) -> None:
     print(f"TensorBoard logs: {tensorboard_dir}")
     print(f"Epoch CSV: {csv_path}")
     print(f"Backbone={backbone_name}; C5 attention={c5_attention}; "
+          f"scale-gated FPN={scale_gated_fpn}; "
           f"loss={loss_name}; precision={precision}")
     print(f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
           f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "

@@ -1,11 +1,16 @@
 {
-  "generated_at": "2026-09-22T16:09:34.112450+00:00",
+  "generated_at": "2026-09-22T16:40:49.245296+00:00",
   "nodes": {
     "detector_core_datasets_dataset_dataset": {
       "code_fingerprint": "af17a8aa22ac36788805f2c8266152b3e50b56d25729da0528fb0291dccea106",
       "label": "Dataset",
-      "last": "2026-09-22T15:56:48.528030+00:00",
+      "last": "2026-09-22T16:12:37.981122+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:12:37.981122+00:00",
+          "outcome": "useful",
+          "q": "Clean up the b0_b1 to backbone_branch rename, confirm binary_slices means Legacy35, and add the missing BEV encoding fields to both configs without changing architecture."
+        },
         {
           "date": "2026-09-22T15:56:48.528030+00:00",
           "outcome": "useful",
@@ -22,16 +27,21 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.98295463,
+      "score": 3.981007048,
       "source_file": "detector/core/datasets/dataset.py",
       "status": "preferred",
-      "uses": 3
+      "uses": 4
     },
     "detector_core_datasets_utils_1_preprocess_encode_bev": {
       "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
       "label": "encode_bev()",
-      "last": "2026-09-22T15:56:48.528030+00:00",
+      "last": "2026-09-22T16:12:37.981122+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:12:37.981122+00:00",
+          "outcome": "useful",
+          "q": "Clean up the b0_b1 to backbone_branch rename, confirm binary_slices means Legacy35, and add the missing BEV encoding fields to both configs without changing architecture."
+        },
         {
           "date": "2026-09-22T15:56:48.528030+00:00",
           "outcome": "useful",
@@ -43,10 +53,10 @@
           "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
         }
       ],
-      "score": 1.990157082,
+      "score": 2.988707208,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "preferred",
-      "uses": 2
+      "uses": 3
     },
     "detector_core_datasets_utils_1_preprocess_voxelize": {
       "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
@@ -69,7 +79,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.979099486,
+      "score": 2.977606009,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "preferred",
       "uses": 3
@@ -95,7 +105,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.968674468,
+      "score": 2.967186217,
       "source_file": "detector/core/losses/loss_fn.py",
       "status": "preferred",
       "uses": 3
@@ -111,7 +121,7 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 0.991127547,
+      "score": 0.990630677,
       "source_file": "detector/core/models/heads/cnn.py",
       "status": "tentative",
       "uses": 1
@@ -119,8 +129,13 @@
     "detector_core_models_model_custommodel": {
       "code_fingerprint": "593218d420eca20bc42689a39cb9c3f1fd6127d4e04ff1a0e4f2825b470ac2dc",
       "label": "CustomModel",
-      "last": "2026-09-22T07:52:12.659349+00:00",
+      "last": "2026-09-22T16:35:23.147401+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:35:23.147401+00:00",
+          "outcome": "useful",
+          "q": "Is there a solid SG-FPN or similar implementation in the current codebase, and is it runnable?"
+        },
         {
           "date": "2026-09-22T07:52:12.659349+00:00",
           "outcome": "useful",
@@ -137,10 +152,10 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.972772977,
+      "score": 3.971195471,
       "source_file": "detector/core/models/model.py",
       "status": "preferred",
-      "uses": 3
+      "uses": 4
     },
     "detector_postprocess_filter_pred": {
       "code_fingerprint": "924c3f7c19dc6d93726ab2527bc65c608d0ae3774f4839da9fab997bed40affb",
@@ -153,7 +168,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.988942404,
+      "score": 0.988446629,
       "source_file": "detector/postprocess.py",
       "status": "tentative",
       "uses": 1
@@ -169,16 +184,53 @@
           "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
         }
       ],
-      "score": 0.99979529,
+      "score": 0.999294074,
       "source_file": "docs/mobile_bev_lightweight/SPEC.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "docs_mobile_bev_lightweight_spec_sg_fpn": {
+      "code_fingerprint": "9cfa402bb025413ccdd9508b5e980051b8422efb5ccc8aa0a767a5b8118be34c",
+      "label": "SG-FPN",
+      "last": "2026-09-22T16:35:23.147401+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T16:35:23.147401+00:00",
+          "outcome": "useful",
+          "q": "Is there a solid SG-FPN or similar implementation in the current codebase, and is it runnable?"
+        }
+      ],
+      "score": 0.999912799,
+      "source_file": "docs/mobile_bev_lightweight/SPEC.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "mermaid_diagram_c4_c3_fusion": {
+      "code_fingerprint": "9d1fa92a2166776bd63eb80b702bfbd6ef485e44aafc692549fd6d6fe977d3ef",
+      "label": "C4→C3 Fusion (Sum-FPN or SG-FPN Gate C3)",
+      "last": "2026-09-22T16:35:23.147401+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T16:35:23.147401+00:00",
+          "outcome": "useful",
+          "q": "Is there a solid SG-FPN or similar implementation in the current codebase, and is it runnable?"
+        }
+      ],
+      "score": 0.999912799,
+      "source_file": "mermaid-diagram.png",
       "status": "tentative",
       "uses": 1
     },
     "mermaid_diagram_c5_c4_fusion": {
       "code_fingerprint": "9d1fa92a2166776bd63eb80b702bfbd6ef485e44aafc692549fd6d6fe977d3ef",
       "label": "C5→C4 Fusion (Sum-FPN or SG-FPN Gate C4)",
-      "last": "2026-09-22T07:35:04.733402+00:00",
+      "last": "2026-09-22T16:35:23.147401+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:35:23.147401+00:00",
+          "outcome": "useful",
+          "q": "Is there a solid SG-FPN or similar implementation in the current codebase, and is it runnable?"
+        },
         {
           "date": "2026-09-22T07:35:04.733402+00:00",
           "outcome": "useful",
@@ -190,13 +242,13 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 1.982906502,
+      "score": 2.981825234,
       "source_file": "mermaid-diagram.png",
       "status": "preferred",
-      "uses": 2
+      "uses": 3
     },
     "readme_uwag_coordatt_training_recipe": {
-      "code_fingerprint": "dc55f879c9d8d15358060f76a82ef4b6e39026f7ed0ecd389d219f79d799add4",
+      "code_fingerprint": "7b3af6d91b53bb60910d95ac686b61ac1d92d973262826ed9836f8ee3517d37a",
       "label": "UWAG and Coordinate Attention Training Recipe",
       "last": "2026-09-22T05:03:31.839000+00:00",
       "provenance": [
@@ -206,7 +258,7 @@
           "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
         }
       ],
-      "score": 0.989370272,
+      "score": 0.988874283,
       "source_file": "README.md",
       "status": "tentative",
       "uses": 1
@@ -214,24 +266,50 @@
     "tests_test_mobile_bev": {
       "code_fingerprint": "875fd7b8645e7b780241ac74668a788785fe80066136fb059c380bdc8bbd6ce1",
       "label": "test_mobile_bev.py",
-      "last": "2026-09-22T15:56:48.528030+00:00",
+      "last": "2026-09-22T16:12:37.981122+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:12:37.981122+00:00",
+          "outcome": "useful",
+          "q": "Clean up the b0_b1 to backbone_branch rename, confirm binary_slices means Legacy35, and add the missing BEV encoding fields to both configs without changing architecture."
+        },
         {
           "date": "2026-09-22T15:56:48.528030+00:00",
           "outcome": "useful",
           "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
         }
       ],
-      "score": 0.99979529,
+      "score": 1.998841902,
+      "source_file": "tests/test_mobile_bev.py",
+      "status": "preferred",
+      "uses": 2
+    },
+    "tests_test_mobile_bev_check_gates": {
+      "code_fingerprint": "875fd7b8645e7b780241ac74668a788785fe80066136fb059c380bdc8bbd6ce1",
+      "label": "check_gates()",
+      "last": "2026-09-22T16:35:23.147401+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T16:35:23.147401+00:00",
+          "outcome": "useful",
+          "q": "Is there a solid SG-FPN or similar implementation in the current codebase, and is it runnable?"
+        }
+      ],
+      "score": 0.999912799,
       "source_file": "tests/test_mobile_bev.py",
       "status": "tentative",
       "uses": 1
     },
     "tests_test_standard_training_notebook": {
-      "code_fingerprint": "e19755be180a826ed13f4cfa816fc3781677895b6449ca6f26977104b2f3803a",
+      "code_fingerprint": "53b688fc992a6872e6f21db1d3be78456e1330bb90a10665533e54eeb581550e",
       "label": "test_standard_training_notebook.py",
-      "last": "2026-09-22T10:08:05.769647+00:00",
+      "last": "2026-09-22T16:12:37.981122+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:12:37.981122+00:00",
+          "outcome": "useful",
+          "q": "Clean up the b0_b1 to backbone_branch rename, confirm binary_slices means Legacy35, and add the missing BEV encoding fields to both configs without changing architecture."
+        },
         {
           "date": "2026-09-22T10:08:05.769647+00:00",
           "outcome": "useful",
@@ -248,10 +326,10 @@
           "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
         }
       ],
-      "score": 2.978047509,
+      "score": 3.976102387,
       "source_file": "tests/test_standard_training_notebook.py",
       "status": "preferred",
-      "uses": 3
+      "uses": 4
     },
     "tools_kitti_training_pipeline_common_build_model": {
       "code_fingerprint": "ac8e9d3cd895a4ddcace76c6baef34558cf652c4d38d44eb93b4ceda1fb38e7f",
@@ -269,7 +347,7 @@
           "q": "Add a notebook cell before training that prints the model architecture and differences compared with the baseline, without needing to print the model name."
         }
       ],
-      "score": 1.991846908,
+      "score": 1.990848359,
       "source_file": "tools/kitti_training_pipeline/common.py",
       "status": "preferred",
       "uses": 2
@@ -277,18 +355,23 @@
     "tools_kitti_training_pipeline_common_input_shape": {
       "code_fingerprint": "ac8e9d3cd895a4ddcace76c6baef34558cf652c4d38d44eb93b4ceda1fb38e7f",
       "label": "input_shape()",
-      "last": "2026-09-22T15:56:48.528030+00:00",
+      "last": "2026-09-22T16:12:37.981122+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T16:12:37.981122+00:00",
+          "outcome": "useful",
+          "q": "Clean up the b0_b1 to backbone_branch rename, confirm binary_slices means Legacy35, and add the missing BEV encoding fields to both configs without changing architecture."
+        },
         {
           "date": "2026-09-22T15:56:48.528030+00:00",
           "outcome": "useful",
           "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
         }
       ],
-      "score": 0.99979529,
+      "score": 1.998841902,
       "source_file": "tools/kitti_training_pipeline/common.py",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     }
   },
   "version": 1

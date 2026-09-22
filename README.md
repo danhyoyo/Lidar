@@ -1,4 +1,4 @@
-# MobilePIXOR baseline and switchable C2PSA
+# MobilePIXOR baseline with switchable C2PSA and scale-gated FPN
 
 This directory contains the preparation, training, evaluation, ONNX export and
 TensorRT utilities for the MobilePIXOR detector in `detector/core`.
@@ -45,10 +45,24 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
 
 Both configurations use Legacy35 input, the baseline loss, the same enabled
 augmentation policy, the same MobilePIXOR stages, and the same FPN and heads.
-The only experimental switch is `model.c5_attention`:
+The controlled B0/B1 comparison changes only `model.c5_attention`:
 
 - `none`: frozen B0 baseline.
 - `c2psa`: one C2PSA block after C5 and before the existing FPN lateral layer.
+
+The clean backbone also accepts the independent Boolean switch
+`model.scale_gated_fpn`. It is explicitly `false` in both committed B0/B1
+configs, so those definitions remain unchanged. When `true`, the two ordinary
+FPN sums become learnable, depthwise scale gates at C4 and C3. The gates are
+zero-initialized, so the model starts exactly as sum-FPN and adds 480 trainable
+parameters. For a controlled SG-FPN experiment, copy one config, change only
+this field, and select it in Colab through `CONFIG_OVERRIDE`.
+
+`SG-FPN` is this repository's shorthand for **scale-gated FPN**. Other papers
+use the same acronym for different architectures, so a paper should define the
+equation instead of implying that the acronym identifies a standard module.
+The implementation was ported from this repository's deprecated MobileBEV
+branch; do not present the port itself as a new contribution.
 
 Train B0:
 

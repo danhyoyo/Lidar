@@ -150,10 +150,7 @@ def load_torch_modules():
 
 
 def check_gates():
-    torch, _, _ = load_torch_modules()
-    from core.models.backbones.mobilepixor_coordinate_attention import (
-        MobilePixorBackBone as Backbone,
-    )
+    torch, Backbone, _ = load_torch_modules()
     torch.manual_seed(7)
     summed = Backbone(input_channels=8, scale_gated_fpn=False).eval()
     gated = Backbone(input_channels=8, scale_gated_fpn=True).eval()
@@ -169,6 +166,20 @@ def check_gates():
         expected = summed(sample)
         actual = gated(sample)
     torch.testing.assert_close(actual, expected, rtol=0, atol=1e-6)
+
+    train_sample = sample.clone().requires_grad_(True)
+    gated(train_sample).square().mean().backward()
+    for gate in (gated.gate_c4, gated.gate_c3):
+        assert gate.weight.grad is not None
+        assert torch.isfinite(gate.weight.grad).all()
+        assert torch.count_nonzero(gate.weight.grad)
+
+    try:
+        Backbone(input_channels=8, scale_gated_fpn="true")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("non-boolean scale_gated_fpn was accepted")
 
 
 def check_c2psa():
@@ -413,7 +424,7 @@ def main():
         ["shapes"] if args.shapes else
         ["gates"] if args.gates else
         ["c2psa"] if args.c2psa else
-        ["legacy", "shapes", "c2psa", "head", "targets", "decode",
+        ["legacy", "shapes", "gates", "c2psa", "head", "targets", "decode",
          "metrics", "training_guard"] if args.clean_backbone else
         ["head"] if args.head else
         ["targets"] if args.targets else

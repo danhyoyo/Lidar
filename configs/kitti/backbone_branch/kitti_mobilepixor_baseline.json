@@ -59,7 +59,8 @@
     "backbone": "mobilepixor",
     "backbone_out_dim": 16,
     "c5_attention": "none",
-    "cls_encoding": "gaussian"
+    "cls_encoding": "gaussian",
+    "scale_gated_fpn": false
   },
   "multi_gpu": false,
   "note": "kitti_mobilepixor_baseline_aug_bf16",

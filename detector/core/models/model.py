@@ -16,6 +16,7 @@ class CustomModel(nn.Module):
                 c2psa_repeats=c2psa.get("repeats", 1),
                 c2psa_expansion=c2psa.get("expansion", 0.5),
                 c2psa_attn_ratio=c2psa.get("attn_ratio", 0.5),
+                scale_gated_fpn=cfg.get("scale_gated_fpn", False),
             )
         elif cfg["backbone"] == "mobilepixor_coordatt":
             from core.models.backbones.mobilepixor_coordinate_attention import (
