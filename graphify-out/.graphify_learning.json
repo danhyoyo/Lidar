@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-09-22T06:50:16.782426+00:00",
+  "nodes": {
+    "detector_core_datasets_dataset_dataset": {
+      "code_fingerprint": "af17a8aa22ac36788805f2c8266152b3e50b56d25729da0528fb0291dccea106",
+      "label": "Dataset",
+      "last": "2026-09-22T04:36:34.301310+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T04:36:34.301310+00:00",
+          "outcome": "useful",
+          "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
+        }
+      ],
+      "score": 0.997856945,
+      "source_file": "detector/core/datasets/dataset.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "detector_core_datasets_utils_1_preprocess_encode_bev": {
+      "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
+      "label": "encode_bev()",
+      "last": "2026-09-22T06:05:57.552622+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T06:05:57.552622+00:00",
+          "outcome": "useful",
+          "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
+        }
+      ],
+      "score": 0.999289127,
+      "source_file": "detector/core/datasets/utils_1/preprocess.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "detector_core_datasets_utils_1_preprocess_voxelize": {
+      "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
+      "label": "voxelize()",
+      "last": "2026-09-22T06:05:57.552622+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T06:05:57.552622+00:00",
+          "outcome": "useful",
+          "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
+        },
+        {
+          "date": "2026-09-22T04:36:34.301310+00:00",
+          "outcome": "useful",
+          "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
+        }
+      ],
+      "score": 1.997146072,
+      "source_file": "detector/core/datasets/utils_1/preprocess.py",
+      "status": "preferred",
+      "uses": 2
+    },
+    "detector_core_losses_loss_fn_lossfunction": {
+      "code_fingerprint": "3d0232e84d04a7c2bfb2095d0d226ff5877fc9745f36a9fec6bb2936af22b895",
+      "label": "LossFunction",
+      "last": "2026-09-22T06:05:57.552622+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T06:05:57.552622+00:00",
+          "outcome": "useful",
+          "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
+        },
+        {
+          "date": "2026-09-22T05:03:31.839000+00:00",
+          "outcome": "useful",
+          "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
+        },
+        {
+          "date": "2026-09-22T04:36:34.301310+00:00",
+          "outcome": "useful",
+          "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
+        }
+      ],
+      "score": 2.995434741,
+      "source_file": "detector/core/losses/loss_fn.py",
+      "status": "preferred",
+      "uses": 3
+    },
+    "detector_core_models_model_custommodel": {
+      "code_fingerprint": "42936c1407599bb3726242060324256be4619da6158c85d712addc1d2852a704",
+      "label": "CustomModel",
+      "last": "2026-09-22T04:36:34.301310+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T04:36:34.301310+00:00",
+          "outcome": "useful",
+          "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
+        }
+      ],
+      "score": 0.997856945,
+      "source_file": "detector/core/models/model.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "detector_postprocess_filter_pred": {
+      "code_fingerprint": "924c3f7c19dc6d93726ab2527bc65c608d0ae3774f4839da9fab997bed40affb",
+      "label": "filter_pred()",
+      "last": "2026-09-22T04:36:34.301310+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T04:36:34.301310+00:00",
+          "outcome": "useful",
+          "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
+        }
+      ],
+      "score": 0.997856945,
+      "source_file": "detector/postprocess.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "readme_uwag_coordatt_training_recipe": {
+      "code_fingerprint": "084f06f067ab0288c13206522ceb04c2dbd43d60925dda47d7afad31f4f83cdb",
+      "label": "UWAG and Coordinate Attention Training Recipe",
+      "last": "2026-09-22T05:03:31.839000+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T05:03:31.839000+00:00",
+          "outcome": "useful",
+          "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
+        }
+      ],
+      "score": 0.99828867,
+      "source_file": "README.md",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}
