@@ -1,4 +1,4 @@
-# Reproduce UWAG + CoordAtt + geometric augmentation
+# MobilePIXOR baseline and switchable C2PSA
 
 This directory contains the preparation, training, evaluation, ONNX export and
 TensorRT utilities for the MobilePIXOR detector in `detector/core`.
@@ -41,83 +41,89 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
   --val-ids splits/kitti/val.txt
 ```
 
-## Train
+## Controlled backbone experiment
+
+Both configurations use Legacy35 input, the baseline loss, disabled data
+augmentation, the same MobilePIXOR stages, and the same FPN and heads. The only
+experimental switch is `model.c5_attention`:
+
+- `none`: frozen B0 baseline.
+- `c2psa`: one C2PSA block after C5 and before the existing FPN lateral layer.
+
+Train B0:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/kitti_uwag_coordatt_aug.json \
+  --config configs/kitti/kitti_mobilepixor_baseline.json \
   --detector-root detector \
   --output-root artifacts/kitti \
-  --run-name uwag_coordatt_aug_bf16_seed42 \
+  --run-name b0_seed42 \
   --num-workers 2
 ```
 
-The config uses MobilePIXOR with Coordinate Attention, UWAG task weighting,
-adaptive Gaussian targets and one geometric transform with probability 0.5:
-rotation +/-20 degrees, scaling 0.95-1.05, or Gaussian translation scale 0.4.
-Optimization uses Adam, learning rate 3e-4, weight decay 5e-4, 100 epochs,
-physical batch 2, accumulation 2, BF16 and seed 42.
+Train the controlled C2PSA variant:
 
-Resume with `--resume /path/to/checkpoint.pt`. The reproduced run became
-non-finite at epoch 81, so its selected evaluation checkpoint is epoch 55.
+```bash
+python3 tools/kitti_training_pipeline/train.py \
+  --config configs/kitti/kitti_mobilepixor_c2psa.json \
+  --detector-root detector \
+  --output-root artifacts/kitti \
+  --run-name b1_c2psa_seed42 \
+  --num-workers 2
+```
+
+Use the same precision, seed, batch size, epoch count, split, and evaluation
+settings for both runs. Resume with `--resume /path/to/checkpoint.pt`. Training
+keeps the minimum-validation-loss checkpoint in `<run>/selected/best.pt`.
+
+## Google Colab
+
+Open `3D_Lidar_Object_Detection_Notebook_standard.ipynb` and change only
+`VARIANT` in the Configuration cell:
+
+- `B0` selects the pure baseline configuration.
+- `B1_C2PSA` selects the post-C5 C2PSA configuration.
+
+The notebook automatically uses BF16 on supported GPUs and FP16 otherwise. It
+records the branch, commit, config hash and effective training settings before
+resuming a run. The older thesis-derived and MobileBEV configs remain in the
+repository for provenance but are not selectable from this notebook.
+
+## Verify
+
+Run the thesis-clean backbone contract before training:
+
+```bash
+python3 tests/test_mobile_bev.py --clean-backbone
+```
 
 ## Evaluate
 
 ```bash
 python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
-  --name uwag_coordatt_aug_bf16_seed42_best \
+  --name b1_c2psa_seed42_validation \
   --backend pytorch \
-  --model /path/to/best.pt \
-  --config configs/kitti/kitti_uwag_coordatt_aug.json \
+  --model artifacts/kitti/b1_c2psa_seed42/selected/best.pt \
+  --config configs/kitti/kitti_mobilepixor_c2psa.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \
-  --output artifacts/kitti/evaluation_best_val.json \
+  --output artifacts/kitti/b1_c2psa_seed42/evaluation_validation.json \
   --device cuda
 ```
 
-PyTorch evaluation also supports `--device cpu` for functional checks, although
-CPU and CUDA latency numbers should not be compared directly.
-
 This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
-submission to KITTI's hidden official test server. The reproduced report is in
-`results/kitti/uwag_coordatt_aug_bf16_seed42/`.
+submission to KITTI's hidden official test server. PyTorch evaluation supports
+`--device cpu` for functional checks, but CPU and CUDA latency measurements
+should not be compared directly.
 
-Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
-`deploy_engine.py` for deployment experiments. TensorRT engines are tied to
-the local CUDA/TensorRT/GPU environment and should not be committed.
+## C2PSA attribution
 
-## MobileBEV-Lite
+The local module implements the published C2PSA structure without requiring the
+`ultralytics` package. C2PSA was introduced in YOLO11 and retained in YOLO26.
+For a paper, cite the applicable Ultralytics model paper/documentation and the
+official module definition:
 
-The frozen design and experiment protocol are in
-`docs/mobile_bev_lightweight/SPEC.md` and `docs/mobile_bev_lightweight/PLAN.md`.
-The four controlled BEV variants are under `configs/kitti/mobilebev/`; A1 is
-the 35-channel baseline and A4 enables RichBEV-8 plus SG-FPN.
-
-Run the dependency-free encoder checks with system Python and the full model
-checks with the environment that contains PyTorch and Shapely:
-
-```bash
-python3 tests/test_mobile_bev.py --encoder
-python3 tests/test_mobile_bev.py
-```
-
-Smoke-train A4 after preparing KITTI:
-
-```bash
-python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/mobilebev/a4_rich8_sgfpn_bev.json \
-  --detector-root detector \
-  --output-root artifacts/kitti \
-  --run-name mobilebev_a4_smoke_seed42 \
-  --epochs 1 --max-train-batches 8 --max-val-batches 4 --num-workers 2
-```
-
-For a full run, omit the three smoke limits. Training keeps the checkpoint
-with the minimum validation loss in `<run>/selected/best.pt`.
-
-Use `--seed 42`, `--seed 43` and `--seed 44` with each A1-A4 config for the
-final twelve runs; the resolved seed is stored in each run config/checkpoint.
-
-The evaluator writes BEV AP R40, distance bands for Pedestrian/Cyclist,
-input/config/split hashes, and compressed per-frame predictions.
+- https://docs.ultralytics.com/guides/yolo-architecture/
+- https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/block.py
+- https://arxiv.org/abs/2606.03748

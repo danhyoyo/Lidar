@@ -164,15 +164,177 @@ class InvertedResidual(nn.Module):
         else:
             return self.conv(x)
 
+
+class C2PSAAttention(nn.Module):
+    """Global position-sensitive attention used inside :class:`C2PSA`.
+
+    This is a local, dependency-free implementation of the C2PSA attention
+    equations used by modern Ultralytics YOLO models. It operates on a BEV
+    feature map and preserves its channel count and spatial resolution.
+    """
+
+    def __init__(self, channels: int, num_heads: int = 1, attn_ratio: float = 0.5):
+        super().__init__()
+        if channels < 1 or num_heads < 1 or channels % num_heads:
+            raise ValueError("channels must be positive and divisible by num_heads")
+        if not 0.0 < attn_ratio <= 1.0:
+            raise ValueError("attn_ratio must be in (0, 1]")
+
+        self.num_heads = num_heads
+        self.head_dim = channels // num_heads
+        self.key_dim = max(1, int(self.head_dim * attn_ratio))
+        self.scale = self.key_dim ** -0.5
+        key_channels = self.key_dim * num_heads
+
+        self.qkv = Conv2dNormActivation(
+            channels,
+            channels + 2 * key_channels,
+            kernel_size=1,
+            activation_layer=None,
+        )
+        self.proj = Conv2dNormActivation(
+            channels, channels, kernel_size=1, activation_layer=None
+        )
+        self.position = Conv2dNormActivation(
+            channels,
+            channels,
+            kernel_size=3,
+            groups=channels,
+            activation_layer=None,
+        )
+
+    def forward(self, x: Tensor) -> Tensor:
+        batch, channels, height, width = x.shape
+        tokens = height * width
+        qkv = self.qkv(x).reshape(
+            batch,
+            self.num_heads,
+            2 * self.key_dim + self.head_dim,
+            tokens,
+        )
+        query, key, value = qkv.split(
+            (self.key_dim, self.key_dim, self.head_dim), dim=2
+        )
+        weights = torch.matmul(query.transpose(-2, -1), key) * self.scale
+        weights = weights.softmax(dim=-1)
+        attended = torch.matmul(value, weights.transpose(-2, -1)).reshape(
+            batch, channels, height, width
+        )
+        value_map = value.reshape(batch, channels, height, width)
+        return self.proj(attended + self.position(value_map))
+
+
+class C2PSABlock(nn.Module):
+    """One residual attention and point-wise feed-forward block."""
+
+    def __init__(self, channels: int, num_heads: int, attn_ratio: float):
+        super().__init__()
+        self.attention = C2PSAAttention(channels, num_heads, attn_ratio)
+        self.feed_forward = nn.Sequential(
+            Conv2dNormActivation(
+                channels,
+                2 * channels,
+                kernel_size=1,
+                activation_layer=nn.SiLU,
+            ),
+            Conv2dNormActivation(
+                2 * channels,
+                channels,
+                kernel_size=1,
+                activation_layer=None,
+            ),
+        )
+
+    def forward(self, x: Tensor) -> Tensor:
+        x = x + self.attention(x)
+        return x + self.feed_forward(x)
+
+
+class C2PSA(nn.Module):
+    """Cross-stage partial position-sensitive attention for C5 BEV features."""
+
+    def __init__(
+        self,
+        channels: int,
+        repeats: int = 1,
+        expansion: float = 0.5,
+        attn_ratio: float = 0.5,
+    ) -> None:
+        super().__init__()
+        if repeats < 1:
+            raise ValueError("C2PSA repeats must be positive")
+        if not 0.0 < expansion <= 1.0:
+            raise ValueError("C2PSA expansion must be in (0, 1]")
+
+        hidden_channels = int(channels * expansion)
+        if hidden_channels < 1:
+            raise ValueError("C2PSA expansion produced zero hidden channels")
+        num_heads = max(hidden_channels // 64, 1)
+        if hidden_channels % num_heads:
+            raise ValueError("C2PSA hidden channels must be divisible by num_heads")
+
+        self.hidden_channels = hidden_channels
+        self.input_projection = Conv2dNormActivation(
+            channels,
+            2 * hidden_channels,
+            kernel_size=1,
+            activation_layer=nn.SiLU,
+        )
+        self.blocks = nn.Sequential(
+            *(
+                C2PSABlock(hidden_channels, num_heads, attn_ratio)
+                for _ in range(repeats)
+            )
+        )
+        self.output_projection = Conv2dNormActivation(
+            2 * hidden_channels,
+            channels,
+            kernel_size=1,
+            activation_layer=nn.SiLU,
+        )
+
+    def forward(self, x: Tensor) -> Tensor:
+        bypass, attended = self.input_projection(x).split(
+            (self.hidden_channels, self.hidden_channels), dim=1
+        )
+        attended = self.blocks(attended)
+        return self.output_projection(torch.cat((bypass, attended), dim=1))
+
+
 class MobilePixorBackBone(nn.Module):
 
-    def __init__(self, block = InvertedResidual, use_bn=True):
+    def __init__(
+        self,
+        block=InvertedResidual,
+        use_bn=True,
+        input_channels=35,
+        c5_attention="none",
+        c2psa_repeats=1,
+        c2psa_expansion=0.5,
+        c2psa_attn_ratio=0.5,
+    ):
         super(MobilePixorBackBone, self).__init__()
 
         self.use_bn = use_bn
 
+        attention_name = str(c5_attention).lower()
+        if attention_name == "none":
+            self.c5_attention = nn.Identity()
+        elif attention_name == "c2psa":
+            self.c5_attention = C2PSA(
+                96,
+                repeats=int(c2psa_repeats),
+                expansion=float(c2psa_expansion),
+                attn_ratio=float(c2psa_attn_ratio),
+            )
+        else:
+            raise ValueError(
+                f"Unsupported C5 attention {c5_attention!r}; expected 'none' or 'c2psa'"
+            )
+        self.c5_attention_name = attention_name
+
         # Block 1
-        self.conv1 = conv3x3(35, 32)
+        self.conv1 = conv3x3(input_channels, 32)
         self.conv2 = conv3x3(32, 32)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(32)
@@ -218,6 +380,7 @@ class MobilePixorBackBone(nn.Module):
         c3 = self.block3(c2)
         c4 = self.block4(c3)
         c5 = self.block5(c4)
+        c5 = self.c5_attention(c5)
 
         l5 = self.latlayer1(c5)
         l4 = self.latlayer2(c4)

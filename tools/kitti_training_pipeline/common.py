@@ -56,11 +56,8 @@ def validate_backbone(config: Dict[str, Any]) -> None:
     backbone = config["model"]["backbone"]
     if backbone not in SUPPORTED_BACKBONES:
         raise ValueError(
-            f"Backbone {backbone!r} is not implemented by the current "
-            "core/models/model.py. The thesis config names "
-            "'mobilepixor_triplet', but that implementation is absent from this "
-            "checkout. Use 'mobilepixor' for the runnable baseline or restore the "
-            "matching backbone source before training."
+            f"Unsupported backbone {backbone!r}; expected one of "
+            f"{sorted(SUPPORTED_BACKBONES)}"
         )
 
 

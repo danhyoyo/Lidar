@@ -215,8 +215,15 @@ def main(argv=None) -> None:
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
 
     loss_name = config.get("loss", {}).get("name", "baseline")
+    c5_attention = config["model"].get("c5_attention", "none")
+    backbone_name = config["model"]["backbone"]
+    experiment_name = (
+        backbone_name
+        if c5_attention == "none"
+        else f"{backbone_name}_{c5_attention}"
+    )
     default_name = (
-        f"{config['model']['backbone']}_{loss_name}_{precision}_"
+        f"{experiment_name}_{loss_name}_{precision}_"
         f"seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     )
     run_dir = args.output_root.expanduser().resolve() / (args.run_name or default_name)
@@ -251,8 +258,8 @@ def main(argv=None) -> None:
 
     log_path = run_dir / "metrics.jsonl"
     print(f"Run directory: {run_dir}")
-    print(f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-          f"precision={precision}")
+    print(f"Backbone={backbone_name}; C5 attention={c5_attention}; "
+          f"loss={loss_name}; precision={precision}")
     print(f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
           f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
           f"effective batch={physical_batch_size * accumulation_steps}")

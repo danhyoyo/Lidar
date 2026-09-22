@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T06:50:16.782426+00:00",
+  "generated_at": "2026-09-22T07:49:24.133352+00:00",
   "nodes": {
     "detector_core_datasets_dataset_dataset": {
       "code_fingerprint": "af17a8aa22ac36788805f2c8266152b3e50b56d25729da0528fb0291dccea106",
@@ -12,7 +12,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.997856945,
+      "score": 0.996910801,
       "source_file": "detector/core/datasets/dataset.py",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
         }
       ],
-      "score": 0.999289127,
+      "score": 0.998341626,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "tentative",
       "uses": 1
@@ -49,7 +49,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 1.997146072,
+      "score": 1.995252427,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "preferred",
       "uses": 2
@@ -75,26 +75,47 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.995434741,
+      "score": 2.992594544,
       "source_file": "detector/core/losses/loss_fn.py",
       "status": "preferred",
       "uses": 3
     },
-    "detector_core_models_model_custommodel": {
-      "code_fingerprint": "42936c1407599bb3726242060324256be4619da6158c85d712addc1d2852a704",
-      "label": "CustomModel",
-      "last": "2026-09-22T04:36:34.301310+00:00",
+    "detector_core_models_heads_cnn_head": {
+      "code_fingerprint": "e905b57b7d6ad67cf4657a9be772689d7d98d8232300dc1dbdd45fc264ea786d",
+      "label": "Head",
+      "last": "2026-09-22T06:54:07.817792+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T06:54:07.817792+00:00",
+          "outcome": "useful",
+          "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
+        }
+      ],
+      "score": 0.999113551,
+      "source_file": "detector/core/models/heads/cnn.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "detector_core_models_model_custommodel": {
+      "code_fingerprint": "593218d420eca20bc42689a39cb9c3f1fd6127d4e04ff1a0e4f2825b470ac2dc",
+      "label": "CustomModel",
+      "last": "2026-09-22T07:35:04.733402+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T07:35:04.733402+00:00",
+          "outcome": "useful",
+          "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
+        },
         {
           "date": "2026-09-22T04:36:34.301310+00:00",
           "outcome": "useful",
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.997856945,
+      "score": 1.996681009,
       "source_file": "detector/core/models/model.py",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "detector_postprocess_filter_pred": {
       "code_fingerprint": "924c3f7c19dc6d93726ab2527bc65c608d0ae3774f4839da9fab997bed40affb",
@@ -107,13 +128,34 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.997856945,
+      "score": 0.996910801,
       "source_file": "detector/postprocess.py",
       "status": "tentative",
       "uses": 1
     },
+    "mermaid_diagram_c5_c4_fusion": {
+      "code_fingerprint": "9d1fa92a2166776bd63eb80b702bfbd6ef485e44aafc692549fd6d6fe977d3ef",
+      "label": "C5→C4 Fusion (Sum-FPN or SG-FPN Gate C4)",
+      "last": "2026-09-22T07:35:04.733402+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T07:35:04.733402+00:00",
+          "outcome": "useful",
+          "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
+        },
+        {
+          "date": "2026-09-22T06:54:07.817792+00:00",
+          "outcome": "useful",
+          "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
+        }
+      ],
+      "score": 1.998883758,
+      "source_file": "mermaid-diagram.png",
+      "status": "preferred",
+      "uses": 2
+    },
     "readme_uwag_coordatt_training_recipe": {
-      "code_fingerprint": "084f06f067ab0288c13206522ceb04c2dbd43d60925dda47d7afad31f4f83cdb",
+      "code_fingerprint": "348dc8ec3c651394ac5eb9deac23d2d90245f57f56ea8aeca831105fad41bee3",
       "label": "UWAG and Coordinate Attention Training Recipe",
       "last": "2026-09-22T05:03:31.839000+00:00",
       "provenance": [
@@ -123,8 +165,24 @@
           "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
         }
       ],
-      "score": 0.99828867,
+      "score": 0.997342117,
       "source_file": "README.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "tests_test_standard_training_notebook": {
+      "code_fingerprint": "204dbd32164f34bbd65f3db43cf4d33b5cbfdf1149324983c3bb1da3714a76fb",
+      "label": "test_standard_training_notebook.py",
+      "last": "2026-09-22T07:35:04.733402+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T07:35:04.733402+00:00",
+          "outcome": "useful",
+          "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
+        }
+      ],
+      "score": 0.999770207,
+      "source_file": "tests/test_standard_training_notebook.py",
       "status": "tentative",
       "uses": 1
     }

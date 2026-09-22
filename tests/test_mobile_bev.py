@@ -144,13 +144,16 @@ def load_torch_modules():
 
     sys.path.insert(0, str(DATASETS))
     sys.path.insert(0, str(ROOT / "detector"))
-    from core.models.backbones.mobilepixor_coordinate_attention import MobilePixorBackBone
+    from core.models.backbones.mobilepixor import MobilePixorBackBone
     from core.models.heads.cnn import Header
     return torch, MobilePixorBackBone, Header
 
 
 def check_gates():
-    torch, Backbone, _ = load_torch_modules()
+    torch, _, _ = load_torch_modules()
+    from core.models.backbones.mobilepixor_coordinate_attention import (
+        MobilePixorBackBone as Backbone,
+    )
     torch.manual_seed(7)
     summed = Backbone(input_channels=8, scale_gated_fpn=False).eval()
     gated = Backbone(input_channels=8, scale_gated_fpn=True).eval()
@@ -166,6 +169,49 @@ def check_gates():
         expected = summed(sample)
         actual = gated(sample)
     torch.testing.assert_close(actual, expected, rtol=0, atol=1e-6)
+
+
+def check_c2psa():
+    import torch
+
+    sys.path.insert(0, str(ROOT / "detector"))
+    from core.models.backbones.mobilepixor import C2PSA, MobilePixorBackBone
+
+    torch.manual_seed(7)
+    attention = C2PSA(96, repeats=1, expansion=0.5).eval()
+    c5 = torch.randn(2, 96, 10, 11, requires_grad=True)
+    attended = attention(c5)
+    assert attended.shape == c5.shape
+    attended.mean().backward()
+    assert c5.grad is not None and torch.isfinite(c5.grad).all()
+
+    baseline = MobilePixorBackBone(
+        input_channels=35, c5_attention="none"
+    ).eval()
+    variant = MobilePixorBackBone(
+        input_channels=35, c5_attention="c2psa"
+    ).eval()
+    missing, unexpected = variant.load_state_dict(
+        baseline.state_dict(), strict=False
+    )
+    assert not unexpected
+    assert missing and all(key.startswith("c5_attention.") for key in missing)
+    assert sum(p.numel() for p in variant.parameters()) > sum(
+        p.numel() for p in baseline.parameters()
+    )
+
+    sample = torch.randn(1, 35, 64, 64)
+    with torch.no_grad():
+        baseline_output = baseline(sample)
+        variant_output = variant(sample)
+    assert baseline_output.shape == variant_output.shape == (1, 16, 16, 16)
+
+    try:
+        MobilePixorBackBone(c5_attention="unknown")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown C5 attention mode was accepted")
 
 
 def check_head():
@@ -336,6 +382,7 @@ CHECKS = {
     "encoder": check_encoder,
     "shapes": check_shapes,
     "gates": check_gates,
+    "c2psa": check_c2psa,
     "head": check_head,
     "targets": check_targets,
     "loss": check_loss,
@@ -351,6 +398,8 @@ def main():
     parser.add_argument("--encoder", action="store_true")
     parser.add_argument("--shapes", action="store_true")
     parser.add_argument("--gates", action="store_true")
+    parser.add_argument("--c2psa", action="store_true")
+    parser.add_argument("--clean-backbone", action="store_true")
     parser.add_argument("--head", action="store_true")
     parser.add_argument("--targets", action="store_true")
     parser.add_argument("--loss", action="store_true")
@@ -363,6 +412,9 @@ def main():
         ["encoder"] if args.encoder else
         ["shapes"] if args.shapes else
         ["gates"] if args.gates else
+        ["c2psa"] if args.c2psa else
+        ["legacy", "shapes", "c2psa", "head", "targets", "decode",
+         "metrics", "training_guard"] if args.clean_backbone else
         ["head"] if args.head else
         ["targets"] if args.targets else
         ["loss"] if args.loss else

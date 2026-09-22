@@ -18,7 +18,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         }
         self.assertEqual(notebooks, expected)
 
-    def test_supports_all_registered_variants_and_safe_resume(self):
+    def test_supports_clean_backbone_variants_and_safe_resume(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
         source = "\n".join(
             "".join(cell.get("source", [])) for cell in notebook["cells"]
@@ -31,10 +31,15 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / "configs").rglob("*.json")
         }
-        for variant in (f"A{i}" for i in range(5)):
+        for variant in ("B0", "B1_C2PSA"):
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
             self.assertIn(match.group(1), config_files)
+        self.assertIn('VARIANT = "B0"', source)
+        self.assertIn('PRECISION = "auto"', source)
+        self.assertIn("--clean-backbone", source)
+        self.assertNotIn("kitti_uwag_coordatt_aug.json", source)
+        self.assertNotIn("configs/kitti/mobilebev/", source)
         self.assertIn("run.json", source)
         self.assertIn("--resume", source)
         self.assertIn("last.pt", source)
@@ -42,6 +47,48 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertNotIn("import subprocess", source)
         self.assertNotIn("subprocess.", source)
         self.assertIn("!set -o pipefail", source)
+
+    def test_c2psa_config_changes_only_the_backbone_attention(self):
+        baseline = json.loads(
+            (ROOT / "configs/kitti/kitti_mobilepixor_baseline.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        c2psa = json.loads(
+            (ROOT / "configs/kitti/kitti_mobilepixor_c2psa.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for key in set(baseline) - {"model", "note"}:
+            self.assertEqual(c2psa[key], baseline[key], key)
+        self.assertEqual(baseline["model"]["c5_attention"], "none")
+        self.assertEqual(c2psa["model"]["c5_attention"], "c2psa")
+        self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
+        self.assertEqual(c2psa["loss"]["name"], "baseline")
+        self.assertEqual(c2psa["augmentation"]["p"], 0.0)
+
+    def test_architecture_comparison_runs_before_training(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        cells = notebook["cells"]
+        architecture_index = next(
+            index
+            for index, cell in enumerate(cells)
+            if "Selected architecture:" in "".join(cell.get("source", []))
+        )
+        smoke_index = next(
+            index
+            for index, cell in enumerate(cells)
+            if "## Smoke test" in "".join(cell.get("source", []))
+        )
+        source = "".join(cells[architecture_index]["source"])
+
+        self.assertLess(architecture_index, smoke_index)
+        self.assertIn("print(selected_model)", source)
+        self.assertIn("Differences from baseline:", source)
+        self.assertIn("kitti_mobilepixor_baseline.json", source)
+        self.assertIn("trainable_parameter_count", source)
+        self.assertIn("del baseline_model, selected_model", source)
+        compile(source, str(NOTEBOOK), "exec")
 
     def test_trainer_writes_a_last_checkpoint_every_epoch(self):
         source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(
