@@ -60,6 +60,12 @@ physical batch 2, accumulation 2, BF16 and seed 42.
 
 Resume with `--resume /path/to/checkpoint.pt`. The reproduced run became
 non-finite at epoch 81, so its selected evaluation checkpoint is epoch 55.
+Each completed epoch is also appended to `<run>/metrics.csv`, and TensorBoard
+event files are written to `<run>/tensorboard`. View a run with:
+
+```bash
+tensorboard --logdir artifacts/kitti/uwag_coordatt_aug_bf16_seed42/tensorboard
+```
 
 ## Evaluate
 

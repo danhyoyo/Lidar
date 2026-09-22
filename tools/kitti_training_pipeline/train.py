@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import random
@@ -21,6 +22,25 @@ from torch.utils.data import DataLoader
 from common import (atomic_torch_save, build_model, configure_detector_imports,
                     git_metadata, normalize_state_dict, read_json, sha256,
                     write_json)
+
+
+def append_csv_row(path: Path, row: Dict[str, Any]) -> None:
+    """Append one epoch to a CSV file, preserving the run's column schema."""
+    fieldnames = list(row)
+    if path.exists() and path.stat().st_size:
+        with path.open("r", newline="", encoding="utf-8") as stream:
+            existing_fieldnames = next(csv.reader(stream), [])
+        if existing_fieldnames != fieldnames:
+            raise RuntimeError(
+                f"CSV columns in {path} do not match this run. "
+                "Resume into the original run directory or choose a new run name."
+            )
+    write_header = not path.exists() or path.stat().st_size == 0
+    with path.open("a", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fieldnames)
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def seed_everything(seed: int) -> None:
@@ -677,8 +697,20 @@ def main(argv=None) -> None:
         )
         print(f"Resumed from epoch {start_epoch}: {resume_path}")
 
+    try:
+        from torch.utils.tensorboard import SummaryWriter
+    except ImportError as exc:
+        raise RuntimeError(
+            "TensorBoard is required for training logs. Install dependencies with "
+            "`python -m pip install -r requirements-kitti.txt`."
+        ) from exc
+    tensorboard_dir = run_dir / "tensorboard"
+    writer = SummaryWriter(log_dir=str(tensorboard_dir), purge_step=start_epoch + 1)
     log_path = run_dir / "metrics.jsonl"
+    csv_path = run_dir / "metrics.csv"
     print(f"Run directory: {run_dir}")
+    print(f"TensorBoard logs: {tensorboard_dir}")
+    print(f"Epoch CSV: {csv_path}")
     print(f"Backbone={config['model']['backbone']}; loss={loss_name}; "
           f"precision={precision}")
     print(f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
@@ -883,10 +915,37 @@ def main(argv=None) -> None:
             row["yaw_fallback_count"] = diagnostic_counts.get("yaw_fallback_count", 0)
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
+        csv_row = {
+            "epoch": epoch,
+            "learning_rate": optimizer.param_groups[0]["lr"],
+            **{f"train_{name}": value for name, value in sorted(train_components.items())},
+            **{f"val_{name}": value for name, value in sorted(validation.items())},
+            "training_seconds": training_seconds,
+            "optimizer_update_attempts": epoch_attempts,
+            "global_update_attempts": global_update_attempts,
+            "successful_updates": successful_updates,
+            "skipped_updates": skipped_updates,
+            "best_validation_objective": best_val,
+            "retained": retained,
+        }
+        append_csv_row(csv_path, csv_row)
+        for name, value in train_components.items():
+            writer.add_scalar(f"train/{name}", value, epoch)
+        for name, value in validation.items():
+            scalar = float(value)
+            if math.isfinite(scalar):
+                writer.add_scalar(f"validation/{name}", scalar, epoch)
+        writer.add_scalar("train/learning_rate", optimizer.param_groups[0]["lr"], epoch)
+        writer.add_scalar("train/optimizer_update_attempts", epoch_attempts, epoch)
+        writer.add_scalar("train/successful_updates", successful_updates, epoch)
+        writer.add_scalar("train/skipped_updates", skipped_updates, epoch)
+        writer.add_scalar("checkpoint/best_validation_objective", best_val, epoch)
+        writer.flush()
         print(f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
               f"val={current_val:.6f} retained={retained} "
               f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
 
+    writer.close()
     print(f"Selected checkpoint: {loss_selection_dir / selected_filename}")
     print(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
