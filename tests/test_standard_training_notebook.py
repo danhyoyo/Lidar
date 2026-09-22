@@ -35,7 +35,10 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
             self.assertIn(match.group(1), config_files)
-        self.assertIn('VARIANT = "B0"', source)
+        selected_variant = re.search(
+            r'^VARIANT = "(B0|B1_C2PSA)"', source, flags=re.MULTILINE
+        )
+        self.assertIsNotNone(selected_variant)
         self.assertIn('PRECISION = "auto"', source)
         self.assertIn("--clean-backbone", source)
         self.assertNotIn("kitti_uwag_coordatt_aug.json", source)
@@ -50,14 +53,16 @@ class StandardTrainingNotebookTests(unittest.TestCase):
 
     def test_c2psa_config_changes_only_the_backbone_attention(self):
         baseline = json.loads(
-            (ROOT / "configs/kitti/b0_b1/kitti_mobilepixor_baseline.json").read_text(
-                encoding="utf-8"
-            )
+            (
+                ROOT
+                / "configs/kitti/backbone_branch/kitti_mobilepixor_baseline.json"
+            ).read_text(encoding="utf-8")
         )
         c2psa = json.loads(
-            (ROOT / "configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json").read_text(
-                encoding="utf-8"
-            )
+            (
+                ROOT
+                / "configs/kitti/backbone_branch/kitti_mobilepixor_c2psa.json"
+            ).read_text(encoding="utf-8")
         )
         for key in set(baseline) - {"model", "note"}:
             self.assertEqual(c2psa[key], baseline[key], key)
@@ -66,6 +71,13 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
         self.assertEqual(c2psa["loss"]["name"], "baseline")
         self.assertEqual(c2psa["augmentation"]["p"], 0.5)
+        expected_bev_encoding = {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "binary_slices",
+        }
+        self.assertEqual(baseline["data"]["bev_encoding"], expected_bev_encoding)
+        self.assertEqual(c2psa["data"]["bev_encoding"], expected_bev_encoding)
         for transform in ("rotation", "scaling", "translation"):
             self.assertTrue(c2psa["augmentation"][transform]["use"])
 
@@ -88,7 +100,8 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn("print(selected_model)", source)
         self.assertIn("Differences from baseline:", source)
         self.assertIn(
-            "configs/kitti/b0_b1/kitti_mobilepixor_baseline.json", source
+            "configs/kitti/backbone_branch/kitti_mobilepixor_baseline.json",
+            source,
         )
         self.assertIn("trainable_parameter_count", source)
         self.assertIn("del baseline_model, selected_model", source)

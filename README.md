@@ -54,7 +54,7 @@ Train B0:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/b0_b1/kitti_mobilepixor_baseline.json \
+  --config configs/kitti/backbone_branch/kitti_mobilepixor_baseline.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name b0_seed42 \
@@ -65,7 +65,7 @@ Train the controlled C2PSA variant:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json \
+  --config configs/kitti/backbone_branch/kitti_mobilepixor_c2psa.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name b1_c2psa_seed42 \
@@ -92,8 +92,8 @@ Open `3D_Lidar_Object_Detection_Notebook_standard.ipynb` and change only
 
 The notebook automatically uses BF16 on supported GPUs and FP16 otherwise. It
 records the branch, commit, config hash and effective training settings before
-resuming a run. The older thesis-derived and MobileBEV configs remain in the
-repository for provenance but are not selectable from this notebook.
+resuming a run. The deprecated thesis-derived and MobileBEV configs remain in
+the repository for provenance but are not selectable from this notebook.
 
 ## Verify
 
@@ -110,7 +110,7 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --name b1_c2psa_seed42_validation \
   --backend pytorch \
   --model artifacts/kitti/b1_c2psa_seed42/selected/best.pt \
-  --config configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json \
+  --config configs/kitti/backbone_branch/kitti_mobilepixor_c2psa.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \

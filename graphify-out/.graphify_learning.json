@@ -1,43 +1,63 @@
 {
-  "generated_at": "2026-09-22T09:57:25.282307+00:00",
+  "generated_at": "2026-09-22T16:09:34.112450+00:00",
   "nodes": {
     "detector_core_datasets_dataset_dataset": {
       "code_fingerprint": "af17a8aa22ac36788805f2c8266152b3e50b56d25729da0528fb0291dccea106",
       "label": "Dataset",
-      "last": "2026-09-22T04:36:34.301310+00:00",
+      "last": "2026-09-22T15:56:48.528030+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        },
+        {
+          "date": "2026-09-22T10:08:05.769647+00:00",
+          "outcome": "useful",
+          "q": "please put the B1 and B0's config file into a same folder please, and edit the notebook accordingly, also enable data augmentation in these configs"
+        },
         {
           "date": "2026-09-22T04:36:34.301310+00:00",
           "outcome": "useful",
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.994865172,
+      "score": 2.98295463,
       "source_file": "detector/core/datasets/dataset.py",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "detector_core_datasets_utils_1_preprocess_encode_bev": {
       "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
       "label": "encode_bev()",
-      "last": "2026-09-22T06:05:57.552622+00:00",
+      "last": "2026-09-22T15:56:48.528030+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        },
         {
           "date": "2026-09-22T06:05:57.552622+00:00",
           "outcome": "useful",
           "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
         }
       ],
-      "score": 0.99629306,
+      "score": 1.990157082,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "detector_core_datasets_utils_1_preprocess_voxelize": {
       "code_fingerprint": "e468fdedee81bffe6b63475d06f74a6bd48fb483a8442662ab51e8f2b99e9b5f",
       "label": "voxelize()",
-      "last": "2026-09-22T06:05:57.552622+00:00",
+      "last": "2026-09-22T15:56:48.528030+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        },
         {
           "date": "2026-09-22T06:05:57.552622+00:00",
           "outcome": "useful",
@@ -49,10 +69,10 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 1.991158232,
+      "score": 2.979099486,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "preferred",
-      "uses": 2
+      "uses": 3
     },
     "detector_core_losses_loss_fn_lossfunction": {
       "code_fingerprint": "3d0232e84d04a7c2bfb2095d0d226ff5877fc9745f36a9fec6bb2936af22b895",
@@ -75,7 +95,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.986453834,
+      "score": 2.968674468,
       "source_file": "detector/core/losses/loss_fn.py",
       "status": "preferred",
       "uses": 3
@@ -91,7 +111,7 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 0.997063401,
+      "score": 0.991127547,
       "source_file": "detector/core/models/heads/cnn.py",
       "status": "tentative",
       "uses": 1
@@ -117,7 +137,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.990576889,
+      "score": 2.972772977,
       "source_file": "detector/core/models/model.py",
       "status": "preferred",
       "uses": 3
@@ -133,8 +153,24 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.994865172,
+      "score": 0.988942404,
       "source_file": "detector/postprocess.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "docs_mobile_bev_lightweight_spec_richbev_8": {
+      "code_fingerprint": "9cfa402bb025413ccdd9508b5e980051b8422efb5ccc8aa0a767a5b8118be34c",
+      "label": "RichBEV-8",
+      "last": "2026-09-22T15:56:48.528030+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        }
+      ],
+      "score": 0.99979529,
+      "source_file": "docs/mobile_bev_lightweight/SPEC.md",
       "status": "tentative",
       "uses": 1
     },
@@ -154,13 +190,13 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 1.994782112,
+      "score": 1.982906502,
       "source_file": "mermaid-diagram.png",
       "status": "preferred",
       "uses": 2
     },
     "readme_uwag_coordatt_training_recipe": {
-      "code_fingerprint": "348dc8ec3c651394ac5eb9deac23d2d90245f57f56ea8aeca831105fad41bee3",
+      "code_fingerprint": "dc55f879c9d8d15358060f76a82ef4b6e39026f7ed0ecd389d219f79d799add4",
       "label": "UWAG and Coordinate Attention Training Recipe",
       "last": "2026-09-22T05:03:31.839000+00:00",
       "provenance": [
@@ -170,16 +206,37 @@
           "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
         }
       ],
-      "score": 0.995295602,
+      "score": 0.989370272,
       "source_file": "README.md",
       "status": "tentative",
       "uses": 1
     },
-    "tests_test_standard_training_notebook": {
-      "code_fingerprint": "2293ca50d8ea3cf252774d738ec7a7243d64f1ef8a23f53223042b557dc20ad8",
-      "label": "test_standard_training_notebook.py",
-      "last": "2026-09-22T07:52:12.659349+00:00",
+    "tests_test_mobile_bev": {
+      "code_fingerprint": "875fd7b8645e7b780241ac74668a788785fe80066136fb059c380bdc8bbd6ce1",
+      "label": "test_mobile_bev.py",
+      "last": "2026-09-22T15:56:48.528030+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        }
+      ],
+      "score": 0.99979529,
+      "source_file": "tests/test_mobile_bev.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "tests_test_standard_training_notebook": {
+      "code_fingerprint": "e19755be180a826ed13f4cfa816fc3781677895b6449ca6f26977104b2f3803a",
+      "label": "test_standard_training_notebook.py",
+      "last": "2026-09-22T10:08:05.769647+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T10:08:05.769647+00:00",
+          "outcome": "useful",
+          "q": "please put the B1 and B0's config file into a same folder please, and edit the notebook accordingly, also enable data augmentation in these configs"
+        },
         {
           "date": "2026-09-22T07:52:12.659349+00:00",
           "outcome": "useful",
@@ -191,23 +248,44 @@
           "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
         }
       ],
-      "score": 1.995711717,
+      "score": 2.978047509,
       "source_file": "tests/test_standard_training_notebook.py",
       "status": "preferred",
-      "uses": 2
+      "uses": 3
     },
     "tools_kitti_training_pipeline_common_build_model": {
       "code_fingerprint": "ac8e9d3cd895a4ddcace76c6baef34558cf652c4d38d44eb93b4ceda1fb38e7f",
       "label": "build_model()",
-      "last": "2026-09-22T07:52:12.659349+00:00",
+      "last": "2026-09-22T15:56:48.528030+00:00",
       "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        },
         {
           "date": "2026-09-22T07:52:12.659349+00:00",
           "outcome": "useful",
           "q": "Add a notebook cell before training that prints the model architecture and differences compared with the baseline, without needing to print the model name."
         }
       ],
-      "score": 0.997993007,
+      "score": 1.991846908,
+      "source_file": "tools/kitti_training_pipeline/common.py",
+      "status": "preferred",
+      "uses": 2
+    },
+    "tools_kitti_training_pipeline_common_input_shape": {
+      "code_fingerprint": "ac8e9d3cd895a4ddcace76c6baef34558cf652c4d38d44eb93b4ceda1fb38e7f",
+      "label": "input_shape()",
+      "last": "2026-09-22T15:56:48.528030+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-22T15:56:48.528030+00:00",
+          "outcome": "useful",
+          "q": "Does the current codebase have runnable RichBEV-8 or RichBEV-11 support, and how can current Legacy35 B0/B1 configs use RichBEV-8?"
+        }
+      ],
+      "score": 0.99979529,
       "source_file": "tools/kitti_training_pipeline/common.py",
       "status": "tentative",
       "uses": 1
