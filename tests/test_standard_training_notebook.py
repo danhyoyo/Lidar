@@ -50,12 +50,12 @@ class StandardTrainingNotebookTests(unittest.TestCase):
 
     def test_c2psa_config_changes_only_the_backbone_attention(self):
         baseline = json.loads(
-            (ROOT / "configs/kitti/kitti_mobilepixor_baseline.json").read_text(
+            (ROOT / "configs/kitti/b0_b1/kitti_mobilepixor_baseline.json").read_text(
                 encoding="utf-8"
             )
         )
         c2psa = json.loads(
-            (ROOT / "configs/kitti/kitti_mobilepixor_c2psa.json").read_text(
+            (ROOT / "configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -65,7 +65,9 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertEqual(c2psa["model"]["c5_attention"], "c2psa")
         self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
         self.assertEqual(c2psa["loss"]["name"], "baseline")
-        self.assertEqual(c2psa["augmentation"]["p"], 0.0)
+        self.assertEqual(c2psa["augmentation"]["p"], 0.5)
+        for transform in ("rotation", "scaling", "translation"):
+            self.assertTrue(c2psa["augmentation"][transform]["use"])
 
     def test_architecture_comparison_runs_before_training(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
@@ -85,7 +87,9 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertLess(architecture_index, smoke_index)
         self.assertIn("print(selected_model)", source)
         self.assertIn("Differences from baseline:", source)
-        self.assertIn("kitti_mobilepixor_baseline.json", source)
+        self.assertIn(
+            "configs/kitti/b0_b1/kitti_mobilepixor_baseline.json", source
+        )
         self.assertIn("trainable_parameter_count", source)
         self.assertIn("del baseline_model, selected_model", source)
         compile(source, str(NOTEBOOK), "exec")

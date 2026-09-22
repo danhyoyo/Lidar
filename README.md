@@ -43,9 +43,9 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
 
 ## Controlled backbone experiment
 
-Both configurations use Legacy35 input, the baseline loss, disabled data
-augmentation, the same MobilePIXOR stages, and the same FPN and heads. The only
-experimental switch is `model.c5_attention`:
+Both configurations use Legacy35 input, the baseline loss, the same enabled
+augmentation policy, the same MobilePIXOR stages, and the same FPN and heads.
+The only experimental switch is `model.c5_attention`:
 
 - `none`: frozen B0 baseline.
 - `c2psa`: one C2PSA block after C5 and before the existing FPN lateral layer.
@@ -54,7 +54,7 @@ Train B0:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/kitti_mobilepixor_baseline.json \
+  --config configs/kitti/b0_b1/kitti_mobilepixor_baseline.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name b0_seed42 \
@@ -65,7 +65,7 @@ Train the controlled C2PSA variant:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/kitti_mobilepixor_c2psa.json \
+  --config configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name b1_c2psa_seed42 \
@@ -104,7 +104,7 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --name b1_c2psa_seed42_validation \
   --backend pytorch \
   --model artifacts/kitti/b1_c2psa_seed42/selected/best.pt \
-  --config configs/kitti/kitti_mobilepixor_c2psa.json \
+  --config configs/kitti/b0_b1/kitti_mobilepixor_c2psa.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \

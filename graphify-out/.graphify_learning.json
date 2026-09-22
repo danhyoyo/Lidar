@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T09:07:20.651966+00:00",
+  "generated_at": "2026-09-22T09:57:25.282307+00:00",
   "nodes": {
     "detector_core_datasets_dataset_dataset": {
       "code_fingerprint": "af17a8aa22ac36788805f2c8266152b3e50b56d25729da0528fb0291dccea106",
@@ -12,7 +12,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.995664859,
+      "score": 0.994865172,
       "source_file": "detector/core/datasets/dataset.py",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "Is the pure MobilePIXOR baseline thesis-clean for independent improvements, and is the Legacy35 voxel input safe to use as inherited prior work?"
         }
       ],
-      "score": 0.997093895,
+      "score": 0.99629306,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "tentative",
       "uses": 1
@@ -49,7 +49,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 1.992758755,
+      "score": 1.991158232,
       "source_file": "detector/core/datasets/utils_1/preprocess.py",
       "status": "preferred",
       "uses": 2
@@ -75,7 +75,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.98885439,
+      "score": 2.986453834,
       "source_file": "detector/core/losses/loss_fn.py",
       "status": "preferred",
       "uses": 3
@@ -91,7 +91,7 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 0.997864856,
+      "score": 0.997063401,
       "source_file": "detector/core/models/heads/cnn.py",
       "status": "tentative",
       "uses": 1
@@ -117,7 +117,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 2.992980759,
+      "score": 2.990576889,
       "source_file": "detector/core/models/model.py",
       "status": "preferred",
       "uses": 3
@@ -133,7 +133,7 @@
           "q": "Explain the current baseline architecture from raw LiDAR through preprocessing, augmentation, encoding, backbone, FPN, heads, loss, training, postprocessing, and determine whether it is clean of claims made in the senior thesis."
         }
       ],
-      "score": 0.995664859,
+      "score": 0.994865172,
       "source_file": "detector/postprocess.py",
       "status": "tentative",
       "uses": 1
@@ -154,7 +154,7 @@
           "q": "I am in charge of the Backbone improvement. Is inserting YOLOv26 C2PSA after C5 doable and advisable on mathematical pros and cons, and what else must change in the prior backbone?"
         }
       ],
-      "score": 1.996385547,
+      "score": 1.994782112,
       "source_file": "mermaid-diagram.png",
       "status": "preferred",
       "uses": 2
@@ -170,7 +170,7 @@
           "q": "so, I am now good to perform improvements on this baseline without worrying about academic faults, right?"
         }
       ],
-      "score": 0.996095636,
+      "score": 0.995295602,
       "source_file": "README.md",
       "status": "tentative",
       "uses": 1
@@ -191,7 +191,7 @@
           "q": "Implement YOLO26 C2PSA after C5 as a switchable addition and clean the Google Colab training notebook of unusable thesis-derived variants."
         }
       ],
-      "score": 1.9973159,
+      "score": 1.995711717,
       "source_file": "tests/test_standard_training_notebook.py",
       "status": "preferred",
       "uses": 2
@@ -207,7 +207,7 @@
           "q": "Add a notebook cell before training that prints the model architecture and differences compared with the baseline, without needing to print the model name."
         }
       ],
-      "score": 0.998795208,
+      "score": 0.997993007,
       "source_file": "tools/kitti_training_pipeline/common.py",
       "status": "tentative",
       "uses": 1
