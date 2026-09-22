@@ -74,7 +74,13 @@ python3 tools/kitti_training_pipeline/train.py \
 
 Use the same precision, seed, batch size, epoch count, split, and evaluation
 settings for both runs. Resume with `--resume /path/to/checkpoint.pt`. Training
-keeps the minimum-validation-loss checkpoint in `<run>/selected/best.pt`.
+keeps the minimum-validation-loss checkpoint in `<run>/selected/best.pt`. Each
+epoch is also appended to `<run>/metrics.csv`, while TensorBoard event files are
+written to `<run>/tensorboard`. View a run with:
+
+```bash
+tensorboard --logdir artifacts/kitti/b0_seed42/tensorboard
+```
 
 ## Google Colab
 

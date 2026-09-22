@@ -109,6 +109,16 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             source,
         )
 
+    def test_trainer_records_each_epoch_in_csv_and_tensorboard(self):
+        source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('csv_path = run_dir / "metrics.csv"', source)
+        self.assertIn('tensorboard_dir = run_dir / "tensorboard"', source)
+        self.assertIn("append_csv_row(csv_path, csv_row)", source)
+        self.assertIn('writer.add_scalar(f"train/{name}"', source)
+        self.assertIn('writer.add_scalar(f"validation/{name}"', source)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import random
@@ -18,6 +19,25 @@ from torch.utils.data import DataLoader
 
 from common import (atomic_torch_save, build_model, configure_detector_imports,
                     normalize_state_dict, read_json, write_json)
+
+
+def append_csv_row(path: Path, row: Dict[str, Any]) -> None:
+    """Append one epoch to a CSV file, creating its header when necessary."""
+    fieldnames = list(row)
+    if path.exists() and path.stat().st_size:
+        with path.open("r", newline="", encoding="utf-8") as stream:
+            existing_fieldnames = next(csv.reader(stream), [])
+        if existing_fieldnames != fieldnames:
+            raise RuntimeError(
+                f"CSV columns in {path} do not match this run. "
+                "Resume into the original run directory or choose a new run name."
+            )
+    write_header = not path.exists() or path.stat().st_size == 0
+    with path.open("a", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fieldnames)
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def seed_everything(seed: int) -> None:
@@ -256,101 +276,144 @@ def main(argv=None) -> None:
             best_val = float(resume.get("best_validation_objective", math.inf))
         print(f"Resumed from epoch {start_epoch}: {args.resume}")
 
+    try:
+        from torch.utils.tensorboard import SummaryWriter
+    except ImportError as exc:
+        raise RuntimeError(
+            "TensorBoard is required for training logs. Install dependencies with "
+            "`python -m pip install -r requirements-kitti.txt`."
+        ) from exc
+    tensorboard_dir = run_dir / "tensorboard"
+    writer = SummaryWriter(log_dir=str(tensorboard_dir), purge_step=start_epoch + 1)
+
     log_path = run_dir / "metrics.jsonl"
+    csv_path = run_dir / "metrics.csv"
     print(f"Run directory: {run_dir}")
+    print(f"TensorBoard logs: {tensorboard_dir}")
+    print(f"Epoch CSV: {csv_path}")
     print(f"Backbone={backbone_name}; C5 attention={c5_attention}; "
           f"loss={loss_name}; precision={precision}")
     print(f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
           f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
           f"effective batch={physical_batch_size * accumulation_steps}")
 
-    for epoch in range(start_epoch + 1, epochs + 1):
-        model.train()
-        criterion.train()
-        optimizer.zero_grad(set_to_none=True)
-        training_sum = 0.0
-        training_samples = update_count = 0
-        started = time.perf_counter()
-        total_batches = len(train_loader)
-        batches_this_epoch = (
-            min(total_batches, args.max_train_batches)
-            if args.max_train_batches else total_batches
-        )
-        if batches_this_epoch == 0:
-            raise RuntimeError("Training loader produced no batches")
-        for batch_index, batch in enumerate(train_loader, start=1):
-            batch = move_tensor_batch(batch, device)
-            batch_size = int(batch["voxel"].shape[0])
-            with autocast_context(device, precision):
-                outputs = model(batch["voxel"])
-                losses = criterion(outputs, batch)
-                objective = losses["loss"]
-                group_start = ((batch_index - 1) // accumulation_steps) * accumulation_steps
-                group_size = min(accumulation_steps, batches_this_epoch - group_start)
-                backward_objective = objective / group_size
-            if not torch.isfinite(objective):
-                components = {
-                    name: float(value.item() if torch.is_tensor(value) else value)
-                    for name, value in losses.items()
-                }
-                raise FloatingPointError(
-                    f"Non-finite loss at epoch {epoch}, batch {batch_index}: "
-                    f"{components}"
-                )
-            scaler.scale(backward_objective).backward()
-            should_update = (batch_index % accumulation_steps == 0
-                             or batch_index == batches_this_epoch)
-            if should_update:
-                previous_scale = scaler.get_scale()
-                scaler.step(optimizer)
-                scaler.update()
-                optimizer.zero_grad(set_to_none=True)
-                # A reduced scale means GradScaler detected non-finite gradients
-                # and deliberately skipped optimizer.step().
-                if not scaler_enabled or scaler.get_scale() >= previous_scale:
-                    update_count += 1
-            training_sum += float(objective.detach().item()) * batch_size
-            training_samples += batch_size
-            if batch_index >= batches_this_epoch:
-                break
+    try:
+        for epoch in range(start_epoch + 1, epochs + 1):
+            model.train()
+            criterion.train()
+            optimizer.zero_grad(set_to_none=True)
+            training_sums: Dict[str, float] = {}
+            training_samples = update_count = 0
+            started = time.perf_counter()
+            total_batches = len(train_loader)
+            batches_this_epoch = (
+                min(total_batches, args.max_train_batches)
+                if args.max_train_batches else total_batches
+            )
+            if batches_this_epoch == 0:
+                raise RuntimeError("Training loader produced no batches")
+            for batch_index, batch in enumerate(train_loader, start=1):
+                batch = move_tensor_batch(batch, device)
+                batch_size = int(batch["voxel"].shape[0])
+                with autocast_context(device, precision):
+                    outputs = model(batch["voxel"])
+                    losses = criterion(outputs, batch)
+                    objective = losses["loss"]
+                    group_start = ((batch_index - 1) // accumulation_steps) * accumulation_steps
+                    group_size = min(accumulation_steps, batches_this_epoch - group_start)
+                    backward_objective = objective / group_size
+                if not torch.isfinite(objective):
+                    components = {
+                        name: float(value.item() if torch.is_tensor(value) else value)
+                        for name, value in losses.items()
+                    }
+                    raise FloatingPointError(
+                        f"Non-finite loss at epoch {epoch}, batch {batch_index}: "
+                        f"{components}"
+                    )
+                scaler.scale(backward_objective).backward()
+                should_update = (batch_index % accumulation_steps == 0
+                                 or batch_index == batches_this_epoch)
+                if should_update:
+                    previous_scale = scaler.get_scale()
+                    scaler.step(optimizer)
+                    scaler.update()
+                    optimizer.zero_grad(set_to_none=True)
+                    # A reduced scale means GradScaler detected non-finite gradients
+                    # and deliberately skipped optimizer.step().
+                    if not scaler_enabled or scaler.get_scale() >= previous_scale:
+                        update_count += 1
+                for name, value in losses.items():
+                    scalar = float(value.detach().item() if torch.is_tensor(value) else value)
+                    training_sums[name] = training_sums.get(name, 0.0) + scalar * batch_size
+                training_samples += batch_size
+                if batch_index >= batches_this_epoch:
+                    break
 
-        training_seconds = time.perf_counter() - started
-        validation = validate(model, criterion, val_loader, device, precision,
-                              args.max_val_batches)
-        if update_count:
-            scheduler.step()
-        else:
-            print(f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced")
-        train_objective = training_sum / max(training_samples, 1)
-        current_val = float(validation["loss"])
-        retained = current_val < best_val
-        if retained:
-            best_val = current_val
-        payload = checkpoint_payload(
-            model, criterion, optimizer, scheduler, scaler, epoch,
-            validation, best_val, config
-        )
-        atomic_torch_save(payload, checkpoints_dir / "last.pt")
-        if epoch % save_every == 0 or epoch == epochs:
-            atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
-        if retained:
-            retained_path = best_dir / f"{epoch}epoch.pt"
-            atomic_torch_save(payload, retained_path)
-            atomic_torch_save(payload, loss_selection_dir / "best.pt")
-            write_json(loss_selection_dir / "selection.json", {
-                "epoch": epoch, "validation_objective": current_val,
-                "checkpoint": str(retained_path),
-                "criterion": "minimum mean validation loss"
-            })
-        row = {"epoch": epoch, "learning_rate": optimizer.param_groups[0]["lr"],
-               "train_objective": train_objective, "validation": validation,
-               "training_seconds": training_seconds, "optimizer_updates": update_count,
-               "precision": precision, "loss": loss_name, "retained": retained}
-        with log_path.open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(row, sort_keys=True) + "\n")
-        print(f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
-              f"val={current_val:.6f} retained={retained} "
-              f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
+            training_seconds = time.perf_counter() - started
+            training = {
+                name: value / max(training_samples, 1)
+                for name, value in training_sums.items()
+            }
+            validation = validate(model, criterion, val_loader, device, precision,
+                                  args.max_val_batches)
+            learning_rate = float(optimizer.param_groups[0]["lr"])
+            if update_count:
+                scheduler.step()
+            else:
+                print(f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced")
+            train_objective = training["loss"]
+            current_val = float(validation["loss"])
+            retained = current_val < best_val
+            if retained:
+                best_val = current_val
+            payload = checkpoint_payload(
+                model, criterion, optimizer, scheduler, scaler, epoch,
+                validation, best_val, config
+            )
+            atomic_torch_save(payload, checkpoints_dir / "last.pt")
+            if epoch % save_every == 0 or epoch == epochs:
+                atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
+            if retained:
+                retained_path = best_dir / f"{epoch}epoch.pt"
+                atomic_torch_save(payload, retained_path)
+                atomic_torch_save(payload, loss_selection_dir / "best.pt")
+                write_json(loss_selection_dir / "selection.json", {
+                    "epoch": epoch, "validation_objective": current_val,
+                    "checkpoint": str(retained_path),
+                    "criterion": "minimum mean validation loss"
+                })
+            row = {"epoch": epoch, "learning_rate": learning_rate,
+                   "train_objective": train_objective, "training": training,
+                   "validation": validation, "training_seconds": training_seconds,
+                   "optimizer_updates": update_count, "precision": precision,
+                   "loss": loss_name, "retained": retained}
+            with log_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(row, sort_keys=True) + "\n")
+            csv_row = {
+                "epoch": epoch,
+                "learning_rate": learning_rate,
+                **{f"train_{name}": value for name, value in sorted(training.items())},
+                **{f"val_{name}": value for name, value in sorted(validation.items())},
+                "training_seconds": training_seconds,
+                "optimizer_updates": update_count,
+                "best_validation_objective": best_val,
+                "retained": retained,
+            }
+            append_csv_row(csv_path, csv_row)
+            for name, value in training.items():
+                writer.add_scalar(f"train/{name}", value, epoch)
+            for name, value in validation.items():
+                writer.add_scalar(f"validation/{name}", value, epoch)
+            writer.add_scalar("train/learning_rate", learning_rate, epoch)
+            writer.add_scalar("train/optimizer_updates", update_count, epoch)
+            writer.add_scalar("checkpoint/best_validation_objective", best_val, epoch)
+            writer.flush()
+            print(f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
+                  f"val={current_val:.6f} retained={retained} "
+                  f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
+    finally:
+        writer.close()
 
     print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
     print(f"Selection record: {loss_selection_dir / 'selection.json'}")
