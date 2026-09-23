@@ -119,8 +119,6 @@ class LossFunction(nn.Module):
         components = torch.stack(
             [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
         )
-        if not torch.isfinite(components).all():
-            raise FloatingPointError("non-finite loss component")
         if self.name == "uwag":
             task_loss = (
                 torch.exp(-self.log_scales) * components + self.log_scales
@@ -130,8 +128,8 @@ class LossFunction(nn.Module):
         else:
             geometric_loss = components.new_zeros(())
             loss = components.sum()
-        if not torch.isfinite(loss):
-            raise FloatingPointError("non-finite total loss")
+        if not torch.isfinite(torch.cat((components, loss.reshape(1)))).all():
+            raise FloatingPointError("non-finite loss")
 
         loss_dict = {
             "loss": loss,

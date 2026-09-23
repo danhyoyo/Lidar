@@ -32,7 +32,7 @@ def seed_everything(seed: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.benchmark = True
+    torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
 
@@ -66,6 +66,12 @@ def autocast_context(device: torch.device, precision: str):
         return torch.amp.autocast(device_type=device.type, enabled=False)
     dtype = {"fp16": torch.float16, "bf16": torch.bfloat16}[precision]
     return torch.amp.autocast(device_type=device.type, dtype=dtype, enabled=True)
+
+
+def synchronize_device(device: torch.device) -> None:
+    """Make wall-clock measurements include queued CUDA work."""
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
 
 
 def checkpoint_payload(
@@ -102,6 +108,7 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
     criterion.eval()
     sums: Dict[str, torch.Tensor] = {}
     samples = 0
+    synchronize_device(device)
     started = time.perf_counter()
     for batch_index, batch in enumerate(loader, start=1):
         batch = move_tensor_batch(batch, device)
@@ -119,6 +126,7 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
             break
     if not samples:
         raise RuntimeError("Validation loader produced no samples")
+    synchronize_device(device)
     metrics = {name: float((value / samples).cpu()) for name, value in sums.items()}
     metrics.update(seconds=time.perf_counter() - started, samples=samples)
     return metrics
@@ -189,6 +197,9 @@ def main(argv=None) -> None:
     if precision == "bf16" and not torch.cuda.is_bf16_supported():
         raise RuntimeError("The selected CUDA device does not support BF16")
     config["train"]["precision"] = precision
+    config["train"]["target_backend"] = args.target_backend
+    config["train"]["compile_model"] = args.compile_model
+    config["train"]["num_workers"] = args.num_workers
     scaler_enabled = precision == "fp16"
 
     physical_batch_size = int(
@@ -332,6 +343,7 @@ def main(argv=None) -> None:
         optimizer.zero_grad(set_to_none=True)
         training_sum = torch.zeros((), device=device)
         training_samples = update_count = 0
+        synchronize_device(device)
         started = time.perf_counter()
         total_batches = len(train_loader)
         batches_this_epoch = (
@@ -353,15 +365,6 @@ def main(argv=None) -> None:
                 ) * accumulation_steps
                 group_size = min(accumulation_steps, batches_this_epoch - group_start)
                 backward_objective = objective / group_size
-            if not torch.isfinite(objective):
-                components = {
-                    name: float(value.item() if torch.is_tensor(value) else value)
-                    for name, value in losses.items()
-                }
-                raise FloatingPointError(
-                    f"Non-finite loss at epoch {epoch}, batch {batch_index}: "
-                    f"{components}"
-                )
             scaler.scale(backward_objective).backward()
             should_update = (
                 batch_index % accumulation_steps == 0
@@ -381,6 +384,7 @@ def main(argv=None) -> None:
             if batch_index >= batches_this_epoch:
                 break
 
+        synchronize_device(device)
         training_seconds = time.perf_counter() - started
         validation = validate(
             model, criterion, val_loader, device, precision, args.max_val_batches
