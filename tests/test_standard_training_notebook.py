@@ -103,6 +103,19 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn("EPOCHS = 100", source)
         self.assertIn("must remain unchanged when resuming", source)
 
+    def test_acceleration_options_are_explicit_and_resume_safe(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        source = "\n".join(
+            "".join(cell.get("source", [])) for cell in notebook["cells"]
+        )
+
+        self.assertIn('TARGET_BACKEND = "numba"', source)
+        self.assertIn("COMPILE_MODEL = False", source)
+        self.assertIn('COMPILE_MODEL_ARGUMENT = "--compile-model"', source)
+        self.assertGreaterEqual(source.count('--target-backend "{TARGET_BACKEND}"'), 2)
+        self.assertGreaterEqual(source.count("{COMPILE_MODEL_ARGUMENT}"), 2)
+        self.assertIn("RUNTIME_PROFILE =", source)
+
     def test_smoke_resume_reuses_trainer_provenance_and_runtime_controls(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
         source = "\n".join(
@@ -114,7 +127,12 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn("SMOKE_MANIFEST_PATH", source)
         self.assertIn("SMOKE_RESUME_ARGUMENT", source)
         self.assertIn("smoke_last_checkpoint.with_suffix", source)
-        self.assertIn("--max-train-batches 2 --max-val-batches 1 --num-workers 0", source)
+        self.assertIn("--max-train-batches {SMOKE_TRAIN_BATCHES}", source)
+        self.assertIn("--max-val-batches {SMOKE_VAL_BATCHES} --num-workers 0", source)
+        self.assertIn("SMOKE_METRICS", source)
+        self.assertIn('math.isfinite(smoke_row["train_objective"])', source)
+        self.assertIn('math.isfinite(smoke_row["validation"]["loss"])', source)
+        self.assertIn('smoke_row["epoch_successful_updates"] < 1', source)
         self.assertNotIn("SMOKE_RUN_DIR.mkdir", source)
 
     def test_notebook_json_has_no_stale_colab_outputs(self):
