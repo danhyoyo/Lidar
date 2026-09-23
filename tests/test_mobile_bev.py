@@ -202,6 +202,7 @@ def check_targets():
         "z_min": -2.0, "z_max": 2.0, "z_res": 1.0,
     }
     boxes = torch.tensor([[1.0, 2.0, 1.0, 1.5, 1.25, 1.25, -1.0, 0.0]])
+    dataset.target_backend = "python"
     target = dataset.get_label(boxes, geometry)
     mask = target["reg_mask"].bool()
     assert tuple(target["offset"].shape) == (2, 4, 4)
@@ -224,6 +225,51 @@ def check_targets():
         rtol=0,
         atol=1e-6,
     )
+
+    from utils_1 import target_backend
+    if target_backend.njit is not None:
+        parity_cases = (
+            boxes,
+            torch.tensor(
+                [
+                    [0.0, 1.5, 0.8, 1.2, 0.01, 0.01, -1.0, -3.1],
+                    [2.0, 1.7, 0.7, 1.4, 3.99, 3.99, -1.0, 3.1],
+                    [1.0, 1.6, 0.9, 1.3, 1.25, 1.25, -1.0, -0.7],
+                ]
+            ),
+            torch.empty((0, 8)),
+        )
+        for parity_boxes in parity_cases:
+            dataset.target_backend = "python"
+            reference = dataset.get_label(parity_boxes, geometry)
+            dataset.target_backend = "numba"
+            accelerated = dataset.get_label(parity_boxes, geometry)
+            for name in ("cls", "offset", "size", "yaw", "reg_mask"):
+                torch.testing.assert_close(
+                    accelerated[name], reference[name], rtol=0, atol=1e-6
+                )
+
+        kitti_geometry = {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+            "z_min": -2.5, "z_max": 1.0, "z_res": 0.1,
+        }
+        kitti_boundary_boxes = torch.tensor(
+            [
+                [0.0, 1.5, 0.8, 1.2, 0.001, -39.999, -1.0, -3.1415927],
+                [1.0, 1.7, 0.7, 1.4, 70.399, 39.999, -1.0, 3.1415927],
+                [2.0, 1.6, 0.9, 1.3, 20.0, 0.0, -1.0, -0.7],
+                [0.0, 2.131067, 0.6437885, 4.4781113, 39.266304,
+                 6.0824404, -0.6802873, 1.6524631],
+            ]
+        )
+        dataset.output_shape = [176, 200]
+        dataset.target_backend = "python"
+        reference = dataset.get_label(kitti_boundary_boxes, kitti_geometry)
+        dataset.target_backend = "numba"
+        accelerated = dataset.get_label(kitti_boundary_boxes, kitti_geometry)
+        for name in ("cls", "offset", "size", "yaw", "reg_mask"):
+            assert torch.equal(accelerated[name], reference[name]), name
 
 
 def check_loss():

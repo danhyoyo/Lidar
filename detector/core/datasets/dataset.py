@@ -211,8 +211,9 @@ class Dataset(Dataset):
 
 
     def get_boxes(self, idx):
-        if self._boxes_cache is not None:
-            return self._boxes_cache[idx].copy()
+        boxes_cache = getattr(self, "_boxes_cache", None)
+        if boxes_cache is not None:
+            return boxes_cache[idx].copy()
         return self._parse_boxes(idx)
 
     def _parse_boxes(self, idx):
