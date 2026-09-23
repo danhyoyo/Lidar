@@ -47,7 +47,7 @@
     "bev_encoding": {
       "density_norm": 32,
       "intensity_scale": 1,
-      "name": "rich8"
+      "name": "binary_slices"
     }
   },
   "date": "reproducible",
