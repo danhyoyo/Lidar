@@ -24,7 +24,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "main"', source)
+        self.assertIn('BRANCH = "C2PSA_c5block"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
         self.assertIn("model.scale_gated_fpn", source)
@@ -51,6 +51,25 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertNotIn("import subprocess", source)
         self.assertNotIn("subprocess.", source)
         self.assertIn("!set -o pipefail", source)
+
+    def test_acceleration_options_are_explicit_and_smoke_validated(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        source = "\n".join(
+            "".join(cell.get("source", [])) for cell in notebook["cells"]
+        )
+
+        self.assertIn('TARGET_BACKEND = "numba"', source)
+        self.assertIn("COMPILE_MODEL = False", source)
+        self.assertIn('COMPILE_MODEL_ARGUMENT = "--compile-model"', source)
+        self.assertGreaterEqual(source.count('--target-backend "{TARGET_BACKEND}"'), 2)
+        self.assertGreaterEqual(source.count("{COMPILE_MODEL_ARGUMENT}"), 2)
+        self.assertIn('"target_backend": TARGET_BACKEND', source)
+        self.assertIn('"compile_model": COMPILE_MODEL', source)
+        self.assertIn('"num_workers": NUM_WORKERS', source)
+        self.assertIn("SMOKE_METRICS", source)
+        self.assertIn('math.isfinite(smoke_row["train_objective"])', source)
+        self.assertIn('math.isfinite(smoke_row["validation"]["loss"])', source)
+        self.assertIn('smoke_row["optimizer_updates"] < 1', source)
 
     def test_c2psa_config_changes_only_the_backbone_attention(self):
         baseline = json.loads(

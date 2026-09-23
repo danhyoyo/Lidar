@@ -35,6 +35,15 @@ if njit is not None:
         yaw_map,
         reg_mask,
     ):
+        # The legacy Torch path performs grid-coordinate arithmetic in float32,
+        # but builds metric cell origins from Python floats before casting the
+        # result to the float32 target tensor.  Keep both precisions explicit so
+        # the accelerated maps are byte-identical at KITTI grid boundaries.
+        x_min_f32 = np.float32(x_min_metric)
+        y_min_f32 = np.float32(y_min_metric)
+        x_res_f32 = np.float32(x_res)
+        y_res_f32 = np.float32(y_res)
+        out_size_factor_f32 = np.float32(out_size_factor)
         for index in range(boxes.shape[0]):
             box = boxes[index]
             radius = radii[index]
@@ -48,8 +57,8 @@ if njit is not None:
             # legacy sign convention for negative yaw values.
             yaw2 = np.fmod(2.0 * yaw, 2.0 * math.pi)
 
-            coor_x = (x - x_min_metric) / x_res / out_size_factor
-            coor_y = (y - y_min_metric) / y_res / out_size_factor
+            coor_x = (x - x_min_f32) / x_res_f32 / out_size_factor_f32
+            coor_y = (y - y_min_f32) / y_res_f32 / out_size_factor_f32
 
             start_x = max(0, int(coor_x - radius))
             end_x = min(output_x, int(coor_x + radius))
@@ -61,13 +70,17 @@ if njit is not None:
                     if math.sqrt(
                         (p_x - coor_x) ** 2 + (p_y - coor_y) ** 2
                     ) < radius:
-                        metric_x = p_x * out_size_factor * x_res + x_min_metric
-                        metric_y = p_y * out_size_factor * y_res + y_min_metric
+                        metric_x = np.float32(
+                            p_x * out_size_factor * x_res + x_min_metric
+                        )
+                        metric_y = np.float32(
+                            p_y * out_size_factor * y_res + y_min_metric
+                        )
 
                         offset_map[p_x, p_y, 0] = x - metric_x
                         offset_map[p_x, p_y, 1] = y - metric_y
-                        size_map[p_x, p_y, 0] = math.log(width)
-                        size_map[p_x, p_y, 1] = math.log(length)
+                        size_map[p_x, p_y, 0] = math.log(np.float64(width))
+                        size_map[p_x, p_y, 1] = math.log(np.float64(length))
                         yaw_map[p_x, p_y, 0] = math.cos(yaw2)
                         yaw_map[p_x, p_y, 1] = math.sin(yaw2)
                         reg_mask[p_x, p_y] = 1.0
@@ -91,13 +104,11 @@ def fill_regression_targets_numba(boxes, radii, output_shape, geometry, out_size
         np.asarray(radii, dtype=np.float32),
         output_x,
         output_y,
-        # ``boxes`` is float32, as are the original Torch coordinate
-        # calculations.  Preserve that arithmetic precision for grid bounds.
-        np.float32(geometry["x_min"]),
-        np.float32(geometry["y_min"]),
-        np.float32(geometry["x_res"]),
-        np.float32(geometry["y_res"]),
-        np.float32(out_size_factor),
+        float(geometry["x_min"]),
+        float(geometry["y_min"]),
+        float(geometry["x_res"]),
+        float(geometry["y_res"]),
+        int(out_size_factor),
         offset_map,
         size_map,
         yaw_map,
