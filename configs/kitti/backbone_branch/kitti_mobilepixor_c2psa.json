@@ -53,7 +53,7 @@
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "name": "uwag"
+    "name": "baseline"
   },
   "model": {
     "backbone": "mobilepixor",
