@@ -8,6 +8,7 @@ import math
 from utils_1.preprocess import encode_bev, get_points_in_a_rotated_box
 from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Random_Translation
 from utils_1.gaussian import gaussian_radius, draw_heatmap_gaussian
+from utils_1.target_backend import fill_regression_targets_numba
 
 def trasform_label2metric(label, geometry, ratio=4):
     '''
@@ -117,7 +118,7 @@ def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
 
 class Dataset(Dataset):
     def __init__(
-        self, data_file, config, aug_config, cls_encoding, task="train"
+        self, data_file, config, aug_config, cls_encoding, task="train", target_backend="python"
     ) -> None:
         self.data_file = data_file
         # stores fine names and data types in self.data_list and self.data_type_list
@@ -126,6 +127,9 @@ class Dataset(Dataset):
         self.bev_encoding = config.get("bev_encoding", {"name": "binary_slices"})
         # depending on this task, we decide whether we want to load certain info (i.e. labels not available for testing sometimes)
         self.task = task
+        if target_backend not in {"python", "numba"}:
+            raise ValueError("target_backend must be either 'python' or 'numba'")
+        self.target_backend = target_backend
         # what kind of encoding we want to use for classification. Available options are : gaussian, inverse_distance, binary
         self.cls_encoding = cls_encoding
         self.num_classes = self.config["num_classes"]
@@ -143,7 +147,13 @@ class Dataset(Dataset):
         geom = self.config[self.data_type_list[0]]["geometry"]
         self.output_shape = [int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / self.out_size_factor), int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / self.out_size_factor)]
 
-
+        # Labels are immutable source data.  Returning a copy below is required
+        # because the train augmentation mutates each sample's boxes in place.
+        self._boxes_cache = (
+            [self._parse_boxes(index) for index in range(len(self.data_list))]
+            if self.task != "test"
+            else None
+        )
 
 
     def __len__(self):
@@ -201,6 +211,11 @@ class Dataset(Dataset):
 
 
     def get_boxes(self, idx):
+        if self._boxes_cache is not None:
+            return self._boxes_cache[idx].copy()
+        return self._parse_boxes(idx)
+
+    def _parse_boxes(self, idx):
         '''
         :param i: the ith velodyne scan in the train/val set
         : return boxes of shape N:8
@@ -250,10 +265,38 @@ class Dataset(Dataset):
         else:
             cls_map = torch.zeros((self.num_classes, self.output_shape[0], self.output_shape[1]))
 
+        radii = []
         for i in range(boxes.shape[0]):
             box = boxes[i]
             radius = self.update_cls_map(cls_map, box, geometry)
-            self.update_reg_map(offset_map, size_map, yaw_map, reg_mask, radius, box, geometry)
+            radii.append(radius)
+
+        if getattr(self, "target_backend", "python") == "numba" and boxes.shape[0]:
+            boxes_np = boxes.detach().cpu().contiguous().numpy().astype(
+                np.float32, copy=False
+            )
+            offset_np, size_np, yaw_np, reg_mask_np = fill_regression_targets_numba(
+                boxes_np,
+                radii,
+                self.output_shape,
+                geometry,
+                self.out_size_factor,
+            )
+            offset_map = torch.from_numpy(offset_np)
+            size_map = torch.from_numpy(size_np)
+            yaw_map = torch.from_numpy(yaw_np)
+            reg_mask = torch.from_numpy(reg_mask_np)
+        else:
+            for i in range(boxes.shape[0]):
+                self.update_reg_map(
+                    offset_map,
+                    size_map,
+                    yaw_map,
+                    reg_mask,
+                    radii[i],
+                    boxes[i],
+                    geometry,
+                )
 
         if self.cls_encoding == "binary":
                 cls_map = cls_map.permute(1, 0)

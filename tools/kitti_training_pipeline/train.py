@@ -79,11 +79,18 @@ def autocast_context(device: torch.device, precision: str):
     )
 
 
+def synchronize_device(device: torch.device) -> None:
+    """Make wall-clock timings include queued CUDA work."""
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+
+
 def checkpoint_payload(model, criterion, optimizer, scheduler, scaler, epoch: int,
                        validation: Dict[str, float], best_val: float,
                        config: Dict[str, Any]) -> Dict[str, Any]:
+    checkpoint_model = getattr(model, "_orig_mod", model)
     return {
-        "epoch": epoch, "model_state_dict": model.state_dict(),
+        "epoch": epoch, "model_state_dict": checkpoint_model.state_dict(),
         "criterion_state_dict": criterion.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
         "scheduler_state_dict": scheduler.state_dict(),
@@ -99,6 +106,7 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
     criterion.eval()
     sums: Dict[str, float] = {}
     samples = 0
+    synchronize_device(device)
     started = time.perf_counter()
     for batch_index, batch in enumerate(loader, start=1):
         batch = move_tensor_batch(batch, device)
@@ -114,6 +122,7 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
             break
     if not samples:
         raise RuntimeError("Validation loader produced no samples")
+    synchronize_device(device)
     metrics = {name: value / samples for name, value in sums.items()}
     metrics.update(seconds=time.perf_counter() - started, samples=samples)
     return metrics
@@ -136,6 +145,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--amp", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-train-batches", type=int, default=0)
     parser.add_argument("--max-val-batches", type=int, default=0)
+    parser.add_argument("--target-backend", choices=("python", "numba"),
+                        default="python")
+    parser.add_argument("--compile-model", action="store_true")
     return parser
 
 
@@ -189,12 +201,20 @@ def main(argv=None) -> None:
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
+    config["train"]["epochs"] = epochs
+    config["train"]["physical_batch_size"] = physical_batch_size
+    config["train"]["accumulation_steps"] = accumulation_steps
+    config["train"]["num_workers"] = int(args.num_workers)
+    config["train"]["target_backend"] = args.target_backend
+    config["train"]["compile_model"] = bool(args.compile_model)
 
     train_dataset = Dataset(config["train"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "train")
+        config["augmentation"], config["model"]["cls_encoding"], "train",
+        target_backend=args.target_backend)
     # A non-special task name disables augmentation and list-valued visualisation data.
     val_dataset = Dataset(config["val"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "validation")
+        config["augmentation"], config["model"]["cls_encoding"], "validation",
+        target_backend=args.target_backend)
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
     train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
@@ -278,6 +298,11 @@ def main(argv=None) -> None:
             best_val = float(resume.get("best_validation_objective", math.inf))
         print(f"Resumed from epoch {start_epoch}: {args.resume}")
 
+    if args.compile_model:
+        if not hasattr(torch, "compile"):
+            raise RuntimeError("--compile-model requires torch.compile support")
+        model = torch.compile(model)
+
     try:
         from torch.utils.tensorboard import SummaryWriter
     except ImportError as exc:
@@ -307,6 +332,7 @@ def main(argv=None) -> None:
             optimizer.zero_grad(set_to_none=True)
             training_sums: Dict[str, float] = {}
             training_samples = update_count = 0
+            synchronize_device(device)
             started = time.perf_counter()
             total_batches = len(train_loader)
             batches_this_epoch = (
@@ -353,6 +379,7 @@ def main(argv=None) -> None:
                 if batch_index >= batches_this_epoch:
                     break
 
+            synchronize_device(device)
             training_seconds = time.perf_counter() - started
             training = {
                 name: value / max(training_samples, 1)

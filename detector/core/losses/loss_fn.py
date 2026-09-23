@@ -135,16 +135,18 @@ class LossFunction(nn.Module):
 
         loss_dict = {
             "loss": loss,
-            "cls": cls_loss.item(),
-            "offset": offset_loss.item(),
-            "size": size_loss.item(),
-            "yaw": yaw_loss.item(),
-            "geo": geometric_loss.item(),
+            # Keep telemetry on-device.  The trainer transfers the aggregated
+            # scalar once per epoch instead of synchronizing for every batch.
+            "cls": cls_loss.detach(),
+            "offset": offset_loss.detach(),
+            "size": size_loss.detach(),
+            "yaw": yaw_loss.detach(),
+            "geo": geometric_loss.detach(),
         }
         if self.name == "uwag":
             for task, log_scale in zip(self.TASKS, self.log_scales):
                 loss_dict[f"weight_{task}"] = torch.exp(
                     -log_scale.detach()
-                ).item()
+                )
 
         return loss_dict

@@ -57,13 +57,22 @@ def check_legacy():
             [0.25, -0.75, -0.75, 0.2],
             [1.25, 0.25, 0.25, 0.8],
             [2.00, 0.00, 0.00, 0.5],
+            [0.001, -0.999, -0.999, 0.3],
+            [1.999, 0.999, 0.999, 0.4],
+            [np.nan, 0.00, 0.00, 0.5],
         ],
         dtype=np.float32,
     )
-    actual = preprocess.voxelize(points, geometry)
-    expected = legacy_reference(points, geometry)
-    assert actual.dtype == np.float32
-    assert actual.tobytes() == expected.tobytes()
+    random_points = np.random.default_rng(42).uniform(
+        low=[-0.1, -1.1, -1.1, 0.0],
+        high=[2.1, 1.1, 1.1, 1.0],
+        size=(257, 4),
+    ).astype(np.float32)
+    for point_cloud in (points, random_points, np.empty((0, 4), dtype=np.float32)):
+        actual = preprocess.voxelize(point_cloud, geometry)
+        expected = legacy_reference(point_cloud, geometry)
+        assert actual.dtype == np.float32
+        assert actual.tobytes() == expected.tobytes()
 
 
 def check_encoder():
