@@ -553,19 +553,24 @@ class TrainingGuardContractTests(unittest.TestCase):
     def test_runtime_controls_are_json_serializable_and_identity_defining(self):
         controls = require_training_helper("resolved_runtime_controls")
 
-        base = controls(torch.device("cpu"), 2, 3, 4)
+        base = controls(torch.device("cpu"), 2, 3, 4, "python", False)
         self.assertEqual(
             set(base),
-            {"device", "num_workers", "max_train_batches", "max_val_batches"},
+            {
+                "device", "num_workers", "max_train_batches", "max_val_batches",
+                "target_backend", "compile_model",
+            },
         )
         # The resolved object is persisted in provenance/resume state, so it
         # must not contain a torch.device or another non-JSON value.
         json.dumps(base)
 
-        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 4, 4))
-        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 3, 5))
-        self.assertNotEqual(base, controls(torch.device("cuda"), 2, 3, 4))
-        self.assertNotEqual(base, controls(torch.device("cpu"), 3, 3, 4))
+        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 4, 4, "python", False))
+        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 3, 5, "python", False))
+        self.assertNotEqual(base, controls(torch.device("cuda"), 2, 3, 4, "python", False))
+        self.assertNotEqual(base, controls(torch.device("cpu"), 3, 3, 4, "python", False))
+        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 3, 4, "numba", False))
+        self.assertNotEqual(base, controls(torch.device("cpu"), 2, 3, 4, "python", True))
 
     def test_run_manifest_input_hashes_detect_changed_or_malformed_inputs(self):
         training = load_training_module()
