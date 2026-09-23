@@ -65,7 +65,7 @@
     },
     "c5_attention": "c2psa",
     "cls_encoding": "gaussian",
-    "scale_gated_fpn": true
+    "scale_gated_fpn": false
   },
   "multi_gpu": false,
   "note": "kitti_mobilepixor_c2psa_c5_aug_bf16",
