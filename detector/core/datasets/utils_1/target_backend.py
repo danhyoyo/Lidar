@@ -43,7 +43,10 @@ if njit is not None:
             x = box[4]
             y = box[5]
             yaw = box[7]
-            yaw2 = math.fmod(2.0 * yaw, 2.0 * math.pi)
+            # Numba supports NumPy's fmod ufunc in nopython mode, unlike
+            # math.fmod in the Colab Python 3.13 runtime.  fmod preserves the
+            # legacy sign convention for negative yaw values.
+            yaw2 = np.fmod(2.0 * yaw, 2.0 * math.pi)
 
             coor_x = (x - x_min_metric) / x_res / out_size_factor
             coor_y = (y - y_min_metric) / y_res / out_size_factor
