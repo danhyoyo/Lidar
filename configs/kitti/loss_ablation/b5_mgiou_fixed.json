@@ -38,7 +38,7 @@
     "cls_encoding": "gaussian",
     "scale_gated_fpn": true
   },
-  "multi_gpu": false,
+  "multi_gpu": true,
   "note": "loss_ablation_B5_mgiou_fixed_candidate",
   "seed": 42,
   "train": {
