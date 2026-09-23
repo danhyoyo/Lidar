@@ -84,21 +84,21 @@ def voxelize(points, geometry):
 
     eps = 0.001
 
-    #clip points
-    x_indexes = np.logical_and(points[:, 0] > x_min + eps, points[:, 0] < x_max - eps)
-    y_indexes = np.logical_and(points[:, 1] > y_min + eps, points[:, 1] < y_max - eps)
-    z_indexes = np.logical_and(points[:, 2] > z_min + eps, points[:, 2] < z_max - eps)
-    pts = points[np.logical_and(np.logical_and(x_indexes, y_indexes), z_indexes)]
+    # Keep the legacy open-boundary rule while avoiding the two N-by-3
+    # temporary index arrays previously allocated for every point cloud.
+    valid = points[:, 0] > x_min + eps
+    valid &= points[:, 0] < x_max - eps
+    valid &= points[:, 1] > y_min + eps
+    valid &= points[:, 1] < y_max - eps
+    valid &= points[:, 2] > z_min + eps
+    valid &= points[:, 2] < z_max - eps
+    pts = points[valid]
 
-    occupancy_mask = np.zeros((pts.shape[0], 3), dtype = np.int32)
-    voxels = np.zeros((x_size, y_size, z_size), dtype = np.float32)
-    occupancy_mask[:, 0] = (pts[:, 0] - x_min) // x_res
-    occupancy_mask[:, 1] = (pts[:, 1] - y_min) // y_res
-    occupancy_mask[:, 2] = (pts[:, 2] - z_min) // z_res
-
-    idxs = np.array([occupancy_mask[:, 0].reshape(-1), occupancy_mask[:, 1].reshape(-1), occupancy_mask[:, 2].reshape( -1)])
-
-    voxels[idxs[0], idxs[1], idxs[2]] = 1
+    voxels = np.zeros((x_size, y_size, z_size), dtype=np.float32)
+    x_indices = ((pts[:, 0] - x_min) // x_res).astype(np.int32, copy=False)
+    y_indices = ((pts[:, 1] - y_min) // y_res).astype(np.int32, copy=False)
+    z_indices = ((pts[:, 2] - z_min) // z_res).astype(np.int32, copy=False)
+    voxels[x_indices, y_indices, z_indices] = 1
     return np.swapaxes(voxels, 0, 1)
 
 
