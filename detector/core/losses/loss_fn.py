@@ -298,11 +298,11 @@ class LossFunction(nn.Module):
 
         loss_dict = {
             "loss": loss,
-            "cls": cls_loss.item(),
-            "offset": offset_loss.item(),
-            "size": size_loss.item(),
-            "yaw": yaw_loss.item(),
-            "geo": geometric_loss.item(),
+            "cls": cls_loss.detach(),
+            "offset": offset_loss.detach(),
+            "size": size_loss.detach(),
+            "yaw": yaw_loss.detach(),
+            "geo": geometric_loss.detach(),
         }
         if clamp_count is not None:
             loss_dict["clamp_count"] = int(clamp_count.detach().cpu())
@@ -310,5 +310,5 @@ class LossFunction(nn.Module):
             loss_dict["yaw_fallback_count"] = int(yaw_fallback_count.detach().cpu())
         if not self.is_fixed_schema and self.name == "uwag":
             for task, log_scale in zip(self.TASKS, self.log_scales):
-                loss_dict[f"weight_{task}"] = torch.exp(-log_scale.detach()).item()
+                loss_dict[f"weight_{task}"] = torch.exp(-log_scale.detach())
         return loss_dict
