@@ -16,8 +16,14 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from common import (atomic_torch_save, build_model, configure_detector_imports,
-                    normalize_state_dict, read_json, write_json)
+from common import (
+    atomic_torch_save,
+    build_model,
+    configure_detector_imports,
+    normalize_state_dict,
+    read_json,
+    write_json,
+)
 
 
 def seed_everything(seed: int) -> None:
@@ -26,7 +32,7 @@ def seed_everything(seed: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.benchmark = True
     torch.backends.cudnn.deterministic = True
 
 
@@ -38,13 +44,18 @@ def seed_worker(worker_id: int) -> None:
 
 
 def move_tensor_batch(batch: Dict[str, Any], device: torch.device) -> Dict[str, Any]:
-    return {key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
-            for key, value in batch.items()}
+    return {
+        key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
+        for key, value in batch.items()
+    }
 
 
 def loader_kwargs(num_workers: int, pin_memory: bool) -> Dict[str, Any]:
-    result: Dict[str, Any] = {"num_workers": num_workers, "pin_memory": pin_memory,
-                              "worker_init_fn": seed_worker}
+    result: Dict[str, Any] = {
+        "num_workers": num_workers,
+        "pin_memory": pin_memory,
+        "worker_init_fn": seed_worker,
+    }
     if num_workers > 0:
         result.update(persistent_workers=True, prefetch_factor=2)
     return result
@@ -54,22 +65,34 @@ def autocast_context(device: torch.device, precision: str):
     if precision == "fp32":
         return torch.amp.autocast(device_type=device.type, enabled=False)
     dtype = {"fp16": torch.float16, "bf16": torch.bfloat16}[precision]
-    return torch.amp.autocast(
-        device_type=device.type, dtype=dtype, enabled=True
-    )
+    return torch.amp.autocast(device_type=device.type, dtype=dtype, enabled=True)
 
 
-def checkpoint_payload(model, criterion, optimizer, scheduler, scaler, epoch: int,
-                       validation: Dict[str, float], best_val: float,
-                       config: Dict[str, Any]) -> Dict[str, Any]:
+def checkpoint_payload(
+    model,
+    criterion,
+    optimizer,
+    scheduler,
+    scaler,
+    epoch: int,
+    validation: Dict[str, float],
+    best_val: float,
+    config: Dict[str, Any],
+) -> Dict[str, Any]:
+    checkpoint_model = getattr(model, "_orig_mod", model)
     return {
-        "epoch": epoch, "model_state_dict": model.state_dict(),
+        "epoch": epoch,
+        # torch.compile wraps the model.  Persist the original state-dict so a
+        # checkpoint remains resumable with and without --compile-model.
+        "model_state_dict": checkpoint_model.state_dict(),
         "criterion_state_dict": criterion.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
         "scheduler_state_dict": scheduler.state_dict(),
-        "scaler_state_dict": scaler.state_dict(), "validation": validation,
-        "best_validation_objective": best_val, "config": config,
-        "saved_at_utc": datetime.now(timezone.utc).isoformat()
+        "scaler_state_dict": scaler.state_dict(),
+        "validation": validation,
+        "best_validation_objective": best_val,
+        "config": config,
+        "saved_at_utc": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -77,7 +100,7 @@ def checkpoint_payload(model, criterion, optimizer, scheduler, scaler, epoch: in
 def validate(model, criterion, loader, device, precision, max_batches=0):
     model.eval()
     criterion.eval()
-    sums: Dict[str, float] = {}
+    sums: Dict[str, torch.Tensor] = {}
     samples = 0
     started = time.perf_counter()
     for batch_index, batch in enumerate(loader, start=1):
@@ -87,14 +110,16 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
             outputs = model(batch["voxel"])
             losses = criterion(outputs, batch)
         for name, value in losses.items():
-            scalar = float(value.item() if torch.is_tensor(value) else value)
-            sums[name] = sums.get(name, 0.0) + scalar * batch_size
+            scalar = value.detach() if torch.is_tensor(value) else torch.as_tensor(
+                value, device=device
+            )
+            sums[name] = sums.get(name, torch.zeros_like(scalar)) + scalar * batch_size
         samples += batch_size
         if max_batches and batch_index >= max_batches:
             break
     if not samples:
         raise RuntimeError("Validation loader produced no samples")
-    metrics = {name: value / samples for name, value in sums.items()}
+    metrics = {name: float((value / samples).cpu()) for name, value in sums.items()}
     metrics.update(seconds=time.perf_counter() - started, samples=samples)
     return metrics
 
@@ -113,6 +138,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--num-workers", type=int, default=2)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--precision", choices=("fp32", "fp16", "bf16"))
+    parser.add_argument(
+        "--target-backend",
+        choices=("python", "numba"),
+        default="python",
+        help="target-map backend; Python is the compatibility default",
+    )
+    parser.add_argument(
+        "--compile-model",
+        action="store_true",
+        help="opt in to torch.compile after checkpoint loading",
+    )
     parser.add_argument("--amp", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-train-batches", type=int, default=0)
     parser.add_argument("--max-val-batches", type=int, default=0)
@@ -141,9 +177,7 @@ def main(argv=None) -> None:
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
 
-    precision = str(
-        args.precision or config["train"].get("precision", "fp32")
-    ).lower()
+    precision = str(args.precision or config["train"].get("precision", "fp32")).lower()
     if args.amp:
         if args.precision and args.precision != "fp16":
             raise ValueError("--amp is a legacy alias for --precision fp16")
@@ -157,10 +191,17 @@ def main(argv=None) -> None:
     config["train"]["precision"] = precision
     scaler_enabled = precision == "fp16"
 
-    physical_batch_size = int(args.physical_batch_size if args.physical_batch_size is not None else
-        config["train"].get("physical_batch_size") or config["train"].get("batch_size", 2))
-    accumulation_steps = int(args.accumulation_steps if args.accumulation_steps is not None else
-        config["train"].get("accumulation_steps", 1))
+    physical_batch_size = int(
+        args.physical_batch_size
+        if args.physical_batch_size is not None
+        else config["train"].get("physical_batch_size")
+        or config["train"].get("batch_size", 2)
+    )
+    accumulation_steps = int(
+        args.accumulation_steps
+        if args.accumulation_steps is not None
+        else config["train"].get("accumulation_steps", 1)
+    )
     if physical_batch_size < 1 or accumulation_steps < 1:
         raise ValueError("Batch size and accumulation steps must be positive")
     epochs = int(args.epochs if args.epochs is not None else config["train"]["epochs"])
@@ -170,27 +211,45 @@ def main(argv=None) -> None:
     if save_every < 1:
         raise ValueError("save_every must be positive")
 
-    train_dataset = Dataset(config["train"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "train")
+    train_dataset = Dataset(
+        config["train"]["data"],
+        config["data"],
+        config["augmentation"],
+        config["model"]["cls_encoding"],
+        "train",
+        args.target_backend,
+    )
     # A non-special task name disables augmentation and list-valued visualisation data.
-    val_dataset = Dataset(config["val"]["data"], config["data"],
-        config["augmentation"], config["model"]["cls_encoding"], "validation")
+    val_dataset = Dataset(
+        config["val"]["data"],
+        config["data"],
+        config["augmentation"],
+        config["model"]["cls_encoding"],
+        "validation",
+        args.target_backend,
+    )
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
-    train_loader = DataLoader(train_dataset, batch_size=physical_batch_size,
-        shuffle=True, generator=generator, **common_loader)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=physical_batch_size,
+        shuffle=True,
+        generator=generator,
+        **common_loader,
+    )
     validation_batch_size = int(
         config["val"].get("physical_batch_size", physical_batch_size)
     )
     if validation_batch_size < 1:
         raise ValueError("validation physical_batch_size must be positive")
-    val_loader = DataLoader(val_dataset, batch_size=validation_batch_size,
-        shuffle=False, **common_loader)
+    val_loader = DataLoader(
+        val_dataset, batch_size=validation_batch_size, shuffle=False, **common_loader
+    )
 
     model = build_model(config).to(device)
-    criterion = LossFunction(
-        config["model"]["cls_encoding"], config.get("loss")
-    ).to(device)
+    criterion = LossFunction(config["model"]["cls_encoding"], config.get("loss")).to(
+        device
+    )
     weight_decay = float(config["train"]["weight_decay"])
     model_parameters = [
         parameter for parameter in model.parameters() if parameter.requires_grad
@@ -198,20 +257,17 @@ def main(argv=None) -> None:
     criterion_parameters = [
         parameter for parameter in criterion.parameters() if parameter.requires_grad
     ]
-    optimizer_groups = [
-        {"params": model_parameters, "weight_decay": weight_decay}
-    ]
+    optimizer_groups = [{"params": model_parameters, "weight_decay": weight_decay}]
     if criterion_parameters:
         # Do not regularize UWAG log-scales; their additive term is the
         # uncertainty-weighting regularizer from Equation 48.
-        optimizer_groups.append(
-            {"params": criterion_parameters, "weight_decay": 0.0}
-        )
+        optimizer_groups.append({"params": criterion_parameters, "weight_decay": 0.0})
     optimizer = torch.optim.Adam(
         optimizer_groups, lr=float(config["train"]["learning_rate"])
     )
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
-        milestones=list(config["train"]["lr_decay_at"]), gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=list(config["train"]["lr_decay_at"]), gamma=0.1
+    )
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
 
     loss_name = config.get("loss", {}).get("name", "baseline")
@@ -234,40 +290,54 @@ def main(argv=None) -> None:
         if isinstance(resume, dict) and resume.get("criterion_state_dict") is not None:
             criterion.load_state_dict(resume["criterion_state_dict"], strict=True)
         elif any(parameter.requires_grad for parameter in criterion.parameters()):
-            print("WARNING: resume checkpoint has no UWAG criterion state; "
-                  "log-scales start from configured initial values")
+            print(
+                "WARNING: resume checkpoint has no UWAG criterion state; "
+                "log-scales start from configured initial values"
+            )
         if isinstance(resume, dict) and "optimizer_state_dict" in resume:
             optimizer.load_state_dict(resume["optimizer_state_dict"])
             if "scheduler_state_dict" in resume:
                 scheduler.load_state_dict(resume["scheduler_state_dict"])
             else:
-                print("WARNING: resume checkpoint has no scheduler state; "
-                      "the learning-rate schedule restarts")
+                print(
+                    "WARNING: resume checkpoint has no scheduler state; "
+                    "the learning-rate schedule restarts"
+                )
             if resume.get("scaler_state_dict"):
                 scaler.load_state_dict(resume["scaler_state_dict"])
             start_epoch = int(resume.get("epoch", 0))
             best_val = float(resume.get("best_validation_objective", math.inf))
         print(f"Resumed from epoch {start_epoch}: {args.resume}")
 
+    if args.compile_model:
+        if not hasattr(torch, "compile"):
+            raise RuntimeError("--compile-model requires PyTorch 2.0 or newer")
+        model = torch.compile(model)
+
     log_path = run_dir / "metrics.jsonl"
     print(f"Run directory: {run_dir}")
-    print(f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-          f"precision={precision}")
-    print(f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
-          f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
-          f"effective batch={physical_batch_size * accumulation_steps}")
+    print(
+        f"Backbone={config['model']['backbone']}; loss={loss_name}; "
+        f"precision={precision}"
+    )
+    print(
+        f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
+        f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
+        f"effective batch={physical_batch_size * accumulation_steps}"
+    )
 
     for epoch in range(start_epoch + 1, epochs + 1):
         model.train()
         criterion.train()
         optimizer.zero_grad(set_to_none=True)
-        training_sum = 0.0
+        training_sum = torch.zeros((), device=device)
         training_samples = update_count = 0
         started = time.perf_counter()
         total_batches = len(train_loader)
         batches_this_epoch = (
             min(total_batches, args.max_train_batches)
-            if args.max_train_batches else total_batches
+            if args.max_train_batches
+            else total_batches
         )
         if batches_this_epoch == 0:
             raise RuntimeError("Training loader produced no batches")
@@ -278,7 +348,9 @@ def main(argv=None) -> None:
                 outputs = model(batch["voxel"])
                 losses = criterion(outputs, batch)
                 objective = losses["loss"]
-                group_start = ((batch_index - 1) // accumulation_steps) * accumulation_steps
+                group_start = (
+                    (batch_index - 1) // accumulation_steps
+                ) * accumulation_steps
                 group_size = min(accumulation_steps, batches_this_epoch - group_start)
                 backward_objective = objective / group_size
             if not torch.isfinite(objective):
@@ -291,8 +363,10 @@ def main(argv=None) -> None:
                     f"{components}"
                 )
             scaler.scale(backward_objective).backward()
-            should_update = (batch_index % accumulation_steps == 0
-                             or batch_index == batches_this_epoch)
+            should_update = (
+                batch_index % accumulation_steps == 0
+                or batch_index == batches_this_epoch
+            )
             if should_update:
                 previous_scale = scaler.get_scale()
                 scaler.step(optimizer)
@@ -302,26 +376,36 @@ def main(argv=None) -> None:
                 # and deliberately skipped optimizer.step().
                 if not scaler_enabled or scaler.get_scale() >= previous_scale:
                     update_count += 1
-            training_sum += float(objective.detach().item()) * batch_size
+            training_sum = training_sum + objective.detach() * batch_size
             training_samples += batch_size
             if batch_index >= batches_this_epoch:
                 break
 
         training_seconds = time.perf_counter() - started
-        validation = validate(model, criterion, val_loader, device, precision,
-                              args.max_val_batches)
+        validation = validate(
+            model, criterion, val_loader, device, precision, args.max_val_batches
+        )
         if update_count:
             scheduler.step()
         else:
-            print(f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced")
-        train_objective = training_sum / max(training_samples, 1)
+            print(
+                f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced"
+            )
+        train_objective = float((training_sum / max(training_samples, 1)).cpu())
         current_val = float(validation["loss"])
         retained = current_val < best_val
         if retained:
             best_val = current_val
         payload = checkpoint_payload(
-            model, criterion, optimizer, scheduler, scaler, epoch,
-            validation, best_val, config
+            model,
+            criterion,
+            optimizer,
+            scheduler,
+            scaler,
+            epoch,
+            validation,
+            best_val,
+            config,
         )
         atomic_torch_save(payload, checkpoints_dir / "last.pt")
         if epoch % save_every == 0 or epoch == epochs:
@@ -330,20 +414,33 @@ def main(argv=None) -> None:
             retained_path = best_dir / f"{epoch}epoch.pt"
             atomic_torch_save(payload, retained_path)
             atomic_torch_save(payload, loss_selection_dir / "best.pt")
-            write_json(loss_selection_dir / "selection.json", {
-                "epoch": epoch, "validation_objective": current_val,
-                "checkpoint": str(retained_path),
-                "criterion": "minimum mean validation loss"
-            })
-        row = {"epoch": epoch, "learning_rate": optimizer.param_groups[0]["lr"],
-               "train_objective": train_objective, "validation": validation,
-               "training_seconds": training_seconds, "optimizer_updates": update_count,
-               "precision": precision, "loss": loss_name, "retained": retained}
+            write_json(
+                loss_selection_dir / "selection.json",
+                {
+                    "epoch": epoch,
+                    "validation_objective": current_val,
+                    "checkpoint": str(retained_path),
+                    "criterion": "minimum mean validation loss",
+                },
+            )
+        row = {
+            "epoch": epoch,
+            "learning_rate": optimizer.param_groups[0]["lr"],
+            "train_objective": train_objective,
+            "validation": validation,
+            "training_seconds": training_seconds,
+            "optimizer_updates": update_count,
+            "precision": precision,
+            "loss": loss_name,
+            "retained": retained,
+        }
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
-        print(f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
-              f"val={current_val:.6f} retained={retained} "
-              f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}")
+        print(
+            f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
+            f"val={current_val:.6f} retained={retained} "
+            f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}"
+        )
 
     print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
     print(f"Selection record: {loss_selection_dir / 'selection.json'}")
