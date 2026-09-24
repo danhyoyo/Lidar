@@ -8,6 +8,8 @@ from core.models.heads.cnn import Header
 class CustomModel(nn.Module):
     def __init__(self, cfg, num_classes=4, input_channels=35):
         super(CustomModel, self).__init__()
+        if cfg["backbone"] != "mobilepixor" and cfg.get("c4_attention", "none") != "none":
+            raise ValueError("c4_attention is supported only by the mobilepixor backbone")
         if cfg["backbone"] == "mobilepixor":
             c2psa = cfg.get("c2psa", {})
             self.backbone = MobilePixorBackBone(
@@ -17,6 +19,9 @@ class CustomModel(nn.Module):
                 c2psa_expansion=c2psa.get("expansion", 0.5),
                 c2psa_attn_ratio=c2psa.get("attn_ratio", 0.5),
                 scale_gated_fpn=cfg.get("scale_gated_fpn", False),
+                c4_attention=cfg.get("c4_attention", "none"),
+                lsk=cfg.get("lsk", {}),
+                litemla=cfg.get("litemla", {}),
             )
         elif cfg["backbone"] == "mobilepixor_coordatt":
             from core.models.backbones.mobilepixor_coordinate_attention import (

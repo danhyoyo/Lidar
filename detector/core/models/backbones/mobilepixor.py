@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Callable, Optional, List
+from core.models.backbones.c4_attention import build_c4_attention
 
 
 def conv3x3(in_planes, out_planes, stride=1, bias=False):
@@ -313,6 +314,9 @@ class MobilePixorBackBone(nn.Module):
         c2psa_expansion=0.5,
         c2psa_attn_ratio=0.5,
         scale_gated_fpn=False,
+        c4_attention="none",
+        lsk=None,
+        litemla=None,
     ):
         super(MobilePixorBackBone, self).__init__()
 
@@ -381,6 +385,11 @@ class MobilePixorBackBone(nn.Module):
             nn.init.zeros_(self.gate_c3.weight)
             nn.init.zeros_(self.gate_c3.bias)
 
+        # Construct last so a disabled adapter does not change existing state
+        # keys or seeded initialization. Refined C4 feeds BOTH C5 and the FPN.
+        self.c4_attention = build_c4_attention(c4_attention, lsk=lsk, litemla=litemla)
+        self.c4_attention_name = c4_attention.lower()
+
     def forward(self, x):
         #print("x.shape")
         #print(x.shape)
@@ -398,6 +407,7 @@ class MobilePixorBackBone(nn.Module):
         c2 = self.block2(c1)
         c3 = self.block3(c2)
         c4 = self.block4(c3)
+        c4 = self.c4_attention(c4)
         c5 = self.block5(c4)
         c5 = self.c5_attention(c5)
 

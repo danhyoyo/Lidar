@@ -58,6 +58,7 @@
   "model": {
     "backbone": "mobilepixor",
     "backbone_out_dim": 16,
+    "c4_attention": "none",
     "c5_attention": "none",
     "cls_encoding": "gaussian",
     "scale_gated_fpn": false

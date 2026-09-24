@@ -1,7 +1,12 @@
 """Contract checks for the shared Colab training notebook."""
 
 import json
+import contextlib
+import io
 import re
+import shutil
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -32,16 +37,22 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / "configs").rglob("*.json")
         }
-        for variant in ("B0", "B1_C2PSA"):
+        for variant in ("B0", "B1_C2PSA", "C4_LSK", "C4_LITEMLA"):
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
             self.assertIn(match.group(1), config_files)
         selected_variant = re.search(
-            r'^VARIANT = "(B0|B1_C2PSA)"', source, flags=re.MULTILINE
+            r'^VARIANT = "(B0|B1_C2PSA|C4_LSK|C4_LITEMLA)"', source, flags=re.MULTILINE
         )
         self.assertIsNotNone(selected_variant)
         self.assertIn('PRECISION = "auto"', source)
         self.assertIn("--clean-backbone", source)
+        self.assertIn("tests/test_c4_attention.py", source)
+        self.assertIn("resolve_ablation_config(", source)
+        self.assertIn("write_json(CONFIG, resolved_config)", source)
+        self.assertIn("BEV_ENCODING_OVERRIDE", source)
+        self.assertIn("SCALE_GATED_FPN_OVERRIDE", source)
+        self.assertIn("C5_ATTENTION_OVERRIDE", source)
         self.assertNotIn("kitti_uwag_coordatt_aug.json", source)
         self.assertNotIn("configs/kitti/mobilebev/", source)
         self.assertIn("run.json", source)
@@ -88,6 +99,8 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             self.assertEqual(c2psa[key], baseline[key], key)
         self.assertEqual(baseline["model"]["c5_attention"], "none")
         self.assertEqual(c2psa["model"]["c5_attention"], "c2psa")
+        self.assertEqual(baseline["model"]["c4_attention"], "none")
+        self.assertEqual(c2psa["model"]["c4_attention"], "none")
         self.assertIs(baseline["model"]["scale_gated_fpn"], False)
         self.assertIs(c2psa["model"]["scale_gated_fpn"], False)
         self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
@@ -134,6 +147,46 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn('atomic_torch_save(payload, checkpoints_dir / "last.pt")', source)
+
+    def test_selector_and_architecture_cells_execute_for_all_presets(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        sources = ["".join(cell.get("source", [])) for cell in notebook["cells"]]
+        selector = next(source for source in sources if "write_json(CONFIG, resolved_config)" in source)
+        # Colab-only directory/install magics are not part of selector logic.
+        selector = "\n".join(line for line in selector.splitlines() if not line.startswith("%"))
+        architecture = next(source for source in sources if "Selected architecture:" in source)
+        sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
+        counts = {"B0": 597817, "B1_C2PSA": 633865, "C4_LSK": 617663, "C4_LITEMLA": 626361}
+        run_names = set()
+        with tempfile.TemporaryDirectory() as directory:
+            temporary_root = Path(directory).resolve()
+            shutil.copytree(ROOT / "configs/kitti/backbone_branch", temporary_root / "configs/kitti/backbone_branch")
+            for variant, count in counts.items():
+                for encoding, gated, delta in ((None, None, 0), ("rich8", True, -7776 + 480)):
+                    with self.subTest(variant=variant, encoding=encoding, gated=gated):
+                        scope = {
+                            "Path": Path, "REPO_DIR": temporary_root,
+                            "CONFIG_OVERRIDE": None, "VARIANT": variant,
+                            "BRANCH": "C2PSA_c5block", "BEV_ENCODING_OVERRIDE": encoding,
+                            "SCALE_GATED_FPN_OVERRIDE": gated, "C5_ATTENTION_OVERRIDE": None,
+                            "PHYSICAL_BATCH_SIZE": 2, "ACCUMULATION_STEPS": 4,
+                            "SEED": 42, "RUN_NAME": "",
+                            "RUNTIME_PROFILE": "numba_eager",
+                            "ARTIFACT_ROOT": temporary_root / "artifacts",
+                        }
+                        output = io.StringIO()
+                        with contextlib.redirect_stdout(output):
+                            exec(compile(selector, "notebook-selector", "exec"), scope)
+                            self.assertTrue(scope["CONFIG"].is_file())
+                            self.assertEqual(json.loads(scope["CONFIG"].read_text()), scope["resolved_config"])
+                            # Use real detector sources and the temporary resolved config.
+                            scope["REPO_DIR"] = ROOT
+                            exec(compile(architecture, "notebook-architecture", "exec"), scope)
+                        self.assertEqual(scope["baseline_parameters"], 597817)
+                        self.assertEqual(scope["selected_parameters"], count + delta)
+                        self.assertIn("Differences from baseline:", output.getvalue())
+                        run_names.add(scope["RUN_NAME"])
+        self.assertEqual(len(run_names), 8)
 
     def test_fp16_grad_scaler_can_recover_from_a_scaled_gradient_overflow(self):
         source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(

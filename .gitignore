@@ -30,7 +30,8 @@ outputs/
 # Local datasets, reports, and experiment results
 /artifacts/
 /data/
-/docs/
+/docs/*
+!/docs/backbone_c4_ablation.md
 /evaluation/
 /outputs/
 /result/

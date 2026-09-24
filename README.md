@@ -1,4 +1,4 @@
-# MobilePIXOR baseline with switchable C2PSA and scale-gated FPN
+# MobilePIXOR with switchable C4/C5 attention and scale-gated FPN
 
 This directory contains the preparation, training, evaluation, ONNX export and
 TensorRT utilities for the MobilePIXOR detector in `detector/core`.
@@ -58,6 +58,21 @@ zero-initialized, so the model starts exactly as sum-FPN and adds 480 trainable
 parameters. For a controlled SG-FPN experiment, copy one config, change only
 this field, and select it in Colab through `CONFIG_OVERRIDE`.
 
+Two additional single-change presets keep C5 attention disabled and refine C4
+before both block5 and the C4 lateral connection:
+
+- `kitti_mobilepixor_c4_lsk.json`: `model.c4_attention: "lsk"`, a large selective
+  kernel adapter (+19,846 parameters).
+- `kitti_mobilepixor_c4_litemla.json`: `model.c4_attention: "litemla"`, a
+  multi-scale linear attention adapter (+28,544 parameters).
+
+Set `model.c4_attention` to `"none"` to disable either adapter. Missing this field
+also preserves the previous B0/B1 behavior and checkpoint keys. C4 attention,
+C5 attention, encoding, and SG-FPN are independent switches. See
+[C4 ablation guide](docs/backbone_c4_ablation.md) for architecture, equations,
+parameter counts, attribution, and controlled experiment design. These are
+adaptations of published mechanisms, not claims of new attention mechanisms.
+
 `SG-FPN` is this repository's shorthand for **scale-gated FPN**. Other papers
 use the same acronym for different architectures, so a paper should define the
 equation instead of implying that the acronym identifies a standard module.
@@ -103,6 +118,18 @@ Open `3D_Lidar_Object_Detection_Notebook_standard.ipynb` and change only
 
 - `B0` selects the pure baseline configuration.
 - `B1_C2PSA` selects the post-C5 C2PSA configuration.
+- `C4_LSK` selects the C4 large selective kernel adapter (notebook default).
+- `C4_LITEMLA` selects the C4 multi-scale linear attention adapter.
+
+Optional `BEV_ENCODING_OVERRIDE`, `SCALE_GATED_FPN_OVERRIDE`, and
+`C5_ATTENTION_OVERRIDE` select encoding, fusion, and C5 attention independently.
+`None` preserves the JSON value. The notebook writes a resolved config and uses
+it consistently for architecture inspection, training, evaluation, and resume
+checks. Automatic run names include all switches and a config hash.
+
+The default branch is `C2PSA_c5block`. Push local changes to that branch (or select
+another branch containing them) before using Colab. Start a new run when changing
+architecture; do not reuse an incompatible run/checkpoint or bypass resume checks.
 
 The notebook automatically uses BF16 on supported GPUs and FP16 otherwise. It
 records the branch, commit, config hash and effective training settings before
@@ -111,11 +138,17 @@ the repository for provenance but are not selectable from this notebook.
 
 ## Verify
 
-Run the thesis-clean backbone contract before training:
+Run the backbone, attention, and notebook contract checks before training:
 
 ```bash
 python3 tests/test_mobile_bev.py --clean-backbone
+python3 tests/test_c4_attention.py
+python3 tests/test_standard_training_notebook.py
 ```
+
+These checks establish functional behavior, not academic novelty or accuracy.
+For adapted C4 source licenses, see [attention notices](third_party/attention/NOTICE.md).
+In particular, the adapted LSK material retains its upstream noncommercial restriction.
 
 ## Evaluate
 

@@ -75,6 +75,7 @@ def main(argv=None) -> None:
         "config": str(args.config.resolve()), "config_sha256": sha256(args.config),
         "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),
         "scale_gated_fpn": config["model"].get("scale_gated_fpn", False),
+        "model_config": config["model"],
         "input_name": "voxel",
         "input_shape": list(sample_shape), "input_dtype": "float32",
         "outputs": {name: list(tensor.shape) for name, tensor in
