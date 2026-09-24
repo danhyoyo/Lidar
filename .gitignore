@@ -37,3 +37,6 @@ outputs/
 
 *.pdf
 *.xlsx
+
+# AI Agents
+.agents/
