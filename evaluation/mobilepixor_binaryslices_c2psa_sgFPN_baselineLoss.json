@@ -1,0 +1,314 @@
+{
+  "accuracy": {
+    "map_moderate_percent": 73.00233315854616,
+    "mean_ap_9_percent": 73.21498060538022,
+    "per_class": {
+      "Car": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 93.89804558637313,
+            "false_positives": 4412,
+            "ground_truth": 1194,
+            "ignored_predictions": 4079,
+            "iou_threshold": 0.7,
+            "max_recall": 0.9916247906197655,
+            "ranked_predictions": 9675,
+            "true_positives": 1184
+          },
+          "Hard": {
+            "ap_r40_percent": 90.19987942809368,
+            "false_positives": 4412,
+            "ground_truth": 4274,
+            "ignored_predictions": 1251,
+            "iou_threshold": 0.7,
+            "max_recall": 0.9386991109031352,
+            "ranked_predictions": 9675,
+            "true_positives": 4012
+          },
+          "Moderate": {
+            "ap_r40_percent": 92.35464957558754,
+            "false_positives": 4412,
+            "ground_truth": 3199,
+            "ignored_predictions": 2208,
+            "iou_threshold": 0.7,
+            "max_recall": 0.9549859331040951,
+            "ranked_predictions": 9675,
+            "true_positives": 3055
+          }
+        },
+        "mean_ap_r40_percent": 92.1508581966848
+      },
+      "Cyclist": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 70.38022340529729,
+            "false_positives": 712,
+            "ground_truth": 131,
+            "ignored_predictions": 129,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8854961832061069,
+            "ranked_predictions": 957,
+            "true_positives": 116
+          },
+          "Hard": {
+            "ap_r40_percent": 67.33268418040448,
+            "false_positives": 712,
+            "ground_truth": 229,
+            "ignored_predictions": 60,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8078602620087336,
+            "ranked_predictions": 957,
+            "true_positives": 185
+          },
+          "Moderate": {
+            "ap_r40_percent": 68.81513413688965,
+            "false_positives": 712,
+            "ground_truth": 216,
+            "ignored_predictions": 66,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8287037037037037,
+            "ranked_predictions": 957,
+            "true_positives": 179
+          }
+        },
+        "mean_ap_r40_percent": 68.84268057419713,
+        "moderate_distance_bands": {
+          "0_30m": {
+            "ap_r40_percent": 73.46370923543138,
+            "false_positives": 330,
+            "ground_truth": 149,
+            "ignored_predictions": 46,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8456375838926175,
+            "ranked_predictions": 502,
+            "true_positives": 126
+          },
+          "30_50m": {
+            "ap_r40_percent": 54.085437574198124,
+            "false_positives": 253,
+            "ground_truth": 64,
+            "ignored_predictions": 16,
+            "iou_threshold": 0.5,
+            "max_recall": 0.78125,
+            "ranked_predictions": 319,
+            "true_positives": 50
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 56.458333333333336,
+            "false_positives": 80,
+            "ground_truth": 3,
+            "ignored_predictions": 4,
+            "iou_threshold": 0.5,
+            "max_recall": 1.0,
+            "ranked_predictions": 87,
+            "true_positives": 3
+          }
+        }
+      },
+      "Pedestrian": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 61.62554141582145,
+            "false_positives": 1205,
+            "ground_truth": 471,
+            "ignored_predictions": 236,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7940552016985138,
+            "ranked_predictions": 1815,
+            "true_positives": 374
+          },
+          "Hard": {
+            "ap_r40_percent": 56.491451956793405,
+            "false_positives": 1205,
+            "ground_truth": 856,
+            "ignored_predictions": 17,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6927570093457944,
+            "ranked_predictions": 1815,
+            "true_positives": 593
+          },
+          "Moderate": {
+            "ap_r40_percent": 57.83721576316132,
+            "false_positives": 1205,
+            "ground_truth": 718,
+            "ignored_predictions": 95,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7172701949860725,
+            "ranked_predictions": 1815,
+            "true_positives": 515
+          }
+        },
+        "mean_ap_r40_percent": 58.651403045258725,
+        "moderate_distance_bands": {
+          "0_30m": {
+            "ap_r40_percent": 63.69900744237638,
+            "false_positives": 864,
+            "ground_truth": 611,
+            "ignored_predictions": 83,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7594108019639935,
+            "ranked_predictions": 1411,
+            "true_positives": 464
+          },
+          "30_50m": {
+            "ap_r40_percent": 29.965908890492226,
+            "false_positives": 260,
+            "ground_truth": 97,
+            "ignored_predictions": 7,
+            "iou_threshold": 0.5,
+            "max_recall": 0.4948453608247423,
+            "ranked_predictions": 315,
+            "true_positives": 48
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 11.578947368421053,
+            "false_positives": 63,
+            "ground_truth": 10,
+            "ignored_predictions": 5,
+            "iou_threshold": 0.5,
+            "max_recall": 0.3,
+            "ranked_predictions": 71,
+            "true_positives": 3
+          }
+        }
+      }
+    }
+  },
+  "counts": {
+    "detections": 12447,
+    "detections_per_frame": 8.314629258517034
+  },
+  "data": {
+    "bev_encoding": {
+      "name": "binary_slices"
+    },
+    "config": "/content/Lidar/configs/kitti/backbone_branch/kitti_mobilepixor_c2psa.json",
+    "config_sha256": "1882651d7a353c37caf3f90c363f858ddffca0263d57b0f676373223aed46b51",
+    "detector_root": "/content/Lidar/detector",
+    "frames": 1497,
+    "full_split_frames": 1497,
+    "input_bytes_fp32": 78848000,
+    "input_channels": 35,
+    "kitti_root": "/content/KITTI_DATASET",
+    "seed": 42,
+    "source": {
+      "commit": "7d79cdd673b7576294c2e8c1874e4fdcb08eea3b",
+      "dirty": false
+    },
+    "split": "/content/Lidar/splits/kitti/val.txt",
+    "split_sha256": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a"
+  },
+  "latency": {
+    "decode_nms": {
+      "fps": 156.11550549607583,
+      "mean_ms": 6.405513640828818,
+      "p50_ms": 5.627525002637412,
+      "p95_ms": 10.832692297844918,
+      "p99_ms": 14.085527101706292,
+      "samples": 1487
+    },
+    "host_to_device": {
+      "fps": 24.425505080344262,
+      "mean_ms": 40.94081152920444,
+      "p50_ms": 38.111839294433594,
+      "p95_ms": 56.08259201049805,
+      "p99_ms": 58.4904638671875,
+      "samples": 1487
+    },
+    "input_to_detections": {
+      "fps": 13.282702766050095,
+      "mean_ms": 75.28588252053254,
+      "p50_ms": 73.64452299952973,
+      "p95_ms": 92.87067729528644,
+      "p99_ms": 97.02063015924068,
+      "samples": 1487
+    },
+    "model": {
+      "fps": 89.52750527358262,
+      "mean_ms": 11.169751652792627,
+      "p50_ms": 11.167648315429688,
+      "p95_ms": 11.223577308654786,
+      "p99_ms": 11.250256023406983,
+      "samples": 1487
+    },
+    "preprocess": {
+      "fps": 60.83553261669762,
+      "mean_ms": 16.437761896499424,
+      "p50_ms": 16.192619994399138,
+      "p95_ms": 20.619180200446863,
+      "p99_ms": 22.046884404844608,
+      "samples": 1487
+    }
+  },
+  "model": {
+    "backend": "pytorch",
+    "bytes": 7896993,
+    "device": "cuda",
+    "framework": "PyTorch 2.11.0+cu128",
+    "parameters": 633865,
+    "path": "/content/drive/MyDrive/lidar_training_artifacts/b1_c2psa_seed42_eb16/selected/best.pt",
+    "precision": "fp32",
+    "sha256": "a044641e1c5c594d1d54077bf44ce0cbaa02ee6b10650baa28bf43429865a69d"
+  },
+  "name": "b1_c2psa_seed42_eb16_validation",
+  "predictions": {
+    "format": "one float32 array per frame; columns are class,score,x,y,l,w,yaw",
+    "path": "/content/drive/MyDrive/lidar_training_artifacts/b1_c2psa_seed42_eb16/evaluation_validation.predictions.npz",
+    "sha256": "a9039b43fd88730274511b7c3e3392c556b36a0b0e79bdf30b0e01e4b8855ec0"
+  },
+  "protocol": {
+    "classes": [
+      "Car",
+      "Pedestrian",
+      "Cyclist"
+    ],
+    "difficulty_rules": {
+      "Easy": {
+        "max_occlusion": 0,
+        "max_truncation": 0.15,
+        "min_height": 40.0
+      },
+      "Hard": {
+        "max_occlusion": 2,
+        "max_truncation": 0.5,
+        "min_height": 25.0
+      },
+      "Moderate": {
+        "max_occlusion": 1,
+        "max_truncation": 0.3,
+        "min_height": 25.0
+      }
+    },
+    "iou_thresholds": {
+      "Car": 0.7,
+      "Cyclist": 0.5,
+      "Pedestrian": 0.5
+    },
+    "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+    "max_detections_per_frame": 500,
+    "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+    "neighbour_class_ignores": {
+      "Car": [
+        "Van"
+      ],
+      "Cyclist": [],
+      "Pedestrian": [
+        "Person_sitting"
+      ]
+    },
+    "nms_threshold": 0.1,
+    "official_hidden_test_submission": false,
+    "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+    "score_threshold": 0.05,
+    "warmup_frames_excluded_from_latency_only": 10
+  },
+  "runtime": {
+    "cuda": "12.8",
+    "elapsed_seconds": 118.82127380371094,
+    "gpu": "NVIDIA L4",
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "torch_peak_memory_mb": 325.51611328125
+  },
+  "status": "ok"
+}
