@@ -42,3 +42,4 @@ outputs/
 
 # AI Agents
 .agents/
+e2e_demo/
