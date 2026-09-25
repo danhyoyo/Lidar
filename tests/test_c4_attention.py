@@ -179,9 +179,24 @@ class C4AttentionTests(unittest.TestCase):
             config = read_json(CONFIG_DIR / f"kitti_mobilepixor_c4_{mode}.json")
             self.assertEqual(config["model"]["c4_attention"], mode)
             config["model"]["c4_attention"] = "none"
-            config["model"].pop(mode)
             config["note"] = self.config["note"]
             self.assertEqual(config, self.config)
+
+    def test_all_backbone_branch_configs_share_universal_model_schema(self):
+        expected_keys = [
+            "backbone", "backbone_out_dim", "c4_attention", "c5_attention",
+            "cls_encoding", "scale_gated_fpn", "c2psa", "lsk", "litemla",
+        ]
+        config_paths = sorted(CONFIG_DIR.glob("*.json"))
+        self.assertEqual(len(config_paths), 4)
+        for path in config_paths:
+            with self.subTest(config=path.name):
+                model = read_json(path)["model"]
+                self.assertEqual(list(model), expected_keys)
+                self.assertEqual(
+                    set(model), set(expected_keys),
+                    "New variants must update every backbone_branch config to the same schema",
+                )
 
     def test_config_overrides_do_not_mutate_presets(self):
         original = deepcopy(self.config)

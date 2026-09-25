@@ -75,6 +75,57 @@ an older Colab run, use its original checkout/config/metadata rather than disabl
 the resume guard. New default run names include all architecture switches and a
 config hash to keep ablations separate.
 
+## C4 mechanism diagrams
+
+The two controlled C4 variants occupy the same insertion point but implement
+different operations. Neither diagram includes C2PSA unless `c5_attention` is
+separately changed to `c2psa`.
+
+```mermaid
+flowchart LR
+  C4["C4 input<br/>64 x 100 x 88"] --> N["BatchNorm"]
+  N --> P["1x1 projection + GELU<br/>feature F"]
+  P --> K5["Depthwise 5x5<br/>local U"]
+  K5 --> K7["Depthwise 7x7, dilation 3<br/>context V, effective 23x23"]
+  K5 --> PU["1x1: 64 to 32"]
+  K7 --> PV["1x1: 64 to 32"]
+  PU --> CAT["Concatenate U and V"]
+  PV --> CAT
+  CAT --> STAT["Channel mean + max"]
+  STAT --> SEL["7x7 conv + sigmoid<br/>two spatial gates"]
+  PU --> MIX["g_local * U + g_context * V"]
+  PV --> MIX
+  SEL --> MIX
+  MIX --> GP["1x1: 32 to 64"]
+  P --> MUL["Feature modulation"]
+  GP --> MUL
+  MUL --> OP["1x1 output projection"]
+  C4 --> ADD["Residual add"]
+  OP --> LS["Per-channel LayerScale"]
+  LS --> ADD
+  ADD --> R["Refined C4"]
+  R --> B5["Block5 / C5 path"]
+  R --> LAT["C4 lateral / FPN path"]
+```
+
+```mermaid
+flowchart LR
+  C4["C4 input<br/>64 x 100 x 88"] --> QKV["1x1 QKV projection"]
+  QKV --> NAT["Native-scale Q, K, V"]
+  QKV --> AGG["Depthwise 5x5 + grouped 1x1<br/>local multi-scale Q, K, V"]
+  NAT --> CAT["Concatenate scale-head groups"]
+  AGG --> CAT
+  CAT --> RELU["ReLU(Q), ReLU(K)"]
+  RELU --> LIN["Linear attention<br/>(V K^T) Q / (sum(K)^T Q + eps)<br/>FP32 accumulation; no N x N matrix"]
+  LIN --> PROJ["1x1 output projection + BN"]
+  PROJ --> LS["Per-channel LayerScale"]
+  C4 --> ADD["Residual add"]
+  LS --> ADD
+  ADD --> R["Refined C4"]
+  R --> B5["Block5 / C5 path"]
+  R --> LAT["C4 lateral / FPN path"]
+```
+
 ## What is implemented
 
 These modules are adaptations of published mechanisms. They do not reproduce the

@@ -73,6 +73,12 @@ C5 attention, encoding, and SG-FPN are independent switches. See
 parameter counts, attribution, and controlled experiment design. These are
 adaptations of published mechanisms, not claims of new attention mechanisms.
 
+Every config in `configs/kitti/backbone_branch/` carries the same model schema,
+including the `c2psa`, `lsk`, and `litemla` option blocks. Only `c4_attention` and
+`c5_attention` activate them. In particular, `c5_attention: "none"` constructs a
+parameter-free identity operation; it does not select a default attention module.
+A regression test requires future variants to update all configs to this schema.
+
 `SG-FPN` is this repository's shorthand for **scale-gated FPN**. Other papers
 use the same acronym for different architectures, so a paper should define the
 equation instead of implying that the acronym identifies a standard module.
