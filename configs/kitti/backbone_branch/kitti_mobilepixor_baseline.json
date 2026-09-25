@@ -83,19 +83,19 @@
   "note": "kitti_mobilepixor_baseline_aug_bf16",
   "seed": 42,
   "train": {
-    "accumulation_steps": 2,
+    "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.0003,
+    "learning_rate": 0.0005,
     "lr_decay_at": [
-      40,
-      80
+      60,
+      85
     ],
     "momentum": 0.9,
-    "physical_batch_size": 2,
+    "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
-    "weight_decay": 0.0005
+    "weight_decay": 0.0001
   },
   "val": {
     "data": "splits/kitti/val.txt",
