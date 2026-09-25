@@ -1,0 +1,316 @@
+{
+  "accuracy": {
+    "map_moderate_percent": 66.04952034749913,
+    "mean_ap_9_percent": 66.83682188264532,
+    "per_class": {
+      "Car": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 88.53350232658906,
+            "false_positives": 6011,
+            "ground_truth": 1194,
+            "ignored_predictions": 3871,
+            "iou_threshold": 0.7,
+            "max_recall": 0.981574539363484,
+            "ranked_predictions": 11054,
+            "true_positives": 1172
+          },
+          "Hard": {
+            "ap_r40_percent": 84.9631015092022,
+            "false_positives": 6011,
+            "ground_truth": 4274,
+            "ignored_predictions": 1181,
+            "iou_threshold": 0.7,
+            "max_recall": 0.9036031820308844,
+            "ranked_predictions": 11054,
+            "true_positives": 3862
+          },
+          "Moderate": {
+            "ap_r40_percent": 86.38761082481079,
+            "false_positives": 6011,
+            "ground_truth": 3199,
+            "ignored_predictions": 2081,
+            "iou_threshold": 0.7,
+            "max_recall": 0.925914348233823,
+            "ranked_predictions": 11054,
+            "true_positives": 2962
+          }
+        },
+        "mean_ap_r40_percent": 86.62807155353403
+      },
+      "Cyclist": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 59.17826463616171,
+            "false_positives": 1143,
+            "ground_truth": 131,
+            "ignored_predictions": 110,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7709923664122137,
+            "ranked_predictions": 1354,
+            "true_positives": 101
+          },
+          "Hard": {
+            "ap_r40_percent": 54.32417007356906,
+            "false_positives": 1143,
+            "ground_truth": 229,
+            "ignored_predictions": 52,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6943231441048034,
+            "ranked_predictions": 1354,
+            "true_positives": 159
+          },
+          "Moderate": {
+            "ap_r40_percent": 54.57586149642359,
+            "false_positives": 1143,
+            "ground_truth": 216,
+            "ignored_predictions": 61,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6944444444444444,
+            "ranked_predictions": 1354,
+            "true_positives": 150
+          }
+        },
+        "mean_ap_r40_percent": 56.026098735384785,
+        "moderate_distance_bands": {
+          "0_30m": {
+            "ap_r40_percent": 64.56733145211878,
+            "false_positives": 476,
+            "ground_truth": 149,
+            "ignored_predictions": 41,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7516778523489933,
+            "ranked_predictions": 629,
+            "true_positives": 112
+          },
+          "30_50m": {
+            "ap_r40_percent": 32.992177819632495,
+            "false_positives": 462,
+            "ground_truth": 64,
+            "ignored_predictions": 16,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5625,
+            "ranked_predictions": 514,
+            "true_positives": 36
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 45.49999999999999,
+            "false_positives": 173,
+            "ground_truth": 3,
+            "ignored_predictions": 4,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6666666666666666,
+            "ranked_predictions": 179,
+            "true_positives": 2
+          }
+        }
+      },
+      "Pedestrian": {
+        "difficulties": {
+          "Easy": {
+            "ap_r40_percent": 61.38194598823452,
+            "false_positives": 1716,
+            "ground_truth": 471,
+            "ignored_predictions": 229,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7919320594479831,
+            "ranked_predictions": 2318,
+            "true_positives": 373
+          },
+          "Hard": {
+            "ap_r40_percent": 55.00185136755393,
+            "false_positives": 1716,
+            "ground_truth": 856,
+            "ignored_predictions": 22,
+            "iou_threshold": 0.5,
+            "max_recall": 0.677570093457944,
+            "ranked_predictions": 2318,
+            "true_positives": 580
+          },
+          "Moderate": {
+            "ap_r40_percent": 57.18508872126302,
+            "false_positives": 1716,
+            "ground_truth": 718,
+            "ignored_predictions": 87,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7172701949860725,
+            "ranked_predictions": 2318,
+            "true_positives": 515
+          }
+        },
+        "mean_ap_r40_percent": 57.85629535901716,
+        "moderate_distance_bands": {
+          "0_30m": {
+            "ap_r40_percent": 62.967753658595136,
+            "false_positives": 1116,
+            "ground_truth": 611,
+            "ignored_predictions": 78,
+            "iou_threshold": 0.5,
+            "max_recall": 0.762684124386252,
+            "ranked_predictions": 1660,
+            "true_positives": 466
+          },
+          "30_50m": {
+            "ap_r40_percent": 23.32702398019772,
+            "false_positives": 471,
+            "ground_truth": 97,
+            "ignored_predictions": 3,
+            "iou_threshold": 0.5,
+            "max_recall": 0.4742268041237113,
+            "ranked_predictions": 520,
+            "true_positives": 46
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 5.666666666666666,
+            "false_positives": 120,
+            "ground_truth": 10,
+            "ignored_predictions": 6,
+            "iou_threshold": 0.5,
+            "max_recall": 0.3,
+            "ranked_predictions": 129,
+            "true_positives": 3
+          }
+        }
+      }
+    }
+  },
+  "counts": {
+    "detections": 14726,
+    "detections_per_frame": 9.837007348029392
+  },
+  "data": {
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    },
+    "config": "D:\\project_lidar_BEV\\Lidar\\configs\\kitti\\loss_ablation\\b4_kld_fixed.json",
+    "config_sha256": "b8451982c0e17f7e3b5c5675c04ae18c8be8040991b4a5b94faeadc5f7952f41",
+    "detector_root": "D:\\project_lidar_BEV\\Lidar\\detector",
+    "frames": 1497,
+    "full_split_frames": 1497,
+    "input_bytes_fp32": 18022400,
+    "input_channels": 8,
+    "kitti_root": "D:\\project_lidar_BEV\\datasets\\KITTI\\object",
+    "seed": 42,
+    "source": {
+      "commit": "c82ec72cc2ed5e633ea5d96340e0a2eb53aa2ea6",
+      "dirty": false
+    },
+    "split": "D:\\project_lidar_BEV\\Lidar\\splits\\kitti\\val.txt",
+    "split_sha256": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a"
+  },
+  "latency": {
+    "decode_nms": {
+      "fps": 152.82481354968562,
+      "mean_ms": 6.543440013259922,
+      "p50_ms": 6.085700006224215,
+      "p95_ms": 9.524749976117164,
+      "p99_ms": 12.307623986853294,
+      "samples": 1487
+    },
+    "host_to_device": {
+      "fps": 349.9015534486345,
+      "mean_ms": 2.8579467285697544,
+      "p50_ms": 2.766335964202881,
+      "p95_ms": 3.6826815605163574,
+      "p99_ms": 4.4858862018585235,
+      "samples": 1487
+    },
+    "input_to_detections": {
+      "fps": 22.080123666559917,
+      "mean_ms": 45.28960141262651,
+      "p50_ms": 44.77390000829473,
+      "p95_ms": 50.86895002168603,
+      "p99_ms": 56.284271987387925,
+      "samples": 1487
+    },
+    "model": {
+      "fps": 103.28522121618784,
+      "mean_ms": 9.681927271152231,
+      "p50_ms": 9.51411247253418,
+      "p95_ms": 10.338531494140625,
+      "p99_ms": 10.611407623291015,
+      "samples": 1487
+    },
+    "preprocess": {
+      "fps": 38.68108588982279,
+      "mean_ms": 25.852428312078633,
+      "p50_ms": 25.642399967182428,
+      "p95_ms": 30.02756998175755,
+      "p99_ms": 33.153859986923635,
+      "samples": 1487
+    }
+  },
+  "model": {
+    "backend": "pytorch",
+    "bytes": 7387050,
+    "device": "cuda",
+    "framework": "PyTorch 2.12.0.dev20260408+cu128",
+    "parameters": 593041,
+    "path": "D:\\project_lidar_BEV\\Lidar\\artifacts\\kitti\\b4_kld_seed42\\checkpoints\\95epoch.pt",
+    "precision": "fp32",
+    "sha256": "1ed88800c50bcb1800651608aef88d16b0615734908ea5264e2598a989bfd379"
+  },
+  "name": "epoch_095",
+  "predictions": {
+    "format": "one float32 array per frame; columns are class,score,x,y,l,w,yaw",
+    "path": "D:\\project_lidar_BEV\\Lidar\\artifacts\\kitti\\b4_kld_seed42\\selected_bev\\evaluations\\epoch_095.predictions.npz",
+    "sha256": "b80ecb3e27fcdf4acdbf6e5ff1abab93e0c18155c565bb52e6a0fd44c5fd2838"
+  },
+  "protocol": {
+    "classes": [
+      "Car",
+      "Pedestrian",
+      "Cyclist"
+    ],
+    "difficulty_rules": {
+      "Easy": {
+        "max_occlusion": 0,
+        "max_truncation": 0.15,
+        "min_height": 40.0
+      },
+      "Hard": {
+        "max_occlusion": 2,
+        "max_truncation": 0.5,
+        "min_height": 25.0
+      },
+      "Moderate": {
+        "max_occlusion": 1,
+        "max_truncation": 0.3,
+        "min_height": 25.0
+      }
+    },
+    "iou_thresholds": {
+      "Car": 0.7,
+      "Cyclist": 0.5,
+      "Pedestrian": 0.5
+    },
+    "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+    "max_detections_per_frame": 500,
+    "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+    "neighbour_class_ignores": {
+      "Car": [
+        "Van"
+      ],
+      "Cyclist": [],
+      "Pedestrian": [
+        "Person_sitting"
+      ]
+    },
+    "nms_threshold": 0.1,
+    "official_hidden_test_submission": false,
+    "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+    "score_threshold": 0.05,
+    "warmup_frames_excluded_from_latency_only": 10
+  },
+  "runtime": {
+    "cuda": "12.8",
+    "elapsed_seconds": 68.82839035987854,
+    "gpu": "NVIDIA GeForce RTX 5060 Ti",
+    "python": "3.11.14",
+    "torch": "2.12.0.dev20260408+cu128",
+    "torch_peak_memory_mb": 297.0859375
+  },
+  "status": "ok"
+}

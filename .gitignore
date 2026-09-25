@@ -30,7 +30,11 @@ outputs/
 # Local datasets and experiment results
 /artifacts/
 /data/
-/evaluation/
+/evaluation/*
+!/evaluation/mobilepixor_rich8-sgfpn_sgfpn_uwag.json
+!/evaluation/mobilepixor_rich8_sgfpn_kfiou.json
+!/evaluation/mobilepixor_rich8_sgfpn_kld.json
+!/evaluation/mobilepixor_rich8_sgfpn_probiou.json
 /outputs/
 /result/
 /results/
