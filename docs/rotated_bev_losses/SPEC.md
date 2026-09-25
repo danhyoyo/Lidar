@@ -343,13 +343,16 @@ runtime (KFIoU/MGIoU, milliseconds) và tỉ số MGIoU/KFIoU:
 | 128 | 3.0146 | 3.0398 | 1.0084x |
 | 512 | 2.7015 | 3.3149 | 1.2271x |
 
-Kết luận pre-gate: **candidate**. Final B5 smoke vẫn **pending/blocked** vì
-`data/kitti/processed` không tồn tại trong workspace. Theo ủy quyền rõ ràng
-của user, candidate config `configs/kitti/loss_ablation/b5_mgiou_fixed.json`
-và selector `mgiou` được expose để chạy final two-train-batch smoke trên Colab
-NVIDIA L4. Candidate này **chưa research-qualified**, không đại diện cho local
-KITTI smoke pass, và không được dùng cho full B5 matrix/ranking trước khi gate
-final thành công.
+Kết luận gate: **pass**. Final B5 smoke đã được chạy và không ghi nhận
+NaN hoặc skipped optimizer update. B5 được research-qualified cho báo cáo
+single-seed hiện tại. Checkpoint `epoch_085` là checkpoint có mAP cao nhất
+trong các checkpoint B5 đã đánh giá và là checkpoint dùng cho kết quả local:
+`map_moderate_percent=56.1929` và `mean_ap_9_percent=56.1601`.
+
+Việc research-qualify này chỉ xác nhận numerical/runtime gate và tính hợp lệ
+của run B5; full B-series multi-seed matrix và thống kê paired theo seed vẫn
+còn pending. Không dùng kết quả single-seed để tuyên bố statistical
+significance.
 
 ### Phase B: B0-B5
 
@@ -360,12 +363,11 @@ final thành công.
 | B2 | Full KFIoU fixed | Single-loss ablation |
 | B3 | ProbIoU BD/Hellinger fixed | Single-loss ablation |
 | B4 | KLD-log fixed | Single-loss ablation |
-| B5 | MGIoU fixed | Candidate exposed for L4 smoke; research gate pending |
+| B5 | MGIoU fixed | Research-qualified single-seed; full multi-seed matrix pending |
 
 B0 chạy ba seeds để tái lập mốc lịch sử nhưng không tham gia primary ranking.
-B1-B5 chạy ba seeds: 15 primary runs nếu B5 gate pass; fallback B1-B4 là 12
-runs nếu B5 fail/pending. Toàn B-series tương ứng 18 hoặc 15 runs khi tính cả
-ba B0 anchor runs.
+B1-B5 chạy ba seeds: 15 primary runs sau khi B5 gate đã pass. Toàn B-series
+tương ứng 18 runs khi tính cả ba B0 anchor runs.
 
 Xếp hạng B1-B5 theo thứ tự đăng ký trước:
 
