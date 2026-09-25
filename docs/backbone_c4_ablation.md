@@ -4,16 +4,18 @@
 
 All presets live in `configs/kitti/backbone_branch/`.
 
-| Preset / Colab VARIANT | File | C4 attention | C5 attention | Legacy35 + sum-FPN parameters |
-|---|---|---|---|---:|
-| B0 | kitti_mobilepixor_baseline.json | none | none | 597,817 |
-| B1_C2PSA | kitti_mobilepixor_c2psa.json | none | c2psa | 633,865 |
-| C4_LSK | kitti_mobilepixor_c4_lsk.json | lsk | none | 617,663 |
-| C4_LITEMLA | kitti_mobilepixor_c4_litemla.json | litemla | none | 626,361 |
+| Preset / Colab VARIANT | File | Encoding | FPN | C4 attention | C5 attention | Parameters |
+|---|---|---|---|---|---|---:|
+| B0 | kitti_mobilepixor_baseline.json | Legacy35 | sum | none | none | 597,817 |
+| B1_C2PSA | kitti_mobilepixor_c2psa.json | RichBEV-8 | SG-FPN | none | c2psa | 626,569 |
+| C4_LSK | kitti_mobilepixor_c4_lsk.json | RichBEV-8 | SG-FPN | lsk | none | 610,367 |
+| C4_LITEMLA | kitti_mobilepixor_c4_litemla.json | RichBEV-8 | SG-FPN | litemla | none | 619,065 |
 
-The C4 presets each differ from B0 only in the selected C4 adapter, its options,
-and the descriptive note. Augmentation remains enabled. Heads, loss, geometry,
-optimizer, split, schedule, and default encoding/FPN are shared.
+The two C4 presets differ from each other only in the selected C4 adapter and
+descriptive note. Both use RichBEV-8 + SG-FPN, enabled augmentation, physical
+training batch 16 with two-step accumulation, and validation batch 16. B0 uses
+Legacy35 + sum-FPN, so comparing either C4 preset directly with B0 is not a
+single-factor attention ablation.
 
 Set the independent switches in a config copy:
 
@@ -25,7 +27,7 @@ Set the independent switches in a config copy:
     "cls_encoding": "gaussian",
     "c4_attention": "lsk",
     "c5_attention": "none",
-    "scale_gated_fpn": false
+    "scale_gated_fpn": true
   }
 }
 ```
@@ -37,9 +39,9 @@ or `rich8`. SG-FPN accepts a JSON Boolean. There is no automatic enabling of C2P
 SG-FPN, CoordAtt, UWAG, or a different encoding when C4 is enabled.
 
 The complete switch space is 3 C4 choices x 2 C5 choices x 2 encodings x 2 FPN
-choices = 24 configurations. Start with C5=`none` to isolate C4, then test C2PSA
-interactions separately. Enabling C4 and C5 together is supported but is a distinct
-experiment, not the default C4 preset.
+choices = 24 configurations. The committed C4 pair uses Rich8, SG-FPN, and
+C5=`none`; test C2PSA interactions separately. Enabling C4 and C5 together is
+supported but is a distinct experiment, not the default C4 preset.
 
 With Rich8, all counts decrease by 7,776 (27 fewer input channels x 32 stem
 channels x 3 x 3). SG-FPN adds 480. C2PSA adds 36,048 relative to C5=`none`.

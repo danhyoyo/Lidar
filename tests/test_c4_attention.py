@@ -26,6 +26,24 @@ from core.losses.loss_fn import LossFunction
 CONFIG_DIR = ROOT / "configs/kitti/backbone_branch"
 
 
+def config_differences(actual, expected, path=""):
+    """Return concise field-level differences for controlled preset failures."""
+    if isinstance(actual, dict) and isinstance(expected, dict):
+        differences = []
+        for key in sorted(actual.keys() | expected.keys()):
+            child = f"{path}.{key}" if path else key
+            if key not in actual:
+                differences.append(f"{child}: missing; expected {expected[key]!r}")
+            elif key not in expected:
+                differences.append(f"{child}: unexpected {actual[key]!r}")
+            else:
+                differences.extend(config_differences(actual[key], expected[key], child))
+        return differences
+    if actual != expected:
+        return [f"{path}: {actual!r} != {expected!r}"]
+    return []
+
+
 class C4AttentionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -174,13 +192,32 @@ class C4AttentionTests(unittest.TestCase):
                     torch.testing.assert_close(first[key], second[key], rtol=0, atol=0)
         self.assertEqual(len(labels), 24)
 
-    def test_new_presets_are_single_changes(self):
-        for mode in ("lsk", "litemla"):
-            config = read_json(CONFIG_DIR / f"kitti_mobilepixor_c4_{mode}.json")
-            self.assertEqual(config["model"]["c4_attention"], mode)
-            config["model"]["c4_attention"] = "none"
-            config["note"] = self.config["note"]
-            self.assertEqual(config, self.config)
+    def test_c4_presets_share_the_rich8_sgfpn_profile(self):
+        configs = {
+            mode: read_json(CONFIG_DIR / f"kitti_mobilepixor_c4_{mode}.json")
+            for mode in ("lsk", "litemla")
+        }
+        for mode, config in configs.items():
+            with self.subTest(mode=mode):
+                self.assertEqual(config["data"]["bev_encoding"]["name"], "rich8")
+                self.assertIs(config["model"]["scale_gated_fpn"], True)
+                self.assertEqual(config["model"]["c4_attention"], mode)
+                self.assertEqual(config["model"]["c5_attention"], "none")
+                self.assertEqual(config["train"]["physical_batch_size"], 16)
+                self.assertEqual(config["train"]["accumulation_steps"], 2)
+                self.assertEqual(config["val"]["physical_batch_size"], 16)
+
+        normalized_lsk = deepcopy(configs["lsk"])
+        normalized_lsk["model"]["c4_attention"] = "none"
+        normalized_lsk["note"] = configs["litemla"]["note"]
+        normalized_litemla = deepcopy(configs["litemla"])
+        normalized_litemla["model"]["c4_attention"] = "none"
+        differences = config_differences(normalized_lsk, normalized_litemla)
+        self.assertFalse(
+            differences,
+            "C4_LSK and C4_LITEMLA must use the same Rich8 + SG-FPN profile; "
+            "unexpected fields:\n- " + "\n- ".join(differences),
+        )
 
     def test_all_backbone_branch_configs_share_universal_model_schema(self):
         expected_keys = [

@@ -41,25 +41,29 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
   --val-ids splits/kitti/val.txt
 ```
 
-## Controlled backbone experiment
+## Backbone experiment profiles
 
-Both configurations use Legacy35 input, the baseline loss, the same enabled
-augmentation policy, the same MobilePIXOR stages, and the same FPN and heads.
-The controlled B0/B1 comparison changes only `model.c5_attention`:
+The committed presets deliberately represent two experiment families:
 
-- `none`: frozen B0 baseline.
-- `c2psa`: one C2PSA block after C5 and before the existing FPN lateral layer.
+- `B0`: Legacy35 + sum-FPN, with C4/C5 attention disabled.
+- `B1_C2PSA`: RichBEV-8 + SG-FPN, with C2PSA after C5.
+- `C4_LSK` and `C4_LITEMLA`: RichBEV-8 + SG-FPN, with C5 attention disabled
+  and the selected adapter after C4.
 
-The clean backbone also accepts the independent Boolean switch
-`model.scale_gated_fpn`. It is explicitly `false` in both committed B0/B1
-configs, so those definitions remain unchanged. When `true`, the two ordinary
-FPN sums become learnable, depthwise scale gates at C4 and C3. The gates are
-zero-initialized, so the model starts exactly as sum-FPN and adds 480 trainable
-parameters. For a controlled SG-FPN experiment, copy one config, change only
-this field, and select it in Colab through `CONFIG_OVERRIDE`.
+Consequently, B0 versus B1 is **not** a single-factor attention ablation: input
+encoding, FPN fusion, and C5 attention all change. The two C4 presets do form a
+controlled mechanism comparison with each other; apart from the selector and
+descriptive note, they share the same RichBEV-8 + SG-FPN profile and training
+settings. For any one-factor paper ablation, copy a preset and hold all switches
+except the factor under test constant (or apply explicit notebook overrides).
 
-Two additional single-change presets keep C5 attention disabled and refine C4
-before both block5 and the C4 lateral connection:
+The independent Boolean `model.scale_gated_fpn` switch changes the two ordinary
+FPN sums into learnable, depthwise scale gates at C4 and C3. The gates are
+zero-initialized, so SG-FPN starts exactly as sum-FPN and adds 480 trainable
+parameters.
+
+The C4 presets keep C5 attention disabled and refine C4 before both block5 and
+the C4 lateral connection:
 
 - `kitti_mobilepixor_c4_lsk.json`: `model.c4_attention: "lsk"`, a large selective
   kernel adapter (+19,846 parameters).
@@ -96,7 +100,7 @@ python3 tools/kitti_training_pipeline/train.py \
   --num-workers 2
 ```
 
-Train the controlled C2PSA variant:
+Train the committed RichBEV-8 + SG-FPN + C2PSA profile:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
@@ -107,8 +111,9 @@ python3 tools/kitti_training_pipeline/train.py \
   --num-workers 2
 ```
 
-Use the same precision, seed, batch size, epoch count, split, and evaluation
-settings for both runs. Resume with `--resume /path/to/checkpoint.pt`. Training
+Do not label those two commands a one-factor B0/C2PSA ablation. For a controlled
+comparison, first make the encoding and FPN settings identical. Resume with
+`--resume /path/to/checkpoint.pt`. Training
 keeps the minimum-validation-loss checkpoint in `<run>/selected/best.pt`. Each
 epoch is also appended to `<run>/metrics.csv`, while TensorBoard event files are
 written to `<run>/tensorboard`. View a run with:
@@ -136,6 +141,9 @@ checks. Automatic run names include all switches and a config hash.
 The default branch is `C2PSA_c5block`. Push local changes to that branch (or select
 another branch containing them) before using Colab. Start a new run when changing
 architecture; do not reuse an incompatible run/checkpoint or bypass resume checks.
+The setup cell prints the detached Git commit actually tested. If GitHub is updated
+after that cell ran, rerun the setup/checkout cell (or restart and run all) before
+interpreting a test failure; do not continue from an obsolete commit.
 
 The notebook automatically uses BF16 on supported GPUs and FP16 otherwise. It
 records the branch, commit, config hash and effective training settings before

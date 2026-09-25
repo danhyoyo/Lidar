@@ -5,6 +5,7 @@ import contextlib
 import io
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -18,9 +19,9 @@ NOTEBOOK = ROOT / "3D_Lidar_Object_Detection_Notebook_standard.ipynb"
 class StandardTrainingNotebookTests(unittest.TestCase):
     def test_repository_keeps_only_the_standard_notebook(self):
         expected = {"3D_Lidar_Object_Detection_Notebook_standard.ipynb"}
-        notebooks = {
-            path.relative_to(ROOT).as_posix() for path in ROOT.rglob("*.ipynb")
-        }
+        notebooks = set(subprocess.check_output(
+            ["git", "ls-files", "*.ipynb"], cwd=ROOT, text=True,
+        ).splitlines())
         self.assertEqual(notebooks, expected)
 
     def test_supports_clean_backbone_variants_and_safe_resume(self):
@@ -82,7 +83,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn('math.isfinite(smoke_row["validation"]["loss"])', source)
         self.assertIn('smoke_row["optimizer_updates"] < 1', source)
 
-    def test_c2psa_config_changes_only_the_backbone_attention(self):
+    def test_committed_b0_and_c2psa_profiles_are_explicit(self):
         baseline = json.loads(
             (
                 ROOT
@@ -95,24 +96,31 @@ class StandardTrainingNotebookTests(unittest.TestCase):
                 / "configs/kitti/backbone_branch/kitti_mobilepixor_c2psa.json"
             ).read_text(encoding="utf-8")
         )
-        for key in set(baseline) - {"model", "note"}:
+        for key in set(baseline) - {"data", "model", "note"}:
             self.assertEqual(c2psa[key], baseline[key], key)
+        for key in set(baseline["data"]) - {"bev_encoding"}:
+            self.assertEqual(c2psa["data"][key], baseline["data"][key], key)
         self.assertEqual(baseline["model"]["c5_attention"], "none")
         self.assertEqual(c2psa["model"]["c5_attention"], "c2psa")
         self.assertEqual(baseline["model"]["c4_attention"], "none")
         self.assertEqual(c2psa["model"]["c4_attention"], "none")
         self.assertIs(baseline["model"]["scale_gated_fpn"], False)
-        self.assertIs(c2psa["model"]["scale_gated_fpn"], False)
+        self.assertIs(c2psa["model"]["scale_gated_fpn"], True)
         self.assertEqual(c2psa["model"]["backbone"], "mobilepixor")
         self.assertEqual(c2psa["loss"]["name"], "baseline")
         self.assertEqual(c2psa["augmentation"]["p"], 0.5)
-        expected_bev_encoding = {
+        expected_baseline_encoding = {
             "density_norm": 32,
             "intensity_scale": 1,
             "name": "binary_slices",
         }
-        self.assertEqual(baseline["data"]["bev_encoding"], expected_bev_encoding)
-        self.assertEqual(c2psa["data"]["bev_encoding"], expected_bev_encoding)
+        expected_c2psa_encoding = {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich8",
+        }
+        self.assertEqual(baseline["data"]["bev_encoding"], expected_baseline_encoding)
+        self.assertEqual(c2psa["data"]["bev_encoding"], expected_c2psa_encoding)
         for transform in ("rotation", "scaling", "translation"):
             self.assertTrue(c2psa["augmentation"][transform]["use"])
 
@@ -156,13 +164,22 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         selector = "\n".join(line for line in selector.splitlines() if not line.startswith("%"))
         architecture = next(source for source in sources if "Selected architecture:" in source)
         sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
-        counts = {"B0": 597817, "B1_C2PSA": 633865, "C4_LSK": 617663, "C4_LITEMLA": 626361}
+        profiles = {
+            "B0": (597817, "rich8", True, -7776 + 480),
+            "B1_C2PSA": (626569, "binary_slices", False, 7776 - 480),
+            "C4_LSK": (610367, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA": (619065, "binary_slices", False, 7776 - 480),
+        }
         run_names = set()
         with tempfile.TemporaryDirectory() as directory:
             temporary_root = Path(directory).resolve()
             shutil.copytree(ROOT / "configs/kitti/backbone_branch", temporary_root / "configs/kitti/backbone_branch")
-            for variant, count in counts.items():
-                for encoding, gated, delta in ((None, None, 0), ("rich8", True, -7776 + 480)):
+            for variant, (count, alternate_encoding, alternate_gated, alternate_delta) in profiles.items():
+                scenarios = (
+                    (None, None, 0),
+                    (alternate_encoding, alternate_gated, alternate_delta),
+                )
+                for encoding, gated, delta in scenarios:
                     with self.subTest(variant=variant, encoding=encoding, gated=gated):
                         scope = {
                             "Path": Path, "REPO_DIR": temporary_root,

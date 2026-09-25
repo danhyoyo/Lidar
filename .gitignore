@@ -44,3 +44,6 @@ outputs/
 # AI Agents
 .agents/
 e2e_demo/
+
+# Generated Graphify knowledge-graph artifacts
+/graphify-out/
