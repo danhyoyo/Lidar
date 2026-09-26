@@ -107,3 +107,34 @@ def test_custom_model_bevnext():
     assert pred["yaw"].shape == (2, 2, 200, 176)
 
 
+def test_detection_header_activations_and_bn():
+    from core.models.heads.cnn import Head, Header
+
+    # Modern head: BN + SiLU
+    head_modern = Head(16, 4, use_bn=True, act="silu")
+    assert isinstance(head_modern.bn1, torch.nn.BatchNorm2d)
+    assert isinstance(head_modern.act1, torch.nn.SiLU)
+
+    x = torch.randn(2, 16, 20, 20, requires_grad=True)
+    out = head_modern(x)
+    assert out.shape == (2, 4, 20, 20)
+    out.sum().backward()
+    assert x.grad is not None and not torch.isnan(x.grad).any()
+
+    # Legacy head: no BN, identity act
+    head_legacy = Head(16, 4, use_bn=False, act="none")
+    assert isinstance(head_legacy.bn1, torch.nn.Identity)
+    assert isinstance(head_legacy.act1, torch.nn.Identity)
+
+    # Full header
+    header = Header(num_classes=3, in_channels=16, use_bn=True, act="silu")
+    feats = torch.randn(2, 16, 50, 44)
+    pred = header(feats)
+    assert set(pred.keys()) == {"cls", "offset", "size", "yaw"}
+    assert pred["cls"].shape == (2, 3, 50, 44)
+    assert pred["offset"].shape == (2, 2, 50, 44)
+    assert pred["size"].shape == (2, 2, 50, 44)
+    assert pred["yaw"].shape == (2, 2, 50, 44)
+
+
+

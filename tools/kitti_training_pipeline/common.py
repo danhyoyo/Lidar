@@ -12,7 +12,13 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 
 
-SUPPORTED_BACKBONES = {"mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
+SUPPORTED_BACKBONES = {
+    "mobilepixor",
+    "mobilepixor_coordatt",
+    "pixor",
+    "rpn",
+    "bevnext",
+}
 
 
 def read_json(path: Path | str) -> Dict[str, Any]:
