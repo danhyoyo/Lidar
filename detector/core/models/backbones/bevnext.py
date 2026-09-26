@@ -129,6 +129,9 @@ class BEVNeXtBackbone(nn.Module):
             nn.init.zeros_(self.gate_c4.bias)
             nn.init.zeros_(self.gate_c3.weight)
             nn.init.zeros_(self.gate_c3.bias)
+        else:
+            self.gate_c4 = nn.Identity()
+            self.gate_c3 = nn.Identity()
 
         # Final projection to header input dimension (16 channels at stride 4)
         self.out_conv = nn.Sequential(
@@ -148,7 +151,7 @@ class BEVNeXtBackbone(nn.Module):
         # Top-down FPN path
         l5 = self.lat_c5(c5)           # (B, 48, 50, 44)
         l4 = self.lat_c4(c4)           # (B, 48, 100, 88)
-        u4 = F.interpolate(l5, scale_factor=2, mode="bilinear", align_corners=False)
+        u4 = F.interpolate(l5, scale_factor=2.0, mode="bilinear", align_corners=False)
         u4 = self.refine_u4(u4)        # (B, 48, 100, 88)
 
         if self.scale_gated_fpn:
@@ -157,7 +160,7 @@ class BEVNeXtBackbone(nn.Module):
             p4 = u4 + l4
 
         l3 = self.lat_c3(c2)           # (B, 24, 200, 176)
-        u3 = F.interpolate(p4, scale_factor=2, mode="bilinear", align_corners=False)
+        u3 = F.interpolate(p4, scale_factor=2.0, mode="bilinear", align_corners=False)
         u3 = self.proj_u3(u3)          # (B, 24, 200, 176)
 
         if self.scale_gated_fpn:

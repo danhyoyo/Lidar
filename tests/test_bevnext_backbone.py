@@ -163,4 +163,24 @@ def test_legacy_backbone_backward_compatibility():
     model.load_state_dict(sd, strict=True)
 
 
+def test_bevnext_torchscript_compilation():
+    from core.models.backbones.bevnext import BEVNeXtBackbone
+
+    x = torch.randn(1, 8, 800, 704)
+
+    # 1. Test scripted model with scale_gated_fpn=True
+    bb_gated = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=True).eval()
+    scripted_gated = torch.jit.script(bb_gated)
+    out_eager = bb_gated(x)
+    out_scripted = scripted_gated(x)
+    assert torch.allclose(out_eager, out_scripted, atol=1e-5)
+
+    # 2. Test scripted model with scale_gated_fpn=False
+    bb_nogate = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=False).eval()
+    scripted_nogate = torch.jit.script(bb_nogate)
+    out_eager_nogate = bb_nogate(x)
+    out_scripted_nogate = scripted_nogate(x)
+    assert torch.allclose(out_eager_nogate, out_scripted_nogate, atol=1e-5)
+
+
 

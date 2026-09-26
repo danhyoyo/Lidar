@@ -55,7 +55,7 @@ class BEVNeXtBlock(nn.Module):
 
         # 2. Pointwise inverted bottleneck expansion
         self.pw_expand = nn.Conv2d(channels, hidden_dim, kernel_size=1, bias=False)
-        self.act = nn.SiLU(inplace=True)
+        self.act = nn.SiLU(inplace=False)
 
         # 3. Pointwise projection back to input channels
         self.pw_project = nn.Conv2d(hidden_dim, channels, kernel_size=1, bias=False)
@@ -94,7 +94,7 @@ class DownsampleBlock(nn.Module):
             bias=False,
         )
         self.norm = nn.BatchNorm2d(out_channels)
-        self.act = nn.SiLU(inplace=True)
+        self.act = nn.SiLU(inplace=False)
 
     def forward(self, x: Tensor) -> Tensor:
         return self.act(self.norm(self.conv(x)))
@@ -158,20 +158,29 @@ class LiteMLARefinement(nn.Module):
         )
         self.layer_scale = _layer_scale(channels, layer_scale_init)
 
-    def linear_attention(self, qkv: Tensor) -> Tensor:
+    def _linear_attention_core(self, qkv: Tensor) -> Tensor:
         batch, _, height, width = qkv.shape
+        packed = qkv.reshape(batch, -1, 3 * self.head_dim, height * width)
+        query, key, value = packed.split(self.head_dim, dim=2)
+        query, key = query.relu(), key.relu()
+        numerator = (value @ key.transpose(-1, -2)) @ query
+        denominator = key.sum(dim=-1, keepdim=True).transpose(-1, -2) @ query
+        attended = numerator / (denominator + self.eps)
+        return attended.reshape(batch, -1, height, width)
+
+    def linear_attention(self, qkv: Tensor) -> Tensor:
         original_dtype = qkv.dtype
-        with torch.autocast(device_type=qkv.device.type, enabled=False):
+        if not torch.jit.is_scripting():
+            with torch.autocast(device_type=qkv.device.type, enabled=False):
+                if original_dtype in (torch.float16, torch.bfloat16):
+                    qkv = qkv.float()
+                attended = self._linear_attention_core(qkv)
+            return attended.to(original_dtype)
+        else:
             if original_dtype in (torch.float16, torch.bfloat16):
                 qkv = qkv.float()
-            packed = qkv.reshape(batch, -1, 3 * self.head_dim, height * width)
-            query, key, value = packed.split(self.head_dim, dim=2)
-            query, key = query.relu(), key.relu()
-            numerator = (value @ key.transpose(-1, -2)) @ query
-            denominator = key.sum(dim=-1, keepdim=True).transpose(-1, -2) @ query
-            attended = numerator / (denominator + self.eps)
-            attended = attended.reshape(batch, -1, height, width)
-        return attended.to(original_dtype)
+            attended = self._linear_attention_core(qkv)
+            return attended.to(original_dtype)
 
     def forward(self, x: Tensor) -> Tensor:
         qkv = self.qkv(x)
