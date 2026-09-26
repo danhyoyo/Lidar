@@ -183,4 +183,24 @@ def test_bevnext_torchscript_compilation():
     assert torch.allclose(out_eager_nogate, out_scripted_nogate, atol=1e-5)
 
 
+def test_litemla_numerical_stability():
+    attn = LiteMLARefinement(channels=96, head_dim=16, scales=(5,), eps=1e-6)
+
+    # 1. Zero input (e.g. empty pointcloud BEV grid)
+    x_zero = torch.zeros(2, 96, 50, 44, requires_grad=True)
+    out_zero = attn(x_zero)
+    assert not torch.isnan(out_zero).any(), "Zero input must not produce NaN"
+    assert not torch.isinf(out_zero).any(), "Zero input must not produce Inf"
+    out_zero.sum().backward()
+    assert x_zero.grad is not None and not torch.isnan(x_zero.grad).any(), "Gradients of zero input must not be NaN"
+
+    # 2. Extreme large magnitude input
+    x_large = (torch.randn(2, 96, 50, 44) * 50.0).requires_grad_(True)
+    out_large = attn(x_large)
+    assert not torch.isnan(out_large).any(), "Large input must not produce NaN"
+    assert not torch.isinf(out_large).any(), "Large input must not produce Inf"
+    out_large.sum().backward()
+    assert x_large.grad is not None and not torch.isnan(x_large.grad).any(), "Gradients of large input must not be NaN"
+
+
 
