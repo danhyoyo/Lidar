@@ -58,6 +58,8 @@
   "model": {
     "backbone": "mobilepixor",
     "backbone_out_dim": 16,
+    "header_use_bn": true,
+    "header_act": "silu",
     "c4_attention": "lsk",
     "c5_attention": "none",
     "cls_encoding": "gaussian",

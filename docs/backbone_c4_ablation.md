@@ -6,14 +6,23 @@ All presets live in `configs/kitti/backbone_branch/`.
 
 | Preset / Colab VARIANT | File | Encoding | FPN | C4 attention | C5 attention | Parameters |
 |---|---|---|---|---|---|---:|
-| B0 | kitti_mobilepixor_baseline.json | Legacy35 | sum | none | none | 597,817 |
-| B1_C2PSA | kitti_mobilepixor_c2psa.json | RichBEV-8 | SG-FPN | none | c2psa | 626,569 |
-| C4_LSK | kitti_mobilepixor_c4_lsk.json | RichBEV-8 | SG-FPN | lsk | none | 610,367 |
-| C4_LITEMLA | kitti_mobilepixor_c4_litemla.json | RichBEV-8 | SG-FPN | litemla | none | 619,065 |
-| RICH8_SGFPN_CONTROL | kitti_mobilepixor_rich8_sgfpn_control.json | RichBEV-8 | SG-FPN | none | none | 590,521 |
-| C4_LITEMLA_LATERAL_ONLY | kitti_mobilepixor_c4_litemla_lateral_only.json | RichBEV-8 | SG-FPN | litemla (lateral only) | none | 619,065 |
-| C4_LITEMLA_C5_C2PSA_SHARED | kitti_mobilepixor_c4_litemla_c5_c2psa_shared.json | RichBEV-8 | SG-FPN | litemla (shared) | c2psa | 655,113 |
-| C4_LITEMLA_C5_C2PSA_DECOUPLED | kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json | RichBEV-8 | SG-FPN | litemla (lateral only) | c2psa | 655,113 |
+| B0 | kitti_mobilepixor_baseline.json | Legacy35 | sum | none | none | 598,073 |
+| B1_C2PSA | kitti_mobilepixor_c2psa.json | RichBEV-8 | SG-FPN | none | c2psa | 626,825 |
+| C4_LSK | kitti_mobilepixor_c4_lsk.json | RichBEV-8 | SG-FPN | lsk | none | 610,623 |
+| C4_LITEMLA | kitti_mobilepixor_c4_litemla.json | RichBEV-8 | SG-FPN | litemla | none | 619,321 |
+| RICH8_SGFPN_CONTROL | kitti_mobilepixor_rich8_sgfpn_control.json | RichBEV-8 | SG-FPN | none | none | 590,777 |
+| C4_LITEMLA_LATERAL_ONLY | kitti_mobilepixor_c4_litemla_lateral_only.json | RichBEV-8 | SG-FPN | litemla (lateral only) | none | 619,321 |
+| C4_LITEMLA_C5_C2PSA_SHARED | kitti_mobilepixor_c4_litemla_c5_c2psa_shared.json | RichBEV-8 | SG-FPN | litemla (shared) | c2psa | 655,369 |
+| C4_LITEMLA_C5_C2PSA_DECOUPLED | kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json | RichBEV-8 | SG-FPN | litemla (lateral only) | c2psa | 655,369 |
+
+All parameter counts above include the configured detection head: each of its two
+hidden 3x3 convolutions is followed by BatchNorm2d and SiLU, while the final
+classification/regression convolution remains linear. This adds 256 trainable
+parameters plus BatchNorm running-statistic buffers to every preset. Missing
+`header_use_bn` and `header_act` fields deliberately retain the exact historical
+head (`Conv -> Conv -> output Conv`) so its old state dictionary still loads
+strictly. Enabling BN+SiLU requires a new training run; it is not checkpoint-
+compatible with a legacy head.
 
 The two C4 presets differ from each other only in the selected C4 adapter and
 descriptive note. Both use RichBEV-8 + SG-FPN, enabled augmentation, physical
@@ -82,7 +91,7 @@ flowchart LR
 Under the default `shared` route, both consumers of C4 receive the same refined
 tensor. No feature resize or
 target/decoder change is needed. `none` is parameter-free Identity: old B0/B1
-state dicts load strictly and their parameter counts and outputs are preserved.
+state dicts load strictly only when the head configuration also matches.
 Enabling an adapter introduces new checkpoint keys; start a new training run.
 Do not resume an old off-mode checkpoint into an on-mode experiment. To reproduce
 an older Colab run, use its original checkout/config/metadata rather than disabling

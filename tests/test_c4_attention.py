@@ -69,7 +69,7 @@ class C4AttentionTests(unittest.TestCase):
         explicit = build_model(self.config).eval()
         explicit.load_state_dict(original.state_dict(), strict=True)
         self.assertFalse(any("c4_attention" in k for k in explicit.state_dict()))
-        self.assertEqual(sum(p.numel() for p in explicit.parameters()), 597817)
+        self.assertEqual(sum(p.numel() for p in explicit.parameters()), 598073)
         x = torch.randn(1, 35, 32, 48)
         with torch.no_grad():
             actual = explicit(x)
@@ -245,7 +245,8 @@ class C4AttentionTests(unittest.TestCase):
     def test_all_backbone_branch_configs_share_universal_model_schema(self):
         required_keys = [
             "backbone", "backbone_out_dim", "c4_attention", "c5_attention",
-            "cls_encoding", "scale_gated_fpn", "c2psa", "lsk", "litemla",
+            "cls_encoding", "scale_gated_fpn", "header_use_bn", "header_act",
+            "c2psa", "lsk", "litemla",
         ]
         allowed_keys = set(required_keys) | {"c4_attention_route"}
         config_paths = sorted(CONFIG_DIR.glob("*.json"))
@@ -255,6 +256,36 @@ class C4AttentionTests(unittest.TestCase):
                 model = read_json(path)["model"]
                 self.assertTrue(set(required_keys).issubset(model))
                 self.assertTrue(set(model).issubset(allowed_keys))
+                self.assertIs(model["header_use_bn"], True)
+                self.assertEqual(model["header_act"], "silu")
+
+    def test_every_committed_config_enables_the_modern_head(self):
+        config_paths = sorted((ROOT / "configs").rglob("*.json"))
+        self.assertEqual(len(config_paths), 13)
+        for path in config_paths:
+            with self.subTest(config=path.relative_to(ROOT).as_posix()):
+                model = read_json(path)["model"]
+                self.assertIs(model["header_use_bn"], True)
+                self.assertEqual(model["header_act"], "silu")
+
+    def test_missing_head_options_preserve_legacy_checkpoints(self):
+        legacy = deepcopy(self.config)
+        legacy["model"].pop("header_use_bn")
+        legacy["model"].pop("header_act")
+        explicit = deepcopy(legacy)
+        explicit["model"]["header_use_bn"] = False
+        explicit["model"]["header_act"] = "none"
+        torch.manual_seed(31)
+        old_model = build_model(legacy).eval()
+        torch.manual_seed(31)
+        explicit_model = build_model(explicit).eval()
+        explicit_model.load_state_dict(old_model.state_dict(), strict=True)
+        self.assertIsInstance(old_model.header.cls.bn1, torch.nn.Identity)
+        self.assertIsInstance(old_model.header.cls.act1, torch.nn.Identity)
+        self.assertFalse(any(
+            key.startswith("header.") and ".bn" in key
+            for key in old_model.state_dict()
+        ))
 
     def test_config_overrides_do_not_mutate_presets(self):
         original = deepcopy(self.config)
@@ -276,6 +307,13 @@ class C4AttentionTests(unittest.TestCase):
                        {"c4_attention_route": "parallel"}):
             with self.assertRaises(ValueError):
                 resolve_ablation_config(self.config, **kwargs)
+        for field, value in (("header_use_bn", "true"), ("header_act", "gelu")):
+            invalid = deepcopy(self.config)
+            invalid["model"][field] = value
+            with self.assertRaises(ValueError):
+                resolve_ablation_config(invalid)
+            with self.assertRaises(ValueError):
+                build_model(invalid)
         with self.assertRaises(ValueError):
             MobilePixorBackBone(c4_attention_route="parallel")
 
@@ -286,7 +324,13 @@ class C4AttentionTests(unittest.TestCase):
         decoupled = deepcopy(shared)
         decoupled["model"]["c4_attention_route"] = "lateral_only"
         self.assertNotEqual(ablation_label(shared), ablation_label(decoupled))
-        self.assertTrue(ablation_label(decoupled).endswith("_c4route-lateral"))
+        self.assertIn("_c4route-lateral", ablation_label(decoupled))
+        self.assertTrue(ablation_label(decoupled).endswith("_head-bn-silu"))
+        legacy = deepcopy(shared)
+        legacy["model"].pop("header_use_bn")
+        legacy["model"].pop("header_act")
+        self.assertNotIn("_head-", ablation_label(legacy))
+        self.assertNotEqual(ablation_label(shared), ablation_label(legacy))
 
     def test_decoupled_preset_matches_its_no_attention_control(self):
         control = read_json(

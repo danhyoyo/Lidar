@@ -35,6 +35,12 @@ def resolve_ablation_config(
         "shared", "lateral_only",
     ):
         raise ValueError("c4_attention_route must be 'shared' or 'lateral_only'")
+    if type(result["model"].get("header_use_bn", False)) is not bool:
+        raise ValueError("header_use_bn must be a JSON boolean")
+    if result["model"].get("header_act", "none") not in (
+        "none", "relu", "silu",
+    ):
+        raise ValueError("header_act must be 'none', 'relu', or 'silu'")
     return result
 
 
@@ -46,9 +52,16 @@ def ablation_label(config):
     fpn = "sgfpn" if model.get("scale_gated_fpn", False) else "sumfpn"
     route = model.get("c4_attention_route", "shared")
     route_suffix = "" if route == "shared" else "_c4route-lateral"
+    header_use_bn = model.get("header_use_bn", False)
+    header_act = model.get("header_act", "none")
+    header_suffix = ""
+    if header_use_bn or header_act != "none":
+        normalization = "bn" if header_use_bn else "nobn"
+        header_suffix = f"_head-{normalization}-{header_act}"
     return (
         f"{encoding}_c4-{model.get('c4_attention', 'none')}_"
         f"c5-{model.get('c5_attention', 'none')}_{fpn}{route_suffix}"
+        f"{header_suffix}"
     )
 
 

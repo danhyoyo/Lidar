@@ -30,7 +30,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "C2PSA_c5block"', source)
+        self.assertIn('BRANCH = "decoupled-c4-c5-routing"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
         self.assertIn("model.scale_gated_fpn", source)
@@ -62,6 +62,8 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertIn("SCALE_GATED_FPN_OVERRIDE", source)
         self.assertIn("C5_ATTENTION_OVERRIDE", source)
         self.assertIn("C4_ATTENTION_ROUTE_OVERRIDE", source)
+        self.assertIn("header_use_bn", source)
+        self.assertIn("header_act", source)
         self.assertNotIn("kitti_uwag_coordatt_aug.json", source)
         self.assertNotIn("configs/kitti/mobilebev/", source)
         self.assertIn("run.json", source)
@@ -173,14 +175,14 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         architecture = next(source for source in sources if "Selected architecture:" in source)
         sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
         profiles = {
-            "B0": (597817, "rich8", True, -7776 + 480),
-            "B1_C2PSA": (626569, "binary_slices", False, 7776 - 480),
-            "C4_LSK": (610367, "binary_slices", False, 7776 - 480),
-            "C4_LITEMLA": (619065, "binary_slices", False, 7776 - 480),
-            "RICH8_SGFPN_CONTROL": (590521, "binary_slices", False, 7776 - 480),
-            "C4_LITEMLA_LATERAL_ONLY": (619065, "binary_slices", False, 7776 - 480),
-            "C4_LITEMLA_C5_C2PSA_SHARED": (655113, "binary_slices", False, 7776 - 480),
-            "C4_LITEMLA_C5_C2PSA_DECOUPLED": (655113, "binary_slices", False, 7776 - 480),
+            "B0": (598073, "rich8", True, -7776 + 480),
+            "B1_C2PSA": (626825, "binary_slices", False, 7776 - 480),
+            "C4_LSK": (610623, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA": (619321, "binary_slices", False, 7776 - 480),
+            "RICH8_SGFPN_CONTROL": (590777, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_LATERAL_ONLY": (619321, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_C5_C2PSA_SHARED": (655369, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_C5_C2PSA_DECOUPLED": (655369, "binary_slices", False, 7776 - 480),
         }
         run_names = set()
         with tempfile.TemporaryDirectory() as directory:
@@ -213,7 +215,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
                             # Use real detector sources and the temporary resolved config.
                             scope["REPO_DIR"] = ROOT
                             exec(compile(architecture, "notebook-architecture", "exec"), scope)
-                        self.assertEqual(scope["baseline_parameters"], 597817)
+                        self.assertEqual(scope["baseline_parameters"], 598073)
                         self.assertEqual(scope["selected_parameters"], count + delta)
                         self.assertIn("Differences from baseline:", output.getvalue())
                         run_names.add(scope["RUN_NAME"])

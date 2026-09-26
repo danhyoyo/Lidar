@@ -53,11 +53,18 @@ def configure_detector_imports(detector_root: Path | str) -> Path:
 
 
 def validate_backbone(config: Dict[str, Any]) -> None:
-    backbone = config["model"]["backbone"]
+    model = config["model"]
+    backbone = model["backbone"]
     if backbone not in SUPPORTED_BACKBONES:
         raise ValueError(
             f"Unsupported backbone {backbone!r}; expected one of "
             f"{sorted(SUPPORTED_BACKBONES)}"
+        )
+    if type(model.get("header_use_bn", False)) is not bool:
+        raise ValueError("model.header_use_bn must be a JSON boolean")
+    if model.get("header_act", "none") not in ("none", "relu", "silu"):
+        raise ValueError(
+            "model.header_act must be 'none', 'relu', or 'silu'"
         )
 
 

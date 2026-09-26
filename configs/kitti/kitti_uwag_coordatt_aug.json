@@ -62,6 +62,8 @@
   "model": {
     "backbone": "mobilepixor_coordatt",
     "backbone_out_dim": 16,
+    "header_use_bn": true,
+    "header_act": "silu",
     "cls_encoding": "gaussian"
   },
   "multi_gpu": false,

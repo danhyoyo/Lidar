@@ -78,8 +78,12 @@ parameter counts, attribution, and controlled experiment design. These are
 adaptations of published mechanisms, not claims of new attention mechanisms.
 
 Every config in `configs/kitti/backbone_branch/` carries the same model schema,
-including the `c2psa`, `lsk`, and `litemla` option blocks. Only `c4_attention` and
-`c5_attention` activate them. In particular, `c5_attention: "none"` constructs a
+including the `c2psa`, `lsk`, and `litemla` option blocks and explicit
+`header_use_bn` / `header_act` settings. The current presets use BatchNorm2d +
+SiLU after both hidden 3x3 convolutions in each detection head; final prediction
+convolutions stay linear. Configs without those two fields retain the exact legacy
+head for checkpoint compatibility. Only `c4_attention` and `c5_attention`
+activate the attention option blocks. In particular, `c5_attention: "none"` constructs a
 parameter-free identity operation; it does not select a default attention module.
 A regression test requires future variants to update all configs to this schema.
 

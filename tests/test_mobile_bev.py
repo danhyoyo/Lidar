@@ -236,11 +236,40 @@ def check_c2psa():
 
 def check_head():
     torch, _, Header = load_torch_modules()
-    sample = torch.randn(1, 16, 8, 8)
-    output = Header(3, 16)(sample)
+    sample = torch.randn(2, 16, 8, 8, requires_grad=True)
+
+    # Missing options preserve the exact pre-activation module/state schema.
+    legacy = Header(3, 16)
+    assert isinstance(legacy.cls.bn1, torch.nn.Identity)
+    assert isinstance(legacy.cls.act1, torch.nn.Identity)
+    assert legacy.cls.conv1.bias is None and legacy.cls.conv2.bias is None
+    assert not any(".bn" in key for key in legacy.state_dict())
+    legacy_clone = Header(3, 16, use_bn=False, act="none")
+    legacy_clone.load_state_dict(legacy.state_dict(), strict=True)
+
+    modern = Header(3, 16, use_bn=True, act="silu")
+    assert isinstance(modern.cls.bn1, torch.nn.BatchNorm2d)
+    assert isinstance(modern.cls.act1, torch.nn.SiLU)
+    assert isinstance(modern.cls.head, torch.nn.Conv2d)
+    output = modern(sample)
     assert {key: value.shape[1] for key, value in output.items()} == {
         "cls": 3, "offset": 2, "size": 2, "yaw": 2
     }
+    sum(value.square().mean() for value in output.values()).backward()
+    assert sample.grad is not None and torch.isfinite(sample.grad).all()
+    assert (
+        sum(parameter.numel() for parameter in modern.parameters())
+        - sum(parameter.numel() for parameter in legacy.parameters())
+        == 256
+    )
+
+    for kwargs in ({"use_bn": "true"}, {"act": "gelu"}):
+        try:
+            Header(3, 16, **kwargs)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid head options were accepted: {kwargs}")
 
 
 def check_targets():
