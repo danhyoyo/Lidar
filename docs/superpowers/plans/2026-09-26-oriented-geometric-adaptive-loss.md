@@ -2,28 +2,28 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Xây dựng và tích hợp hàm loss hoàn toàn mới OGA-Loss (Oriented Geometric Alignment & Adaptive Loss) kết hợp giám sát hình học xoay chính xác ($\pi$-symmetric normalized corner distance + multi-axis projection GIoU), giám sát toạ độ độc lập 2 luồng (Dual-Stream), và cơ chế cân bằng đa nhiệm bảo toàn gradient (Temperature-Softmax Bounded Uncertainty Weighting) nhằm tối ưu hoá vượt trội độ chính xác phát hiện vật thể 3D LiDAR BEV.
+**Goal:** Implement and integrate the novel OGA-Loss (Oriented Geometric Alignment & Adaptive Loss) combining exact rotated geometry ($\pi$-symmetric normalized corner distance + multi-axis projection GIoU), dual-stream parameter-space supervision, and gradient-conserved multi-task balancing (Temperature-Softmax Bounded Uncertainty Weighting) to substantially advance 3D LiDAR BEV detection accuracy.
 
-**Architecture:** 
-- Mô-đun hình học xoay `detector/core/losses/oriented_geometry_loss.py`: giải mã 4 góc hộp xoay trong toạ độ BEV, tính khoảng cách góc chuẩn hoá kích thước chu kỳ $\pi$ ($L_{\text{NCD}}$) và khoảng cách chiếu đa trục ($L_{\text{proj}}$), không dùng nghịch đảo ma trận.
-- Mô-đun cân bằng đa nhiệm `detector/core/losses/uncertainty_weighting.py`: triển khai `TemperatureSoftmaxUncertainty` bảo toàn tổng ngân sách gradient $\sum w_i = M$, chống suy biến số học trong BF16.
-- Bộ điều phối `detector/core/losses/loss_fn.py`: tích hợp chế độ `name="oga"` điều phối focal loss, smooth L1 toạ độ và hình học xoay OGA, tương thích 100% với pipeline huấn luyện KITTI và checkpoint state dict.
+**Architecture:**
+- Geometry Module `detector/core/losses/oriented_geometry_loss.py`: decodes rotated bounding box corners and axes in BEV metric coordinates, computes scale-normalized $\pi$-symmetric corner distance ($L_{\text{NCD}}$) and 4-axis projection GIoU ($L_{\text{proj}}$) without matrix inversions or covariance degradation.
+- Multi-Task Weighting Module `detector/core/losses/uncertainty_weighting.py`: implements `TemperatureSoftmaxUncertainty` enforcing a strictly conserved total gradient budget $\sum w_i = M$ with soft bounding to prevent gradient explosion and task starvation under mixed precision (BF16/FP32).
+- Composite Criterion `detector/core/losses/loss_fn.py`: integrates `name="oga"` mode coordinating focal loss, decoupled smooth-L1 coordinates, and OGA rotated geometry, maintaining 100% compatibility with KITTI training pipelines and checkpoint state dicts.
 
-**Tech Stack:** Python 3, PyTorch (CUDA/BF16/FP32), NumPy, `unittest`. Không thêm dependency ngoài.
+**Tech Stack:** Python 3, PyTorch 2.11.0 (CUDA / BF16 / FP32), NumPy, `unittest`. Zero external dependencies.
 
 **Spec:** `docs/superpowers/specs/2026-09-26-oriented-geometric-adaptive-loss.md`
 
 ## Global Constraints
 
-- Không sao chép mã nguồn của hàm loss UWAG lịch sử; kế thừa ý tưởng cân bằng tác vụ và khắc phục triệt để các hạn chế lý thuyết của UWAG.
-- Toàn bộ tính toán hình học xoay và softmax chạy ổn định trên cả FP32 và mixed-precision BF16 autocast.
-- Giữ nguyên toàn bộ hợp đồng suy luận (inference contract): `cls`, `offset`, `size`, `yaw` không thay đổi kiến trúc head, decoder, ONNX hay TensorRT.
-- Bắt buộc kiểm thử với Python môi trường `AI_env` (`/home/duyennh/miniconda3/envs/AI_env/bin/python`).
-- Các lệnh Git được thực thi qua `rtk git` theo quy chuẩn RTK token-saving.
+- Do not reuse or copy legacy UWAG codebase; implement completely independent, theoretically grounded formulations.
+- All geometric operations and softmax normalization must be unconditionally stable in both FP32 and BF16 autocast.
+- Preserve inference contract: `cls`, `offset`, `size`, `yaw` tensor structures, decoders, ONNX, and TensorRT pipelines remain untouched (zero inference latency overhead).
+- All unit tests must be executed with the active Conda Python environment (`/home/duyennh/miniconda3/envs/AI_env/bin/python`).
+- All Git operations must use `rtk git` in accordance with the token-saving protocol.
 
 ---
 
-### Task 1: Xây dựng giải mã hình học góc xoay và Khoảng cách Đỉnh Chu Kỳ $\pi$ ($L_{\text{NCD}}$)
+### Task 1: Rotated Box Decoding & Scale-Normalized $\pi$-Symmetric Corner Distance ($L_{\text{NCD}}$)
 
 **Files:**
 - Create: `detector/core/losses/oriented_geometry_loss.py`
@@ -31,21 +31,16 @@
 
 **Interfaces:**
 - Consumes:
-  - `pred_offset`, `target_offset`: `torch.Tensor` kích thước `[N, 2]` đại diện $(dx, dy)$
-  - `pred_size`, `target_size`: `torch.Tensor` kích thước `[N, 2]` đại diện $(\log w, \log l)$
-  - `pred_yaw`, `target_yaw`: `torch.Tensor` kích thước `[N, 2]` đại diện $(\cos 2\theta, \sin 2\theta)$
+  - `pred_offset`, `target_offset`: `torch.Tensor` of shape `[N, 2]` representing metric center $(dx, dy)$
+  - `pred_size`, `target_size`: `torch.Tensor` of shape `[N, 2]` representing log-extents $(\log w, \log l)$
+  - `pred_yaw`, `target_yaw`: `torch.Tensor` of shape `[N, 2]` representing doubled angle $(\cos 2\theta, \sin 2\theta)$
 - Produces:
-  - `box_corners(offset, log_size, doubled_yaw, epsilon=1e-6, max_abs_log_size=10.0)` -> `(corners, axes, clamp_count, fallback_count)` với `corners` hình dạng `[N, 4, 2]`, `axes` hình dạng `[N, 2, 2]`
-  - `pi_symmetric_corner_distance(pred_corners, target_corners, target_size, epsilon=1e-6)` -> `torch.Tensor` scalar loss chuẩn hoá theo đường chéo
+  - `box_corners(offset, log_size, doubled_yaw, epsilon=1e-6, max_abs_log_size=10.0)` -> `(corners, axes, clamp_count, fallback_count)` where `corners` is `[N, 4, 2]` and `axes` is `[N, 2, 2]`
+  - `pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, epsilon=1e-6)` -> `torch.Tensor` scalar scale-normalized loss
 
-- [ ] **Step 1: Viết test thất bại kiểm tra hình học hộp và $L_{\text{NCD}}$**
+- [ ] **Step 1: Write failing test verifying rotated box geometry and $L_{\text{NCD}}$**
 
-Tạo `tests/test_oriented_geometry_loss.py` kiểm tra:
-1. Hai hộp giống hệt nhau sinh ra khoảng cách $L_{\text{NCD}} = 0$.
-2. Tính bất biến góc quay $\pi$: góc $\theta$ và $\theta + \pi$ sinh ra các đỉnh và khoảng cách giống hệt nhau.
-3. Chuẩn hoá kích thước: lỗi góc 0.5m trên hộp nhỏ bị phạt nặng hơn hộp lớn theo tỉ lệ đường chéo.
-4. Gradient liên tục và khác 0 khi 2 hộp không giao nhau ở cự ly $10\text{m}$.
-
+Create `tests/test_oriented_geometry_loss.py`:
 ```python
 # tests/test_oriented_geometry_loss.py
 import math
@@ -118,17 +113,17 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test THẤT BẠI**
+- [ ] **Step 2: Run test to verify it fails**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_oriented_geometry_loss.py
 ```
-Kỳ vọng: Lỗi `ModuleNotFoundError: No module named 'core.losses.oriented_geometry_loss'`.
+Expected: FAIL with `ModuleNotFoundError: No module named 'core.losses.oriented_geometry_loss'`.
 
-- [ ] **Step 3: Triển khai mã nguồn tối thiểu cho `box_corners` và `pi_symmetric_corner_distance`**
+- [ ] **Step 3: Implement minimal code for `box_corners` and `pi_symmetric_corner_distance`**
 
-Tạo `detector/core/losses/oriented_geometry_loss.py`:
+Create `detector/core/losses/oriented_geometry_loss.py`:
 ```python
 """Oriented BEV box geometry and Scale-Normalized Pi-Symmetric Corner Distance."""
 
@@ -203,10 +198,9 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
     if pred_corners.shape[0] == 0:
         return pred_corners.sum() * 0.0
 
-    # Two valid cyclic permutations under pi-rotation: direct (0,1,2,3) and rotated-pi (3,2,1,0) or (2,3,0,1)
     # With indexing [++, +-, -+, --]:
-    # rotating by 180 degrees maps ++ to -- (idx 0 to 3) and +- to -+ (idx 1 to 2)
-    # direct: [0, 1, 2, 3], rotated: [3, 2, 1, 0]
+    # Rotating by 180 degrees maps ++ to -- (idx 0 to 3) and +- to -+ (idx 1 to 2)
+    # Direct: [0, 1, 2, 3], Rotated-pi: [3, 2, 1, 0]
     dist_direct = torch.norm(pred_corners - target_corners, p=1, dim=-1).mean(dim=-1) # [N]
     
     target_corners_pi = target_corners[:, [3, 2, 1, 0], :]
@@ -223,15 +217,15 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
     return normalized_distance.mean()
 ```
 
-- [ ] **Step 4: Chạy test để xác nhận test THÀNH CÔNG**
+- [ ] **Step 4: Run test to verify it passes**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_oriented_geometry_loss.py
 ```
-Kỳ vọng: `Ran 3 tests in ... OK`.
+Expected: `Ran 3 tests in ... OK`.
 
-- [ ] **Step 5: Commit qua rtk git**
+- [ ] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/oriented_geometry_loss.py tests/test_oriented_geometry_loss.py
@@ -240,7 +234,7 @@ rtk git commit -m "feat(loss): add rotated box corners and pi-symmetric corner d
 
 ---
 
-### Task 2: Triển khai Chiếu Đa Trục Pháp Tuyến ($L_{\text{proj}}$) và Mô-đun Hoàn Chỉnh `OrientedGeometryLoss`
+### Task 2: Multi-Axis Projection GIoU ($L_{\text{proj}}$) & Composite `OrientedGeometryLoss` Module
 
 **Files:**
 - Modify: `detector/core/losses/oriented_geometry_loss.py`
@@ -257,13 +251,9 @@ rtk git commit -m "feat(loss): add rotated box corners and pi-symmetric corner d
     - `__init__(beta=1.0, epsilon=1e-6, max_abs_log_size=10.0)`
     - `forward(pred_offset, pred_size, pred_yaw, target_offset, target_size, target_yaw, reg_mask)` -> `(total_loss, metrics_dict)`
 
-- [ ] **Step 1: Viết test cho `multiaxis_projection_giou` và `OrientedGeometryLoss`**
+- [ ] **Step 1: Write failing tests for `multiaxis_projection_giou` and `OrientedGeometryLoss`**
 
-Thêm các test case vào `tests/test_oriented_geometry_loss.py`:
-1. Hộp trùng khớp cho $L_{\text{proj}} = 0$ và $L_{\text{total}} = 0$.
-2. Mask rỗng (`reg_mask` toàn 0) trả về scalar 0 gắn kết autograd đồ thị cho cả 3 đầu vào.
-3. Hỗ trợ mixed-precision autocast an toàn.
-
+Append tests to `tests/test_oriented_geometry_loss.py`:
 ```python
     def test_multiaxis_projection_giou_identical(self):
         offset = torch.tensor([[0.0, 0.0]], dtype=torch.float32)
@@ -294,17 +284,17 @@ Thêm các test case vào `tests/test_oriented_geometry_loss.py`:
         self.assertEqual(pred_offset.grad.sum().item(), 0.0)
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test THẤT BẠI**
+- [ ] **Step 2: Run test to verify it fails**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_oriented_geometry_loss.py
 ```
-Kỳ vọng: Lỗi `ImportError: cannot import name 'multiaxis_projection_giou'`.
+Expected: FAIL with `ImportError: cannot import name 'multiaxis_projection_giou'`.
 
-- [ ] **Step 3: Cập nhật `oriented_geometry_loss.py` với `multiaxis_projection_giou` và `OrientedGeometryLoss`**
+- [ ] **Step 3: Implement `multiaxis_projection_giou` and `OrientedGeometryLoss`**
 
-Bổ sung vào `detector/core/losses/oriented_geometry_loss.py`:
+Append to `detector/core/losses/oriented_geometry_loss.py`:
 ```python
 def multiaxis_projection_giou(pred_corners, pred_axes, target_corners, target_axes, epsilon=1e-6):
     """Compute 1D Generalized IoU projected over 4 rectangle normal axes.
@@ -314,7 +304,7 @@ def multiaxis_projection_giou(pred_corners, pred_axes, target_corners, target_ax
     if pred_corners.shape[0] == 0:
         return pred_corners.sum() * 0.0
 
-    # 4 axes: 2 from prediction, 2 from target
+    # 4 projection axes: 2 from prediction, 2 from target
     axes = torch.cat((pred_axes, target_axes), dim=1) # [N, 4, 2]
     
     # Project 4 corners of each box onto the 4 projection axes
@@ -388,15 +378,15 @@ class OrientedGeometryLoss(nn.Module):
         }
 ```
 
-- [ ] **Step 4: Chạy lại test suite để kiểm tra tất cả test PASS**
+- [ ] **Step 4: Run test to verify it passes**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_oriented_geometry_loss.py
 ```
-Kỳ vọng: Tất cả 5 tests PASS.
+Expected: All 5 tests PASS.
 
-- [ ] **Step 5: Commit qua rtk git**
+- [ ] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/oriented_geometry_loss.py tests/test_oriented_geometry_loss.py
@@ -405,7 +395,7 @@ rtk git commit -m "feat(loss): implement multiaxis projection giou and OrientedG
 
 ---
 
-### Task 3: Triển khai Cân Bằng Đa Nhiệm Bất Định Chuẩn Hoá Softmax Nhiệt Độ (`TemperatureSoftmaxUncertainty`)
+### Task 3: Temperature-Softmax Bounded Uncertainty Weighting (`TemperatureSoftmaxUncertainty`)
 
 **Files:**
 - Create: `detector/core/losses/uncertainty_weighting.py`
@@ -413,17 +403,17 @@ rtk git commit -m "feat(loss): implement multiaxis projection giou and OrientedG
 
 **Interfaces:**
 - Consumes:
-  - `num_tasks`: int (số tác vụ $M$, mặc định 5: cls, offset, size, yaw, geo)
-  - `temperature`: float $\tau$ (mặc định 2.0)
-  - `clamp_bound`: float $c$ (mặc định 3.0)
+  - `num_tasks`: int ($M$, default 5: `cls`, `offset`, `size`, `yaw`, `geo`)
+  - `temperature`: float $\tau$ (default 2.0)
+  - `clamp_bound`: float $c$ (default 3.0)
 - Produces:
   - `TemperatureSoftmaxUncertainty(nn.Module)`:
-    - Parameter `log_scales`: `nn.Parameter` kích thước `[M]`, khởi tạo bằng 0
-    - `forward(losses_dict)` -> `(weighted_total_loss, weights_dict)`
+    - Parameter `log_scales`: `nn.Parameter` of shape `[M]`, initialized to 0
+    - `forward(task_losses)` -> `(weighted_total_loss, weights_dict)`
 
-- [ ] **Step 1: Viết test cho `TemperatureSoftmaxUncertainty`**
+- [ ] **Step 1: Write failing test for `TemperatureSoftmaxUncertainty`**
 
-Tạo `tests/test_uncertainty_weighting.py`:
+Create `tests/test_uncertainty_weighting.py`:
 ```python
 import sys
 import unittest
@@ -454,7 +444,6 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
 
     def test_gradient_conservation_and_updates(self):
         weighting = TemperatureSoftmaxUncertainty(num_tasks=3, temperature=1.5, clamp_bound=3.0)
-        # Simulate an imbalance where task A is very large
         task_losses = {
             "a": torch.tensor(5.0, requires_grad=True),
             "b": torch.tensor(0.2, requires_grad=True),
@@ -468,11 +457,9 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
 
     def test_bound_clamping_prevents_extreme_starvation(self):
         weighting = TemperatureSoftmaxUncertainty(num_tasks=2, temperature=1.0, clamp_bound=2.0)
-        # Set extreme logits manually
         with torch.no_grad():
             weighting.log_scales.copy_(torch.tensor([-100.0, 100.0]))
         weights = weighting.get_task_weights()
-        # Because clamped to [-2.0, 2.0], minimum weight must be > 0.05
         min_weight = min(weights.values())
         self.assertGreater(min_weight, 0.01)
         self.assertAlmostEqual(sum(weights.values()), 2.0, places=5)
@@ -482,17 +469,17 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test THẤT BẠI**
+- [ ] **Step 2: Run test to verify it fails**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_uncertainty_weighting.py
 ```
-Kỳ vọng: Lỗi `ModuleNotFoundError: No module named 'core.losses.uncertainty_weighting'`.
+Expected: FAIL with `ModuleNotFoundError: No module named 'core.losses.uncertainty_weighting'`.
 
-- [ ] **Step 3: Triển khai `TemperatureSoftmaxUncertainty`**
+- [ ] **Step 3: Implement `TemperatureSoftmaxUncertainty`**
 
-Tạo `detector/core/losses/uncertainty_weighting.py`:
+Create `detector/core/losses/uncertainty_weighting.py`:
 ```python
 """Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) for multi-task loss balancing."""
 
@@ -558,15 +545,15 @@ class TemperatureSoftmaxUncertainty(nn.Module):
         return total_loss, weights_dict
 ```
 
-- [ ] **Step 4: Chạy lại test suite để kiểm tra PASS**
+- [ ] **Step 4: Run test to verify it passes**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_uncertainty_weighting.py
 ```
-Kỳ vọng: Tất cả 3 tests PASS.
+Expected: All 3 tests PASS.
 
-- [ ] **Step 5: Commit qua rtk git**
+- [ ] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/uncertainty_weighting.py tests/test_uncertainty_weighting.py
@@ -575,7 +562,7 @@ rtk git commit -m "feat(loss): add TemperatureSoftmaxUncertainty multi-task bala
 
 ---
 
-### Task 4: Tích hợp chế độ `name="oga"` vào `LossFunction` trong `detector/core/losses/loss_fn.py`
+### Task 4: Integrate `name="oga"` into `LossFunction` in `detector/core/losses/loss_fn.py`
 
 **Files:**
 - Modify: `detector/core/losses/loss_fn.py`
@@ -583,16 +570,17 @@ rtk git commit -m "feat(loss): add TemperatureSoftmaxUncertainty multi-task bala
 
 **Interfaces:**
 - Consumes:
-  - `cls_encoding`: `"gaussian"` hoặc `"binary"`
-  - `config`: dict chứa `name: "oga"`, `geometric_weight`, `temperature`, `clamp_bound`, `corner_beta`
+  - `cls_encoding`: `"gaussian"` or `"binary"`
+  - `config`: dictionary containing `name: "oga"`, `temperature`, `clamp_bound`, `corner_beta`, `geometric_weight`
 - Produces:
-  - `LossFunction(cls_encoding, config)`: hỗ trợ `self.name == "oga"`
-  - `criterion(outputs, batch)`: trả về dictionary đầy đủ `{loss, cls, offset, size, yaw, geo, corner_dist, proj_giou, weight_cls, ...}`
+  - `LossFunction`: instantiates `OrientedGeometryLoss` and `TemperatureSoftmaxUncertainty`
+  - `criterion(pred, target)`: returns `{loss, cls, offset, size, yaw, geo, corner_dist, proj_giou, weight_cls, ...}`
 
-- [ ] **Step 1: Viết test tích hợp `LossFunction` với cấu hình OGA**
+- [ ] **Step 1: Write failing test for `LossFunction` with OGA config**
 
-Tạo `tests/test_loss_fn_oga.py`:
+Create `tests/test_loss_fn_oga.py`:
 ```python
+import math
 import sys
 import unittest
 from pathlib import Path
@@ -652,47 +640,47 @@ class TestLossFunctionOGA(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import math
     unittest.main()
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test THẤT BẠI**
+- [ ] **Step 2: Run test to verify it fails**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_loss_fn_oga.py
 ```
-Kỳ vọng: Lỗi `ValueError: Unsupported loss name: 'oga'`.
+Expected: FAIL with `ValueError: Unsupported loss name: 'oga'`.
 
-- [ ] **Step 3: Sửa đổi `detector/core/losses/loss_fn.py` để tích hợp OGA**
+- [ ] **Step 3: Modify `detector/core/losses/loss_fn.py` to support OGA**
 
-Chỉnh sửa `detector/core/losses/loss_fn.py`:
-1. Import `OrientedGeometryLoss` và `TemperatureSoftmaxUncertainty`.
-2. Trong `__init__`: cho phép `name in {"baseline", "uwag", "oga"}`.
-   Nếu `name == "oga"`:
-   - Khởi tạo `self.geometry_loss = OrientedGeometryLoss(beta=config.get("corner_beta", 1.0), epsilon=self.eps, max_abs_log_size=self.max_abs_log_size)`.
-   - Khởi tạo `self.weighting = TemperatureSoftmaxUncertainty(temperature=config.get("temperature", 2.0), clamp_bound=config.get("clamp_bound", 3.0))`.
-3. Trong `forward`:
-   - Tính toán `cls_loss`, `offset_loss = smooth_l1_loss`, `size_loss = smooth_l1_loss`, `yaw_loss = smooth_l1_loss`.
-   - Tính toán `geo_loss, geo_metrics = self.geometry_loss(...)`.
-   - Tính toán tổng loss qua `self.weighting`.
-   - Trả về dictionary đồng bộ.
+Update `detector/core/losses/loss_fn.py`:
+1. Import `OrientedGeometryLoss` and `TemperatureSoftmaxUncertainty`.
+2. In `__init__`: permit `self.name in {"baseline", "uwag", "oga"}`.
+   When `self.name == "oga"`:
+   - Instantiate `self.geometry_loss = OrientedGeometryLoss(beta=config.get("corner_beta", 1.0), epsilon=self.eps, max_abs_log_size=self.max_abs_log_size)`.
+   - Instantiate `self.weighting = TemperatureSoftmaxUncertainty(task_names=("cls", "offset", "size", "yaw", "geo"), temperature=config.get("temperature", 2.0), clamp_bound=config.get("clamp_bound", 3.0))`.
+3. In `forward`:
+   - Compute `cls_loss` (via `modified_focal_loss`).
+   - Compute `offset_loss`, `size_loss`, `yaw_loss` (via `smooth_l1_loss`).
+   - Compute `geo_loss, geo_metrics = self.geometry_loss(...)`.
+   - Compute total weighted loss via `self.weighting`.
+   - Return clean dictionary with telemetry for all components.
 
-- [ ] **Step 4: Chạy lại test suite để kiểm tra PASS**
+- [ ] **Step 4: Run test to verify it passes**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_loss_fn_oga.py
 ```
-Kỳ vọng: `Ran 1 test in ... OK`.
+Expected: `Ran 1 test in ... OK`.
 
-Chạy thêm kiểm thử hồi quy cho baseline & uwag:
+Run full test regression check:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest discover -s tests -p "test_*.py"
 ```
-Kỳ vọng: Toàn bộ test suite vượt qua.
+Expected: All tests PASS.
 
-- [ ] **Step 5: Commit qua rtk git**
+- [ ] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/loss_fn.py tests/test_loss_fn_oga.py
@@ -701,19 +689,19 @@ rtk git commit -m "feat(loss): integrate OGA loss mode into LossFunction"
 
 ---
 
-### Task 5: Tạo cấu hình huấn luyện chuẩn & Kiểm thử tích hợp End-to-End với Pipeline
+### Task 5: Production Configuration & End-to-End Pipeline Integration Test
 
 **Files:**
 - Create: `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`
 - Create: `tests/test_training_pipeline_oga.py`
 
 **Interfaces:**
-- Consumes: Config JSON đầy đủ kết hợp kiến trúc BEVNeXt + LiteMLA + sgFPN và hàm loss OGA.
-- Produces: Test pipeline xác nhận `model -> loss -> backward -> optimizer` khớp 100% logic của `train.py`.
+- Consumes: Complete JSON config binding BEVNeXt + LiteMLA + sgFPN with OGA-Loss.
+- Produces: Integration test verifying end-to-end forward/backward pipeline matching `train.py`.
 
-- [ ] **Step 1: Tạo cấu hình `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`**
+- [ ] **Step 1: Create `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`**
 
-Tạo snapshot cấu hình hoàn chỉnh kế thừa kiến trúc backbone BEVNeXt tốt nhất:
+Create snapshot config:
 ```json
 {
   "augmentation": {
@@ -808,9 +796,9 @@ Tạo snapshot cấu hình hoàn chỉnh kế thừa kiến trúc backbone BEVNe
 }
 ```
 
-- [ ] **Step 2: Viết test End-to-End mô phỏng bước huấn luyện của `train.py`**
+- [ ] **Step 2: Write end-to-end integration test matching `train.py` logic**
 
-Tạo `tests/test_training_pipeline_oga.py`:
+Create `tests/test_training_pipeline_oga.py`:
 ```python
 import json
 import sys
@@ -835,13 +823,11 @@ class TestTrainingPipelineOGA(unittest.TestCase):
         model = build_model(config).to(device)
         criterion = LossFunction(config["model"]["cls_encoding"], config["loss"]).to(device)
 
-        # Mock a voxel batch matching input dimension [B, 8, 704, 800]
-        # Use small spatial slice [B, 8, 64, 64] for fast unit testing
+        # Mock a voxel batch [B, 8, 64, 64]
         B = 2
         voxel = torch.randn(B, 8, 64, 64, device=device)
         outputs = model(voxel)
 
-        # Target dimensions match outputs
         H_out, W_out = outputs["cls"].shape[2], outputs["cls"].shape[3]
         batch = {
             "cls": torch.zeros(B, 3, H_out, W_out, device=device),
@@ -859,7 +845,7 @@ class TestTrainingPipelineOGA(unittest.TestCase):
         # Backward pass
         loss.backward()
 
-        # Check model and criterion gradients
+        # Check gradients
         has_model_grad = any(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())
         has_crit_grad = any(p.grad is not None and torch.isfinite(p.grad).all() for p in criterion.parameters())
         self.assertTrue(has_model_grad)
@@ -870,23 +856,23 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 3: Chạy test End-to-End**
+- [ ] **Step 3: Run end-to-end integration test**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest tests/test_training_pipeline_oga.py
 ```
-Kỳ vọng: Test PASS, mô phỏng hoàn chỉnh cả forward và backward pass với BEVNeXt và OGA loss.
+Expected: PASS.
 
-- [ ] **Step 4: Chạy toàn bộ test suite hoàn chỉnh của repository**
+- [ ] **Step 4: Run complete test suite**
 
-Chạy:
+Run:
 ```bash
 /home/duyennh/miniconda3/envs/AI_env/bin/python -m unittest discover -s tests -p "test_*.py"
 ```
-Kỳ vọng: Tất cả tests đều PASS, không có regression nào.
+Expected: All tests in the repository PASS.
 
-- [ ] **Step 5: Commit qua rtk git**
+- [ ] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json tests/test_training_pipeline_oga.py
