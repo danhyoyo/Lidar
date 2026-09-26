@@ -38,7 +38,7 @@
   - `box_corners(offset, log_size, doubled_yaw, epsilon=1e-6, max_abs_log_size=10.0)` -> `(corners, axes, clamp_count, fallback_count)` where `corners` is `[N, 4, 2]` and `axes` is `[N, 2, 2]`
   - `pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, epsilon=1e-6)` -> `torch.Tensor` scalar scale-normalized loss
 
-- [ ] **Step 1: Write failing test verifying rotated box geometry and $L_{\text{NCD}}$**
+- [x] **Step 1: Write failing test verifying rotated box geometry and $L_{\text{NCD}}$**
 
 Create `tests/test_oriented_geometry_loss.py`:
 ```python
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -121,7 +121,7 @@ Run:
 ```
 Expected: FAIL with `ModuleNotFoundError: No module named 'core.losses.oriented_geometry_loss'`.
 
-- [ ] **Step 3: Implement minimal code for `box_corners` and `pi_symmetric_corner_distance`**
+- [x] **Step 3: Implement minimal code for `box_corners` and `pi_symmetric_corner_distance`**
 
 Create `detector/core/losses/oriented_geometry_loss.py`:
 ```python
@@ -217,7 +217,7 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
     return normalized_distance.mean()
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -225,7 +225,7 @@ Run:
 ```
 Expected: `Ran 3 tests in ... OK`.
 
-- [ ] **Step 5: Commit via rtk git**
+- [x] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/oriented_geometry_loss.py tests/test_oriented_geometry_loss.py
@@ -251,7 +251,7 @@ rtk git commit -m "feat(loss): add rotated box corners and pi-symmetric corner d
     - `__init__(beta=1.0, epsilon=1e-6, max_abs_log_size=10.0)`
     - `forward(pred_offset, pred_size, pred_yaw, target_offset, target_size, target_yaw, reg_mask)` -> `(total_loss, metrics_dict)`
 
-- [ ] **Step 1: Write failing tests for `multiaxis_projection_giou` and `OrientedGeometryLoss`**
+- [x] **Step 1: Write failing tests for `multiaxis_projection_giou` and `OrientedGeometryLoss`**
 
 Append tests to `tests/test_oriented_geometry_loss.py`:
 ```python
@@ -284,7 +284,7 @@ Append tests to `tests/test_oriented_geometry_loss.py`:
         self.assertEqual(pred_offset.grad.sum().item(), 0.0)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -292,7 +292,7 @@ Run:
 ```
 Expected: FAIL with `ImportError: cannot import name 'multiaxis_projection_giou'`.
 
-- [ ] **Step 3: Implement `multiaxis_projection_giou` and `OrientedGeometryLoss`**
+- [x] **Step 3: Implement `multiaxis_projection_giou` and `OrientedGeometryLoss`**
 
 Append to `detector/core/losses/oriented_geometry_loss.py`:
 ```python
@@ -378,7 +378,7 @@ class OrientedGeometryLoss(nn.Module):
         }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -386,7 +386,7 @@ Run:
 ```
 Expected: All 5 tests PASS.
 
-- [ ] **Step 5: Commit via rtk git**
+- [x] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/oriented_geometry_loss.py tests/test_oriented_geometry_loss.py
@@ -411,7 +411,7 @@ rtk git commit -m "feat(loss): implement multiaxis projection giou and OrientedG
     - Parameter `log_scales`: `nn.Parameter` of shape `[M]`, initialized to 0
     - `forward(task_losses)` -> `(weighted_total_loss, weights_dict)`
 
-- [ ] **Step 1: Write failing test for `TemperatureSoftmaxUncertainty`**
+- [x] **Step 1: Write failing test for `TemperatureSoftmaxUncertainty`**
 
 Create `tests/test_uncertainty_weighting.py`:
 ```python
@@ -469,7 +469,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -477,7 +477,7 @@ Run:
 ```
 Expected: FAIL with `ModuleNotFoundError: No module named 'core.losses.uncertainty_weighting'`.
 
-- [ ] **Step 3: Implement `TemperatureSoftmaxUncertainty`**
+- [x] **Step 3: Implement `TemperatureSoftmaxUncertainty`**
 
 Create `detector/core/losses/uncertainty_weighting.py`:
 ```python
@@ -545,7 +545,7 @@ class TemperatureSoftmaxUncertainty(nn.Module):
         return total_loss, weights_dict
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -553,7 +553,7 @@ Run:
 ```
 Expected: All 3 tests PASS.
 
-- [ ] **Step 5: Commit via rtk git**
+- [x] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/uncertainty_weighting.py tests/test_uncertainty_weighting.py
@@ -576,7 +576,7 @@ rtk git commit -m "feat(loss): add TemperatureSoftmaxUncertainty multi-task bala
   - `LossFunction`: instantiates `OrientedGeometryLoss` and `TemperatureSoftmaxUncertainty`
   - `criterion(pred, target)`: returns `{loss, cls, offset, size, yaw, geo, corner_dist, proj_giou, weight_cls, ...}`
 
-- [ ] **Step 1: Write failing test for `LossFunction` with OGA config**
+- [x] **Step 1: Write failing test for `LossFunction` with OGA config**
 
 Create `tests/test_loss_fn_oga.py`:
 ```python
@@ -643,7 +643,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -651,7 +651,7 @@ Run:
 ```
 Expected: FAIL with `ValueError: Unsupported loss name: 'oga'`.
 
-- [ ] **Step 3: Modify `detector/core/losses/loss_fn.py` to support OGA**
+- [x] **Step 3: Modify `detector/core/losses/loss_fn.py` to support OGA**
 
 Update `detector/core/losses/loss_fn.py`:
 1. Import `OrientedGeometryLoss` and `TemperatureSoftmaxUncertainty`.
@@ -666,7 +666,7 @@ Update `detector/core/losses/loss_fn.py`:
    - Compute total weighted loss via `self.weighting`.
    - Return clean dictionary with telemetry for all components.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -680,7 +680,7 @@ Run full test regression check:
 ```
 Expected: All tests PASS.
 
-- [ ] **Step 5: Commit via rtk git**
+- [x] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add detector/core/losses/loss_fn.py tests/test_loss_fn_oga.py
@@ -699,7 +699,7 @@ rtk git commit -m "feat(loss): integrate OGA loss mode into LossFunction"
 - Consumes: Complete JSON config binding BEVNeXt + LiteMLA + sgFPN with OGA-Loss.
 - Produces: Integration test verifying end-to-end forward/backward pipeline matching `train.py`.
 
-- [ ] **Step 1: Create `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`**
+- [x] **Step 1: Create `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`**
 
 Create snapshot config:
 ```json
@@ -796,7 +796,7 @@ Create snapshot config:
 }
 ```
 
-- [ ] **Step 2: Write end-to-end integration test matching `train.py` logic**
+- [x] **Step 2: Write end-to-end integration test matching `train.py` logic**
 
 Create `tests/test_training_pipeline_oga.py`:
 ```python
@@ -856,7 +856,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 3: Run end-to-end integration test**
+- [x] **Step 3: Run end-to-end integration test**
 
 Run:
 ```bash
@@ -864,7 +864,7 @@ Run:
 ```
 Expected: PASS.
 
-- [ ] **Step 4: Run complete test suite**
+- [x] **Step 4: Run complete test suite**
 
 Run:
 ```bash
@@ -872,7 +872,7 @@ Run:
 ```
 Expected: All tests in the repository PASS.
 
-- [ ] **Step 5: Commit via rtk git**
+- [x] **Step 5: Commit via rtk git**
 
 ```bash
 rtk git add configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json tests/test_training_pipeline_oga.py
