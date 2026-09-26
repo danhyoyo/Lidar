@@ -3,7 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from core.losses.focal_loss import modified_focal_loss, focal_loss
-from core.losses.l1_loss import l1_loss
+from core.losses.l1_loss import l1_loss, smooth_l1_loss
+from core.losses.oriented_geometry_loss import OrientedGeometryLoss
+from core.losses.uncertainty_weighting import TemperatureSoftmaxUncertainty
 
 
 class LossFunction(nn.Module):
@@ -22,7 +24,7 @@ class LossFunction(nn.Module):
         self.cls_encoding = cls_encoding
         config = config or {}
         self.name = str(config.get("name", "baseline")).lower()
-        if self.name not in {"baseline", "uwag"}:
+        if self.name not in {"baseline", "uwag", "oga"}:
             raise ValueError(f"Unsupported loss name: {self.name!r}")
 
         self.geometric_weight = float(config.get("geometric_weight", 0.2))
@@ -40,6 +42,20 @@ class LossFunction(nn.Module):
             if len(initial) != len(self.TASKS):
                 raise ValueError("initial_log_scales must contain four values")
             self.log_scales = nn.Parameter(torch.tensor(initial, dtype=torch.float32))
+        elif self.name == "oga":
+            self.corner_beta = float(config.get("corner_beta", 1.0))
+            self.temperature = float(config.get("temperature", 2.0))
+            self.clamp_bound = float(config.get("clamp_bound", 3.0))
+            self.geometry_loss = OrientedGeometryLoss(
+                beta=self.corner_beta,
+                epsilon=self.eps,
+                max_abs_log_size=self.max_abs_log_size,
+            )
+            self.weighting = TemperatureSoftmaxUncertainty(
+                task_names=("cls", "offset", "size", "yaw", "geo"),
+                temperature=self.temperature,
+                clamp_bound=self.clamp_bound,
+            )
         else:
             self.register_buffer(
                 "log_scales", torch.empty(0, dtype=torch.float32), persistent=False
@@ -112,23 +128,47 @@ class LossFunction(nn.Module):
             cls_loss = focal_loss(pred["cls"], target["cls"])
         else:
             cls_loss = modified_focal_loss(pred["cls"], target["cls"])
-        offset_loss = l1_loss(pred["offset"], target["offset"], target["reg_mask"])
-        size_loss = l1_loss(pred["size"], target["size"], target["reg_mask"])
-        yaw_loss = l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
-
-        components = torch.stack(
-            [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
-        )
-        if self.name == "uwag":
-            task_loss = (
-                torch.exp(-self.log_scales) * components + self.log_scales
-            ).sum()
-            geometric_loss = self._yaw_aware_bev_iou_loss(pred, target)
-            loss = task_loss + geometric_loss
+        if self.name == "oga":
+            offset_loss = smooth_l1_loss(pred["offset"], target["offset"], target["reg_mask"])
+            size_loss = smooth_l1_loss(pred["size"], target["size"], target["reg_mask"])
+            yaw_loss = smooth_l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
+            geo_loss, geo_metrics = self.geometry_loss(
+                pred["offset"][:, :2],
+                pred["size"][:, :2],
+                pred["yaw"][:, :2],
+                target["offset"][:, :2],
+                target["size"][:, :2],
+                target["yaw"][:, :2],
+                target["reg_mask"],
+            )
+            task_losses = {
+                "cls": cls_loss,
+                "offset": offset_loss,
+                "size": size_loss,
+                "yaw": yaw_loss,
+                "geo": geo_loss,
+            }
+            loss, weights = self.weighting(task_losses)
+            geometric_loss = geo_loss
         else:
-            geometric_loss = components.new_zeros(())
-            loss = components.sum()
-        if not torch.isfinite(torch.cat((components, loss.reshape(1)))).all():
+            offset_loss = l1_loss(pred["offset"], target["offset"], target["reg_mask"])
+            size_loss = l1_loss(pred["size"], target["size"], target["reg_mask"])
+            yaw_loss = l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
+
+            components = torch.stack(
+                [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
+            )
+            if self.name == "uwag":
+                task_loss = (
+                    torch.exp(-self.log_scales) * components + self.log_scales
+                ).sum()
+                geometric_loss = self._yaw_aware_bev_iou_loss(pred, target)
+                loss = task_loss + geometric_loss
+            else:
+                geometric_loss = components.new_zeros(())
+                loss = components.sum()
+
+        if not torch.isfinite(loss):
             raise FloatingPointError("non-finite loss")
 
         loss_dict = {
@@ -146,5 +186,10 @@ class LossFunction(nn.Module):
                 loss_dict[f"weight_{task}"] = torch.exp(
                     -log_scale.detach()
                 )
+        elif self.name == "oga":
+            loss_dict["corner_dist"] = geo_metrics["corner_dist"]
+            loss_dict["proj_giou"] = geo_metrics["proj_giou"]
+            for task, w in weights.items():
+                loss_dict[f"weight_{task}"] = w
 
         return loss_dict
