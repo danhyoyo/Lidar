@@ -37,11 +37,15 @@ class CustomModel(nn.Module):
         if cfg["cls_encoding"] == "binary":
             self.num_classes += 1
 
+        is_bevnext = cfg.get("backbone") == "bevnext"
+        use_bn = cfg.get("header_use_bn", is_bevnext)
+        act = cfg.get("header_act", "silu" if is_bevnext else "none")
+
         self.header = Header(
             self.num_classes,
             cfg["backbone_out_dim"],
-            use_bn=cfg.get("header_use_bn", True),
-            act=cfg.get("header_act", "silu"),
+            use_bn=use_bn,
+            act=act,
         )
 
     def forward(self, x):

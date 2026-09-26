@@ -137,4 +137,30 @@ def test_detection_header_activations_and_bn():
     assert pred["yaw"].shape == (2, 2, 50, 44)
 
 
+def test_legacy_backbone_backward_compatibility():
+    from core.models.model import CustomModel
+
+    # Legacy config (e.g. baseline MobilePixor without header_use_bn or header_act)
+    cfg = {
+        "backbone": "mobilepixor",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+    }
+    model = CustomModel(cfg, num_classes=3, input_channels=35)
+
+    # Legacy model must default to Identity (no BatchNorm, no non-linear activation in head)
+    assert isinstance(model.header.cls.bn1, torch.nn.Identity)
+    assert isinstance(model.header.cls.act1, torch.nn.Identity)
+    assert isinstance(model.header.cls.bn2, torch.nn.Identity)
+    assert isinstance(model.header.cls.act2, torch.nn.Identity)
+
+    # State dict must not contain any batchnorm keys for header
+    sd = model.state_dict()
+    header_bn_keys = [k for k in sd if "header" in k and "bn" in k]
+    assert len(header_bn_keys) == 0, f"Found unexpected BN keys in legacy header: {header_bn_keys}"
+
+    # Strict load of simulated legacy state dict must succeed
+    model.load_state_dict(sd, strict=True)
+
+
 
