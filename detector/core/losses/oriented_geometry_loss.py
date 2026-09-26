@@ -5,7 +5,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = ["box_corners", "pi_symmetric_corner_distance"]
+__all__ = [
+    "box_corners",
+    "pi_symmetric_corner_distance",
+    "multiaxis_projection_giou",
+    "OrientedGeometryLoss",
+]
 
 
 def box_corners(offset, log_size, doubled_yaw, epsilon=1e-6, max_abs_log_size=10.0):
@@ -93,3 +98,86 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
 
     normalized_distance = raw_distance / diagonal
     return normalized_distance.mean()
+
+
+def multiaxis_projection_giou(pred_corners, pred_axes, target_corners, target_axes, epsilon=1e-6):
+    """Compute 1D Generalized IoU projected over 4 rectangle normal axes.
+
+    Paper: AAAI 2026 MGIoU (Specialized 2D BEV projection).
+    """
+    if pred_corners.shape[0] == 0:
+        return pred_corners.sum() * 0.0
+
+    # 4 projection axes: 2 from prediction, 2 from target
+    axes = torch.cat((pred_axes, target_axes), dim=1)  # [N, 4, 2]
+
+    # Project 4 corners of each box onto the 4 projection axes
+    pred_proj = torch.einsum("ncd,nad->nac", pred_corners, axes)      # [N, 4, 4]
+    target_proj = torch.einsum("ncd,nad->nac", target_corners, axes)  # [N, 4, 4]
+
+    pred_min, pred_max = pred_proj.amin(dim=-1), pred_proj.amax(dim=-1)        # [N, 4]
+    target_min, target_max = target_proj.amin(dim=-1), target_proj.amax(dim=-1)  # [N, 4]
+
+    intersection = (
+        torch.minimum(pred_max, target_max) - torch.maximum(pred_min, target_min)
+    ).clamp_min(0.0)
+    union = pred_max - pred_min + target_max - target_min - intersection
+    hull = torch.maximum(pred_max, target_max) - torch.minimum(pred_min, target_min)
+
+    giou = intersection / union.clamp_min(epsilon) - (hull - union) / hull.clamp_min(epsilon)
+    loss_1d = (1.0 - giou.mean(dim=-1)) / 2.0
+    return loss_1d.mean()
+
+
+class OrientedGeometryLoss(nn.Module):
+    """Composite Rotated BEV Geometry Loss: Multi-Axis Projection GIoU + Normalized Corner Distance."""
+
+    def __init__(self, beta=1.0, epsilon=1e-6, max_abs_log_size=10.0):
+        super().__init__()
+        self.beta = float(beta)
+        self.epsilon = float(epsilon)
+        self.max_abs_log_size = float(max_abs_log_size)
+
+    def forward(
+        self,
+        pred_offset,
+        pred_size,
+        pred_yaw,
+        target_offset,
+        target_size,
+        target_yaw,
+        reg_mask,
+    ):
+        positive = reg_mask.reshape(-1).bool()
+        if not positive.any():
+            zero = (pred_offset.sum() + pred_size.sum() + pred_yaw.sum()) * 0.0
+            return zero, {"proj_giou": 0.0, "corner_dist": 0.0}
+
+        def _select(x):
+            return x.permute(0, 2, 3, 1).reshape(-1, 2)[positive].float()
+
+        pred_off_pos = _select(pred_offset)
+        pred_size_pos = _select(pred_size)
+        pred_yaw_pos = _select(pred_yaw)
+
+        tgt_off_pos = _select(target_offset)
+        tgt_size_pos = _select(target_size)
+        tgt_yaw_pos = _select(target_yaw)
+
+        with torch.autocast(device_type=pred_offset.device.type, enabled=False):
+            pred_c, pred_ax, _, _ = box_corners(
+                pred_off_pos, pred_size_pos, pred_yaw_pos, self.epsilon, self.max_abs_log_size
+            )
+            tgt_c, tgt_ax, _, _ = box_corners(
+                tgt_off_pos, tgt_size_pos, tgt_yaw_pos, self.epsilon, self.max_abs_log_size
+            )
+
+            proj_loss = multiaxis_projection_giou(pred_c, pred_ax, tgt_c, tgt_ax, self.epsilon)
+            corner_loss = pi_symmetric_corner_distance(pred_c, tgt_c, tgt_size_pos, self.epsilon)
+            total_geo = proj_loss + self.beta * corner_loss
+
+        return total_geo, {
+            "proj_giou": proj_loss.detach().item(),
+            "corner_dist": corner_loss.detach().item(),
+        }
+

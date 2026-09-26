@@ -62,6 +62,34 @@ class TestOrientedGeometryCornerLoss(unittest.TestCase):
         self.assertTrue(torch.isfinite(pred_offset.grad).all())
         self.assertFalse((pred_offset.grad == 0).all())
 
+    def test_multiaxis_projection_giou_identical(self):
+        offset = torch.tensor([[0.0, 0.0]], dtype=torch.float32)
+        log_size = torch.tensor([[math.log(2.0), math.log(4.0)]], dtype=torch.float32)
+        yaw = torch.tensor([[1.0, 0.0]], dtype=torch.float32)
+        corners, axes, _, _ = box_corners(offset, log_size, yaw)
+
+        from core.losses.oriented_geometry_loss import multiaxis_projection_giou
+        loss = multiaxis_projection_giou(corners, axes, corners, axes)
+        self.assertAlmostEqual(loss.item(), 0.0, places=5)
+
+    def test_oriented_geometry_loss_empty_mask(self):
+        from core.losses.oriented_geometry_loss import OrientedGeometryLoss
+        module = OrientedGeometryLoss(beta=1.0)
+        B, H, W = 2, 8, 8
+        pred_offset = torch.zeros((B, 2, H, W), requires_grad=True)
+        pred_size = torch.zeros((B, 2, H, W), requires_grad=True)
+        pred_yaw = torch.zeros((B, 2, H, W), requires_grad=True)
+        tgt_offset = torch.zeros((B, 2, H, W))
+        tgt_size = torch.zeros((B, 2, H, W))
+        tgt_yaw = torch.zeros((B, 2, H, W))
+        reg_mask = torch.zeros((B, H, W))
+
+        loss, metrics = module(pred_offset, pred_size, pred_yaw, tgt_offset, tgt_size, tgt_yaw, reg_mask)
+        loss.backward()
+        self.assertEqual(loss.item(), 0.0)
+        self.assertTrue(pred_offset.grad is not None)
+        self.assertEqual(pred_offset.grad.sum().item(), 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()
