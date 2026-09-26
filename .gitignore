@@ -30,7 +30,11 @@ outputs/
 # Local datasets, reports, and experiment results
 /artifacts/
 /data/
-/docs/
+/docs/*
+!/docs/superpowers/
+!/docs/rotated_bev_losses/
+!/docs/mobile_bev_lightweight/
+!/docs/*.md
 /evaluation/
 /outputs/
 /result/
