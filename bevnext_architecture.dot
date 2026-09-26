@@ -1,0 +1,113 @@
+
+digraph BEVNeXt {
+    rankdir=TB;
+    bgcolor="#0d1117";
+    node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.1"];
+    edge [color="#58a6ff", penwidth=1.5, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
+
+    subgraph cluster_input {
+        label="Input Layer";
+        fontcolor="#58a6ff";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        input [label="LiDAR BEV Input (Rich8)\nChannels: 8\nResolution: 800 x 704 (0.1m/pixel)", fillcolor="#1f242c", color="#388bfd"];
+    }
+
+    subgraph cluster_stem {
+        label="Stage 1: Fast Spatial Stem";
+        fontcolor="#58a6ff";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        s1 [label="Conv 3x3 (stride=2) + BN + SiLU\n8 -> 32 | 400 x 352", fillcolor="#161b22", color="#58a6ff"];
+        s2 [label="Conv 3x3 (stride=1) + BN + SiLU\n32 -> 32 | 400 x 352", fillcolor="#161b22", color="#58a6ff"];
+        s1 -> s2;
+    }
+
+    subgraph cluster_stage2 {
+        label="Stage 2: Low-Level Metric Geometry (C2)";
+        fontcolor="#f0883e";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        d2 [label="Downsample 3x3 (stride=2): 32 -> 48\n200 x 176", fillcolor="#21262d", color="#f0883e"];
+        b2 [label="2x BEVNeXt Blocks (48 ch)\nDepthwise 7x7 Conv (0.7m Receptive Field)\n1x1 Inverted Expansion (2.5x) + SiLU + LayerScale", fillcolor="#1f242c", color="#f0883e"];
+        d2 -> b2;
+    }
+
+    subgraph cluster_stage3 {
+        label="Stage 3: Core Semantic & Geometry (C3 / C4)";
+        fontcolor="#7ee787";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        d3 [label="Downsample 3x3 (stride=2): 48 -> 96\n100 x 88", fillcolor="#21262d", color="#7ee787"];
+        b3 [label="4x BEVNeXt Blocks (96 ch)\nHigh-Capacity Metric Feature Extraction\n7x7 Depthwise Conv + SiLU", fillcolor="#1f242c", color="#7ee787"];
+        attn [label="LiteMLA Refinement (Linear Attention)\nMulti-Scale QKV (5x5 DW + Native)\nFP32 Linear Accumulation + LayerScale (0.01)\nO(N) Complexity (No NxN Matrix)", fillcolor="#238636", color="#3fb950", penwidth=2];
+        d3 -> b3 -> attn;
+    }
+
+    subgraph cluster_stage4 {
+        label="Stage 4: High-Level Context (C5)";
+        fontcolor="#d2a8ff";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        d4 [label="Downsample 3x3 (stride=2): 96 -> 128\n50 x 44", fillcolor="#21262d", color="#d2a8ff"];
+        b4 [label="2x BEVNeXt Blocks (128 ch)\nPure Convolution (Zero Attention Interference)", fillcolor="#1f242c", color="#d2a8ff"];
+        d4 -> b4;
+    }
+
+    subgraph cluster_fpn {
+        label="Bilinear Scale-Gated FPN Neck";
+        fontcolor="#79c0ff";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+
+        lat5 [label="Lateral C5: 1x1 Conv (128 -> 48)", fillcolor="#161b22", color="#79c0ff"];
+        lat4 [label="Lateral C4: 1x1 Conv (96 -> 48)", fillcolor="#161b22", color="#79c0ff"];
+        lat3 [label="Lateral C3: 1x1 Conv (48 -> 24)", fillcolor="#161b22", color="#79c0ff"];
+
+        u4 [label="Bilinear Upsample 2x (50x44 -> 100x88)\n+ 3x3 Depthwise Refinement", fillcolor="#1f242c", color="#58a6ff"];
+        fuse4 [label="Scale-Gated Fusion (P4)\nFused = U4 + (2*sigmoid(Gate4)) * L4\nShape: 48 x 100 x 88", fillcolor="#1f242c", color="#58a6ff"];
+
+        u3 [label="Bilinear Upsample 2x (100x88 -> 200x176)\n+ 3x3 Conv Projection (48 -> 24)", fillcolor="#1f242c", color="#58a6ff"];
+        fuse3 [label="Scale-Gated Fusion (P3)\nFused = U3 + (2*sigmoid(Gate3)) * L3\nShape: 24 x 200 x 176", fillcolor="#1f242c", color="#58a6ff"];
+
+        out_proj [label="Output Projection: 3x3 Conv + BN + SiLU\n24 -> 16 channels | Stride 4 (200 x 176)", fillcolor="#1f242c", color="#58a6ff", penwidth=2];
+
+        lat5 -> u4 -> fuse4;
+        lat4 -> fuse4;
+        fuse4 -> u3 -> fuse3;
+        lat3 -> fuse3;
+        fuse3 -> out_proj;
+    }
+
+    subgraph cluster_heads {
+        label="Detection Header (Stride 4: 200 x 176)";
+        fontcolor="#f778ba";
+        fontsize=12;
+        color="#30363d";
+        style="rounded,dashed";
+        h_cls [label="Classification Head\n3 classes (Car, Ped, Cyc)", fillcolor="#21262d", color="#f778ba"];
+        h_off [label="Offset Head\n2 channels (dx, dy)", fillcolor="#21262d", color="#f778ba"];
+        h_siz [label="Size Head\n2 channels (log_l, log_w)", fillcolor="#21262d", color="#f778ba"];
+        h_yaw [label="Yaw Head\n2 channels (cos_yaw, sin_yaw)", fillcolor="#21262d", color="#f778ba"];
+    }
+
+    input -> s1;
+    s2 -> d2;
+    b2 -> d3;
+    attn -> d4;
+
+    b4 -> lat5;
+    attn -> lat4;
+    b2 -> lat3;
+
+    out_proj -> h_cls;
+    out_proj -> h_off;
+    out_proj -> h_siz;
+    out_proj -> h_yaw;
+}
