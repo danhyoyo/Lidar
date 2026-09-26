@@ -81,3 +81,29 @@ def test_bevnext_backbone_attention_options():
     params_litemla = sum(p.numel() for p in bb_litemla.parameters())
     assert params_litemla > params_none, "LiteMLA should add attention parameters"
 
+
+def test_custom_model_bevnext():
+    from core.models.model import CustomModel
+
+    cfg = {
+        "backbone": "bevnext",
+        "cls_encoding": "gaussian",
+        "backbone_out_dim": 16,
+        "c4_attention": "litemla",
+        "scale_gated_fpn": True,
+    }
+    model = CustomModel(cfg, num_classes=4, input_channels=8)
+    total_model_params = sum(p.numel() for p in model.parameters())
+    print(f"\nCustomModel (BEVNeXt + Header) Total Parameters: {total_model_params:,}")
+    assert total_model_params < 2_000_000, f"Full model must be < 2M params, got {total_model_params:,}"
+
+    x = torch.randn(2, 8, 800, 704)
+    pred = model(x)
+    assert isinstance(pred, dict)
+    assert "cls" in pred and "offset" in pred and "size" in pred and "yaw" in pred
+    assert pred["cls"].shape == (2, 4, 200, 176)
+    assert pred["offset"].shape == (2, 2, 200, 176)
+    assert pred["size"].shape == (2, 2, 200, 176)
+    assert pred["yaw"].shape == (2, 2, 200, 176)
+
+

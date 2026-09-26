@@ -6,6 +6,7 @@ from core.models.backbones.mobilepixor_coordinate_attention import (
     MobilePixorBackBone as MobilePixorCoordAttBackBone,
 )
 from core.models.backbones.pixor import PixorBackBone
+from core.models.backbones.bevnext import BEVNeXtBackbone
 from core.models.heads.cnn import Header
 
 class CustomModel(nn.Module):
@@ -17,6 +18,13 @@ class CustomModel(nn.Module):
             self.backbone = MobilePixorCoordAttBackBone(
                 input_channels=input_channels,
                 scale_gated_fpn=cfg.get("scale_gated_fpn", False),
+            )
+        elif cfg["backbone"] == "bevnext":
+            self.backbone = BEVNeXtBackbone(
+                input_channels=input_channels,
+                backbone_out_dim=cfg.get("backbone_out_dim", 16),
+                c4_attention=cfg.get("c4_attention", "litemla"),
+                scale_gated_fpn=cfg.get("scale_gated_fpn", True),
             )
         elif cfg["backbone"] == "pixor":
             self.backbone = PixorBackBone()
