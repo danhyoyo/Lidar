@@ -9,12 +9,13 @@ from core.losses.uncertainty_weighting import TemperatureSoftmaxUncertainty
 
 
 class LossFunction(nn.Module):
-    """Baseline loss or the thesis UWAG composite objective.
+    """Loss function supporting baseline, legacy UWAG, and novel OGA composite objectives.
 
-    UWAG combines learnable homoscedastic task weights, the dataset's
-    object-size-adaptive Gaussian classification target, and a yaw-aware BEV
-    overlap penalty. The one-argument constructor remains compatible with the
-    legacy training agent and selects the baseline objective.
+    - baseline: standard focal loss for classification + unweighted L1 for box regression.
+    - uwag: legacy homoscedastic uncertainty weighting with axis-aligned footprint IoU.
+    - oga: Oriented Geometric Alignment & Adaptive Loss combining scale-normalized
+      pi-symmetric corner distance, multi-axis projection GIoU, dual-stream parameter
+      guidance, and temperature-softmax bounded uncertainty balancing (T-SBUW).
     """
 
     TASKS = ("cls", "offset", "size", "yaw")
@@ -189,6 +190,8 @@ class LossFunction(nn.Module):
         elif self.name == "oga":
             loss_dict["corner_dist"] = geo_metrics["corner_dist"]
             loss_dict["proj_giou"] = geo_metrics["proj_giou"]
+            loss_dict["clamp_count"] = geo_metrics.get("clamp_count", 0)
+            loss_dict["fallback_count"] = geo_metrics.get("fallback_count", 0)
             for task, w in weights.items():
                 loss_dict[f"weight_{task}"] = w
 

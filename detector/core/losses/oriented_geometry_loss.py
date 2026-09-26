@@ -92,8 +92,9 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
     raw_distance = torch.minimum(dist_direct, dist_pi) # [N]
 
     # Normalize by the target bounding box diagonal to equalize scale sensitivity across classes
-    target_w = torch.exp(target_log_size[:, 0].float())
-    target_l = torch.exp(target_log_size[:, 1].float())
+    clamped_target_size = target_log_size.float().clamp(-10.0, 10.0)
+    target_w = torch.exp(clamped_target_size[:, 0])
+    target_l = torch.exp(clamped_target_size[:, 1])
     diagonal = torch.sqrt(target_w.square() + target_l.square()).clamp_min(epsilon)
 
     normalized_distance = raw_distance / diagonal
@@ -138,6 +139,13 @@ class OrientedGeometryLoss(nn.Module):
         self.epsilon = float(epsilon)
         self.max_abs_log_size = float(max_abs_log_size)
 
+        if self.beta < 0.0:
+            raise ValueError(f"beta must be non-negative, got {self.beta}")
+        if self.epsilon <= 0.0:
+            raise ValueError(f"epsilon must be positive, got {self.epsilon}")
+        if self.max_abs_log_size <= 0.0:
+            raise ValueError(f"max_abs_log_size must be positive, got {self.max_abs_log_size}")
+
     def forward(
         self,
         pred_offset,
@@ -151,7 +159,12 @@ class OrientedGeometryLoss(nn.Module):
         positive = reg_mask.reshape(-1).bool()
         if not positive.any():
             zero = (pred_offset.sum() + pred_size.sum() + pred_yaw.sum()) * 0.0
-            return zero, {"proj_giou": 0.0, "corner_dist": 0.0}
+            return zero, {
+                "proj_giou": 0.0,
+                "corner_dist": 0.0,
+                "clamp_count": 0,
+                "fallback_count": 0,
+            }
 
         def _select(x):
             return x.permute(0, 2, 3, 1).reshape(-1, 2)[positive].float()
@@ -165,10 +178,10 @@ class OrientedGeometryLoss(nn.Module):
         tgt_yaw_pos = _select(target_yaw)
 
         with torch.autocast(device_type=pred_offset.device.type, enabled=False):
-            pred_c, pred_ax, _, _ = box_corners(
+            pred_c, pred_ax, pred_clamps, pred_fallbacks = box_corners(
                 pred_off_pos, pred_size_pos, pred_yaw_pos, self.epsilon, self.max_abs_log_size
             )
-            tgt_c, tgt_ax, _, _ = box_corners(
+            tgt_c, tgt_ax, tgt_clamps, tgt_fallbacks = box_corners(
                 tgt_off_pos, tgt_size_pos, tgt_yaw_pos, self.epsilon, self.max_abs_log_size
             )
 
@@ -179,5 +192,7 @@ class OrientedGeometryLoss(nn.Module):
         return total_geo, {
             "proj_giou": proj_loss.detach().item(),
             "corner_dist": corner_loss.detach().item(),
+            "clamp_count": int((pred_clamps + tgt_clamps).item()),
+            "fallback_count": int((pred_fallbacks + tgt_fallbacks).item()),
         }
 

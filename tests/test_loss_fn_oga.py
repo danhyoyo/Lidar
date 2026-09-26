@@ -59,6 +59,51 @@ class TestLossFunctionOGA(unittest.TestCase):
         self.assertTrue(params[0].grad is not None)
         self.assertTrue(torch.isfinite(params[0].grad).all())
 
+    def test_oga_loss_empty_mask(self):
+        config = {
+            "name": "oga",
+            "temperature": 2.0,
+            "clamp_bound": 3.0,
+            "corner_beta": 1.0,
+        }
+        criterion = LossFunction("gaussian", config)
+        empty_target = {
+            "cls": self.target["cls"],
+            "offset": self.target["offset"],
+            "size": self.target["size"],
+            "yaw": self.target["yaw"],
+            "reg_mask": torch.zeros(self.B, self.H, self.W),
+        }
+        pred = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+        loss_dict = criterion(pred, empty_target)
+        self.assertTrue(torch.isfinite(loss_dict["loss"]))
+        loss_dict["loss"].backward()
+        for head in ("cls", "offset", "size", "yaw"):
+            self.assertTrue(pred[head].grad is not None)
+            self.assertTrue(torch.isfinite(pred[head].grad).all())
+
+    def test_oga_loss_autocast_bf16(self):
+        if not torch.cuda.is_available():
+            self.skipTest("CUDA not available for BF16 test")
+        device = torch.device("cuda")
+        pred = {k: v.to(device).detach().requires_grad_(True) for k, v in self.pred.items()}
+        target = {k: v.to(device) for k, v in self.target.items()}
+        config = {
+            "name": "oga",
+            "temperature": 2.0,
+            "clamp_bound": 3.0,
+            "corner_beta": 1.0,
+        }
+        criterion = LossFunction("gaussian", config).to(device)
+        with torch.amp.autocast("cuda", dtype=torch.bfloat16):
+            loss_dict = criterion(pred, target)
+            loss = loss_dict["loss"]
+            self.assertTrue(torch.isfinite(loss))
+        loss.backward()
+        for head in ("cls", "offset", "size", "yaw"):
+            self.assertTrue(pred[head].grad is not None)
+            self.assertTrue(torch.isfinite(pred[head].grad).all())
+
 
 if __name__ == "__main__":
     unittest.main()

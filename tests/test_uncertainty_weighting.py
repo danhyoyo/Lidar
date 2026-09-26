@@ -47,6 +47,25 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
         self.assertGreater(min_weight, 0.01)
         self.assertAlmostEqual(sum(weights.values()), 2.0, places=5)
 
+    def test_smooth_tanh_gradient_non_zero_at_saturation(self):
+        weighting = TemperatureSoftmaxUncertainty(task_names=("t1", "t2"), temperature=1.0, clamp_bound=3.0)
+        # Initialize at extreme boundary past clamp_bound
+        with torch.no_grad():
+            weighting.log_scales.copy_(torch.tensor([5.0, -5.0]))
+        task_losses = {"t1": torch.tensor(1.0), "t2": torch.tensor(2.0)}
+        total, _ = weighting(task_losses)
+        total.backward()
+
+        # Gradient must remain strictly non-zero (eliminates hard clamp saturation dead zone)
+        self.assertTrue(torch.isfinite(weighting.log_scales.grad).all())
+        self.assertTrue((weighting.log_scales.grad != 0).all())
+
+    def test_missing_task_key_raises_key_error(self):
+        weighting = TemperatureSoftmaxUncertainty(task_names=("cls", "offset", "geo"))
+        incomplete_losses = {"cls": torch.tensor(1.0), "offset": torch.tensor(2.0)}
+        with self.assertRaises(KeyError):
+            weighting(incomplete_losses)
+
 
 if __name__ == "__main__":
     unittest.main()
