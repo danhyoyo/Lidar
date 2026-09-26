@@ -10,6 +10,10 @@ All presets live in `configs/kitti/backbone_branch/`.
 | B1_C2PSA | kitti_mobilepixor_c2psa.json | RichBEV-8 | SG-FPN | none | c2psa | 626,569 |
 | C4_LSK | kitti_mobilepixor_c4_lsk.json | RichBEV-8 | SG-FPN | lsk | none | 610,367 |
 | C4_LITEMLA | kitti_mobilepixor_c4_litemla.json | RichBEV-8 | SG-FPN | litemla | none | 619,065 |
+| RICH8_SGFPN_CONTROL | kitti_mobilepixor_rich8_sgfpn_control.json | RichBEV-8 | SG-FPN | none | none | 590,521 |
+| C4_LITEMLA_LATERAL_ONLY | kitti_mobilepixor_c4_litemla_lateral_only.json | RichBEV-8 | SG-FPN | litemla (lateral only) | none | 619,065 |
+| C4_LITEMLA_C5_C2PSA_SHARED | kitti_mobilepixor_c4_litemla_c5_c2psa_shared.json | RichBEV-8 | SG-FPN | litemla (shared) | c2psa | 655,113 |
+| C4_LITEMLA_C5_C2PSA_DECOUPLED | kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json | RichBEV-8 | SG-FPN | litemla (lateral only) | c2psa | 655,113 |
 
 The two C4 presets differ from each other only in the selected C4 adapter and
 descriptive note. Both use RichBEV-8 + SG-FPN, enabled augmentation, physical
@@ -38,10 +42,17 @@ This fragment belongs inside a complete existing training config. C4 choices are
 or `rich8`. SG-FPN accepts a JSON Boolean. There is no automatic enabling of C2PSA,
 SG-FPN, CoordAtt, UWAG, or a different encoding when C4 is enabled.
 
-The complete switch space is 3 C4 choices x 2 C5 choices x 2 encodings x 2 FPN
-choices = 24 configurations. The committed C4 pair uses Rich8, SG-FPN, and
-C5=`none`; test C2PSA interactions separately. Enabling C4 and C5 together is
-supported but is a distinct experiment, not the default C4 preset.
+`model.c4_attention_route` is optional. `shared` is the legacy behavior: the
+refined C4 tensor feeds both block5 and the C4 lateral. `lateral_only` sends raw
+C4 to block5 and reserves the refined tensor for the lateral branch. Omitting the
+field preserves `shared`, so existing configs and checkpoints keep their behavior.
+
+The legacy `shared` switch space is 3 C4 choices x 2 C5 choices x 2 encodings x
+2 FPN choices = 24 configurations. `lateral_only` is an additional routing
+ablation for enabled C4 adapters, not another attention mechanism. The committed
+C4 pair uses Rich8, SG-FPN, and C5=`none`; test C2PSA interactions separately.
+Enabling C4 and C5 together is supported but is a distinct experiment, not the
+default C4 preset.
 
 With Rich8, all counts decrease by 7,776 (27 fewer input channels x 32 stem
 channels x 3 x 3). SG-FPN adds 480. C2PSA adds 36,048 relative to C5=`none`.
@@ -68,7 +79,8 @@ flowchart LR
   F3 --> HEAD["Existing 16-channel BEV heads"]
 ```
 
-Both consumers of C4 receive the same refined tensor. No feature resize or
+Under the default `shared` route, both consumers of C4 receive the same refined
+tensor. No feature resize or
 target/decoder change is needed. `none` is parameter-free Identity: old B0/B1
 state dicts load strictly and their parameter counts and outputs are preserved.
 Enabling an adapter introduces new checkpoint keys; start a new training run.
@@ -76,6 +88,34 @@ Do not resume an old off-mode checkpoint into an on-mode experiment. To reproduc
 an older Colab run, use its original checkout/config/metadata rather than disabling
 the resume guard. New default run names include all architecture switches and a
 config hash to keep ablations separate.
+
+### Decoupled C4/C5 proposal
+
+The decoupled preset changes only feature routing; parameter count and checkpoint
+keys are identical to the shared LiteMLA+C2PSA combination:
+
+```mermaid
+flowchart LR
+  C4["raw C4"] --> B5["block5"] --> C5["C5"] --> A5["C2PSA"] --> L5["C5 lateral"]
+  C4 --> A4["LiteMLA"] --> L4["C4 lateral"]
+  L5 --> F["SG-FPN"]
+  L4 --> F
+```
+
+This removes the direct `LiteMLA -> block5 -> C2PSA` serial path, but does not
+prove that optimization interference is absent: both branches still share the
+stem through block4 and their gradients meet at the SG-FPN output. Test it as a
+routing ablation, not as a guaranteed fix.
+
+The supplied results contain only one seed and lack the matched Rich8 + SG-FPN +
+no-attention cell. A formal two-factor interaction needs all four cells (neither,
+C4 only, C5 only, both) under identical training settings and multiple seeds. Use
+`kitti_mobilepixor_rich8_sgfpn_control.json` for the missing control.
+
+For a routing-aware study, run six cells: no attention; C2PSA only; LiteMLA only
+with `shared`; LiteMLA only with `lateral_only`; both with `shared`; and both with
+`lateral_only`. The committed presets make the last four routes explicit. This
+separates an attention interaction from the effect of changing the block5 input.
 
 ## C4 mechanism diagrams
 

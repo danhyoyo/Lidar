@@ -20,6 +20,7 @@ class CustomModel(nn.Module):
                 c2psa_attn_ratio=c2psa.get("attn_ratio", 0.5),
                 scale_gated_fpn=cfg.get("scale_gated_fpn", False),
                 c4_attention=cfg.get("c4_attention", "none"),
+                c4_attention_route=cfg.get("c4_attention_route", "shared"),
                 lsk=cfg.get("lsk", {}),
                 litemla=cfg.get("litemla", {}),
             )

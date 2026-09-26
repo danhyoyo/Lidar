@@ -38,22 +38,30 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / "configs").rglob("*.json")
         }
-        for variant in ("B0", "B1_C2PSA", "C4_LSK", "C4_LITEMLA"):
+        variants = (
+            "B0", "B1_C2PSA", "C4_LSK", "C4_LITEMLA",
+            "RICH8_SGFPN_CONTROL", "C4_LITEMLA_LATERAL_ONLY",
+            "C4_LITEMLA_C5_C2PSA_SHARED",
+            "C4_LITEMLA_C5_C2PSA_DECOUPLED",
+        )
+        for variant in variants:
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
             self.assertIn(match.group(1), config_files)
-        selected_variant = re.search(
-            r'^VARIANT = "(B0|B1_C2PSA|C4_LSK|C4_LITEMLA)"', source, flags=re.MULTILINE
-        )
+        selected_variant = re.search(r'^VARIANT = "([A-Z0-9_]+)"', source, flags=re.MULTILINE)
         self.assertIsNotNone(selected_variant)
+        self.assertIn(selected_variant.group(1), variants)
         self.assertIn('PRECISION = "auto"', source)
         self.assertIn("--clean-backbone", source)
         self.assertIn("tests/test_c4_attention.py", source)
         self.assertIn("resolve_ablation_config(", source)
         self.assertIn("write_json(CONFIG, resolved_config)", source)
+        self.assertIn('resolved_config["train"]["physical_batch_size"]', source)
+        self.assertIn('resolved_config["train"]["accumulation_steps"]', source)
         self.assertIn("BEV_ENCODING_OVERRIDE", source)
         self.assertIn("SCALE_GATED_FPN_OVERRIDE", source)
         self.assertIn("C5_ATTENTION_OVERRIDE", source)
+        self.assertIn("C4_ATTENTION_ROUTE_OVERRIDE", source)
         self.assertNotIn("kitti_uwag_coordatt_aug.json", source)
         self.assertNotIn("configs/kitti/mobilebev/", source)
         self.assertIn("run.json", source)
@@ -169,6 +177,10 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "B1_C2PSA": (626569, "binary_slices", False, 7776 - 480),
             "C4_LSK": (610367, "binary_slices", False, 7776 - 480),
             "C4_LITEMLA": (619065, "binary_slices", False, 7776 - 480),
+            "RICH8_SGFPN_CONTROL": (590521, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_LATERAL_ONLY": (619065, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_C5_C2PSA_SHARED": (655113, "binary_slices", False, 7776 - 480),
+            "C4_LITEMLA_C5_C2PSA_DECOUPLED": (655113, "binary_slices", False, 7776 - 480),
         }
         run_names = set()
         with tempfile.TemporaryDirectory() as directory:
@@ -186,7 +198,9 @@ class StandardTrainingNotebookTests(unittest.TestCase):
                             "CONFIG_OVERRIDE": None, "VARIANT": variant,
                             "BRANCH": "C2PSA_c5block", "BEV_ENCODING_OVERRIDE": encoding,
                             "SCALE_GATED_FPN_OVERRIDE": gated, "C5_ATTENTION_OVERRIDE": None,
+                            "C4_ATTENTION_ROUTE_OVERRIDE": None,
                             "PHYSICAL_BATCH_SIZE": 2, "ACCUMULATION_STEPS": 4,
+                            "EPOCHS": 100, "PRECISION": "bf16",
                             "SEED": 42, "RUN_NAME": "",
                             "RUNTIME_PROFILE": "numba_eager",
                             "ARTIFACT_ROOT": temporary_root / "artifacts",
@@ -203,7 +217,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
                         self.assertEqual(scope["selected_parameters"], count + delta)
                         self.assertIn("Differences from baseline:", output.getvalue())
                         run_names.add(scope["RUN_NAME"])
-        self.assertEqual(len(run_names), 8)
+        self.assertEqual(len(run_names), 16)
 
     def test_fp16_grad_scaler_can_recover_from_a_scaled_gradient_overflow(self):
         source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(

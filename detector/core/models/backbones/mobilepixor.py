@@ -315,6 +315,7 @@ class MobilePixorBackBone(nn.Module):
         c2psa_attn_ratio=0.5,
         scale_gated_fpn=False,
         c4_attention="none",
+        c4_attention_route="shared",
         lsk=None,
         litemla=None,
     ):
@@ -386,9 +387,16 @@ class MobilePixorBackBone(nn.Module):
             nn.init.zeros_(self.gate_c3.bias)
 
         # Construct last so a disabled adapter does not change existing state
-        # keys or seeded initialization. Refined C4 feeds BOTH C5 and the FPN.
+        # keys or seeded initialization. Routing decides whether refined C4 is
+        # shared with block5 or reserved for the lateral FPN branch.
         self.c4_attention = build_c4_attention(c4_attention, lsk=lsk, litemla=litemla)
         self.c4_attention_name = c4_attention.lower()
+        route = str(c4_attention_route).lower()
+        if route not in ("shared", "lateral_only"):
+            raise ValueError(
+                "c4_attention_route must be 'shared' or 'lateral_only'"
+            )
+        self.c4_attention_route = route
 
     def forward(self, x):
         #print("x.shape")
@@ -406,13 +414,16 @@ class MobilePixorBackBone(nn.Module):
         # bottom up layers
         c2 = self.block2(c1)
         c3 = self.block3(c2)
-        c4 = self.block4(c3)
-        c4 = self.c4_attention(c4)
-        c5 = self.block5(c4)
+        c4_raw = self.block4(c3)
+        c4_refined = self.c4_attention(c4_raw)
+        c5_input = (
+            c4_refined if self.c4_attention_route == "shared" else c4_raw
+        )
+        c5 = self.block5(c5_input)
         c5 = self.c5_attention(c5)
 
         l5 = self.latlayer1(c5)
-        l4 = self.latlayer2(c4)
+        l4 = self.latlayer2(c4_refined)
         u4 = self.deconv1(l5)
         p5 = (
             u4 + 2 * torch.sigmoid(self.gate_c4(l4 + u4)) * l4

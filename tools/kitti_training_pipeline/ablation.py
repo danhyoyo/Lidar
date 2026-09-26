@@ -7,6 +7,7 @@ import json
 
 def resolve_ablation_config(
     config, *, bev_encoding=None, scale_gated_fpn=None, c5_attention=None,
+    c4_attention_route=None,
 ):
     """Apply explicit overrides to a copy; None preserves the source config."""
     result = deepcopy(config)
@@ -18,6 +19,8 @@ def resolve_ablation_config(
         result["model"]["scale_gated_fpn"] = scale_gated_fpn
     if c5_attention is not None:
         result["model"]["c5_attention"] = c5_attention
+    if c4_attention_route is not None:
+        result["model"]["c4_attention_route"] = c4_attention_route
     if result["data"].get("bev_encoding", {}).get("name", "binary_slices") not in (
         "binary_slices", "rich8",
     ):
@@ -28,6 +31,10 @@ def resolve_ablation_config(
         raise ValueError("c4_attention must be 'none', 'lsk', or 'litemla'")
     if result["model"].get("c5_attention", "none") not in ("none", "c2psa"):
         raise ValueError("c5_attention must be 'none' or 'c2psa'")
+    if result["model"].get("c4_attention_route", "shared") not in (
+        "shared", "lateral_only",
+    ):
+        raise ValueError("c4_attention_route must be 'shared' or 'lateral_only'")
     return result
 
 
@@ -37,9 +44,11 @@ def ablation_label(config):
     encoding = config["data"].get("bev_encoding", {}).get("name", "binary_slices")
     encoding = "legacy35" if encoding == "binary_slices" else encoding
     fpn = "sgfpn" if model.get("scale_gated_fpn", False) else "sumfpn"
+    route = model.get("c4_attention_route", "shared")
+    route_suffix = "" if route == "shared" else "_c4route-lateral"
     return (
         f"{encoding}_c4-{model.get('c4_attention', 'none')}_"
-        f"c5-{model.get('c5_attention', 'none')}_{fpn}"
+        f"c5-{model.get('c5_attention', 'none')}_{fpn}{route_suffix}"
     )
 
 

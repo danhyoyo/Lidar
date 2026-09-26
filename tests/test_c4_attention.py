@@ -126,7 +126,7 @@ class C4AttentionTests(unittest.TestCase):
                     layer.layer_scale.zero_()
                     torch.testing.assert_close(layer(sample), sample, rtol=0, atol=0)
 
-    def test_refined_c4_feeds_both_c5_and_lateral(self):
+    def test_shared_route_feeds_refined_c4_to_both_consumers(self):
         for mode in ("lsk", "litemla"):
             backbone = MobilePixorBackBone(c4_attention=mode).eval()
             captured = {}
@@ -144,6 +144,29 @@ class C4AttentionTests(unittest.TestCase):
                 handle.remove()
             self.assertIs(captured["refined"], captured["c5_input"])
             self.assertIs(captured["refined"], captured["lateral_input"])
+
+    def test_lateral_only_route_keeps_block5_on_raw_c4(self):
+        backbone = MobilePixorBackBone(
+            c4_attention="litemla", c4_attention_route="lateral_only"
+        ).eval()
+        captured = {}
+        handles = [
+            backbone.block4.register_forward_hook(
+                lambda m, args, out: captured.update(raw=out)),
+            backbone.c4_attention.register_forward_hook(
+                lambda m, args, out: captured.update(refined=out)),
+            backbone.block5.register_forward_pre_hook(
+                lambda m, args: captured.update(c5_input=args[0])),
+            backbone.latlayer2.register_forward_pre_hook(
+                lambda m, args: captured.update(lateral_input=args[0])),
+        ]
+        with torch.no_grad():
+            backbone(torch.randn(1, 35, 32, 48))
+        for handle in handles:
+            handle.remove()
+        self.assertIs(captured["raw"], captured["c5_input"])
+        self.assertIs(captured["refined"], captured["lateral_input"])
+        self.assertIsNot(captured["raw"], captured["refined"])
 
     def test_all_24_ablation_combinations_train_and_reload(self):
         criterion = LossFunction("gaussian", {"name": "baseline"})
@@ -220,20 +243,18 @@ class C4AttentionTests(unittest.TestCase):
         )
 
     def test_all_backbone_branch_configs_share_universal_model_schema(self):
-        expected_keys = [
+        required_keys = [
             "backbone", "backbone_out_dim", "c4_attention", "c5_attention",
             "cls_encoding", "scale_gated_fpn", "c2psa", "lsk", "litemla",
         ]
+        allowed_keys = set(required_keys) | {"c4_attention_route"}
         config_paths = sorted(CONFIG_DIR.glob("*.json"))
-        self.assertEqual(len(config_paths), 4)
+        self.assertEqual(len(config_paths), 8)
         for path in config_paths:
             with self.subTest(config=path.name):
                 model = read_json(path)["model"]
-                self.assertEqual(list(model), expected_keys)
-                self.assertEqual(
-                    set(model), set(expected_keys),
-                    "New variants must update every backbone_branch config to the same schema",
-                )
+                self.assertTrue(set(required_keys).issubset(model))
+                self.assertTrue(set(model).issubset(allowed_keys))
 
     def test_config_overrides_do_not_mutate_presets(self):
         original = deepcopy(self.config)
@@ -251,9 +272,72 @@ class C4AttentionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 LiteMLARefinement(**kwargs)
         for kwargs in ({"bev_encoding": "rich11"}, {"scale_gated_fpn": "false"},
-                       {"c5_attention": "coordatt"}):
+                       {"c5_attention": "coordatt"},
+                       {"c4_attention_route": "parallel"}):
             with self.assertRaises(ValueError):
                 resolve_ablation_config(self.config, **kwargs)
+        with self.assertRaises(ValueError):
+            MobilePixorBackBone(c4_attention_route="parallel")
+
+    def test_decoupled_and_shared_configs_get_distinct_labels(self):
+        shared = deepcopy(self.config)
+        shared["model"]["c4_attention"] = "litemla"
+        shared["model"]["c5_attention"] = "c2psa"
+        decoupled = deepcopy(shared)
+        decoupled["model"]["c4_attention_route"] = "lateral_only"
+        self.assertNotEqual(ablation_label(shared), ablation_label(decoupled))
+        self.assertTrue(ablation_label(decoupled).endswith("_c4route-lateral"))
+
+    def test_decoupled_preset_matches_its_no_attention_control(self):
+        control = read_json(
+            CONFIG_DIR / "kitti_mobilepixor_rich8_sgfpn_control.json"
+        )
+        variants = {
+            "c4_lateral": read_json(
+                CONFIG_DIR / "kitti_mobilepixor_c4_litemla_lateral_only.json"
+            ),
+            "joint_shared": read_json(
+                CONFIG_DIR / "kitti_mobilepixor_c4_litemla_c5_c2psa_shared.json"
+            ),
+            "joint_lateral": read_json(
+                CONFIG_DIR
+                / "kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json"
+            ),
+        }
+        self.assertEqual(control["model"]["c4_attention"], "none")
+        self.assertEqual(control["model"]["c5_attention"], "none")
+        expected = {
+            "c4_lateral": ("litemla", "none", "lateral_only"),
+            "joint_shared": ("litemla", "c2psa", "shared"),
+            "joint_lateral": ("litemla", "c2psa", "lateral_only"),
+        }
+        for name, variant in variants.items():
+            with self.subTest(variant=name):
+                actual = (
+                    variant["model"]["c4_attention"],
+                    variant["model"]["c5_attention"],
+                    variant["model"]["c4_attention_route"],
+                )
+                self.assertEqual(actual, expected[name])
+                normalized = deepcopy(variant)
+                normalized["model"]["c4_attention"] = "none"
+                normalized["model"]["c5_attention"] = "none"
+                normalized["model"]["c4_attention_route"] = "shared"
+                normalized["note"] = control["note"]
+                self.assertFalse(config_differences(normalized, control))
+
+    def test_decoupled_preset_backpropagates_through_both_branches(self):
+        cfg = read_json(
+            CONFIG_DIR / "kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json"
+        )
+        model = build_model(cfg).train()
+        outputs = model(torch.randn(2, 8, 32, 48))
+        sum(value.square().mean() for value in outputs.values()).backward()
+        for module in (model.backbone.c4_attention, model.backbone.c5_attention):
+            gradients = [p.grad for p in module.parameters()]
+            self.assertTrue(
+                all(g is not None and torch.isfinite(g).all() for g in gradients)
+            )
 
     def test_cpu_bfloat16_autocast_backward(self):
         for mode in ("lsk", "litemla"):
@@ -297,11 +381,13 @@ class C4AttentionTests(unittest.TestCase):
         import onnxruntime as ort
         from export_onnx import RawHeadWrapper
 
-        for mode in ("lsk", "litemla"):
-            with self.subTest(mode=mode):
+        for mode, route in itertools.product(
+            ("lsk", "litemla"), ("shared", "lateral_only")
+        ):
+            with self.subTest(mode=mode, route=route):
                 cfg = resolve_ablation_config(
                     self.config, bev_encoding="rich8", scale_gated_fpn=True,
-                    c5_attention="c2psa",
+                    c5_attention="c2psa", c4_attention_route=route,
                 )
                 cfg["model"]["c4_attention"] = mode
                 model = build_model(cfg).eval()
