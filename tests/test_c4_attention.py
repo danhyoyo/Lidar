@@ -18,6 +18,7 @@ from ablation import ablation_label, config_digest, resolve_ablation_config
 
 configure_detector_imports(ROOT / "detector")
 from core.models.backbones.c4_attention import (
+    BiLevelRoutingAttentionRefinement, DeformableAttentionRefinement,
     LSKRefinement, LiteMLARefinement, build_c4_attention,
 )
 from core.models.backbones.mobilepixor import MobilePixorBackBone
@@ -109,7 +110,11 @@ class C4AttentionTests(unittest.TestCase):
                 self.assertTrue(torch.isfinite(packed.grad).all())
 
     def test_residual_modules_preserve_shape_and_learn(self):
-        for module_type in (LSKRefinement, LiteMLARefinement):
+        module_types = (
+            LSKRefinement, LiteMLARefinement,
+            DeformableAttentionRefinement, BiLevelRoutingAttentionRefinement,
+        )
+        for module_type in module_types:
             with self.subTest(module=module_type.__name__):
                 layer = module_type().train()
                 sample = torch.randn(2, 64, 9, 11, requires_grad=True)
@@ -120,14 +125,21 @@ class C4AttentionTests(unittest.TestCase):
                     self.assertIsNotNone(parameter.grad, name)
                     self.assertTrue(torch.isfinite(parameter.grad).all(), name)
                 self.assertGreater(layer.layer_scale.grad.abs().sum().item(), 0)
-                weight = layer.local.weight if isinstance(layer, LSKRefinement) else layer.qkv.weight
+                if isinstance(layer, LSKRefinement):
+                    weight = layer.local.weight
+                elif isinstance(layer, LiteMLARefinement):
+                    weight = layer.qkv.weight
+                elif isinstance(layer, DeformableAttentionRefinement):
+                    weight = layer.offset[-1].weight
+                else:
+                    weight = layer.qkv.weight
                 self.assertGreater(weight.grad.abs().sum().item(), 0)
                 with torch.no_grad():
                     layer.layer_scale.zero_()
                     torch.testing.assert_close(layer(sample), sample, rtol=0, atol=0)
 
     def test_shared_route_feeds_refined_c4_to_both_consumers(self):
-        for mode in ("lsk", "litemla"):
+        for mode in ("lsk", "litemla", "dat", "bra"):
             backbone = MobilePixorBackBone(c4_attention=mode).eval()
             captured = {}
             handles = [
@@ -146,33 +158,35 @@ class C4AttentionTests(unittest.TestCase):
             self.assertIs(captured["refined"], captured["lateral_input"])
 
     def test_lateral_only_route_keeps_block5_on_raw_c4(self):
-        backbone = MobilePixorBackBone(
-            c4_attention="litemla", c4_attention_route="lateral_only"
-        ).eval()
-        captured = {}
-        handles = [
-            backbone.block4.register_forward_hook(
-                lambda m, args, out: captured.update(raw=out)),
-            backbone.c4_attention.register_forward_hook(
-                lambda m, args, out: captured.update(refined=out)),
-            backbone.block5.register_forward_pre_hook(
-                lambda m, args: captured.update(c5_input=args[0])),
-            backbone.latlayer2.register_forward_pre_hook(
-                lambda m, args: captured.update(lateral_input=args[0])),
-        ]
-        with torch.no_grad():
-            backbone(torch.randn(1, 35, 32, 48))
-        for handle in handles:
-            handle.remove()
-        self.assertIs(captured["raw"], captured["c5_input"])
-        self.assertIs(captured["refined"], captured["lateral_input"])
-        self.assertIsNot(captured["raw"], captured["refined"])
+        for mode in ("litemla", "dat", "bra"):
+            with self.subTest(mode=mode):
+                backbone = MobilePixorBackBone(
+                    c4_attention=mode, c4_attention_route="lateral_only"
+                ).eval()
+                captured = {}
+                handles = [
+                    backbone.block4.register_forward_hook(
+                        lambda m, args, out: captured.update(raw=out)),
+                    backbone.c4_attention.register_forward_hook(
+                        lambda m, args, out: captured.update(refined=out)),
+                    backbone.block5.register_forward_pre_hook(
+                        lambda m, args: captured.update(c5_input=args[0])),
+                    backbone.latlayer2.register_forward_pre_hook(
+                        lambda m, args: captured.update(lateral_input=args[0])),
+                ]
+                with torch.no_grad():
+                    backbone(torch.randn(1, 35, 32, 48))
+                for handle in handles:
+                    handle.remove()
+                self.assertIs(captured["raw"], captured["c5_input"])
+                self.assertIs(captured["refined"], captured["lateral_input"])
+                self.assertIsNot(captured["raw"], captured["refined"])
 
-    def test_all_24_ablation_combinations_train_and_reload(self):
+    def test_all_40_ablation_combinations_train_and_reload(self):
         criterion = LossFunction("gaussian", {"name": "baseline"})
         labels = set()
         for c4, c5, encoding, gated in itertools.product(
-            ("none", "lsk", "litemla"), ("none", "c2psa"),
+            ("none", "lsk", "litemla", "dat", "bra"), ("none", "c2psa"),
             ("binary_slices", "rich8"), (False, True),
         ):
             with self.subTest(c4=c4, c5=c5, encoding=encoding, gated=gated):
@@ -213,7 +227,7 @@ class C4AttentionTests(unittest.TestCase):
                     first, second = model(sample), reloaded(sample)
                 for key in first:
                     torch.testing.assert_close(first[key], second[key], rtol=0, atol=0)
-        self.assertEqual(len(labels), 24)
+        self.assertEqual(len(labels), 40)
 
     def test_c4_presets_share_the_rich8_sgfpn_profile(self):
         configs = {
@@ -246,11 +260,11 @@ class C4AttentionTests(unittest.TestCase):
         required_keys = [
             "backbone", "backbone_out_dim", "c4_attention", "c5_attention",
             "cls_encoding", "scale_gated_fpn", "header_use_bn", "header_act",
-            "c2psa", "lsk", "litemla",
+            "c2psa", "lsk", "litemla", "dat", "bra",
         ]
         allowed_keys = set(required_keys) | {"c4_attention_route"}
         config_paths = sorted(CONFIG_DIR.glob("*.json"))
-        self.assertEqual(len(config_paths), 8)
+        self.assertEqual(len(config_paths), 10)
         for path in config_paths:
             with self.subTest(config=path.name):
                 model = read_json(path)["model"]
@@ -261,7 +275,7 @@ class C4AttentionTests(unittest.TestCase):
 
     def test_every_committed_config_enables_the_modern_head(self):
         config_paths = sorted((ROOT / "configs").rglob("*.json"))
-        self.assertEqual(len(config_paths), 13)
+        self.assertEqual(len(config_paths), 15)
         for path in config_paths:
             with self.subTest(config=path.relative_to(ROOT).as_posix()):
                 model = read_json(path)["model"]
@@ -302,6 +316,14 @@ class C4AttentionTests(unittest.TestCase):
                        {"scales": [3, 3]}, {"eps": 0}, {"layer_scale_init": -1}):
             with self.assertRaises(ValueError):
                 LiteMLARefinement(**kwargs)
+        for kwargs in ({"num_heads": 3}, {"num_groups": 3}, {"stride": 0},
+                       {"offset_kernel_size": 4}, {"offset_range_factor": -1}):
+            with self.assertRaises(ValueError):
+                DeformableAttentionRefinement(**kwargs)
+        for kwargs in ({"num_heads": 3}, {"n_win": 1}, {"topk": 0},
+                       {"topk": 65}, {"side_dwconv": 4}):
+            with self.assertRaises(ValueError):
+                BiLevelRoutingAttentionRefinement(**kwargs)
         for kwargs in ({"bev_encoding": "rich11"}, {"scale_gated_fpn": "false"},
                        {"c5_attention": "coordatt"},
                        {"c4_attention_route": "parallel"}):
@@ -347,6 +369,12 @@ class C4AttentionTests(unittest.TestCase):
                 CONFIG_DIR
                 / "kitti_mobilepixor_c4_litemla_c5_c2psa_decoupled.json"
             ),
+            "dat_lateral": read_json(
+                CONFIG_DIR / "kitti_mobilepixor_c4_dat_lateral_only.json"
+            ),
+            "bra_lateral": read_json(
+                CONFIG_DIR / "kitti_mobilepixor_c4_bra_lateral_only.json"
+            ),
         }
         self.assertEqual(control["model"]["c4_attention"], "none")
         self.assertEqual(control["model"]["c5_attention"], "none")
@@ -354,6 +382,8 @@ class C4AttentionTests(unittest.TestCase):
             "c4_lateral": ("litemla", "none", "lateral_only"),
             "joint_shared": ("litemla", "c2psa", "shared"),
             "joint_lateral": ("litemla", "c2psa", "lateral_only"),
+            "dat_lateral": ("dat", "none", "lateral_only"),
+            "bra_lateral": ("bra", "none", "lateral_only"),
         }
         for name, variant in variants.items():
             with self.subTest(variant=name):
@@ -384,7 +414,7 @@ class C4AttentionTests(unittest.TestCase):
             )
 
     def test_cpu_bfloat16_autocast_backward(self):
-        for mode in ("lsk", "litemla"):
+        for mode in ("lsk", "litemla", "dat", "bra"):
             with self.subTest(mode=mode):
                 module = build_c4_attention(mode).train()
                 sample = torch.randn(2, 64, 9, 11, requires_grad=True)
@@ -400,7 +430,10 @@ class C4AttentionTests(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available(), "CUDA is not available")
     def test_cuda_autocast_backward(self):
-        for mode, dtype in itertools.product(("lsk", "litemla"), (torch.float16, torch.bfloat16)):
+        for mode, dtype in itertools.product(
+            ("lsk", "litemla", "dat", "bra"),
+            (torch.float16, torch.bfloat16),
+        ):
             if dtype == torch.bfloat16 and not torch.cuda.is_bf16_supported():
                 continue
             with self.subTest(mode=mode, dtype=dtype):
@@ -426,7 +459,8 @@ class C4AttentionTests(unittest.TestCase):
         from export_onnx import RawHeadWrapper
 
         for mode, route in itertools.product(
-            ("lsk", "litemla"), ("shared", "lateral_only")
+            ("lsk", "litemla", "dat", "bra"),
+            ("shared", "lateral_only"),
         ):
             with self.subTest(mode=mode, route=route):
                 cfg = resolve_ablation_config(
@@ -457,8 +491,14 @@ class C4AttentionTests(unittest.TestCase):
                     stream.getvalue(), sess_options=options, providers=["CPUExecutionProvider"]
                 )
                 actual = session.run(None, {"voxel": sample.numpy()})
+                # ONNX Runtime's CPU GridSample kernel differs slightly from
+                # PyTorch's bilinear kernel; keep a tight absolute bound while
+                # avoiding false failures on values close to zero.
+                rtol, atol = (2e-3, 3e-4) if mode == "dat" else (2e-4, 1e-5)
                 for got, want in zip(actual, expected):
-                    torch.testing.assert_close(torch.from_numpy(got), want, rtol=2e-4, atol=1e-5)
+                    torch.testing.assert_close(
+                        torch.from_numpy(got), want, rtol=rtol, atol=atol
+                    )
 
 
 if __name__ == "__main__":

@@ -27,8 +27,12 @@ def resolve_ablation_config(
         raise ValueError("BEV encoding must be 'binary_slices' or 'rich8'")
     if type(result["model"].get("scale_gated_fpn", False)) is not bool:
         raise ValueError("scale_gated_fpn must be a JSON boolean")
-    if result["model"].get("c4_attention", "none") not in ("none", "lsk", "litemla"):
-        raise ValueError("c4_attention must be 'none', 'lsk', or 'litemla'")
+    if result["model"].get("c4_attention", "none") not in (
+        "none", "lsk", "litemla", "dat", "bra",
+    ):
+        raise ValueError(
+            "c4_attention must be 'none', 'lsk', 'litemla', 'dat', or 'bra'"
+        )
     if result["model"].get("c5_attention", "none") not in ("none", "c2psa"):
         raise ValueError("c5_attention must be 'none' or 'c2psa'")
     if result["model"].get("c4_attention_route", "shared") not in (

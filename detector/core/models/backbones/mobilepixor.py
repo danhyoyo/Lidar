@@ -318,6 +318,8 @@ class MobilePixorBackBone(nn.Module):
         c4_attention_route="shared",
         lsk=None,
         litemla=None,
+        dat=None,
+        bra=None,
     ):
         super(MobilePixorBackBone, self).__init__()
 
@@ -389,7 +391,9 @@ class MobilePixorBackBone(nn.Module):
         # Construct last so a disabled adapter does not change existing state
         # keys or seeded initialization. Routing decides whether refined C4 is
         # shared with block5 or reserved for the lateral FPN branch.
-        self.c4_attention = build_c4_attention(c4_attention, lsk=lsk, litemla=litemla)
+        self.c4_attention = build_c4_attention(
+            c4_attention, lsk=lsk, litemla=litemla, dat=dat, bra=bra
+        )
         self.c4_attention_name = c4_attention.lower()
         route = str(c4_attention_route).lower()
         if route not in ("shared", "lateral_only"):

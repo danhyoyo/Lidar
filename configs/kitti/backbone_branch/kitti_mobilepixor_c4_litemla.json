@@ -79,7 +79,9 @@
       ],
       "eps": 0.000001,
       "layer_scale_init": 0.01
-    }
+    },
+    "dat": {"num_heads": 4, "num_groups": 4, "stride": 4, "offset_kernel_size": 5, "offset_range_factor": 2.0, "layer_scale_init": 0.01},
+    "bra": {"num_heads": 4, "n_win": 8, "topk": 4, "side_dwconv": 3, "layer_scale_init": 0.01}
   },
   "multi_gpu": false,
   "note": "kitti_mobilepixor_c4_litemla_aug_bf16",

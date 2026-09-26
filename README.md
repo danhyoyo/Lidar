@@ -47,8 +47,9 @@ The committed presets deliberately represent two experiment families:
 
 - `B0`: Legacy35 + sum-FPN, with C4/C5 attention disabled.
 - `B1_C2PSA`: RichBEV-8 + SG-FPN, with C2PSA after C5.
-- `C4_LSK` and `C4_LITEMLA`: RichBEV-8 + SG-FPN, with C5 attention disabled
-  and the selected adapter after C4.
+- `C4_LSK`, `C4_LITEMLA`, `C4_DAT_LATERAL_ONLY`, and
+  `C4_BRA_LATERAL_ONLY`: RichBEV-8 + SG-FPN, with C5 attention disabled and
+  the selected adapter after C4.
 
 Consequently, B0 versus B1 is **not** a single-factor attention ablation: input
 encoding, FPN fusion, and C5 attention all change. The two C4 presets do form a
@@ -62,15 +63,19 @@ FPN sums into learnable, depthwise scale gates at C4 and C3. The gates are
 zero-initialized, so SG-FPN starts exactly as sum-FPN and adds 480 trainable
 parameters.
 
-The C4 presets keep C5 attention disabled and refine C4 before both block5 and
-the C4 lateral connection:
+The original C4 presets keep C5 attention disabled and refine C4 before both
+block5 and the C4 lateral connection:
 
 - `kitti_mobilepixor_c4_lsk.json`: `model.c4_attention: "lsk"`, a large selective
   kernel adapter (+19,846 parameters).
 - `kitti_mobilepixor_c4_litemla.json`: `model.c4_attention: "litemla"`, a
   multi-scale linear attention adapter (+28,544 parameters).
+- `kitti_mobilepixor_c4_dat_lateral_only.json`: `model.c4_attention: "dat"`,
+  grouped deformable attention on the C4 lateral path (+17,936 parameters).
+- `kitti_mobilepixor_c4_bra_lateral_only.json`: `model.c4_attention: "bra"`,
+  bi-level routing attention on the C4 lateral path (+17,472 parameters).
 
-Set `model.c4_attention` to `"none"` to disable either adapter. Missing this field
+Set `model.c4_attention` to `"none"` to disable the adapter. Missing this field
 also preserves the previous B0/B1 behavior and checkpoint keys. C4 attention,
 C5 attention, encoding, and SG-FPN are independent switches. See
 [C4 ablation guide](docs/backbone_c4_ablation.md) for architecture, equations,
@@ -78,7 +83,7 @@ parameter counts, attribution, and controlled experiment design. These are
 adaptations of published mechanisms, not claims of new attention mechanisms.
 
 Every config in `configs/kitti/backbone_branch/` carries the same model schema,
-including the `c2psa`, `lsk`, and `litemla` option blocks and explicit
+including the `c2psa`, `lsk`, `litemla`, `dat`, and `bra` option blocks and explicit
 `header_use_bn` / `header_act` settings. The current presets use BatchNorm2d +
 SiLU after both hidden 3x3 convolutions in each detection head; final prediction
 convolutions stay linear. Configs without those two fields retain the exact legacy
@@ -133,8 +138,10 @@ Open `3D_Lidar_Object_Detection_Notebook_standard.ipynb` and change only
 
 - `B0` selects the pure baseline configuration.
 - `B1_C2PSA` selects the post-C5 C2PSA configuration.
-- `C4_LSK` selects the C4 large selective kernel adapter (notebook default).
+- `C4_LSK` selects the C4 large selective kernel adapter.
 - `C4_LITEMLA` selects the C4 multi-scale linear attention adapter.
+- `C4_DAT_LATERAL_ONLY` selects C4 deformable attention only for the FPN lateral.
+- `C4_BRA_LATERAL_ONLY` selects C4 bi-level routing attention only for the FPN lateral.
 
 Optional `BEV_ENCODING_OVERRIDE`, `SCALE_GATED_FPN_OVERRIDE`, and
 `C5_ATTENTION_OVERRIDE` select encoding, fusion, and C5 attention independently.
@@ -142,7 +149,7 @@ Optional `BEV_ENCODING_OVERRIDE`, `SCALE_GATED_FPN_OVERRIDE`, and
 it consistently for architecture inspection, training, evaluation, and resume
 checks. Automatic run names include all switches and a config hash.
 
-The default branch is `C2PSA_c5block`. Push local changes to that branch (or select
+The default branch is `decoupled-c4-c5-routing`. Push local changes to that branch (or select
 another branch containing them) before using Colab. Start a new run when changing
 architecture; do not reuse an incompatible run/checkpoint or bypass resume checks.
 The setup cell prints the detached Git commit actually tested. If GitHub is updated

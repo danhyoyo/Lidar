@@ -41,6 +41,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         variants = (
             "B0", "B1_C2PSA", "C4_LSK", "C4_LITEMLA",
             "RICH8_SGFPN_CONTROL", "C4_LITEMLA_LATERAL_ONLY",
+            "C4_DAT_LATERAL_ONLY", "C4_BRA_LATERAL_ONLY",
             "C4_LITEMLA_C5_C2PSA_SHARED",
             "C4_LITEMLA_C5_C2PSA_DECOUPLED",
         )
@@ -181,6 +182,8 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "C4_LITEMLA": (619321, "binary_slices", False, 7776 - 480),
             "RICH8_SGFPN_CONTROL": (590777, "binary_slices", False, 7776 - 480),
             "C4_LITEMLA_LATERAL_ONLY": (619321, "binary_slices", False, 7776 - 480),
+            "C4_DAT_LATERAL_ONLY": (608713, "binary_slices", False, 7776 - 480),
+            "C4_BRA_LATERAL_ONLY": (608249, "binary_slices", False, 7776 - 480),
             "C4_LITEMLA_C5_C2PSA_SHARED": (655369, "binary_slices", False, 7776 - 480),
             "C4_LITEMLA_C5_C2PSA_DECOUPLED": (655369, "binary_slices", False, 7776 - 480),
         }
@@ -219,7 +222,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
                         self.assertEqual(scope["selected_parameters"], count + delta)
                         self.assertIn("Differences from baseline:", output.getvalue())
                         run_names.add(scope["RUN_NAME"])
-        self.assertEqual(len(run_names), 16)
+        self.assertEqual(len(run_names), 20)
 
     def test_fp16_grad_scaler_can_recover_from_a_scaled_gradient_overflow(self):
         source = (ROOT / "tools/kitti_training_pipeline/train.py").read_text(

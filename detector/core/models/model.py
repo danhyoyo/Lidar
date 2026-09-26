@@ -23,6 +23,8 @@ class CustomModel(nn.Module):
                 c4_attention_route=cfg.get("c4_attention_route", "shared"),
                 lsk=cfg.get("lsk", {}),
                 litemla=cfg.get("litemla", {}),
+                dat=cfg.get("dat", {}),
+                bra=cfg.get("bra", {}),
             )
         elif cfg["backbone"] == "mobilepixor_coordatt":
             from core.models.backbones.mobilepixor_coordinate_attention import (
