@@ -68,7 +68,9 @@
     "backbone": "mobilepixor_coordatt",
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
-    "scale_gated_fpn": true
+    "scale_gated_fpn": true,
+    "header_use_bn": false,
+    "header_act": "none"
   },
   "multi_gpu": false,
   "note": "mobilebev_lightweight_ablation",

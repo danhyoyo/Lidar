@@ -61,6 +61,7 @@
     "cls_encoding": "gaussian",
     "c4_attention": "litemla",
     "scale_gated_fpn": true,
+    "expansion": 2.5,
     "header_use_bn": true,
     "header_act": "silu"
   },
@@ -68,10 +69,10 @@
   "note": "kitti_bevnext_litemla_rich8_sgfpn",
   "seed": 42,
   "train": {
-    "accumulation_steps": 1,
+    "accumulation_steps": 8,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.0005,
+    "learning_rate": 0.005,
     "lr_decay_at": [
       65,
       85

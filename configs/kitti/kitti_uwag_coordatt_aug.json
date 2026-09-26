@@ -62,7 +62,9 @@
   "model": {
     "backbone": "mobilepixor_coordatt",
     "backbone_out_dim": 16,
-    "cls_encoding": "gaussian"
+    "cls_encoding": "gaussian",
+    "header_use_bn": false,
+    "header_act": "none"
   },
   "multi_gpu": false,
   "note": "kitti_uwag_coordatt_geometric_aug_bf16",

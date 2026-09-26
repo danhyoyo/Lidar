@@ -25,6 +25,7 @@ class CustomModel(nn.Module):
                 backbone_out_dim=cfg.get("backbone_out_dim", 16),
                 c4_attention=cfg.get("c4_attention", "litemla"),
                 scale_gated_fpn=cfg.get("scale_gated_fpn", True),
+                expansion=cfg.get("expansion", 2.5),
             )
         elif cfg["backbone"] == "pixor":
             self.backbone = PixorBackBone()
