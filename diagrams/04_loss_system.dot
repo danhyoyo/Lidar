@@ -1,0 +1,82 @@
+digraph LossSystem {
+    rankdir=TB;
+    bgcolor="#0d1117";
+    compound=true;
+    nodesep=0.5;
+    ranksep=0.6;
+
+    node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.12"];
+    edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
+
+    subgraph cluster_inputs {
+        label="Loss Inputs: Predictions & Ground Truth Targets";
+        fontcolor="#58a6ff"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        preds [label="Header Predictions (B, C, 200, 176):\n• cls: Class logits (B, C_cls, 200, 176)\n• offset: Sub-pixel grid shifts (dx, dy)\n• size: Log dimensions (log_w, log_l)\n• yaw: Doubled-angle vector (cos2θ, sin2θ)", fillcolor="#1f242c", color="#388bfd"];
+        targets [label="Ground Truth Targets (B, C, 200, 176):\n• cls: Adaptive Gaussian heatmaps\n• offset, size, yaw: Metric box targets\n• reg_mask: Boolean foreground mask", fillcolor="#1f242c", color="#f0883e"];
+    }
+
+    subgraph cluster_facade {
+        label="LossFunction Façade & Strategy Registry";
+        fontcolor="#d2a8ff"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        loss_router [label="LossFunction (Modular Strategy Selector)\nConfig: 'baseline' | 'uwag' | 'oga'", fillcolor="#1f242c", color="#d2a8ff", penwidth=2];
+    }
+
+    subgraph cluster_oga {
+        label="SOTA Strategy: OGA (Oriented Geometric Alignment & Adaptive Loss)";
+        fontcolor="#7ee787"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        subgraph cluster_sublosses {
+            label="5 Supervised Task Objectives";
+            fontcolor="#58a6ff"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
+
+            l_cls [label="1. Modified Focal Loss (cls)\nHeatmap penalty with Gaussian focal decay\nα = 2, β = 4", fillcolor="#21262d", color="#58a6ff"];
+            l_off [label="2. Smooth L1 Loss (offset)\nMasked center alignment: reg_mask * SmoothL1(dx, dy)", fillcolor="#21262d", color="#58a6ff"];
+            l_siz [label="3. Smooth L1 Loss (size)\nMasked log-dimension alignment: reg_mask * SmoothL1(log_w, log_l)", fillcolor="#21262d", color="#58a6ff"];
+            l_yaw [label="4. Smooth L1 Loss (yaw)\nMasked doubled-angle alignment: reg_mask * SmoothL1(cos2θ, sin2θ)", fillcolor="#21262d", color="#58a6ff"];
+
+            subgraph cluster_geo {
+                label="5. OrientedGeometryLoss (Composite L_geo = L_MGIoU + β * L_corner)";
+                fontcolor="#f778ba"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#161b22";
+
+                geo_corner [label="Scale-Normalized π-Symmetric Corner Distance\n• Computes 4 BEV corners from (offset, size, yaw)\n• Evaluates min(||C - C_gt||, ||C - C_gt^π||) (180° invariance)\n• Normalizes by target diagonal: √(W_gt² + L_gt²)", fillcolor="#21262d", color="#f778ba"];
+                geo_mgiou [label="Multi-Axis Projection GIoU (MGIoU)\n• Projects 4 corners onto 4 normal axes (2 pred + 2 target)\n• Computes 1D GIoU along each axis: (I / U) - (Hull - U)/Hull\n• Specialized 2D rotated BEV overlap loss (AAAI 2026)", fillcolor="#21262d", color="#f778ba"];
+                geo_corner -> geo_mgiou [style=invis];
+            }
+        }
+
+        subgraph cluster_tsbuw {
+            label="T-SBUW: Temperature-Softmax Bounded Uncertainty Weighting";
+            fontcolor="#ffa657"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
+
+            tsbuw_scale [label="Smooth Tanh Soft-Bounding\ns_bounded = B * tanh(s_i / B)  (Bound B = 3.0)", fillcolor="#21262d", color="#ffa657"];
+            tsbuw_weight [label="Conserved Gradient Weights (Softmax with Temp τ=2.0)\nw_i = M * exp(s_bounded_i / τ) / ∑_j exp(s_bounded_j / τ)\nGuarantee: ∑ w_i == M (Total gradient budget conserved!)", fillcolor="#21262d", color="#ffa657"];
+            tsbuw_ema [label="Running Scale Normalization (EMA momentum 0.99)\nL_calibrated_i = L_i / EMA(L_i)\nPrevents simplex collapse across disparate loss scales", fillcolor="#21262d", color="#ffa657"];
+            tsbuw_total [label="Conserved Composite Total Loss\nL_total = (1/M * ∑ EMA(L_i)) * ∑ (w_i * L_calibrated_i)", fillcolor="#1f242c", color="#ffa657", penwidth=2];
+
+            tsbuw_scale -> tsbuw_weight -> tsbuw_ema -> tsbuw_total;
+        }
+
+        l_cls -> tsbuw_total;
+        l_off -> tsbuw_total;
+        l_siz -> tsbuw_total;
+        l_yaw -> tsbuw_total;
+        geo_corner -> tsbuw_total;
+        geo_mgiou -> tsbuw_total;
+    }
+
+    subgraph cluster_others {
+        label="Alternative Strategies";
+        fontcolor="#8b949e"; fontsize=12; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        strat_baseline [label="Baseline Strategy:\nL_cls(Focal) + L1(off) + L1(size) + L1(yaw)\nSimple unweighted sum", fillcolor="#21262d", color="#8b949e"];
+        strat_uwag [label="UWAG Strategy:\nHomoscedastic log-scales: ∑ (e^(-s_i) * L_i + s_i)\n+ Yaw-aware Footprint IoU: IoU_bev * 0.5 * (1 + cos2Δθ)", fillcolor="#21262d", color="#8b949e"];
+    }
+
+    preds -> loss_router;
+    targets -> loss_router;
+    loss_router -> l_cls [label="OGA Selected", color="#7ee787", penwidth=2];
+    loss_router -> strat_baseline [color="#8b949e", style="dashed"];
+    loss_router -> strat_uwag [color="#8b949e", style="dashed"];
+}\n

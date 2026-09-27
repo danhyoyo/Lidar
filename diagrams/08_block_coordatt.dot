@@ -1,0 +1,49 @@
+digraph CoordinateAttentionBlock {
+    rankdir=TB;
+    bgcolor="#0d1117";
+    nodesep=0.45;
+    ranksep=0.45;
+
+    node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.12"];
+    edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
+
+    subgraph cluster_coordatt {
+        label="Coordinate Attention Block (Hou et al., CVPR 2021) at Apex c5";
+        fontcolor="#f778ba"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        x_in [label="Input Feature Map X\nShape: (B, C, H, W) [C = 96 at c5 apex]", fillcolor="#1f242c", color="#388bfd", penwidth=2];
+
+        subgraph cluster_pooling {
+            label="1. Directional Coordinate Information Embedding";
+            fontcolor="#58a6ff"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
+
+            pool_h [label="Y-Axis 1D Global Pooling\nAdaptiveAvgPool2d((None, 1))\nEncodes vertical position -> (B, C, H, 1)", fillcolor="#21262d", color="#58a6ff"];
+            pool_w [label="X-Axis 1D Global Pooling\nAdaptiveAvgPool2d((1, None)) + Permute\nEncodes horizontal position -> (B, C, W, 1)", fillcolor="#21262d", color="#58a6ff"];
+        }
+
+        concat [label="2. Spatial Concatenation along Dimension 2\nY = cat([X_h, X_w], dim=2)\nShape: (B, C, H + W, 1)", fillcolor="#21262d", color="#f0883e"];
+
+        shared_conv [label="3. Shared Bottleneck Transformation\n• Conv2d(C, mip, kernel_size=1, stride=1)\n• mip = max(8, C // reduction) = max(8, 96//32) = 8\n• BatchNorm2d(mip) + ReLU", fillcolor="#21262d", color="#f0883e"];
+
+        subgraph cluster_split {
+            label="4. Coordinate Attention Weight Generation";
+            fontcolor="#7ee787"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
+
+            split_h [label="Vertical Attention Branch (a_h)\n• Split Y -> (B, mip, H, 1)\n• Conv2d(mip, C, 1x1) + Sigmoid\n• Output a_h ∈ ℝ^(B, C, H, 1)", fillcolor="#21262d", color="#7ee787"];
+            split_w [label="Horizontal Attention Branch (a_w)\n• Split Y -> (B, mip, W, 1) + Permute -> (B, mip, 1, W)\n• Conv2d(mip, C, 1x1) + Sigmoid\n• Output a_w ∈ ℝ^(B, C, 1, W)", fillcolor="#21262d", color="#7ee787"];
+        }
+
+        multiply [label="5. Spatial Attention Gating\nOutput Y = X ⊙ a_h ⊙ a_w\nBroadcast Multiplication: (B, C, H, W) * (B, C, H, 1) * (B, C, 1, W)\nLocates precise Pedestrian/Cyclist coordinates without losing spatial alignment!", fillcolor="#1f242c", color="#3fb950", penwidth=2];
+
+        x_in -> pool_h;
+        x_in -> pool_w;
+        pool_h -> concat;
+        pool_w -> concat;
+        concat -> shared_conv;
+        shared_conv -> split_h;
+        shared_conv -> split_w;
+        split_h -> multiply;
+        split_w -> multiply;
+        x_in -> multiply [label="Feature Multiplication", color="#3fb950", penwidth=2.0];
+    }
+}\n

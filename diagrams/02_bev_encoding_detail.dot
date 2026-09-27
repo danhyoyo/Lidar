@@ -1,0 +1,65 @@
+digraph BevEncodingDetail {
+    rankdir=TB;
+    bgcolor="#0d1117";
+    compound=true;
+    nodesep=0.5;
+    ranksep=0.6;
+
+    node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.12"];
+    edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
+
+    subgraph cluster_input {
+        label="Input LiDAR Point Cloud";
+        fontcolor="#58a6ff"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        pts_in [label="Raw LiDAR Point Cloud P = {(x_i, y_i, z_i, r_i)}\nCoordinate frame: Velodyne LiDAR\nPoint count N ~ 100,000 points / frame", fillcolor="#1f242c", color="#388bfd", penwidth=2];
+        grid_spec [label="BEV Grid Geometry Parameters:\nx_range: [0.0, 70.4] m  (resolution Δx = 0.1 m -> W = 704)\ny_range: [-40.0, 40.0] m (resolution Δy = 0.1 m -> H = 800)\nz_range: [-2.5, 1.0] m  (height span = 3.5 m)", fillcolor="#21262d", color="#58a6ff"];
+        pts_in -> grid_spec;
+    }
+
+    subgraph cluster_legacy {
+        label="Option A: Legacy Binary Slices (voxelize)";
+        fontcolor="#f0883e"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        leg_voxel [label="3D Voxel Quantization\nx_idx = ⌊(x - x_min) / Δx⌋ ∈ [0, 703]\ny_idx = ⌊(y - y_min) / Δy⌋ ∈ [0, 799]\nz_idx = ⌊(z - z_min) / Δz⌋ ∈ [0, 34] (Δz = 0.1m)", fillcolor="#21262d", color="#f0883e"];
+        leg_binary [label="Binary Occupancy Binarization\nVoxels[x_idx, y_idx, z_idx] = 1.0\n(Only records presence, discards density & reflectance)", fillcolor="#21262d", color="#f0883e"];
+        leg_swap [label="Axis Swap to Channel-First (PyTorch)\nSwap axes: (W, H, Z) -> (Z, H, W)\nTensor Shape: (35, 800, 704) float32\nSize: ~78.8 MB per frame", fillcolor="#1f242c", color="#f0883e", penwidth=2];
+        leg_eval [label="Trade-offs:\n❌ 35 channels: Heavy VRAM & bandwidth overhead\n❌ Loses point density and reflectance (intensity)\n✔ Simple legacy baseline", fillcolor="#21262d", color="#8b949e"];
+
+        leg_voxel -> leg_binary -> leg_swap -> leg_eval;
+    }
+
+    subgraph cluster_rich8 {
+        label="Option B: Modern RichBEV-8 Encoding (encode_bev)";
+        fontcolor="#7ee787"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        rich_norm [label="Coordinate & Attribute Normalization\n• flat = y_idx * W + x_idx  (1D cell address)\n• z_norm = clip((z - z_min)/(z_max - z_min), 0.0, 1.0)\n• intensity = clip(r * intensity_scale, 0.0, 1.0)\n• count = bincount(flat) (total points per vertical pillar)", fillcolor="#21262d", color="#7ee787"];
+
+        subgraph cluster_channels {
+            label="8 Dense Statistical BEV Channels";
+            fontcolor="#58a6ff"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
+
+            ch_bands [label="Channels 0 - 2: 3 Height Band Occupancies\n• Band = min(⌊z_norm * 3⌋, 2)\n• Ch 0: Low Band [0, 1/3)\n• Ch 1: Mid Band [1/3, 2/3)\n• Ch 2: High Band [2/3, 1.0]", fillcolor="#21262d", color="#58a6ff"];
+            ch_height [label="Channels 3 - 4: Metric Height Distribution\n• Ch 3 (Max Z): np.maximum.at(output[3], flat, z_norm)\n• Ch 4 (Mean Z): bincount(flat, weights=z_norm) / max(count, 1)", fillcolor="#21262d", color="#58a6ff"];
+            ch_intensity [label="Channels 5 - 6: Reflectance Distribution\n• Ch 5 (Max I): np.maximum.at(output[5], flat, intensity)\n• Ch 6 (Mean I): bincount(flat, weights=intensity) / max(count, 1)", fillcolor="#21262d", color="#58a6ff"];
+            ch_density [label="Channel 7: Log-Normalized Pillar Density\n• Ch 7 (Density): min(1.0, ln(1 + count) / ln(1 + density_norm))\n(Default density_norm = 32.0)", fillcolor="#21262d", color="#58a6ff"];
+        }
+
+        rich_out [label="Packed RichBEV-8 Tensor\nReshape & Transpose: (8, 800, 704) float32\nSize: ~18.0 MB per frame (77.1% Reduction!)", fillcolor="#1f242c", color="#7ee787", penwidth=2];
+        rich_eval [label="Trade-offs:\n✔ 77.1% memory & PCIe transfer savings!\n✔ Preserves multi-slice vertical structure (3 bands)\n✔ Encodes metric height, surface reflectance & density", fillcolor="#21262d", color="#3fb950"];
+
+        rich_norm -> ch_bands;
+        rich_norm -> ch_height;
+        rich_norm -> ch_intensity;
+        rich_norm -> ch_density;
+
+        ch_bands -> rich_out;
+        ch_height -> rich_out;
+        ch_intensity -> rich_out;
+        ch_density -> rich_out;
+        rich_out -> rich_eval;
+    }
+
+    grid_spec -> leg_voxel [label="Legacy Flow", color="#f0883e"];
+    grid_spec -> rich_norm [label="RichBEV Flow", color="#7ee787", penwidth=2];
+}\n

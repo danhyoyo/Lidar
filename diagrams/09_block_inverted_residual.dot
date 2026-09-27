@@ -1,0 +1,29 @@
+digraph InvertedResidualBlock {
+    rankdir=TB;
+    bgcolor="#0d1117";
+    nodesep=0.45;
+    ranksep=0.45;
+
+    node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.12"];
+    edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
+
+    subgraph cluster_inv_res {
+        label="InvertedResidual Block (MobileNetV2 Style in MobilePIXOR)";
+        fontcolor="#ffa657"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
+
+        x_in [label="Input Feature Map X\nShape: (B, C_in, H, W)", fillcolor="#1f242c", color="#388bfd", penwidth=2];
+
+        pw_exp [label="1. Pointwise 1x1 Expansion (if expand_ratio t != 1)\n• Conv2d(C_in, hidden_dim, kernel_size=1, bias=False)\n• hidden_dim = round(C_in * t)  (typically t=6)\n• BatchNorm2d(hidden_dim) + ReLU", fillcolor="#21262d", color="#f0883e"];
+
+        dw_conv [label="2. Depthwise 3x3 Convolution\n• Conv2d(hidden_dim, hidden_dim, kernel_size=3, stride=s, padding=1, groups=hidden_dim, bias=False)\n• Spatial filtering (stride s=1 or s=2)\n• BatchNorm2d(hidden_dim) + ReLU", fillcolor="#21262d", color="#58a6ff"];
+
+        opt_attn [label="3. Optional Attention Hook\nCoordAtt(hidden_dim, hidden_dim) (if use_attn=True)\nDefault in main model: False (CoordAtt placed at macro-level c5)", fillcolor="#21262d", color="#8b949e", style="rounded,dashed"];
+
+        pw_linear [label="4. Pointwise 1x1 Linear Bottleneck Projection\n• Conv2d(hidden_dim, C_out, kernel_size=1, bias=False)\n• BatchNorm2d(C_out)\n• Linear (NO non-linear activation to preserve manifold)", fillcolor="#21262d", color="#7ee787"];
+
+        res_add [label="5. Residual Addition (Only if stride==1 and C_in == C_out)\nOutput Y = X + Conv(X)\nShape: (B, C_out, H', W')", fillcolor="#1f242c", color="#3fb950", penwidth=2];
+
+        x_in -> pw_exp -> dw_conv -> opt_attn -> pw_linear -> res_add;
+        x_in -> res_add [label="Shortcut (if s=1 and C_in==C_out)", color="#3fb950", penwidth=2.0];
+    }
+}\n
