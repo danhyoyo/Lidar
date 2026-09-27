@@ -163,7 +163,50 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def configure_matmul_precision() -> None:
+    if torch.cuda.is_available() and hasattr(torch, "set_float32_matmul_precision"):
+        torch.set_float32_matmul_precision("high")
+
+
+def build_optimizer(
+    model: torch.nn.Module,
+    criterion: torch.nn.Module,
+    config: dict,
+) -> torch.optim.Optimizer:
+    train_cfg = config.get("train", {})
+    opt_type = train_cfg.get("optimizer", "adamw").lower()
+    lr = float(train_cfg["learning_rate"])
+    weight_decay = float(train_cfg.get("weight_decay", 0.0001))
+
+    decay_params = []
+    no_decay_params = []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if param.ndim <= 1 or name.endswith(".bias"):
+            no_decay_params.append(param)
+        else:
+            decay_params.append(param)
+
+    groups = [
+        {"params": decay_params, "weight_decay": weight_decay},
+        {"params": no_decay_params, "weight_decay": 0.0},
+    ]
+
+    crit_params = [p for p in criterion.parameters() if p.requires_grad]
+    if crit_params:
+        groups.append({"params": crit_params, "weight_decay": 0.0})
+
+    if opt_type == "adam":
+        return torch.optim.Adam(groups, lr=lr)
+    elif opt_type == "adamw":
+        return torch.optim.AdamW(groups, lr=lr)
+    else:
+        raise ValueError(f"Unsupported optimizer type: {opt_type}")
+
+
 def main(argv=None) -> None:
+    configure_matmul_precision()
     args = build_parser().parse_args(argv)
     configure_detector_imports(args.detector_root)
     from core.datasets.dataset import Dataset
@@ -261,21 +304,7 @@ def main(argv=None) -> None:
     criterion = LossFunction(config["model"]["cls_encoding"], config.get("loss")).to(
         device
     )
-    weight_decay = float(config["train"]["weight_decay"])
-    model_parameters = [
-        parameter for parameter in model.parameters() if parameter.requires_grad
-    ]
-    criterion_parameters = [
-        parameter for parameter in criterion.parameters() if parameter.requires_grad
-    ]
-    optimizer_groups = [{"params": model_parameters, "weight_decay": weight_decay}]
-    if criterion_parameters:
-        # Do not regularize UWAG log-scales; their additive term is the
-        # uncertainty-weighting regularizer from Equation 48.
-        optimizer_groups.append({"params": criterion_parameters, "weight_decay": 0.0})
-    optimizer = torch.optim.Adam(
-        optimizer_groups, lr=float(config["train"]["learning_rate"])
-    )
+    optimizer = build_optimizer(model, criterion, config)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=list(config["train"]["lr_decay_at"]), gamma=0.1
     )
