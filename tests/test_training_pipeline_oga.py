@@ -15,7 +15,7 @@ from core.losses.loss_fn import LossFunction
 
 class TestTrainingPipelineOGA(unittest.TestCase):
     def test_pipeline_forward_backward_with_oga(self):
-        config_path = REPO_ROOT / "configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json"
+        config_path = REPO_ROOT / "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json"
         with open(config_path) as f:
             config = json.load(f)
 

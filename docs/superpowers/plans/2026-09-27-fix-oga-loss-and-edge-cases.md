@@ -352,17 +352,17 @@ git commit -m "fix(loss): add reg_mask validation and empty-mask test coverage"
 - Test: `tests/test_model_registry.py`
 
 **Interfaces:**
-- Consumes: `cfg: Dict[str, Any]` (chấp nhận bất kể chữ hoa hay chữ thường cho `"backbone": "BEVNeXt"`, `"bevnext"`).
-- Produces: `CustomModel` kích hoạt đúng `use_bn=True` và `act="silu"` cho mọi biến thể chữ hoa/thường của `bevnext`.
+- Consumes: `cfg: Dict[str, Any]` (chấp nhận bất kể chữ hoa hay chữ thường cho `"backbone": "MobilePixorNeXt"`, `"mobilepixornext"`).
+- Produces: `CustomModel` kích hoạt đúng `use_bn=True` và `act="silu"` cho mọi biến thể chữ hoa/thường của `mobilepixornext`.
 
-- [x] **Step 1: Viết test kiểm tra tính không phân biệt hoa/thường của BEVNeXt trong CustomModel**
+- [x] **Step 1: Viết test kiểm tra tính không phân biệt hoa/thường của MobilePixorNeXt trong CustomModel**
 
 Thêm test vào `tests/test_model_registry.py`:
 
 ```python
-    def test_custom_model_case_insensitive_bevnext_header(self):
+    def test_custom_model_case_insensitive_mobilepixornext_header(self):
         cfg_upper = {
-            "backbone": "BEVNeXt",
+            "backbone": "MobilePixorNeXt",
             "backbone_out_dim": 16,
             "cls_encoding": "gaussian",
         }
@@ -382,9 +382,9 @@ Thêm test vào `tests/test_model_registry.py`:
 
 Run:
 ```bash
-PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_model_registry.py::TestBackboneRegistry::test_custom_model_case_insensitive_bevnext_header -v -p no:launch_testing -p no:launch_testing_ros
+PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_model_registry.py::TestBackboneRegistry::test_custom_model_case_insensitive_mobilepixornext_header -v -p no:launch_testing -p no:launch_testing_ros
 ```
-Expected: FAIL với assertion `False is not true` (do `cfg.get("backbone") == "bevnext"` bị lệch hoa/thường).
+Expected: FAIL với assertion `False is not true` (do `cfg.get("backbone") == "mobilepixornext"` bị lệch hoa/thường).
 
 - [x] **Step 3: Cập nhật `detector/core/models/model.py`**
 
@@ -408,9 +408,9 @@ class CustomModel(nn.Module):
         if cls_encoding == "binary":
             self.num_classes += 1
 
-        is_bevnext = backbone_name.lower() == "bevnext"
-        use_bn = cfg.get("header_use_bn", is_bevnext)
-        act = cfg.get("header_act", "silu" if is_bevnext else "none")
+        is_mobilepixornext = backbone_name.lower() == "mobilepixornext"
+        use_bn = cfg.get("header_use_bn", is_mobilepixornext)
+        act = cfg.get("header_act", "silu" if is_mobilepixornext else "none")
 
         backbone_out_dim = cfg.get("backbone_out_dim", 16)
 
@@ -558,7 +558,7 @@ git commit -m "feat(registry): add allow_override option and harmonize default e
 
 **Files:**
 - Test: Toàn bộ bộ kiểm thử trong `tests/`
-- Config: `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`
+- Config: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`
 
 **Interfaces:**
 - Đảm bảo toàn bộ luồng huấn luyện `test_training_pipeline_oga.py` và 59+ bài test chạy trơn tru mà không có cảnh báo/lỗi bất thường.

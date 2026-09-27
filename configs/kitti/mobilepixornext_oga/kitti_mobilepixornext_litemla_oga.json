@@ -62,7 +62,7 @@
     "max_abs_log_size": 10.0
   },
   "model": {
-    "backbone": "bevnext",
+    "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
     "c4_attention": "litemla",
     "cls_encoding": "gaussian",
@@ -72,7 +72,7 @@
     "scale_gated_fpn": true
   },
   "multi_gpu": false,
-  "note": "kitti_bevnext_litemla_rich8_sgfpn_oga_loss",
+  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

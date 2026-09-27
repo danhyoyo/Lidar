@@ -29,7 +29,7 @@
 
 > [!NOTE]
 > **Không thay đổi hợp đồng giao diện cấu hình JSON:**
-> Mọi file cấu hình hiện tại (`kitti_bevnext_litemla_oga.json`, `kitti_bevnext_litemla.json`, `kitti_mobilepixor_baseline.json`,...) và cấu trúc trả về `loss_dict` giữ nguyên 100% tính tương thích.
+> Mọi file cấu hình hiện tại (`kitti_mobilepixornext_litemla_oga.json`, `kitti_mobilepixornext_litemla.json`, `kitti_mobilepixor_baseline.json`,...) và cấu trúc trả về `loss_dict` giữ nguyên 100% tính tương thích.
 
 ---
 

@@ -3,7 +3,7 @@
 Status: **Proposed Research Contribution**  
 Date: **2026-09-26**  
 Authors: Antigravity AI Assistant & DuyenNH  
-Target Application: 3D LiDAR Bird's Eye View (BEV) Object Detection (BEVNeXt / MobilePixor)
+Target Application: 3D LiDAR Bird's Eye View (BEV) Object Detection (MobilePixorNeXt / MobilePixor)
 
 ---
 

@@ -315,14 +315,14 @@ git commit -m "feat(pipeline): add modular Cosine Annealing with Warmup schedule
 ### Task 3: Update Config Files for 100 Epochs, AdamW, and Cosine Annealing
 
 **Files:**
-- Modify: `configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json`
-- Modify: `configs/kitti/backbone_branch/kitti_bevnext_litemla.json`
+- Modify: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`
+- Modify: `configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`
 
 **Interfaces:**
 - Consumes: JSON config schema
 - Produces: Updated JSON configs with `"epochs": 100`, `"optimizer": "adamw"`, `"scheduler": "cosine"`, `"warmup_epochs": 5`, `"min_lr": 1e-6`, `"learning_rate": 0.002`
 
-- [x] **Step 1: Update `configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json`**
+- [x] **Step 1: Update `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`**
 
 Update `train` section:
 ```json
@@ -342,7 +342,7 @@ Update `train` section:
   }
 ```
 
-- [x] **Step 2: Update `configs/kitti/backbone_branch/kitti_bevnext_litemla.json`**
+- [x] **Step 2: Update `configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`**
 
 Update `train` section similarly:
 ```json
@@ -373,7 +373,7 @@ Expected: PASS
 - [x] **Step 4: Commit**
 
 ```bash
-git add configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json configs/kitti/backbone_branch/kitti_bevnext_litemla.json
+git add configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json
 git commit -m "feat(config): configure 100 epochs, AdamW and Cosine Annealing with Warmup"
 ```
 
@@ -401,7 +401,7 @@ In `3D_Lidar_Object_Detection_Notebook_standard.ipynb`:
    ```
 2. In cell 2 (Dependencies and variant):
    Ensure `VARIANT_CONFIGS` includes the new dedicated path:
-   `"BEVNEXT_OGA": "configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json"` alongside `"BEVNEXT_LITEMLA"`.
+   `"MOBILEPIXORNEXT_OGA": "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json"` alongside `"MOBILEPIXORNEXT_LITEMLA"`.
 
 - [x] **Step 2: Run notebook validation test**
 
@@ -415,7 +415,7 @@ Expected: PASS
 
 ```bash
 git add 3D_Lidar_Object_Detection_Notebook_standard.ipynb
-git commit -m "feat(notebook): set 100 epochs, TF32 precision, and register BEVNEXT_OGA variant"
+git commit -m "feat(notebook): set 100 epochs, TF32 precision, and register MOBILEPIXORNEXT_OGA variant"
 ```
 
 ---
@@ -436,6 +436,6 @@ Expected: 100% tests pass (all 65+ tests pass with 0 failures).
 - [x] **Step 2: Push changes to remote feature branch**
 
 ```bash
-git push origin feature/bevnext-oga-loss
+git push origin feature/mobilepixornext-oga-loss
 ```
-Expected: Branch `feature/bevnext-oga-loss` successfully pushed to GitHub.
+Expected: Branch `feature/mobilepixornext-oga-loss` successfully pushed to GitHub.

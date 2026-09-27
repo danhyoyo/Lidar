@@ -1,7 +1,7 @@
-"""BEVNeXt: A modern, lightweight 3D LiDAR BEV backbone under 2.0M parameters.
+"""MobilePixorNeXt: A modern, lightweight 3D LiDAR BEV backbone under 2.0M parameters.
 
 Architectural highlights:
-- 7x7 Depthwise Conv Inverted Bottleneck blocks (0.7m metric receptive field in BEV).
+- 7x7 Depthwise Conv Inverted Bottleneck blocks; metric footprint depends on stage stride.
 - Smooth SiLU activations replacing legacy ReLU.
 - Strategic single-stage C4 LiteMLA attention (linear complexity, FP32 accumulation).
 - Pure-convolution C5 stage to prevent cascading attention interference.
@@ -13,14 +13,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from core.models.backbones.bevnext_blocks import (
-    BEVNeXtBlock,
+from core.models.backbones.mobilepixornext_blocks import (
+    MobilePixorNeXtBlock,
     DownsampleBlock,
     LiteMLARefinement,
 )
 
 
-class BEVNeXtBackbone(nn.Module):
+class MobilePixorNeXtBackbone(nn.Module):
     """Modern BEV backbone for 3D LiDAR object detection.
 
     Args:
@@ -28,7 +28,7 @@ class BEVNeXtBackbone(nn.Module):
         backbone_out_dim: Channels of the output feature map (default 16 for Header).
         c4_attention: Attention adapter at Stage 3 ('none' or 'litemla').
         scale_gated_fpn: Whether to use learnable depthwise scale gating in FPN fusion.
-        expansion: Channel expansion ratio inside BEVNeXt blocks.
+        expansion: Channel expansion ratio inside MobilePixorNeXt blocks.
     """
 
     def __init__(
@@ -61,8 +61,8 @@ class BEVNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down2 = DownsampleBlock(32, 48, stride=2)
         self.stage2 = nn.Sequential(
-            BEVNeXtBlock(48, expansion=expansion),
-            BEVNeXtBlock(48, expansion=expansion),
+            MobilePixorNeXtBlock(48, expansion=expansion),
+            MobilePixorNeXtBlock(48, expansion=expansion),
         )
 
         # -------------------------------------------------------------
@@ -71,10 +71,10 @@ class BEVNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down3 = DownsampleBlock(48, 96, stride=2)
         self.stage3 = nn.Sequential(
-            BEVNeXtBlock(96, expansion=expansion),
-            BEVNeXtBlock(96, expansion=expansion),
-            BEVNeXtBlock(96, expansion=expansion),
-            BEVNeXtBlock(96, expansion=expansion),
+            MobilePixorNeXtBlock(96, expansion=expansion),
+            MobilePixorNeXtBlock(96, expansion=expansion),
+            MobilePixorNeXtBlock(96, expansion=expansion),
+            MobilePixorNeXtBlock(96, expansion=expansion),
         )
 
         attn_choice = str(c4_attention).lower()
@@ -97,8 +97,8 @@ class BEVNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down4 = DownsampleBlock(96, 128, stride=2)
         self.stage4 = nn.Sequential(
-            BEVNeXtBlock(128, expansion=expansion),
-            BEVNeXtBlock(128, expansion=expansion),
+            MobilePixorNeXtBlock(128, expansion=expansion),
+            MobilePixorNeXtBlock(128, expansion=expansion),
         )
 
         # -------------------------------------------------------------

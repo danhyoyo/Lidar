@@ -1,4 +1,4 @@
-"""Core modern building blocks for the BEVNeXt LiDAR backbone.
+"""Core modern building blocks for the MobilePixorNeXt LiDAR backbone.
 
 Integrates:
 - 7x7 Depthwise Inverted Bottleneck blocks with SiLU and LayerScale (ConvNeXt/UIB style)
@@ -19,7 +19,7 @@ def _layer_scale(channels: int, value: float) -> nn.Parameter:
     return nn.Parameter(torch.full((1, channels, 1, 1), float(value)))
 
 
-class BEVNeXtBlock(nn.Module):
+class MobilePixorNeXtBlock(nn.Module):
     """Modern BEV building block with 7x7 Depthwise Conv and Inverted Expansion.
 
     Structure:
@@ -42,7 +42,7 @@ class BEVNeXtBlock(nn.Module):
         hidden_dim = int(round(channels * expansion))
         self.channels = channels
 
-        # 1. Spatial aggregation with large 7x7 kernel (0.7m receptive field in BEV)
+        # 1. Spatial aggregation with a 7x7 kernel (metric footprint depends on stage stride)
         self.dwconv = nn.Conv2d(
             channels,
             channels,

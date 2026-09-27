@@ -1,4 +1,4 @@
-# Kiến Trúc Toàn Diện Hệ Thống 3D LiDAR Object Detection (BEVNeXt & MobilePIXOR)
+# Kiến Trúc Toàn Diện Hệ Thống 3D LiDAR Object Detection (MobilePixorNeXt & MobilePIXOR)
 
 Thư mục này chứa toàn bộ các biểu đồ kiến trúc hệ thống (`.png` và `.dot` nguồn) cùng giải thích chi tiết về luồng hoạt động, cấu trúc tensor, phương trình toán học và mã nguồn tương ứng trong repository.
 
@@ -10,9 +10,9 @@ Thư mục này chứa toàn bộ các biểu đồ kiến trúc hệ thống (`
 |:---:|:---|:---|:---|
 | **Hình 1** | **Tổng quát Codebase** | [`01_codebase_overview.png`](./01_codebase_overview.png) | Toàn cảnh End-to-End Pipeline: Dữ liệu KITTI $\to$ Tiền xử lý $\to$ Mô hình $\to$ Huấn luyện (Loss) $\to$ Suy luận (NMS) |
 | **Hình 2** | **Chi tiết BEV Encoding** | [`02_bev_encoding_detail.png`](./02_bev_encoding_detail.png) | So sánh chi tiết 2 phương pháp: Legacy 35 Binary Slices vs RichBEV-8 (8 kênh đặc trưng thống kê) |
-| **Hình 3** | **Chi tiết Backbone** | [`03_backbone_architecture.png`](./03_backbone_architecture.png) | Cấu trúc phân tầng BEVNeXt (Stem $\to$ Stage 2-4 $\to$ Scale-Gated FPN) và MobilePIXOR-CoordAtt |
+| **Hình 3** | **Chi tiết Backbone** | [`03_backbone_architecture.png`](./03_backbone_architecture.png) | Cấu trúc phân tầng MobilePixorNeXt (Stem $\to$ Stage 2-4 $\to$ Scale-Gated FPN) và MobilePIXOR-CoordAtt |
 | **Hình 4** | **Chi tiết Hệ thống Loss** | [`04_loss_system.png`](./04_loss_system.png) | LossFunction Façade & Chiến lược SOTA OGA (Focal + Smooth L1 + MGIoU + $\pi$-Corner Dist + T-SBUW) |
-| **Hình 5** | **Khối `BEVNeXtBlock`** | [`05_block_bevnext.png`](./05_block_bevnext.png) | Khối tích chập 7x7 Depthwise Conv, 2.5x Inverted Expansion, SiLU và LayerScale |
+| **Hình 5** | **Khối `MobilePixorNeXtBlock`** | [`05_block_mobilepixornext.png`](./05_block_mobilepixornext.png) | Khối tích chập 7x7 Depthwise Conv, 2.5x Inverted Expansion, SiLU và LayerScale |
 | **Hình 6** | **Khối `LiteMLARefinement`** | [`06_block_litemla.png`](./06_block_litemla.png) | Khối Linear Attention đa tỉ lệ $O(N)$ tại Stage 3 với cơ chế tính FP32 chống tràn số |
 | **Hình 7** | **Khối `ScaleGatedFPNBlock`** | [`07_block_scale_gated_fpn.png`](./07_block_scale_gated_fpn.png) | Cổng học tỉ lệ (Scale-Gated) kết hợp Bilinear Upsampling chống hiện tượng bàn cờ (checkerboard) |
 | **Hình 8** | **Khối `CoordAtt`** | [`08_block_coordatt.png`](./08_block_coordatt.png) | Khối Coordinate Attention tại đỉnh kim tự tháp C5 (Hour et al. CVPR 2021) phân rã tọa độ X/Y |
@@ -77,27 +77,27 @@ Nén dữ liệu xuống **8 kênh thống kê liên tục** ($\sim 18.0\text{ M
 
 ---
 
-## 3. Hình 3: Chi Tiết Kiến Trúc Backbone (BEVNeXt)
+## 3. Hình 3: Chi Tiết Kiến Trúc Backbone (MobilePixorNeXt)
 
 ![Hình 3: Chi tiết Backbone](./03_backbone_architecture.png)
 
-[`BEVNeXtBackbone`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/bevnext.py) là backbone hiện đại được thiết kế riêng cho BEV LiDAR với dung lượng nhẹ (< 2.0M tham số):
+[`MobilePixorNeXtBackbone`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/mobilepixornext.py) là backbone hiện đại được thiết kế riêng cho BEV LiDAR với dung lượng nhẹ (< 2.0M tham số):
 
 1. **Stage 1 (Fast Spatial Stem - Stride 2)**:
    - Hai lớp Conv $3\times 3$ (stride 2 rồi stride 1) + BatchNorm2d + SiLU.
    - Đầu vào $(B, C_{in}, 800, 704) \to (B, 32, 400, 352)$.
 2. **Stage 2 (C2 - Low-Level Metric Geometry - Stride 4)**:
    - `DownsampleBlock` ($3\times 3, s=2$): $32 \to 48$ kênh.
-   - 2 khối `BEVNeXtBlock` (48 kênh, kernel $7\times 7$, expansion 2.5).
+   - 2 khối `MobilePixorNeXtBlock` (48 kênh, kernel $7\times 7$, expansion 2.5).
    - Xuất feature $C_2$: $(B, 48, 200, 176)$.
 3. **Stage 3 (C3/C4 - Core Semantic & Geometry - Stride 8)**:
    - `DownsampleBlock` ($3\times 3, s=2$): $48 \to 96$ kênh.
-   - 4 khối `BEVNeXtBlock` (96 kênh, dung lượng biểu diễn không gian lớn).
+   - 4 khối `MobilePixorNeXtBlock` (96 kênh, dung lượng biểu diễn không gian lớn).
    - Khối tinh chỉnh chú ý tuyến tính `LiteMLARefinement` (Linear Multi-Scale Attention với head_dim=16, FP32).
    - Xuất feature $C_4$: $(B, 96, 100, 88)$.
 4. **Stage 4 (C5 - High-Level Context - Stride 16)**:
    - `DownsampleBlock` ($3\times 3, s=2$): $96 \to 128$ kênh.
-   - 2 khối `BEVNeXtBlock` tích chập thuần (pure convolution, tránh hiện tượng cascading attention).
+   - 2 khối `MobilePixorNeXtBlock` tích chập thuần (pure convolution, tránh hiện tượng cascading attention).
    - Xuất feature $C_5$: $(B, 128, 50, 44)$.
 5. **Bilinear Scale-Gated FPN Neck (Top-Down Fusion)**:
    - Chiếu ngang (Lateral Projections): $L_5 (128 \to 48)$, $L_4 (96 \to 48)$, $L_3 (48 \to 24)$.
@@ -142,11 +142,11 @@ Trong đó, [`OgaLossStrategy`](file:///home/duyennh/AI_projects/research_lidar/
 
 ---
 
-## 5. Hình 5: Chi Tiết Khối `BEVNeXtBlock`
+## 5. Hình 5: Chi Tiết Khối `MobilePixorNeXtBlock`
 
-![Hình 5: Khối BEVNeXtBlock](./05_block_bevnext.png)
+![Hình 5: Khối MobilePixorNeXtBlock](./05_block_mobilepixornext.png)
 
-[`BEVNeXtBlock`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/bevnext_blocks.py#L22-L76) được xây dựng theo phong cách ConvNeXt / Universal Inverted Bottleneck (UIB):
+[`MobilePixorNeXtBlock`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/mobilepixornext_blocks.py#L22-L76) được xây dựng theo phong cách ConvNeXt / Universal Inverted Bottleneck (UIB):
 1. **Depthwise Conv $7\times 7$ (stride 1, padding 3, groups=$C$)**: Tạo trường tiếp nhận không gian vật lý lớn ngay lập tức ($0.7\text{m} \times 0.7\text{m}$ trên lưới BEV).
 2. **BatchNorm2d**.
 3. **Pointwise Conv $1\times 1$ Expansion**: Mở rộng số kênh lên $2.5\times C$ ($C \to 2.5C$).
@@ -162,7 +162,7 @@ Trong đó, [`OgaLossStrategy`](file:///home/duyennh/AI_projects/research_lidar/
 
 ![Hình 6: Khối LiteMLARefinement](./06_block_litemla.png)
 
-[`LiteMLARefinement`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/bevnext_blocks.py#L103-L190) là cơ chế chú ý tuyến tính đa tỉ lệ (Multi-Scale Linear Attention):
+[`LiteMLARefinement`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/mobilepixornext_blocks.py#L103-L190) là cơ chế chú ý tuyến tính đa tỉ lệ (Multi-Scale Linear Attention):
 1. **Chiếu QKV**: Conv $1\times 1$ từ 96 kênh sang $3 \times 96 = 288$ kênh.
 2. **Tập hợp đa tỉ lệ (Multi-Scale Context Aggregation)**:
    - Nhánh gốc (Native QKV).
@@ -184,7 +184,7 @@ Trong đó, [`OgaLossStrategy`](file:///home/duyennh/AI_projects/research_lidar/
 
 ![Hình 7: Khối ScaleGatedFPNBlock](./07_block_scale_gated_fpn.png)
 
-Khối tích hợp tỉ lệ thích ứng trong FPN ([`bevnext.py`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/bevnext.py#L113-L170)):
+Khối tích hợp tỉ lệ thích ứng trong FPN ([`mobilepixornext.py`](file:///home/duyennh/AI_projects/research_lidar/Lidar/detector/core/models/backbones/mobilepixornext.py#L113-L170)):
 1. **Nội suy song tuyến (Bilinear Interpolation 2x)**: Nâng độ phân giải từ mức trên mà không sinh hiệu ứng răng cưa bàn cờ.
 2. **Tinh chỉnh**: Tích chập Depthwise $3\times 3$ hoặc Conv $3\times 3$ chiếu kênh tạo feature $U_k$.
 3. **Cổng học tỉ lệ (Scale-Gating)**:

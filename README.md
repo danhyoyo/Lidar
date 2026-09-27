@@ -1,7 +1,7 @@
-# Reproduce UWAG + CoordAtt + geometric augmentation
+# LiDAR BEV object detection
 
 This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for the MobilePIXOR detector in `detector/core`.
+TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
 
 ## Environment
 
@@ -121,3 +121,18 @@ final twelve runs; the resolved seed is stored in each run config/checkpoint.
 
 The evaluator writes BEV AP R40, distance bands for Pedestrian/Cyclist,
 input/config/split hashes, and compressed per-frame predictions.
+
+## MobilePixorNeXt
+
+`mobilepixornext` is the registry name for the lightweight backbone with 7×7
+depthwise blocks, LiteMLA refinement, and a scale-gated FPN. It replaces the
+former backbone name in model configs and code. The architecture is described
+in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
+
+The RichBEV-8 configuration with OGA loss is
+[`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json).
+The backbone-only configuration is
+[`configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`](configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json).
+Use either config with the training command above by replacing its `--config`
+argument. OGA changes training loss only; the four prediction heads and BEV
+postprocessing keep the same output format.

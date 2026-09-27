@@ -692,14 +692,14 @@ rtk git commit -m "feat(loss): integrate OGA loss mode into LossFunction"
 ### Task 5: Production Configuration & End-to-End Pipeline Integration Test
 
 **Files:**
-- Create: `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`
+- Create: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`
 - Create: `tests/test_training_pipeline_oga.py`
 
 **Interfaces:**
-- Consumes: Complete JSON config binding BEVNeXt + LiteMLA + sgFPN with OGA-Loss.
+- Consumes: Complete JSON config binding MobilePixorNeXt + LiteMLA + sgFPN with OGA-Loss.
 - Produces: Integration test verifying end-to-end forward/backward pipeline matching `train.py`.
 
-- [x] **Step 1: Create `configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json`**
+- [x] **Step 1: Create `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`**
 
 Create snapshot config:
 ```json
@@ -763,7 +763,7 @@ Create snapshot config:
     "max_abs_log_size": 10.0
   },
   "model": {
-    "backbone": "bevnext",
+    "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
     "c4_attention": "litemla",
     "cls_encoding": "gaussian",
@@ -773,7 +773,7 @@ Create snapshot config:
     "scale_gated_fpn": true
   },
   "multi_gpu": false,
-  "note": "kitti_bevnext_litemla_rich8_sgfpn_oga_loss",
+  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 8,
@@ -815,7 +815,7 @@ from core.losses.loss_fn import LossFunction
 
 class TestTrainingPipelineOGA(unittest.TestCase):
     def test_pipeline_forward_backward_with_oga(self):
-        config_path = REPO_ROOT / "configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json"
+        config_path = REPO_ROOT / "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json"
         with open(config_path) as f:
             config = json.load(f)
 
@@ -875,6 +875,6 @@ Expected: All tests in the repository PASS.
 - [x] **Step 5: Commit via rtk git**
 
 ```bash
-rtk git add configs/kitti/backbone_branch/kitti_bevnext_litemla_oga.json tests/test_training_pipeline_oga.py
-rtk git commit -m "feat(config): add BEVNeXt LiteMLA OGA loss config and e2e integration test"
+rtk git add configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json tests/test_training_pipeline_oga.py
+rtk git commit -m "feat(config): add MobilePixorNeXt LiteMLA OGA loss config and e2e integration test"
 ```

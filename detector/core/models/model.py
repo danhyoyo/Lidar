@@ -15,9 +15,9 @@ class CustomModel(nn.Module):
         if cls_encoding == "binary":
             self.num_classes += 1
 
-        is_bevnext = backbone_name.lower() == "bevnext"
-        use_bn = cfg.get("header_use_bn", is_bevnext)
-        act = cfg.get("header_act", "silu" if is_bevnext else "none")
+        is_mobilepixornext = backbone_name.lower() == "mobilepixornext"
+        use_bn = cfg.get("header_use_bn", is_mobilepixornext)
+        act = cfg.get("header_act", "silu" if is_mobilepixornext else "none")
 
         backbone_out_dim = cfg.get("backbone_out_dim", 16)
 
