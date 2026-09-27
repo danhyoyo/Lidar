@@ -1,25 +1,54 @@
 {
   "augmentation": {
     "p": 0.5,
-    "rotation": {"limit_angle": 20, "p": 1, "use": true},
-    "scaling": {"p": 1, "range": [0.95, 1.05], "use": true},
-    "translation": {"p": 1, "scale": 0.4, "use": true}
+    "rotation": {
+      "limit_angle": 20,
+      "p": 1,
+      "use": true
+    },
+    "scaling": {
+      "p": 1,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "use": true
+    },
+    "translation": {
+      "p": 1,
+      "scale": 0.4,
+      "use": true
+    }
   },
   "data": {
     "gaussian_overlap": 0.1,
     "kitti": {
       "geometry": {
-        "x_max": 70.4, "x_min": 0, "x_res": 0.1,
-        "y_max": 40, "y_min": -40, "y_res": 0.1,
-        "z_max": 1, "z_min": -2.5, "z_res": 0.1
+        "x_max": 70.4,
+        "x_min": 0,
+        "x_res": 0.1,
+        "y_max": 40,
+        "y_min": -40,
+        "y_res": 0.1,
+        "z_max": 1,
+        "z_min": -2.5,
+        "z_res": 0.1
       },
       "location": "data/kitti/processed",
-      "objects": {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      }
     },
     "min_radius": 4,
     "num_classes": 3,
     "out_size_factor": 4,
-    "bev_encoding": {"density_norm": 32, "intensity_scale": 1, "name": "rich8"}
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    }
   },
   "date": "reproducible",
   "device": "cuda",
@@ -27,7 +56,7 @@
     "regression": "l1",
     "weighting": "fixed",
     "regression_weight": 1.0,
-    "covariance_epsilon": 0.000001,
+    "covariance_epsilon": 1e-06,
     "max_abs_log_size": 10.0,
     "probiou_switch_fraction": 0.5,
     "kld_tau": 1.0
@@ -42,17 +71,19 @@
   "note": "loss_ablation_B1_l1_fixed",
   "seed": 42,
   "train": {
-    "accumulation_steps": 2,
+    "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.0003,
-    "lr_decay_at": [40, 80],
-    "momentum": 0.9,
-    "physical_batch_size": 2,
+    "learning_rate": 0.002,
+    "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
     "selection_policy": "final_epoch",
-    "weight_decay": 0.0005
+    "weight_decay": 0.0001,
+    "optimizer": "adamw",
+    "scheduler": "cosine",
+    "warmup_epochs": 5,
+    "min_lr": 1e-06
   },
   "val": {
     "data": "splits/kitti/val.txt",

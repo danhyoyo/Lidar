@@ -471,7 +471,96 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def configure_matmul_precision() -> None:
+    if torch.cuda.is_available() and hasattr(torch, "set_float32_matmul_precision"):
+        torch.set_float32_matmul_precision("high")
+
+
+def build_optimizer(
+    model: torch.nn.Module,
+    criterion: torch.nn.Module,
+    config: dict,
+) -> torch.optim.Optimizer:
+    train_cfg = config.get("train", {})
+    opt_type = train_cfg.get("optimizer", "adamw").lower()
+    lr = float(train_cfg["learning_rate"])
+    weight_decay = float(train_cfg.get("weight_decay", 0.0001))
+
+    decay_params = []
+    no_decay_params = []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if param.ndim <= 1 or name.endswith(".bias"):
+            no_decay_params.append(param)
+        else:
+            decay_params.append(param)
+
+    groups = [
+        {"params": decay_params, "weight_decay": weight_decay},
+        {"params": no_decay_params, "weight_decay": 0.0},
+    ]
+
+    crit_params = [p for p in criterion.parameters() if p.requires_grad]
+    if crit_params:
+        groups.append({"params": crit_params, "weight_decay": 0.0})
+
+    if opt_type == "adam":
+        return torch.optim.Adam(groups, lr=lr)
+    elif opt_type == "adamw":
+        return torch.optim.AdamW(groups, lr=lr)
+    else:
+        raise ValueError(f"Unsupported optimizer type: {opt_type}")
+
+
+def build_scheduler(
+    optimizer: torch.optim.Optimizer,
+    config: dict,
+    epochs: int,
+) -> torch.optim.lr_scheduler.LRScheduler:
+    train_cfg = config.get("train", {})
+    sched_type = train_cfg.get("scheduler", "cosine").lower()
+    base_lr = float(train_cfg["learning_rate"])
+
+    if sched_type == "cosine":
+        warmup_epochs = int(train_cfg.get("warmup_epochs", 5))
+        min_lr = float(train_cfg.get("min_lr", 1e-6))
+        if warmup_epochs > 0:
+            start_factor = min(1.0, max(1e-4, min_lr / base_lr))
+            warmup = torch.optim.lr_scheduler.LinearLR(
+                optimizer,
+                start_factor=start_factor,
+                end_factor=1.0,
+                total_iters=warmup_epochs,
+            )
+            cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                T_max=max(1, epochs - warmup_epochs),
+                eta_min=min_lr,
+            )
+            return torch.optim.lr_scheduler.SequentialLR(
+                optimizer,
+                schedulers=[warmup, cosine],
+                milestones=[warmup_epochs],
+            )
+        else:
+            return torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                T_max=epochs,
+                eta_min=min_lr,
+            )
+    elif sched_type == "multistep":
+        milestones = list(train_cfg.get("lr_decay_at", [65, 85]))
+        gamma = float(train_cfg.get("lr_decay_gamma", 0.1))
+        return torch.optim.lr_scheduler.MultiStepLR(
+            optimizer, milestones=milestones, gamma=gamma
+        )
+    else:
+        raise ValueError(f"Unsupported scheduler type: {sched_type}")
+
+
 def main(argv=None) -> None:
+    configure_matmul_precision()
     args = build_parser().parse_args(argv)
     configure_detector_imports(args.detector_root)
     from core.datasets.dataset import Dataset
@@ -577,27 +666,8 @@ def main(argv=None) -> None:
     criterion = LossFunction(
         config["model"]["cls_encoding"], config.get("loss")
     ).to(device)
-    weight_decay = float(config["train"]["weight_decay"])
-    model_parameters = [
-        parameter for parameter in model.parameters() if parameter.requires_grad
-    ]
-    criterion_parameters = [
-        parameter for parameter in criterion.parameters() if parameter.requires_grad
-    ]
-    optimizer_groups = [
-        {"params": model_parameters, "weight_decay": weight_decay}
-    ]
-    if criterion_parameters:
-        # Do not regularize UWAG log-scales; their additive term is the
-        # uncertainty-weighting regularizer from Equation 48.
-        optimizer_groups.append(
-            {"params": criterion_parameters, "weight_decay": 0.0}
-        )
-    optimizer = torch.optim.Adam(
-        optimizer_groups, lr=float(config["train"]["learning_rate"])
-    )
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
-        milestones=list(config["train"]["lr_decay_at"]), gamma=0.1)
+    optimizer = build_optimizer(model, criterion, config)
+    scheduler = build_scheduler(optimizer, config, epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
 
     loss_name = config.get("loss", {}).get(
