@@ -5,7 +5,7 @@ import os
 import subprocess
 from pathlib import Path
 
-DIAGRAMS_DIR = Path("/home/duyennh/AI_projects/research_lidar/Lidar/diagrams")
+DIAGRAMS_DIR = Path(__file__).resolve().parent.parent / "diagrams"
 DIAGRAMS_DIR.mkdir(parents=True, exist_ok=True)
 
 DIAGRAMS = {}
@@ -42,7 +42,7 @@ DIAGRAMS["01_codebase_overview"] = """digraph CodebaseOverview {
         label="2. Neural Network Architecture (CustomModel)";
         fontcolor="#7ee787"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
 
-        backbone [label="Modular Backbone (Registry)\\nBEVNeXt (Flagship) / MobilePIXOR / MobilePIXOR-CoordAtt / Pixor\\nInput: (B, C_in, 800, 704) -> Downsampling & Scale-Gated Neck\\nOutput: Feature Map (B, 16, 200, 176) [Stride 4]", fillcolor="#1f242c", color="#7ee787", penwidth=2];
+        backbone [label="Modular Backbone (Registry)\\nMobilePixorNeXt (Flagship) / MobilePIXOR / MobilePIXOR-CoordAtt / Pixor\\nInput: (B, C_in, 800, 704) -> Downsampling & Scale-Gated Neck\\nOutput: Feature Map (B, 16, 200, 176) [Stride 4]", fillcolor="#1f242c", color="#7ee787", penwidth=2];
 
         subgraph cluster_header {
             label="Detection Header (4 Parallel Heads)";
@@ -183,8 +183,8 @@ DIAGRAMS["03_backbone_architecture"] = """digraph BackboneArchitecture {
     node [shape=box, style="filled,rounded", fontname="DejaVu Sans,Arial", fontsize=11, fontcolor="#ffffff", margin="0.2,0.1"];
     edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
 
-    subgraph cluster_bevnext {
-        label="BEVNeXt Backbone (< 2.0M Params, Stride 4 Output)";
+    subgraph cluster_mobilepixornext {
+        label="MobilePixorNeXt Backbone (< 2.0M Params, Stride 4 Output)";
         fontcolor="#58a6ff"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
 
         in_bev [label="BEV Input Tensor\\nShape: (B, C_in, 800, 704)\\nC_in = 8 (RichBEV) or 35 (Legacy)", fillcolor="#1f242c", color="#388bfd", penwidth=2];
@@ -201,7 +201,7 @@ DIAGRAMS["03_backbone_architecture"] = """digraph BackboneArchitecture {
             label="Stage 2: Low-Level Metric Geometry C2 (Stride 4)";
             fontcolor="#f0883e"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
             d2 [label="DownsampleBlock (Conv 3x3, s=2) + BN + SiLU\\n32 -> 48 | (B, 48, 200, 176)", fillcolor="#21262d", color="#f0883e"];
-            b2 [label="2x BEVNeXtBlock (48 ch, exp=2.5)\\n7x7 DW-Conv (0.7m Receptive Field) + LayerScale\\nOutput C2: (B, 48, 200, 176)", fillcolor="#1f242c", color="#f0883e"];
+            b2 [label="2x MobilePixorNeXtBlock (48 ch, exp=2.5)\\n7x7 DW-Conv (2.8m footprint at stride 4) + LayerScale\\nOutput C2: (B, 48, 200, 176)", fillcolor="#1f242c", color="#f0883e"];
             d2 -> b2;
         }
 
@@ -209,7 +209,7 @@ DIAGRAMS["03_backbone_architecture"] = """digraph BackboneArchitecture {
             label="Stage 3: Core Semantic & Geometry C3/C4 (Stride 8)";
             fontcolor="#7ee787"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
             d3 [label="DownsampleBlock (Conv 3x3, s=2) + BN + SiLU\\n48 -> 96 | (B, 96, 100, 88)", fillcolor="#21262d", color="#7ee787"];
-            b3 [label="4x BEVNeXtBlock (96 ch, exp=2.5)\\nLarge metric receptive field spatial aggregation\\nFeature Map C3: (B, 96, 100, 88)", fillcolor="#1f242c", color="#7ee787"];
+            b3 [label="4x MobilePixorNeXtBlock (96 ch, exp=2.5)\\nLarge metric receptive field spatial aggregation\\nFeature Map C3: (B, 96, 100, 88)", fillcolor="#1f242c", color="#7ee787"];
             attn [label="LiteMLARefinement (Linear Multi-Scale Attention)\\n• Multi-scale QKV (5x5 DW + Native)\\n• FP32 Linear Kernel V(K^T Q)/(1^T K Q + eps)\\n• LayerScale (init=0.01) -> Refined C4: (B, 96, 100, 88)", fillcolor="#238636", color="#3fb950", penwidth=2];
             d3 -> b3 -> attn;
         }
@@ -218,7 +218,7 @@ DIAGRAMS["03_backbone_architecture"] = """digraph BackboneArchitecture {
             label="Stage 4: High-Level Context C5 (Stride 16)";
             fontcolor="#d2a8ff"; fontsize=11; color="#484f58"; style="rounded"; bgcolor="#0d1117";
             d4 [label="DownsampleBlock (Conv 3x3, s=2) + BN + SiLU\\n96 -> 128 | (B, 128, 50, 44)", fillcolor="#21262d", color="#d2a8ff"];
-            b4 [label="2x BEVNeXtBlock (128 ch, exp=2.5)\\nPure Convolution (No Attention Interference)\\nOutput C5: (B, 128, 50, 44)", fillcolor="#1f242c", color="#d2a8ff"];
+            b4 [label="2x MobilePixorNeXtBlock (128 ch, exp=2.5)\\nPure Convolution (No Attention Interference)\\nOutput C5: (B, 128, 50, 44)", fillcolor="#1f242c", color="#d2a8ff"];
             d4 -> b4;
         }
 
@@ -357,9 +357,9 @@ DIAGRAMS["04_loss_system"] = """digraph LossSystem {
 """
 
 # ==============================================================================
-# 5. BEVNEXT BLOCK
+# 5. MOBILEPIXORNEXT BLOCK
 # ==============================================================================
-DIAGRAMS["05_block_bevnext"] = """digraph BevNextBlock {
+DIAGRAMS["05_block_mobilepixornext"] = """digraph MobilePixorNeXtBlock {
     rankdir=TB;
     bgcolor="#0d1117";
     nodesep=0.4;
@@ -369,12 +369,12 @@ DIAGRAMS["05_block_bevnext"] = """digraph BevNextBlock {
     edge [color="#58a6ff", penwidth=1.6, arrowsize=0.8, fontname="DejaVu Sans,Arial", fontsize=9, fontcolor="#8b949e"];
 
     subgraph cluster_block {
-        label="BEVNeXtBlock Micro-Architecture (ConvNeXt / UIB Style)";
+        label="MobilePixorNeXtBlock Micro-Architecture (ConvNeXt / UIB Style)";
         fontcolor="#58a6ff"; fontsize=13; color="#30363d"; style="rounded,dashed"; bgcolor="#161b22";
 
         in_x [label="Input Feature Map X\\nShape: (B, C, H, W)", fillcolor="#1f242c", color="#388bfd", penwidth=2];
 
-        dwconv [label="1. Large-Kernel Depthwise Convolution\\n• Conv2d(C, C, kernel_size=7, stride=1, padding=3, groups=C, bias=False)\\n• Physical BEV Receptive Field: 0.7m x 0.7m per block\\n• Captures spatial context without channel mixing", fillcolor="#21262d", color="#58a6ff"];
+        dwconv [label="1. Large-Kernel Depthwise Convolution\\n• Conv2d(C, C, kernel_size=7, stride=1, padding=3, groups=C, bias=False)\\n• BEV footprint depends on feature stride (2.8m at stride 4)\\n• Captures spatial context without channel mixing", fillcolor="#21262d", color="#58a6ff"];
         norm1 [label="2. Normalization\\nBatchNorm2d(C)", fillcolor="#21262d", color="#58a6ff"];
 
         pw_exp [label="3. Inverted Bottleneck Pointwise Expansion\\n• Conv2d(C, hidden_dim, kernel_size=1, bias=False)\\n• Expansion ratio e = 2.5 -> hidden_dim = round(C * 2.5)\\n• Stage 2 (48 -> 120) | Stage 3 (96 -> 240) | Stage 4 (128 -> 320)", fillcolor="#21262d", color="#f0883e"];
@@ -597,15 +597,11 @@ DIAGRAMS["09_block_inverted_residual"] = """digraph InvertedResidualBlock {
 def main():
     print(f"Generating diagrams into {DIAGRAMS_DIR} ...")
     for name, dot_content in DIAGRAMS.items():
-        dot_path = DIAGRAMS_DIR / f"{name}.dot"
         png_path = DIAGRAMS_DIR / f"{name}.png"
-        
-        with open(dot_path, "w") as f:
-            f.write(dot_content.strip() + "\\n")
-            
+
         print(f"-> Rendering {name}.png ...")
-        cmd = ["dot", "-Tpng", "-Gdpi=220", str(dot_path), "-o", str(png_path)]
-        res = subprocess.run(cmd, capture_output=True, text=True)
+        cmd = ["dot", "-Tpng", "-Gdpi=220", "-o", str(png_path)]
+        res = subprocess.run(cmd, input=dot_content, capture_output=True, text=True)
         if res.returncode != 0:
             print(f"Error rendering {name}: {res.stderr}")
             raise RuntimeError(res.stderr)

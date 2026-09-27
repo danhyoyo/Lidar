@@ -105,7 +105,7 @@ When the network has high uncertainty / poor recall on Pedestrian or Cyclist, th
 - `tools/dataset_converter/create_gt_database.py`: Offline generator for `kitti_gt_database.pkl`.
 
 ### 3.2. Configuration Interface
-In `configs/kitti/bevnext_oga/kitti_bevnext_litemla_oga.json`:
+In `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`:
 ```json
 {
   "aug": {

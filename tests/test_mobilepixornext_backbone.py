@@ -8,15 +8,15 @@ sys.path[:0] = [
     str(ROOT / "detector"),
 ]
 
-from core.models.backbones.bevnext_blocks import (
-    BEVNeXtBlock,
+from core.models.backbones.mobilepixornext_blocks import (
+    MobilePixorNeXtBlock,
     DownsampleBlock,
     LiteMLARefinement,
 )
 
 
-def test_bevnext_block_shape_and_grad():
-    blk = BEVNeXtBlock(channels=64, expansion=2.5)
+def test_mobilepixornext_block_shape_and_grad():
+    blk = MobilePixorNeXtBlock(channels=64, expansion=2.5)
     x = torch.randn(2, 64, 50, 44, requires_grad=True)
     out = blk(x)
     assert out.shape == x.shape, f"Expected shape {x.shape}, got {out.shape}"
@@ -25,9 +25,9 @@ def test_bevnext_block_shape_and_grad():
     assert not torch.isnan(x.grad).any(), "Gradient should not contain NaNs"
 
 
-def test_bevnext_block_layer_scale():
+def test_mobilepixornext_block_layer_scale():
     # When layer_scale is 0, output should equal input (pure identity)
-    blk = BEVNeXtBlock(channels=32, layer_scale_init=0.0)
+    blk = MobilePixorNeXtBlock(channels=32, layer_scale_init=0.0)
     x = torch.randn(1, 32, 20, 20)
     out = blk(x)
     assert torch.allclose(out, x), "Zero-initialized LayerScale must produce pure Identity"
@@ -50,10 +50,10 @@ def test_litemla_block():
     assert not torch.isnan(x.grad).any(), "Gradient should not contain NaNs"
 
 
-def test_bevnext_backbone_forward_and_shapes():
-    from core.models.backbones.bevnext import BEVNeXtBackbone
+def test_mobilepixornext_backbone_forward_and_shapes():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
-    backbone = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
+    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
     x = torch.randn(2, 8, 800, 704, requires_grad=True)
     out = backbone(x)
     assert out.shape == (2, 16, 200, 176), f"Expected (2, 16, 200, 176), got {out.shape}"
@@ -62,31 +62,31 @@ def test_bevnext_backbone_forward_and_shapes():
     assert not torch.isnan(x.grad).any(), "Gradients must not be NaN"
 
 
-def test_bevnext_backbone_parameter_budget():
-    from core.models.backbones.bevnext import BEVNeXtBackbone
+def test_mobilepixornext_backbone_parameter_budget():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
-    backbone = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
+    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
     total_params = sum(p.numel() for p in backbone.parameters())
-    print(f"\nBEVNeXt Backbone Parameters: {total_params:,}")
+    print(f"\nMobilePixorNeXt Backbone Parameters: {total_params:,}")
     assert total_params < 2_000_000, f"Backbone must be < 2M params, got {total_params:,}"
     assert total_params > 500_000, f"Backbone should have enough capacity, got {total_params:,}"
 
 
-def test_bevnext_backbone_attention_options():
-    from core.models.backbones.bevnext import BEVNeXtBackbone
+def test_mobilepixornext_backbone_attention_options():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
-    bb_none = BEVNeXtBackbone(input_channels=8, c4_attention="none")
-    bb_litemla = BEVNeXtBackbone(input_channels=8, c4_attention="litemla")
+    bb_none = MobilePixorNeXtBackbone(input_channels=8, c4_attention="none")
+    bb_litemla = MobilePixorNeXtBackbone(input_channels=8, c4_attention="litemla")
     params_none = sum(p.numel() for p in bb_none.parameters())
     params_litemla = sum(p.numel() for p in bb_litemla.parameters())
     assert params_litemla > params_none, "LiteMLA should add attention parameters"
 
 
-def test_custom_model_bevnext():
+def test_custom_model_mobilepixornext():
     from core.models.model import CustomModel
 
     cfg = {
-        "backbone": "bevnext",
+        "backbone": "mobilepixornext",
         "cls_encoding": "gaussian",
         "backbone_out_dim": 16,
         "c4_attention": "litemla",
@@ -94,7 +94,7 @@ def test_custom_model_bevnext():
     }
     model = CustomModel(cfg, num_classes=4, input_channels=8)
     total_model_params = sum(p.numel() for p in model.parameters())
-    print(f"\nCustomModel (BEVNeXt + Header) Total Parameters: {total_model_params:,}")
+    print(f"\nCustomModel (MobilePixorNeXt + Header) Total Parameters: {total_model_params:,}")
     assert total_model_params < 2_000_000, f"Full model must be < 2M params, got {total_model_params:,}"
 
     x = torch.randn(2, 8, 800, 704)
@@ -170,20 +170,20 @@ def test_legacy_backbone_backward_compatibility():
     model.load_state_dict(sd, strict=True)
 
 
-def test_bevnext_torchscript_compilation():
-    from core.models.backbones.bevnext import BEVNeXtBackbone
+def test_mobilepixornext_torchscript_compilation():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
     x = torch.randn(1, 8, 800, 704)
 
     # 1. Test scripted model with scale_gated_fpn=True
-    bb_gated = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=True).eval()
+    bb_gated = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=True).eval()
     scripted_gated = torch.jit.script(bb_gated)
     out_eager = bb_gated(x)
     out_scripted = scripted_gated(x)
     assert torch.allclose(out_eager, out_scripted, atol=1e-5)
 
     # 2. Test scripted model with scale_gated_fpn=False
-    bb_nogate = BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=False).eval()
+    bb_nogate = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, scale_gated_fpn=False).eval()
     scripted_nogate = torch.jit.script(bb_nogate)
     out_eager_nogate = bb_nogate(x)
     out_scripted_nogate = scripted_nogate(x)

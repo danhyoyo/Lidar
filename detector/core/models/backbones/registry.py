@@ -43,7 +43,7 @@ from core.models.backbones.mobilepixor_coordinate_attention import (
 )
 from core.models.backbones.pixor import PixorBackBone
 from core.models.backbones.rpn import RPN
-from core.models.backbones.bevnext import BEVNeXtBackbone
+from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
 
 @register_backbone("mobilepixor")
@@ -59,9 +59,9 @@ def _build_mobilepixor_coordatt(cfg: Dict[str, Any], input_channels: int = 35) -
     )
 
 
-@register_backbone("bevnext")
-def _build_bevnext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
-    return BEVNeXtBackbone(
+@register_backbone("mobilepixornext")
+def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
+    return MobilePixorNeXtBackbone(
         input_channels=input_channels,
         backbone_out_dim=cfg.get("backbone_out_dim", 16),
         c4_attention=cfg.get("c4_attention", "litemla"),

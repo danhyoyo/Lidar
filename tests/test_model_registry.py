@@ -14,7 +14,7 @@ from core.models.backbones.registry import (
     get_available_backbones,
 )
 from core.models.model import CustomModel
-from core.models.backbones.bevnext import BEVNeXtBackbone
+from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 from core.models.backbones.mobilepixor import MobilePixorBackBone
 from tools.kitti_training_pipeline.common import validate_backbone
 
@@ -22,7 +22,7 @@ from tools.kitti_training_pipeline.common import validate_backbone
 class TestBackboneRegistry(unittest.TestCase):
     def test_default_backbones_registered(self):
         available = get_available_backbones()
-        for name in ("bevnext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"):
+        for name in ("mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"):
             self.assertIn(name, available)
 
     def test_unsupported_backbone_raises_value_error(self):
@@ -35,12 +35,12 @@ class TestBackboneRegistry(unittest.TestCase):
         bb_pixor = build_backbone("mobilepixor", {}, input_channels=35)
         self.assertIsInstance(bb_pixor, MobilePixorBackBone)
 
-        bb_bevnext = build_backbone(
-            "bevnext",
+        bb_mobilepixornext = build_backbone(
+            "mobilepixornext",
             {"backbone_out_dim": 16, "c4_attention": "litemla", "scale_gated_fpn": True},
             input_channels=8,
         )
-        self.assertIsInstance(bb_bevnext, BEVNeXtBackbone)
+        self.assertIsInstance(bb_mobilepixornext, MobilePixorNeXtBackbone)
 
     def test_custom_backbone_registration_and_model_integration(self):
         @register_backbone("custom_dummy_test")
@@ -67,7 +67,7 @@ class TestBackboneRegistry(unittest.TestCase):
 
     def test_duplicate_registration_raises_key_error(self):
         with self.assertRaises(KeyError):
-            @register_backbone("bevnext")
+            @register_backbone("mobilepixornext")
             def _duplicate(cfg, in_c):
                 return nn.Identity()
 
@@ -90,9 +90,9 @@ class TestBackboneRegistry(unittest.TestCase):
         bb = build_backbone("temp_override_test", {})
         self.assertIsInstance(bb, nn.ReLU)
 
-    def test_custom_model_case_insensitive_bevnext_header(self):
+    def test_custom_model_case_insensitive_mobilepixornext_header(self):
         cfg_upper = {
-            "backbone": "BEVNeXt",
+            "backbone": "MobilePixorNeXt",
             "backbone_out_dim": 16,
             "cls_encoding": "gaussian",
         }
