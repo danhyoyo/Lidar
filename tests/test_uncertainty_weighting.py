@@ -98,6 +98,37 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
             self.assertLess(w, 2.0, f"Task {name} monopolized weight budget: weight {w} > 2.0")
         self.assertAlmostEqual(sum(final_weights.values()), 5.0, places=4)
 
+    def test_eval_mode_freezes_running_loss_means(self):
+        weighting = TemperatureSoftmaxUncertainty(
+            task_names=["cls", "offset", "size", "yaw", "geo"],
+            temperature=2.0,
+            ema_momentum=0.9,
+        )
+        # Step in train mode to initialize buffer
+        weighting.train()
+        train_losses = {k: torch.tensor(1.0) for k in weighting.task_names}
+        weighting(train_losses)
+        initial_means = weighting.running_loss_means.clone()
+
+        # Switch to eval mode
+        weighting.eval()
+        eval_losses = {k: torch.tensor(50.0) for k in weighting.task_names}
+        weighting(eval_losses)
+
+        # Running means must remain strictly unchanged during eval
+        self.assertTrue(
+            torch.allclose(weighting.running_loss_means, initial_means),
+            f"Evaluation mode mutated running loss means: {weighting.running_loss_means} != {initial_means}",
+        )
+
+        # Switch back to train mode and verify updates resume
+        weighting.train()
+        weighting(eval_losses)
+        self.assertFalse(
+            torch.allclose(weighting.running_loss_means, initial_means),
+            "Training mode failed to update running loss means.",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -103,13 +103,14 @@ class TemperatureSoftmaxUncertainty(nn.Module):
 
         stacked_losses = torch.stack(ordered_losses)
 
-        with torch.no_grad():
-            detached = stacked_losses.detach().clamp_min(1e-4)
-            if not self.initialized:
-                self.running_loss_means.copy_(detached)
-                self.initialized.copy_(torch.tensor(True, device=target_device))
-            else:
-                self.running_loss_means.lerp_(detached, 1.0 - self.ema_momentum)
+        if self.training:
+            with torch.no_grad():
+                detached = stacked_losses.detach().clamp_min(1e-4)
+                if not self.initialized:
+                    self.running_loss_means.copy_(detached)
+                    self.initialized.fill_(True)
+                else:
+                    self.running_loss_means.lerp_(detached, 1.0 - self.ema_momentum)
 
         calibrated_losses = stacked_losses / self.running_loss_means.clamp_min(1e-4)
         nominal_scale = self.running_loss_means.mean().detach()
