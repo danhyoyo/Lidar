@@ -17,7 +17,7 @@ SUPPORTED_BACKBONES = {
     "mobilepixor_coordatt",
     "pixor",
     "rpn",
-    "bevnext",
+    "mobilepixornext",
 }
 
 

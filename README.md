@@ -1,7 +1,7 @@
-# Reproduce UWAG + CoordAtt + geometric augmentation
+# LiDAR BEV object detection
 
 This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for the MobilePIXOR detector in `detector/core`.
+TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
 
 ## Environment
 
@@ -121,3 +121,12 @@ final twelve runs; the resolved seed is stored in each run config/checkpoint.
 
 The evaluator writes BEV AP R40, distance bands for Pedestrian/Cyclist,
 input/config/split hashes, and compressed per-frame predictions.
+
+## MobilePixorNeXt
+
+`mobilepixornext` selects the backbone with 7×7 depthwise blocks, LiteMLA
+refinement, and a scale-gated FPN. Its architecture is described in
+[`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
+Train it with
+[`configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`](configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json)
+by replacing the `--config` argument in the training command above.

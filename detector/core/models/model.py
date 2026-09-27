@@ -6,7 +6,7 @@ from core.models.backbones.mobilepixor_coordinate_attention import (
     MobilePixorBackBone as MobilePixorCoordAttBackBone,
 )
 from core.models.backbones.pixor import PixorBackBone
-from core.models.backbones.bevnext import BEVNeXtBackbone
+from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 from core.models.heads.cnn import Header
 
 class CustomModel(nn.Module):
@@ -19,8 +19,8 @@ class CustomModel(nn.Module):
                 input_channels=input_channels,
                 scale_gated_fpn=cfg.get("scale_gated_fpn", False),
             )
-        elif cfg["backbone"] == "bevnext":
-            self.backbone = BEVNeXtBackbone(
+        elif cfg["backbone"] == "mobilepixornext":
+            self.backbone = MobilePixorNeXtBackbone(
                 input_channels=input_channels,
                 backbone_out_dim=cfg.get("backbone_out_dim", 16),
                 c4_attention=cfg.get("c4_attention", "litemla"),
@@ -38,9 +38,9 @@ class CustomModel(nn.Module):
         if cfg["cls_encoding"] == "binary":
             self.num_classes += 1
 
-        is_bevnext = cfg.get("backbone") == "bevnext"
-        use_bn = cfg.get("header_use_bn", is_bevnext)
-        act = cfg.get("header_act", "silu" if is_bevnext else "none")
+        is_mobilepixornext = cfg.get("backbone") == "mobilepixornext"
+        use_bn = cfg.get("header_use_bn", is_mobilepixornext)
+        act = cfg.get("header_act", "silu" if is_mobilepixornext else "none")
 
         self.header = Header(
             self.num_classes,

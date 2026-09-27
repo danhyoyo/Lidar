@@ -1,4 +1,4 @@
-# BEVNeXt Architecture Specification & Diagrams
+# MobilePixorNeXt Architecture Specification & Diagrams
 
 ## 1. High-Level Pipeline Diagram
 
@@ -25,7 +25,7 @@ flowchart TD
     %% Stage 2
     subgraph STAGE2 ["Stage 2: Low-Level Metric Geometry (C2)"]
         D2["Downsample 3x3 (s=2): 32 -> 48 | 200 x 176"]:::stageStyle
-        B2["2x BEVNeXt Blocks (7x7 DW-Conv, 48ch)<br/>0.7m Receptive Field per block"]:::stageStyle
+        B2["2x MobilePixorNeXt Blocks (7x7 DW-Conv, 48ch)<br/>2.8m kernel footprint at stride 4"]:::stageStyle
         D2 --> B2
     end
     S2 --> D2
@@ -33,7 +33,7 @@ flowchart TD
     %% Stage 3
     subgraph STAGE3 ["Stage 3: Core Semantic & Geometry (C3 / C4)"]
         D3["Downsample 3x3 (s=2): 48 -> 96 | 100 x 88"]:::stageStyle
-        B3["4x BEVNeXt Blocks (7x7 DW-Conv, 96ch)<br/>High capacity spatial representation"]:::stageStyle
+        B3["4x MobilePixorNeXt Blocks (7x7 DW-Conv, 96ch)<br/>High capacity spatial representation"]:::stageStyle
         ATTN["<b>LiteMLA Refinement (Linear Attention)</b><br/>Multi-scale (5x5 DW + Native QKV)<br/>FP32 Linear Accumulation + LayerScale (0.01)"]:::attnStyle
         D3 --> B3
         B3 --> ATTN
@@ -43,7 +43,7 @@ flowchart TD
     %% Stage 4
     subgraph STAGE4 ["Stage 4: High-Level Context (C5)"]
         D4["Downsample 3x3 (s=2): 96 -> 128 | 50 x 44"]:::stageStyle
-        B4["2x BEVNeXt Blocks (7x7 DW-Conv, 128ch)<br/>Pure Convolution (Zero Attention Interference)"]:::stageStyle
+        B4["2x MobilePixorNeXt Blocks (7x7 DW-Conv, 128ch)<br/>Pure Convolution (Zero Attention Interference)"]:::stageStyle
         D4 --> B4
     end
     ATTN --> D4
@@ -82,8 +82,8 @@ flowchart TD
     subgraph HEADS ["Detection Header (Stride 4: 200 x 176)"]
         H_CLS["Classification Head: 3 classes (Car, Pedestrian, Cyclist)"]:::headStyle
         H_OFF["Offset Head: 2 channels (dx, dy)"]:::headStyle
-        H_SIZ["Size Head: 2 channels (log_l, log_w)"]:::headStyle
-        H_YAW["Yaw Head: 2 channels (cos_yaw, sin_yaw)"]:::headStyle
+        H_SIZ["Size Head: 2 channels (log_w, log_l)"]:::headStyle
+        H_YAW["Yaw Head: 2 channels (cos 2θ, sin 2θ)"]:::headStyle
     end
 
     OUT_PROJ --> H_CLS
@@ -94,7 +94,7 @@ flowchart TD
 
 ---
 
-## 2. Micro-Architecture: `BEVNeXtBlock` Detail
+## 2. Micro-Architecture: `MobilePixorNeXtBlock` Detail
 
 ```mermaid
 flowchart TD
@@ -103,7 +103,7 @@ flowchart TD
 
     X["Input Feature Map X (C x H x W)"]:::main
     
-    DW["<b>1. Depthwise 7x7 Conv</b><br/>groups = C, padding = 3<br/><i>Immediate 0.7m x 0.7m Receptive Field in BEV</i>"]:::op
+    DW["<b>1. Depthwise 7x7 Conv</b><br/>groups = C, padding = 3<br/><i>Kernel footprint: 2.8m at stride 4, 5.6m at stride 8, 11.2m at stride 16</i>"]:::op
     BN1["BatchNorm2d"]:::op
     PW1["<b>2. Pointwise 1x1 Conv (Expand)</b><br/>Channels: C -> 2.5 * C"]:::op
     ACT["<b>3. SiLU Activation</b><br/><i>Smooth, avoids Dying ReLU on sparse LiDAR</i>"]:::op
