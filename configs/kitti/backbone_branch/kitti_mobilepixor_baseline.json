@@ -75,7 +75,7 @@
       "scales": [
         5
       ],
-      "eps": 0.000001,
+      "eps": 1e-06,
       "layer_scale_init": 0.01
     }
   },
@@ -83,19 +83,18 @@
   "note": "kitti_mobilepixor_baseline_aug_bf16",
   "seed": 42,
   "train": {
-    "accumulation_steps": 1,
+    "accumulation_steps": 2,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.0005,
-    "lr_decay_at": [
-      60,
-      85
-    ],
-    "momentum": 0.9,
+    "learning_rate": 0.002,
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
-    "weight_decay": 0.0001
+    "weight_decay": 0.0001,
+    "optimizer": "adamw",
+    "scheduler": "cosine",
+    "warmup_epochs": 5,
+    "min_lr": 1e-06
   },
   "val": {
     "data": "splits/kitti/val.txt",
