@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Train a configured KITTI MobilePIXOR variant with best-checkpoint selection."""
+'''
+Example: cmd /c "set KMP_DUPLICATE_LIB_OK=TRUE&& python -u tools/kitti_training_pipeline/train.py --config configs/kitti/kitti_mobilepixor_baseline.json --detector-root detector --output-root artifacts/kitti --run-name baseline_b0_seed42 --device cuda--precision bf16 --seed 42 --epochs 100 --physical-batch-size 16 --accumulation-steps 1 --num-workers 3 --target-backend numba"  
+'''
 
 from __future__ import annotations
 
