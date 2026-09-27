@@ -143,6 +143,15 @@ To prevent confounding effects, each individual mechanism is subjected to isolat
   Sweep $\alpha \in \{0.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0\}$.
   *(Note: $\alpha = 0.0$ represents standard classification-only NMS; $\alpha = 1.0$ represents IoU-only ranking).*
 
+### 5.5. Experiment Set E: Physics-Consistent 3D Data Augmentation (PCU-Aug)
+- **E1 (Transform Pipeline Comparison)**:
+  - E1.1: Baseline Augmentations (`OneOf([Rot, Scale, Trans])`)
+  - E1.2: + 3D Horizontal Flip (`Flip-Y` along lateral axis)
+  - E1.3: + Standard SECOND GT-Sampling (without shadow masking or radiometric calibration)
+  - E1.4: + Full PCU-Aug (Ray-consistent shadow masking + $(R_1/R_2)^2$ subsampling + range intensity calibration + uncertainty curriculum)
+- **E2 (Ray Shadow Masking Impact)**:
+  - Evaluate false-positive rate and background clutter suppression when shadow frustum masking is toggled on vs off.
+
 ---
 
 ## 6. Standardized Results Reporting Template
@@ -158,6 +167,7 @@ All ablation results must be logged in the following standardized Markdown forma
 | **$M_2$** | + Robust MS-LiteMLA $(3, 5)$ | 1.84 / 1.36 | 14.5 | 10.9 ms | 91.7 | - / - / - | - / - / - | - / - / - | - |
 | **$M_3$** | + Bi-SGFPN Neck | 1.93 / 1.45 | 16.1 | 11.4 ms | 87.7 | - / - / - | - / - / - | - / - / - | - |
 | **$M_4$** | + IQA-Header ($\alpha=0.5$) | 1.95 / 1.47 | 16.3 | 11.5 ms | 86.9 | - / - / - | - / - / - | - / - / - | - |
+| **$M_5$** | + PCU-Augmentation (SOTA v2) | 1.95 / 1.47 | 16.3 | 11.5 ms | 86.9 | - / - / - | - / - / - | - / - / - | - |
 
 ---
 

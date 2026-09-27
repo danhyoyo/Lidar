@@ -41,6 +41,7 @@ This roadmap defines the next generation of the **MobilePixorNeXt** 3D LiDAR Obj
 | [02_ROBUST_MULTISCALE_LITEMLA.md](./02_ROBUST_MULTISCALE_LITEMLA.md) | **Attention (C3)** | Multi-scale regional kernels $(3\times 3, 5\times 5)$ + QK-Norm | $+0.05$ ms latency, robust under BF16 |
 | [03_BIDIRECTIONAL_SGFPN.md](./03_BIDIRECTIONAL_SGFPN.md) | **Neck (FPN)** | Top-down & bottom-up scale-gated pyramid fusion | $+0.4$ ms latency, $+85\text{k}$ parameters |
 | [04_IOU_AWARE_QUALITY_HEADER.md](./04_IOU_AWARE_QUALITY_HEADER.md) | **Detection Header** | 3D IoU prediction branch + Joint NMS Scoring | $+0.08$ ms latency, fixes score-box misalignment |
+| [05_PHYSICS_UNCERTAINTY_3D_AUGMENTATION.md](./05_PHYSICS_UNCERTAINTY_3D_AUGMENTATION.md) | **Data Augmentation** | Ray shadow masking, range radiometric calibration, uncertainty curriculum | **0 ms** latency (offline/DataLoader only) |
 
 ---
 
@@ -69,5 +70,8 @@ This roadmap defines the next generation of the **MobilePixorNeXt** 3D LiDAR Obj
    M3: M2 + Bi-directional Scale-Gated Neck (Bi-SGFPN)
     │
     ▼
-   M4: M3 + IoU-Aware Quality Detection Header (IQA-Header)  ==> [MobilePixorNeXt v2 SOTA]
+   M4: M3 + IoU-Aware Quality Detection Header (IQA-Header)
+    │
+    ▼
+   M5: M4 + Physics-Consistent 3D Data Augmentation (PCU-Aug) ==> [MobilePixorNeXt v2 SOTA]
 ```
