@@ -1,6 +1,6 @@
-**Modern BEVNeXt Backbone Implementation Plan**  
+**Modern MobilePixorNeXt Backbone Implementation Plan**  
 ***For agentic workers:*** * REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (* *- [ ]* *) syntax for tracking.*  
-**Goal:** Refactor the outdated MobileNetV2-based backbone in MobilePIXOR into a modern, lightweight 3D LiDAR BEV backbone ("BEVNeXt") featuring 7x7 depthwise convolutions, SiLU activations, single-stage C4 LiteMLA attention, and bilinear scale-gated FPN under 1.0M parameters.  
+**Goal:** Refactor the outdated MobileNetV2-based backbone in MobilePIXOR into a modern, lightweight 3D LiDAR BEV backbone ("MobilePixorNeXt") featuring 7x7 depthwise convolutions, SiLU activations, single-stage C4 LiteMLA attention, and bilinear scale-gated FPN under 1.0M parameters.  
 **Architecture:**  
 - Stem: Fast spatial downsampler (stride 2) mapping 8-channel RichBEV to 32 channels.  
 - Stages 2–4: ConvNeXt/UIB-style blocks with 7x7 depthwise convolutions (0.7m metric receptive field), inverted expansion (2.5x), and SiLU non-linearity.  
@@ -19,18 +19,18 @@
 **Component 1: Modern BEV Block & Attention Modules**  
 ***[NEW] *** *detector/core/models/backbones/bevnext_blocks.py*  
 Contains:  
-- BEVNeXtBlock: 7x7 Depthwise Conv -> BatchNorm2d -> 1x1 Pointwise Expand (2.5x) -> SiLU -> 1x1 Pointwise Project -> LayerScale -> Residual Add.  
+- MobilePixorNeXtBlock: 7x7 Depthwise Conv -> BatchNorm2d -> 1x1 Pointwise Expand (2.5x) -> SiLU -> 1x1 Pointwise Project -> LayerScale -> Residual Add.  
 - DownsampleBlock: 3x3 Conv stride 2 with BatchNorm2d and SiLU.  
 - LiteMLARefinement: Ported and generalized for arbitrary channel widths (96 channels) with FP32 linear attention accumulation and LayerScale.  
-**Component 2: Complete BEVNeXt Backbone Architecture**  
+**Component 2: Complete MobilePixorNeXt Backbone Architecture**  
 ***[NEW] *** *detector/core/models/backbones/bevnext.py*  
 Contains:  
-- BEVNeXtBackbone: Complete backbone integrating Stem, Stage 2 (48ch), Stage 3 (96ch + LiteMLA hook), Stage 4 (128ch), and Bilinear Scale-Gated FPN Neck.  
+- MobilePixorNeXtBackbone: Complete backbone integrating Stem, Stage 2 (48ch), Stage 3 (96ch + LiteMLA hook), Stage 4 (128ch), and Bilinear Scale-Gated FPN Neck.  
 - Parameter count guarantee: ~1.1M to 1.3M parameters.  
 **Component 3: Model Factory & Dispatch Integration**  
 ***[MODIFY] *** *detector/core/models/model.py*  
 - Add "bevnext" option into CustomModel.__init__.  
-- Pass input_channels, c4_attention, and scale_gated_fpn options to BEVNeXtBackbone.  
+- Pass input_channels, c4_attention, and scale_gated_fpn options to MobilePixorNeXtBackbone.  
 **Component 4: Preset Configuration**  
 ***[NEW] *** *configs/kitti/backbone_branch/kitti_bevnext_litemla.json*  
 - Configuration file using rich8, backbone: "bevnext", c4_attention: "litemla", scale_gated_fpn: true.  
@@ -47,17 +47,17 @@ Contains:
 - Create: detector/core/models/backbones/bevnext_blocks.py  
 - Test: tests/test_bevnext_backbone.py  
 **Interfaces:**  
-- Produces: BEVNeXtBlock(channels, expansion=2.5, layer_scale_init=1e-5)  
+- Produces: MobilePixorNeXtBlock(channels, expansion=2.5, layer_scale_init=1e-5)  
 - Produces: DownsampleBlock(in_channels, out_channels, stride=2)  
 - Produces: LiteMLARefinement(channels, head_dim=16, scales=(5,), layer_scale_init=0.01)  
 - **Step 1: Write unit tests for core blocks**  
 # In tests/test_bevnext_backbone.py  
  import torch  
  import pytest  
- from core.models.backbones.bevnext_blocks import BEVNeXtBlock, DownsampleBlock, LiteMLARefinement  
+ from core.models.backbones.bevnext_blocks import MobilePixorNeXtBlock, DownsampleBlock, LiteMLARefinement  
    
  def test_bevnext_block_shape_and_grad():  
-     blk = BEVNeXtBlock(channels=64)  
+     blk = MobilePixorNeXtBlock(channels=64)  
      x = torch.randn(2, 64, 50, 44, requires_grad=True)  
      out = blk(x)  
      assert out.shape == x.shape  
@@ -83,7 +83,7 @@ Contains:
  Run: /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_bevnext_backbone.py -v  
    
  Expected: FAIL (ModuleNotFoundError)  
-- **Step 3: Implement ** **BEVNeXtBlock** **, ** **DownsampleBlock** **, and ** **LiteMLARefinement**  
+- **Step 3: Implement ** **MobilePixorNeXtBlock** **, ** **DownsampleBlock** **, and ** **LiteMLARefinement**  
    
  In detector/core/models/backbones/bevnext_blocks.py:  
    
@@ -95,17 +95,17 @@ Contains:
  Expected: PASS  
 - **Step 5: Git commit task 1**  
 git add detector/core/models/backbones/bevnext_blocks.py tests/test_bevnext_backbone.py  
- git commit -m "feat(backbone): implement BEVNeXt modern building blocks"  
+ git commit -m "feat(backbone): implement MobilePixorNeXt modern building blocks"  
    
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANUlEQVR4nO3OMQ2AABAAsSNBCUrfD6LYGNDAgAU2QtIq6DIzW7UHAMBfHGt1V+fXEwAAXrseHDAF/orRG+cAAAAASUVORK5CYII=)  
-**Task 2: Implement Complete BEVNeXt Backbone (**bevnext.py **)**  
+**Task 2: Implement Complete MobilePixorNeXt Backbone (**bevnext.py **)**  
 **Files:**  
 - Create: detector/core/models/backbones/bevnext.py  
 - Test: tests/test_bevnext_backbone.py  
 **Interfaces:**  
-- Consumes: BEVNeXtBlock, DownsampleBlock, LiteMLARefinement from bevnext_blocks.py  
-- Produces: BEVNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention='litemla', scale_gated_fpn=True)  
-- **Step 1: Write integration test for BEVNeXt Backbone**  
+- Consumes: MobilePixorNeXtBlock, DownsampleBlock, LiteMLARefinement from bevnext_blocks.py  
+- Produces: MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention='litemla', scale_gated_fpn=True)  
+- **Step 1: Write integration test for MobilePixorNeXt Backbone**  
    
  Add tests checking:  
 - Forward pass with input (1, 8, 800, 704) producing (1, 16, 200, 176).  
@@ -116,11 +116,11 @@ git add detector/core/models/backbones/bevnext_blocks.py tests/test_bevnext_back
  Run: /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_bevnext_backbone.py -k test_backbone -v  
    
  Expected: FAIL  
-- **Step 3: Implement ** **BEVNeXtBackbone**  
+- **Step 3: Implement ** **MobilePixorNeXtBackbone**  
 - Stem: Conv3x3 (in -> 32, stride 2) + Conv3x3 (32 -> 32)  
-- Stage 2: Downsample (32 -> 48) + 2x BEVNeXtBlock (48ch)  
-- Stage 3: Downsample (48 -> 96) + 4x BEVNeXtBlock (96ch) + Optional LiteMLA  
-- Stage 4: Downsample (96 -> 128) + 2x BEVNeXtBlock (128ch, no attention)  
+- Stage 2: Downsample (32 -> 48) + 2x MobilePixorNeXtBlock (48ch)  
+- Stage 3: Downsample (48 -> 96) + 4x MobilePixorNeXtBlock (96ch) + Optional LiteMLA  
+- Stage 4: Downsample (96 -> 128) + 2x MobilePixorNeXtBlock (128ch, no attention)  
 - Bilinear FPN Neck: Bilinear upsample 2x + 3x3 depthwise conv + scale gates  
 - Output lateral fusion to 16 channels.  
 - **Step 4: Run test to verify it passes**  
@@ -130,7 +130,7 @@ git add detector/core/models/backbones/bevnext_blocks.py tests/test_bevnext_back
  Expected: PASS  
 - **Step 5: Git commit task 2**  
 git add detector/core/models/backbones/bevnext.py tests/test_bevnext_backbone.py  
- git commit -m "feat(backbone): implement BEVNeXt full backbone with bilinear SG-FPN"  
+ git commit -m "feat(backbone): implement MobilePixorNeXt full backbone with bilinear SG-FPN"  
    
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANUlEQVR4nO3OMQ2AABAAsSNBCUrfEJoYGDDBgAU2QtIq6DIzW7UHAMBfHGt1V+fXEwAAXrseJfoF+ljayTIAAAAASUVORK5CYII=)  
 **Task 3: Integrate into **CustomModel ** and Model Factory**  
@@ -138,7 +138,7 @@ git add detector/core/models/backbones/bevnext.py tests/test_bevnext_backbone.py
 - Modify: detector/core/models/model.py  
 - Test: tests/test_bevnext_backbone.py  
 **Interfaces:**  
-- Consumes: BEVNeXtBackbone from core.models.backbones.bevnext  
+- Consumes: MobilePixorNeXtBackbone from core.models.backbones.bevnext  
 - Produces: CustomModel(cfg) when cfg["backbone"] == "bevnext"  
 - **Step 1: Write test for CustomModel with ** **backbone: bevnext**  
 def test_custom_model_bevnext():  
@@ -164,7 +164,7 @@ def test_custom_model_bevnext():
    
  Add import and dispatch branch:  
 elif cfg["backbone"] == "bevnext":  
-     self.backbone = BEVNeXtBackbone(  
+     self.backbone = MobilePixorNeXtBackbone(  
          input_channels=input_channels,  
          backbone_out_dim=cfg.get("backbone_out_dim", 16),  
          c4_attention=cfg.get("c4_attention", "litemla"),  
@@ -187,8 +187,8 @@ git add detector/core/models/model.py tests/test_bevnext_backbone.py
 - Test: Benchmark script measuring latency and VRAM on GPU  
 - **Step 1: Create config file**  
    
- Create configs/kitti/backbone_branch/kitti_bevnext_litemla.json using Rich8 BEV encoding, BEVNeXt backbone, LiteMLA attention, and baseline loss settings.  
-- **Step 2: Run benchmark script comparing MobilePIXOR vs BEVNeXt**  
+ Create configs/kitti/backbone_branch/kitti_bevnext_litemla.json using Rich8 BEV encoding, MobilePixorNeXt backbone, LiteMLA attention, and baseline loss settings.  
+- **Step 2: Run benchmark script comparing MobilePIXOR vs MobilePixorNeXt**  
    
  Verify:  
 - Parameters < 2.0M.  

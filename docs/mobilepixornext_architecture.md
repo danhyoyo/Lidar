@@ -1,4 +1,4 @@
-# BEVNeXt Architecture Specification & Diagrams
+# MobilePixorNeXt Architecture Specification & Diagrams
 
 ## 1. High-Level Pipeline Diagram
 
@@ -25,7 +25,7 @@ flowchart TD
     %% Stage 2
     subgraph STAGE2 ["Stage 2: Low-Level Metric Geometry (C2)"]
         D2["Downsample 3x3 (s=2): 32 -> 48 | 200 x 176"]:::stageStyle
-        B2["2x BEVNeXt Blocks (7x7 DW-Conv, 48ch)<br/>0.7m Receptive Field per block"]:::stageStyle
+        B2["2x MobilePixorNeXt Blocks (7x7 DW-Conv, 48ch)<br/>0.7m Receptive Field per block"]:::stageStyle
         D2 --> B2
     end
     S2 --> D2
@@ -33,7 +33,7 @@ flowchart TD
     %% Stage 3
     subgraph STAGE3 ["Stage 3: Core Semantic & Geometry (C3 / C4)"]
         D3["Downsample 3x3 (s=2): 48 -> 96 | 100 x 88"]:::stageStyle
-        B3["4x BEVNeXt Blocks (7x7 DW-Conv, 96ch)<br/>High capacity spatial representation"]:::stageStyle
+        B3["4x MobilePixorNeXt Blocks (7x7 DW-Conv, 96ch)<br/>High capacity spatial representation"]:::stageStyle
         ATTN["<b>LiteMLA Refinement (Linear Attention)</b><br/>Multi-scale (5x5 DW + Native QKV)<br/>FP32 Linear Accumulation + LayerScale (0.01)"]:::attnStyle
         D3 --> B3
         B3 --> ATTN
@@ -43,7 +43,7 @@ flowchart TD
     %% Stage 4
     subgraph STAGE4 ["Stage 4: High-Level Context (C5)"]
         D4["Downsample 3x3 (s=2): 96 -> 128 | 50 x 44"]:::stageStyle
-        B4["2x BEVNeXt Blocks (7x7 DW-Conv, 128ch)<br/>Pure Convolution (Zero Attention Interference)"]:::stageStyle
+        B4["2x MobilePixorNeXt Blocks (7x7 DW-Conv, 128ch)<br/>Pure Convolution (Zero Attention Interference)"]:::stageStyle
         D4 --> B4
     end
     ATTN --> D4
@@ -94,7 +94,7 @@ flowchart TD
 
 ---
 
-## 2. Micro-Architecture: `BEVNeXtBlock` Detail
+## 2. Micro-Architecture: `MobilePixorNeXtBlock` Detail
 
 ```mermaid
 flowchart TD
