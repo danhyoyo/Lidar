@@ -120,6 +120,42 @@ class TestLossStrategies(unittest.TestCase):
         loss_dict = criterion(self.pred, self.target)
         self.assertEqual(loss_dict["loss"].item(), 1.0)
 
+    def test_missing_or_invalid_reg_mask_raises_error(self):
+        strategy = BaselineLossStrategy("gaussian")
+
+        # Test thiếu reg_mask
+        target_no_mask = {k: v for k, v in self.target.items() if k != "reg_mask"}
+        with self.assertRaises(KeyError) as ctx:
+            strategy(self.pred, target_no_mask)
+        self.assertIn("reg_mask", str(ctx.exception))
+
+        # Test sai shape reg_mask
+        target_bad_mask = dict(self.target)
+        target_bad_mask["reg_mask"] = torch.ones(self.B, 1, self.H, self.W)
+        with self.assertRaises(ValueError) as ctx:
+            strategy(self.pred, target_bad_mask)
+        self.assertIn("reg_mask shape mismatch", str(ctx.exception))
+
+    def test_baseline_and_uwag_empty_mask_finite_loss(self):
+        target_empty = dict(self.target)
+        target_empty["reg_mask"] = torch.zeros(self.B, self.H, self.W)
+
+        # Baseline
+        crit_base = BaselineLossStrategy("gaussian")
+        pred_base = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+        out_base = crit_base(pred_base, target_empty)
+        self.assertTrue(torch.isfinite(out_base["loss"]))
+        out_base["loss"].backward()
+        self.assertTrue(pred_base["offset"].grad is not None)
+
+        # UWAG
+        crit_uwag = UwagLossStrategy("gaussian")
+        pred_uwag = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+        out_uwag = crit_uwag(pred_uwag, target_empty)
+        self.assertTrue(torch.isfinite(out_uwag["loss"]))
+        out_uwag["loss"].backward()
+        self.assertTrue(pred_uwag["offset"].grad is not None)
+
 
 if __name__ == "__main__":
     unittest.main()
