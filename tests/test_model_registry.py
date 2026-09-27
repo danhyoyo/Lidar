@@ -71,6 +71,22 @@ class TestBackboneRegistry(unittest.TestCase):
             def _duplicate(cfg, in_c):
                 return nn.Identity()
 
+    def test_custom_model_case_insensitive_bevnext_header(self):
+        cfg_upper = {
+            "backbone": "BEVNeXt",
+            "backbone_out_dim": 16,
+            "cls_encoding": "gaussian",
+        }
+        model = CustomModel(cfg_upper, num_classes=3, input_channels=8)
+        self.assertTrue(model.header.cls.bn1.__class__.__name__ == "BatchNorm2d")
+        self.assertEqual(model.header.cls.act1.__class__.__name__, "SiLU")
+
+    def test_custom_model_default_fallback_values(self):
+        cfg_minimal = {"backbone": "mobilepixor"}
+        model = CustomModel(cfg_minimal)
+        self.assertIsNotNone(model)
+        self.assertEqual(model.num_classes, 4)
+
 
 if __name__ == "__main__":
     unittest.main()
