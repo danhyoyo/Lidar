@@ -1,9 +1,7 @@
 """Oriented BEV box geometry and Scale-Normalized Pi-Symmetric Corner Distance."""
 
-import math
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 __all__ = [
     "box_corners",
@@ -65,13 +63,17 @@ def box_corners(offset, log_size, doubled_yaw, epsilon=1e-6, max_abs_log_size=10
     return corners, axes, clamp_count, fallback_count
 
 
-def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, epsilon=1e-6):
+def pi_symmetric_corner_distance(
+    pred_corners, target_corners, target_log_size, epsilon=1e-6, max_abs_log_size=10.0
+):
     """Compute scale-normalized pi-symmetric corner distance between oriented boxes.
 
     Inputs:
         pred_corners: [N, 4, 2] predicted corners.
         target_corners: [N, 4, 2] target corners.
         target_log_size: [N, 2] target log(width, length) for scale normalization.
+        epsilon: numerical stability constant.
+        max_abs_log_size: maximum log-dimension bound for scale normalization.
     """
     if pred_corners.shape[0] == 0:
         return pred_corners.sum() * 0.0
@@ -84,15 +86,15 @@ def pi_symmetric_corner_distance(pred_corners, target_corners, target_log_size, 
     # -- (idx 3) to ++ (idx 0)
     # Direct alignment: [0, 1, 2, 3]
     # Pi-rotated alignment: [3, 2, 1, 0]
-    dist_direct = torch.norm(pred_corners - target_corners, p=1, dim=-1).mean(dim=-1) # [N]
+    dist_direct = torch.abs(pred_corners - target_corners).sum(dim=-1).mean(dim=-1) # [N]
 
     target_corners_pi = target_corners[:, [3, 2, 1, 0], :]
-    dist_pi = torch.norm(pred_corners - target_corners_pi, p=1, dim=-1).mean(dim=-1)   # [N]
+    dist_pi = torch.abs(pred_corners - target_corners_pi).sum(dim=-1).mean(dim=-1)   # [N]
 
     raw_distance = torch.minimum(dist_direct, dist_pi) # [N]
 
     # Normalize by the target bounding box diagonal to equalize scale sensitivity across classes
-    clamped_target_size = target_log_size.float().clamp(-10.0, 10.0)
+    clamped_target_size = target_log_size.float().clamp(-max_abs_log_size, max_abs_log_size)
     target_w = torch.exp(clamped_target_size[:, 0])
     target_l = torch.exp(clamped_target_size[:, 1])
     diagonal = torch.sqrt(target_w.square() + target_l.square()).clamp_min(epsilon)
@@ -159,11 +161,12 @@ class OrientedGeometryLoss(nn.Module):
         positive = reg_mask.reshape(-1).bool()
         if not positive.any():
             zero = (pred_offset.sum() + pred_size.sum() + pred_yaw.sum()) * 0.0
+            device = pred_offset.device
             return zero, {
-                "proj_giou": 0.0,
-                "corner_dist": 0.0,
-                "clamp_count": 0,
-                "fallback_count": 0,
+                "proj_giou": torch.zeros((), device=device),
+                "corner_dist": torch.zeros((), device=device),
+                "clamp_count": torch.zeros((), dtype=torch.int64, device=device),
+                "fallback_count": torch.zeros((), dtype=torch.int64, device=device),
             }
 
         def _select(x):
@@ -186,13 +189,15 @@ class OrientedGeometryLoss(nn.Module):
             )
 
             proj_loss = multiaxis_projection_giou(pred_c, pred_ax, tgt_c, tgt_ax, self.epsilon)
-            corner_loss = pi_symmetric_corner_distance(pred_c, tgt_c, tgt_size_pos, self.epsilon)
+            corner_loss = pi_symmetric_corner_distance(
+                pred_c, tgt_c, tgt_size_pos, self.epsilon, self.max_abs_log_size
+            )
             total_geo = proj_loss + self.beta * corner_loss
 
         return total_geo, {
-            "proj_giou": proj_loss.detach().item(),
-            "corner_dist": corner_loss.detach().item(),
-            "clamp_count": int((pred_clamps + tgt_clamps).item()),
-            "fallback_count": int((pred_fallbacks + tgt_fallbacks).item()),
+            "proj_giou": proj_loss.detach(),
+            "corner_dist": corner_loss.detach(),
+            "clamp_count": (pred_clamps + tgt_clamps).detach(),
+            "fallback_count": (pred_fallbacks + tgt_fallbacks).detach(),
         }
 

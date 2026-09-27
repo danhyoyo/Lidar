@@ -55,6 +55,7 @@ class TemperatureSoftmaxUncertainty(nn.Module):
         """Smooth tanh soft-bounding strictly within (-clamp_bound, clamp_bound)."""
         return self.clamp_bound * torch.tanh(self.log_scales / self.clamp_bound)
 
+    @torch.no_grad()
     def get_task_weights(self):
         """Compute the normalized task weights as a dict {task_name: float_weight}."""
         bounded = self._bounded_scales()
@@ -78,7 +79,7 @@ class TemperatureSoftmaxUncertainty(nn.Module):
             for i, (name, loss_val) in enumerate(task_losses.items()):
                 w = normalized_weights[i]
                 total_loss = total_loss + w * loss_val
-                weights_dict[name] = float(w.detach().item())
+                weights_dict[name] = w.detach()
         else:
             missing = [name for name in self.task_names if name not in task_losses]
             if missing:
@@ -88,6 +89,6 @@ class TemperatureSoftmaxUncertainty(nn.Module):
             for i, name in enumerate(self.task_names):
                 w = normalized_weights[i]
                 total_loss = total_loss + w * task_losses[name]
-                weights_dict[name] = float(w.detach().item())
+                weights_dict[name] = w.detach()
 
         return total_loss, weights_dict

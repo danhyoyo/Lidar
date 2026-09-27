@@ -139,9 +139,9 @@ This ensures robust linear guidance from individual coordinates early in trainin
 
 To resolve the numerical instability and scale drift of Kendall's homoscedastic weighting:
 Let $\mathbf{s} = (s_{\text{cls}}, s_{\text{offset}}, s_{\text{size}}, s_{\text{yaw}}, s_{\text{geo}}) \in \mathbb{R}^5$ denote learnable log-uncertainty logits initialized to $\mathbf{0}$.
-Task weights are computed via temperature-scaled Softmax with bound constraints:
-$$s_t^{\text{clamped}} = \text{clamp}(s_t, -c, c), \quad c = 3.0$$
-$$w_t = M \cdot \frac{\exp(s_t^{\text{clamped}} / \tau)}{\sum_{j=1}^M \exp(s_j^{\text{clamped}} / \tau)}, \quad M = 5, \; \tau = 2.0$$
+Task weights are computed via temperature-scaled Softmax with smooth $\tanh$ bound constraints:
+$$s_t^{\text{bounded}} = c \cdot \tanh(s_t / c), \quad c = 3.0$$
+$$w_t = M \cdot \frac{\exp(s_t^{\text{bounded}} / \tau)}{\sum_{j=1}^M \exp(s_j^{\text{bounded}} / \tau)}, \quad M = 5, \; \tau = 2.0$$
 
 **Mathematical & Optimization Guarantees:**
 1. **Gradient Scale Conservation:**

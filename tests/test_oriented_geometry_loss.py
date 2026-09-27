@@ -90,6 +90,57 @@ class TestOrientedGeometryCornerLoss(unittest.TestCase):
         self.assertTrue(pred_offset.grad is not None)
         self.assertEqual(pred_offset.grad.sum().item(), 0.0)
 
+    def test_oriented_geometry_loss_positive_mask(self):
+        from core.losses.oriented_geometry_loss import OrientedGeometryLoss
+        module = OrientedGeometryLoss(beta=1.0)
+        B, H, W = 2, 4, 4
+        pred_offset = torch.randn((B, 2, H, W), requires_grad=True)
+        pred_size = torch.randn((B, 2, H, W), requires_grad=True)
+        pred_yaw = torch.randn((B, 2, H, W), requires_grad=True)
+        tgt_offset = torch.zeros((B, 2, H, W))
+        tgt_size = torch.zeros((B, 2, H, W))
+        tgt_yaw = torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(B, 2, H, W)
+        reg_mask = torch.ones((B, H, W))
+
+        loss, metrics = module(pred_offset, pred_size, pred_yaw, tgt_offset, tgt_size, tgt_yaw, reg_mask)
+        self.assertTrue(torch.isfinite(loss))
+        self.assertGreater(loss.item(), 0.0)
+
+        # Check telemetry metrics are on-device tensors
+        for key in ("proj_giou", "corner_dist", "clamp_count", "fallback_count"):
+            self.assertIn(key, metrics)
+            self.assertTrue(torch.is_tensor(metrics[key]))
+            self.assertTrue(torch.isfinite(metrics[key]).all())
+
+        loss.backward()
+        for head in (pred_offset, pred_size, pred_yaw):
+            self.assertTrue(head.grad is not None)
+            self.assertTrue(torch.isfinite(head.grad).all())
+            self.assertFalse((head.grad == 0).all())
+
+    def test_multiaxis_projection_giou_disjoint_boxes_finite_gradients(self):
+        from core.losses.oriented_geometry_loss import multiaxis_projection_giou
+
+        pred_offset = torch.tensor([[0.0, 0.0]], dtype=torch.float32, requires_grad=True)
+        pred_size = torch.tensor([[math.log(2.0), math.log(4.0)]], dtype=torch.float32, requires_grad=True)
+        pred_yaw = torch.tensor([[1.0, 0.0]], dtype=torch.float32, requires_grad=True)
+
+        tgt_offset = torch.tensor([[20.0, 20.0]], dtype=torch.float32)
+        tgt_size = torch.tensor([[math.log(2.0), math.log(4.0)]], dtype=torch.float32)
+        tgt_yaw = torch.tensor([[0.0, 1.0]], dtype=torch.float32)
+
+        pred_c, pred_ax, _, _ = box_corners(pred_offset, pred_size, pred_yaw)
+        tgt_c, tgt_ax, _, _ = box_corners(tgt_offset, tgt_size, tgt_yaw)
+
+        loss = multiaxis_projection_giou(pred_c, pred_ax, tgt_c, tgt_ax)
+        self.assertTrue(torch.isfinite(loss))
+        self.assertGreater(loss.item(), 0.0)
+        self.assertLessEqual(loss.item(), 1.0)
+
+        loss.backward()
+        self.assertTrue(pred_offset.grad is not None and torch.isfinite(pred_offset.grad).all())
+        self.assertFalse((pred_offset.grad == 0).all())
+
 
 if __name__ == "__main__":
     unittest.main()
