@@ -32,8 +32,6 @@ outputs/
 /data/
 /docs/*
 !/docs/superpowers/
-!/docs/rotated_bev_losses/
-!/docs/mobile_bev_lightweight/
 !/docs/plans/
 !/docs/*.md
 /evaluation/
