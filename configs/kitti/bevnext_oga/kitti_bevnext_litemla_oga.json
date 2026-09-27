@@ -75,19 +75,18 @@
   "note": "kitti_bevnext_litemla_rich8_sgfpn_oga_loss",
   "seed": 42,
   "train": {
-    "accumulation_steps": 8,
+    "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.005,
-    "lr_decay_at": [
-      65,
-      85
-    ],
-    "momentum": 0.9,
+    "learning_rate": 0.002,
+    "min_lr": 1e-06,
+    "optimizer": "adamw",
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
-    "weight_decay": 0.0005
+    "scheduler": "cosine",
+    "warmup_epochs": 5,
+    "weight_decay": 0.0001
   },
   "val": {
     "data": "splits/kitti/val.txt",
