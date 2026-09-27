@@ -129,6 +129,21 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
             "Training mode failed to update running loss means.",
         )
 
+    def test_device_mismatch_raises_runtime_error(self):
+        weighting = TemperatureSoftmaxUncertainty(task_names=["cls", "offset", "size", "yaw", "geo"])
+        if torch.cuda.is_available():
+            weighting.cpu()
+            cuda_losses = {k: torch.tensor(1.0, device="cuda") for k in weighting.task_names}
+            with self.assertRaises(RuntimeError) as ctx:
+                weighting(cuda_losses)
+            self.assertIn("Device mismatch in TemperatureSoftmaxUncertainty", str(ctx.exception))
+        else:
+            fake_device = torch.device("meta")
+            meta_losses = {k: torch.tensor(1.0, device=fake_device) for k in weighting.task_names}
+            with self.assertRaises(RuntimeError) as ctx:
+                weighting(meta_losses)
+            self.assertIn("Device mismatch in TemperatureSoftmaxUncertainty", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

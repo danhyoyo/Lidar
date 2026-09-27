@@ -88,7 +88,11 @@ class TemperatureSoftmaxUncertainty(nn.Module):
 
         target_device = next(iter(task_losses.values())).device
         if self.log_scales.device != target_device:
-            self.to(target_device)
+            raise RuntimeError(
+                f"Device mismatch in TemperatureSoftmaxUncertainty: log_scales is on {self.log_scales.device} "
+                f"while input losses are on {target_device}. Ensure criterion is moved to the target device "
+                "via criterion.to(device) before building the optimizer and starting training."
+            )
 
         bounded = self._bounded_scales()
         normalized_weights = F.softmax(bounded / self.temperature, dim=0) * self.num_tasks
