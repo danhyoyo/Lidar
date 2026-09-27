@@ -1,198 +1,82 @@
+"""Composite Loss Function Façade delegating to modular Loss Strategies."""
+
+from typing import Any, Dict
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
-from core.losses.focal_loss import modified_focal_loss, focal_loss
-from core.losses.l1_loss import l1_loss, smooth_l1_loss
-from core.losses.oriented_geometry_loss import OrientedGeometryLoss
-from core.losses.uncertainty_weighting import TemperatureSoftmaxUncertainty
+from core.losses.strategies import (
+    BaseLossStrategy,
+    build_loss_strategy,
+    get_available_loss_strategies,
+)
 
 
 class LossFunction(nn.Module):
-    """Loss function supporting baseline, legacy UWAG, and novel OGA composite objectives.
+    """Façade for modular detection loss strategies (baseline, uwag, oga).
 
-    - baseline: standard focal loss for classification + unweighted L1 for box regression.
-    - uwag: legacy homoscedastic uncertainty weighting with axis-aligned footprint IoU.
-    - oga: Oriented Geometric Alignment & Adaptive Loss combining scale-normalized
-      pi-symmetric corner distance, multi-axis projection GIoU, dual-stream parameter
-      guidance, and temperature-softmax bounded uncertainty balancing (T-SBUW).
+    Delegates composite loss computation to the configured LossStrategy while
+    providing 100% backward compatibility for:
+    - checkpoint state dictionaries (both legacy flat keys and strategy-prefixed keys).
+    - direct attribute access (e.g. criterion.log_scales, criterion.geometry_loss, criterion.weighting).
+    - existing trainer and evaluation pipelines.
     """
 
     TASKS = ("cls", "offset", "size", "yaw")
 
-    def __init__(self, cls_encoding, config=None):
-        super(LossFunction, self).__init__()
+    def __init__(self, cls_encoding: str, config: Dict[str, Any] = None):
+        super().__init__()
         self.cls_encoding = cls_encoding
         config = config or {}
         self.name = str(config.get("name", "baseline")).lower()
-        if self.name not in {"baseline", "uwag", "oga"}:
-            raise ValueError(f"Unsupported loss name: {self.name!r}")
 
-        self.geometric_weight = float(config.get("geometric_weight", 0.2))
-        self.eps = float(config.get("epsilon", 1e-4))
-        self.max_abs_log_size = float(config.get("max_abs_log_size", 10.0))
-        if self.geometric_weight < 0:
-            raise ValueError("geometric_weight must be non-negative")
-        if self.eps <= 0:
-            raise ValueError("epsilon must be positive")
-        if self.max_abs_log_size <= 0:
-            raise ValueError("max_abs_log_size must be positive")
+        # Build active strategy via the registry
+        self.strategy = build_loss_strategy(self.name, cls_encoding, config)
 
-        if self.name == "uwag":
-            initial = config.get("initial_log_scales", [0.0] * len(self.TASKS))
-            if len(initial) != len(self.TASKS):
-                raise ValueError("initial_log_scales must contain four values")
-            self.log_scales = nn.Parameter(torch.tensor(initial, dtype=torch.float32))
-        elif self.name == "oga":
-            self.corner_beta = float(config.get("corner_beta", 1.0))
-            self.temperature = float(config.get("temperature", 2.0))
-            self.clamp_bound = float(config.get("clamp_bound", 3.0))
-            self.geometry_loss = OrientedGeometryLoss(
-                beta=self.corner_beta,
-                epsilon=self.eps,
-                max_abs_log_size=self.max_abs_log_size,
-            )
-            self.weighting = TemperatureSoftmaxUncertainty(
-                task_names=("cls", "offset", "size", "yaw", "geo"),
-                temperature=self.temperature,
-                clamp_bound=self.clamp_bound,
-            )
-        else:
-            self.register_buffer(
-                "log_scales", torch.empty(0, dtype=torch.float32), persistent=False
-            )
+    @property
+    def log_scales(self):
+        if self.name == "baseline":
+            return torch.empty(0, dtype=torch.float32)
+        return getattr(self.strategy, "log_scales", None)
 
-    def _yaw_aware_bev_iou_loss(self, pred, target):
-        """Differentiable footprint IoU multiplied by doubled-yaw agreement."""
-        mask = target["reg_mask"].float()
-        pred_offset = pred["offset"][:, :2].float()
-        target_offset = target["offset"][:, :2].float()
-        pred_size = torch.exp(
-            pred["size"][:, :2].float().clamp(
-                -self.max_abs_log_size, self.max_abs_log_size
-            )
-        )
-        target_size = torch.exp(
-            target["size"][:, :2].float().clamp(
-                -self.max_abs_log_size, self.max_abs_log_size
-            )
-        )
+    @property
+    def geometry_loss(self):
+        return getattr(self.strategy, "geometry_loss", None)
 
-        pred_min = pred_offset - 0.5 * pred_size
-        pred_max = pred_offset + 0.5 * pred_size
-        target_min = target_offset - 0.5 * target_size
-        target_max = target_offset + 0.5 * target_size
-        intersection_size = (
-            torch.minimum(pred_max, target_max)
-            - torch.maximum(pred_min, target_min)
-        ).clamp_min(0.0)
-        intersection = intersection_size[:, 0] * intersection_size[:, 1]
-        pred_area = pred_size[:, 0] * pred_size[:, 1]
-        target_area = target_size[:, 0] * target_size[:, 1]
-        bev_iou = intersection / (
-            pred_area + target_area - intersection + self.eps
-        )
+    @property
+    def weighting(self):
+        return getattr(self.strategy, "weighting", None)
 
-        pred_yaw = F.normalize(pred["yaw"].float(), dim=1, eps=self.eps)
-        target_yaw = F.normalize(target["yaw"].float(), dim=1, eps=self.eps)
-        doubled_yaw_similarity = (
-            pred_yaw * target_yaw
-        ).sum(dim=1).clamp(-1.0, 1.0)
-        yaw_factor = 0.5 * (1.0 + doubled_yaw_similarity)
-        oriented_overlap = bev_iou * yaw_factor
-        return self.geometric_weight * (
-            ((1.0 - oriented_overlap) * mask).sum() / (mask.sum() + self.eps)
-        )
+    def __getattr__(self, name: str):
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            strategy = self.__dict__.get("_modules", {}).get("strategy")
+            if strategy is not None:
+                return getattr(strategy, name)
+            raise
 
-    def forward(self, pred, target):
-        for name in ("offset", "size", "yaw"):
-            if pred[name].shape != target[name].shape:
-                raise ValueError(
-                    f"{name} prediction/target shape mismatch: "
-                    f"{tuple(pred[name].shape)} != {tuple(target[name].shape)}"
-                )
-        expected_cls_shape = (
-            pred["cls"].shape[:1] + pred["cls"].shape[2:]
-            if self.cls_encoding == "binary" else pred["cls"].shape
-        )
-        if target["cls"].shape != expected_cls_shape:
-            raise ValueError(
-                f"cls prediction/target shape mismatch: {tuple(pred['cls'].shape)} "
-                f"is incompatible with {tuple(target['cls'].shape)}"
-            )
-        if pred["offset"].shape[1] not in {2, 3} or pred["size"].shape[1] != pred["offset"].shape[1]:
-            raise ValueError("offset and size must both have 2 or 3 channels")
-        if pred["yaw"].shape[1] != 2:
-            raise ValueError("yaw must have 2 channels")
-
-        if self.cls_encoding == "binary":
-            cls_loss = focal_loss(pred["cls"], target["cls"])
-        else:
-            cls_loss = modified_focal_loss(pred["cls"], target["cls"])
-        if self.name == "oga":
-            offset_loss = smooth_l1_loss(pred["offset"], target["offset"], target["reg_mask"])
-            size_loss = smooth_l1_loss(pred["size"], target["size"], target["reg_mask"])
-            yaw_loss = smooth_l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
-            geo_loss, geo_metrics = self.geometry_loss(
-                pred["offset"][:, :2],
-                pred["size"][:, :2],
-                pred["yaw"][:, :2],
-                target["offset"][:, :2],
-                target["size"][:, :2],
-                target["yaw"][:, :2],
-                target["reg_mask"],
-            )
-            task_losses = {
-                "cls": cls_loss,
-                "offset": offset_loss,
-                "size": size_loss,
-                "yaw": yaw_loss,
-                "geo": geo_loss,
-            }
-            loss, weights = self.weighting(task_losses)
-            geometric_loss = geo_loss
-        else:
-            offset_loss = l1_loss(pred["offset"], target["offset"], target["reg_mask"])
-            size_loss = l1_loss(pred["size"], target["size"], target["reg_mask"])
-            yaw_loss = l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
-
-            components = torch.stack(
-                [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
-            )
-            if self.name == "uwag":
-                task_loss = (
-                    torch.exp(-self.log_scales) * components + self.log_scales
-                ).sum()
-                geometric_loss = self._yaw_aware_bev_iou_loss(pred, target)
-                loss = task_loss + geometric_loss
-            else:
-                geometric_loss = components.new_zeros(())
-                loss = components.sum()
-
-        if not torch.isfinite(loss):
+    def forward(
+        self, pred: Dict[str, torch.Tensor], target: Dict[str, torch.Tensor]
+    ) -> Dict[str, Any]:
+        loss_dict = self.strategy(pred, target)
+        if not torch.isfinite(loss_dict["loss"]):
             raise FloatingPointError("non-finite loss")
-
-        loss_dict = {
-            "loss": loss,
-            # Keep telemetry on-device.  The trainer transfers the aggregated
-            # scalar once per epoch instead of synchronizing for every batch.
-            "cls": cls_loss.detach(),
-            "offset": offset_loss.detach(),
-            "size": size_loss.detach(),
-            "yaw": yaw_loss.detach(),
-            "geo": geometric_loss.detach(),
-        }
-        if self.name == "uwag":
-            for task, log_scale in zip(self.TASKS, self.log_scales):
-                loss_dict[f"weight_{task}"] = torch.exp(
-                    -log_scale.detach()
-                )
-        elif self.name == "oga":
-            loss_dict["corner_dist"] = geo_metrics["corner_dist"]
-            loss_dict["proj_giou"] = geo_metrics["proj_giou"]
-            loss_dict["clamp_count"] = geo_metrics.get("clamp_count", 0)
-            loss_dict["fallback_count"] = geo_metrics.get("fallback_count", 0)
-            for task, w in weights.items():
-                loss_dict[f"weight_{task}"] = w
-
         return loss_dict
+
+    def load_state_dict(self, state_dict: Dict[str, Any], strict: bool = True):
+        """Remap legacy checkpoint keys missing 'strategy.' prefix for backward compatibility."""
+        remapped = {}
+        target_keys = set(self.state_dict().keys())
+
+        for k, v in state_dict.items():
+            if k in target_keys:
+                remapped[k] = v
+            elif f"strategy.{k}" in target_keys:
+                # Remap legacy un-prefixed key (e.g. 'log_scales' -> 'strategy.log_scales')
+                remapped[f"strategy.{k}"] = v
+            elif k.startswith("strategy.") and k[9:] in target_keys:
+                remapped[k[9:]] = v
+            else:
+                remapped[k] = v
+
+        return super().load_state_dict(remapped, strict=strict)
