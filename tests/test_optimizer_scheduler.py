@@ -88,6 +88,7 @@ class TestSchedulerBuilder(unittest.TestCase):
 
         # Step through 5 warmup epochs
         for ep in range(5):
+            optimizer.step()
             scheduler.step()
 
         # At end of warmup (milestone epoch 5), LR reaches peak 0.002
@@ -95,6 +96,7 @@ class TestSchedulerBuilder(unittest.TestCase):
 
         # Step remaining 95 epochs
         for ep in range(95):
+            optimizer.step()
             scheduler.step()
 
         # At end of 100 epochs, LR reaches min_lr
@@ -129,6 +131,7 @@ class TestSchedulerBuilder(unittest.TestCase):
         optimizer1 = build_optimizer(model, criterion, config)
         scheduler1 = build_scheduler(optimizer1, config, 100)
         for _ in range(10):
+            optimizer1.step()
             scheduler1.step()
         sd = scheduler1.state_dict()
         opt_sd = optimizer1.state_dict()
