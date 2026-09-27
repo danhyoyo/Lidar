@@ -159,6 +159,13 @@ def test_legacy_backbone_backward_compatibility():
     header_bn_keys = [k for k in sd if "header" in k and "bn" in k]
     assert len(header_bn_keys) == 0, f"Found unexpected BN keys in legacy header: {header_bn_keys}"
 
+    # Pre-refactor checkpoints also have no conv1/conv2 bias tensors.
+    legacy_bias_keys = [
+        key for key in sd
+        if key.startswith("header.") and key.endswith(("conv1.bias", "conv2.bias"))
+    ]
+    assert not legacy_bias_keys, f"Legacy checkpoint keys changed: {legacy_bias_keys}"
+
     # Strict load of simulated legacy state dict must succeed
     model.load_state_dict(sd, strict=True)
 
@@ -201,6 +208,5 @@ def test_litemla_numerical_stability():
     assert not torch.isinf(out_large).any(), "Large input must not produce Inf"
     out_large.sum().backward()
     assert x_large.grad is not None and not torch.isnan(x_large.grad).any(), "Gradients of large input must not be NaN"
-
 
 

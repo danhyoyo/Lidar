@@ -96,6 +96,18 @@ class TestLossStrategies(unittest.TestCase):
         crit_oga_new.load_state_dict(current_sd, strict=True)
         self.assertTrue(torch.allclose(crit_oga_new.weighting.log_scales, torch.ones(5) * 0.2))
 
+    def test_legacy_loss_keys_load_when_nested_in_module(self):
+        for loss_name, old_key, values in (
+            ("uwag", "log_scales", torch.full((4,), 0.5)),
+            ("oga", "weighting.log_scales", torch.full((5,), 0.2)),
+        ):
+            with self.subTest(loss_name=loss_name):
+                parent = nn.Module()
+                parent.criterion = LossFunction("gaussian", {"name": loss_name})
+                parent.load_state_dict({f"criterion.{old_key}": values}, strict=True)
+                restored = parent.criterion.state_dict()[f"strategy.{old_key}"]
+                self.assertTrue(torch.allclose(restored, values))
+
     def test_custom_strategy_registration(self):
         @register_loss_strategy("custom_dummy_loss")
         class DummyStrategy(BaseLossStrategy):

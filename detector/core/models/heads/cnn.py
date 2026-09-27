@@ -6,9 +6,9 @@ def conv3x3(in_planes, out_planes, stride=1, bias=False):
                      padding=1, bias=bias)
 
 class Head(nn.Module):
-    def __init__(self, in_channels, out, use_bn=True, act="silu"):
+    def __init__(self, in_channels, out, use_bn=False, act="none"):
         super(Head, self).__init__()
-        self.conv1 = conv3x3(in_channels, in_channels, bias=not use_bn)
+        self.conv1 = conv3x3(in_channels, in_channels)
         self.bn1 = nn.BatchNorm2d(in_channels) if use_bn else nn.Identity()
         if act == "silu":
             self.act1 = nn.SiLU(inplace=True)
@@ -22,7 +22,7 @@ class Head(nn.Module):
         else:
             raise ValueError(f"Unsupported activation: {act!r}")
 
-        self.conv2 = conv3x3(in_channels, in_channels, bias=not use_bn)
+        self.conv2 = conv3x3(in_channels, in_channels)
         self.bn2 = nn.BatchNorm2d(in_channels) if use_bn else nn.Identity()
         self.head = nn.Conv2d(in_channels, out, kernel_size=1)
 
@@ -34,7 +34,7 @@ class Head(nn.Module):
         return head
 
 class Header(nn.Module):
-    def __init__(self, num_classes, in_channels, use_bn=True, act="silu"):
+    def __init__(self, num_classes, in_channels, use_bn=False, act="none"):
         super(Header, self).__init__()
         self.cls = Head(in_channels, num_classes, use_bn=use_bn, act=act)
         self.offset = Head(in_channels, 2, use_bn=use_bn, act=act)
@@ -50,4 +50,3 @@ class Header(nn.Module):
         pred = {"cls": cls, "offset": offset, "size": size, "yaw": yaw}
 
         return pred
-

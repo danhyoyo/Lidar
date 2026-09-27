@@ -63,20 +63,19 @@ class LossFunction(nn.Module):
             raise FloatingPointError("non-finite loss")
         return loss_dict
 
-    def load_state_dict(self, state_dict: Dict[str, Any], strict: bool = True):
-        """Remap legacy checkpoint keys missing 'strategy.' prefix for backward compatibility."""
-        remapped = {}
-        target_keys = set(self.state_dict().keys())
-
-        for k, v in state_dict.items():
-            if k in target_keys:
-                remapped[k] = v
-            elif f"strategy.{k}" in target_keys:
-                # Remap legacy un-prefixed key (e.g. 'log_scales' -> 'strategy.log_scales')
-                remapped[f"strategy.{k}"] = v
-            elif k.startswith("strategy.") and k[9:] in target_keys:
-                remapped[k[9:]] = v
-            else:
-                remapped[k] = v
-
-        return super().load_state_dict(remapped, strict=strict)
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict,
+        missing_keys, unexpected_keys, error_msgs,
+    ):
+        """Accept flat legacy loss keys during direct or parent-module loading."""
+        for key in self.strategy.state_dict():
+            legacy_key = f"{prefix}{key}"
+            current_key = f"{prefix}strategy.{key}"
+            if legacy_key in state_dict:
+                if current_key not in state_dict:
+                    state_dict[current_key] = state_dict[legacy_key]
+                del state_dict[legacy_key]
+        super()._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict,
+            missing_keys, unexpected_keys, error_msgs,
+        )

@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "detector"))
 
 import torch
@@ -15,6 +16,7 @@ from core.models.backbones.registry import (
 from core.models.model import CustomModel
 from core.models.backbones.bevnext import BEVNeXtBackbone
 from core.models.backbones.mobilepixor import MobilePixorBackBone
+from tools.kitti_training_pipeline.common import validate_backbone
 
 
 class TestBackboneRegistry(unittest.TestCase):
@@ -57,6 +59,7 @@ class TestBackboneRegistry(unittest.TestCase):
             "cls_encoding": "gaussian",
         }
         model = CustomModel(cfg, num_classes=3, input_channels=8)
+        validate_backbone({"model": cfg})
         x = torch.randn(1, 8, 32, 32)
         out = model(x)
         self.assertIn("cls", out)

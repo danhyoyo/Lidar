@@ -12,15 +12,6 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 
 
-SUPPORTED_BACKBONES = {
-    "mobilepixor",
-    "mobilepixor_coordatt",
-    "pixor",
-    "rpn",
-    "bevnext",
-}
-
-
 def read_json(path: Path | str) -> Dict[str, Any]:
     with Path(path).open("r", encoding="utf-8") as stream:
         return json.load(stream)
@@ -59,14 +50,14 @@ def configure_detector_imports(detector_root: Path | str) -> Path:
 
 
 def validate_backbone(config: Dict[str, Any]) -> None:
+    from core.models.backbones.registry import get_available_backbones
+
     backbone = config["model"]["backbone"]
-    if backbone not in SUPPORTED_BACKBONES:
+    available = get_available_backbones()
+    if str(backbone).lower() not in available:
         raise ValueError(
-            f"Backbone {backbone!r} is not implemented by the current "
-            "core/models/model.py. The thesis config names "
-            "'mobilepixor_triplet', but that implementation is absent from this "
-            "checkout. Use 'mobilepixor' for the runnable baseline or restore the "
-            "matching backbone source before training."
+            f"Unsupported backbone: {backbone!r}. "
+            f"Available backbones: {', '.join(available)}"
         )
 
 
