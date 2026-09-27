@@ -57,7 +57,8 @@
     "temperature": 2.0,
     "clamp_bound": 3.0,
     "corner_beta": 1.0,
-    "epsilon": 0.0001,
+    "ema_momentum": 0.99,
+    "epsilon": 1e-06,
     "max_abs_log_size": 10.0
   },
   "model": {

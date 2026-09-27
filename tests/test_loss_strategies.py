@@ -67,7 +67,9 @@ class TestLossStrategies(unittest.TestCase):
         self.assertTrue(strategy.log_scales.grad is not None)
 
     def test_oga_strategy(self):
-        strategy = OgaLossStrategy("gaussian", {"temperature": 2.0, "clamp_bound": 3.0})
+        strategy = OgaLossStrategy("gaussian", {"temperature": 2.0, "clamp_bound": 3.0, "ema_momentum": 0.95})
+        self.assertEqual(strategy.ema_momentum, 0.95)
+        self.assertEqual(strategy.weighting.ema_momentum, 0.95)
         pred = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
         loss_dict = strategy(pred, self.target)
         self.assertIn("loss", loss_dict)

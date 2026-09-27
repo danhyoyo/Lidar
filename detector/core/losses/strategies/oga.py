@@ -27,6 +27,7 @@ class OgaLossStrategy(BaseLossStrategy):
         self.corner_beta = float(config.get("corner_beta", 1.0))
         self.temperature = float(config.get("temperature", 2.0))
         self.clamp_bound = float(config.get("clamp_bound", 3.0))
+        self.ema_momentum = float(config.get("ema_momentum", 0.99))
 
         if self.eps <= 0:
             raise ValueError("epsilon must be positive")
@@ -34,6 +35,8 @@ class OgaLossStrategy(BaseLossStrategy):
             raise ValueError("max_abs_log_size must be positive")
         if self.corner_beta < 0:
             raise ValueError("corner_beta must be non-negative")
+        if not (0.0 < self.ema_momentum < 1.0):
+            raise ValueError("ema_momentum must be in (0, 1)")
 
         self.geometry_loss = OrientedGeometryLoss(
             beta=self.corner_beta,
@@ -44,6 +47,7 @@ class OgaLossStrategy(BaseLossStrategy):
             task_names=self.TASKS,
             temperature=self.temperature,
             clamp_bound=self.clamp_bound,
+            ema_momentum=self.ema_momentum,
         )
 
     def forward(
