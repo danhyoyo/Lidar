@@ -71,6 +71,25 @@ class TestBackboneRegistry(unittest.TestCase):
             def _duplicate(cfg, in_c):
                 return nn.Identity()
 
+    def test_allow_override_registration(self):
+        @register_backbone("temp_override_test")
+        def _builder1(cfg, in_c):
+            return nn.Identity()
+
+        # Không bật override -> lỗi KeyError
+        with self.assertRaises(KeyError):
+            @register_backbone("temp_override_test")
+            def _builder2(cfg, in_c):
+                return nn.Identity()
+
+        # Bật allow_override=True -> thành công
+        @register_backbone("temp_override_test", allow_override=True)
+        def _builder3(cfg, in_c):
+            return nn.ReLU()
+
+        bb = build_backbone("temp_override_test", {})
+        self.assertIsInstance(bb, nn.ReLU)
+
     def test_custom_model_case_insensitive_bevnext_header(self):
         cfg_upper = {
             "backbone": "BEVNeXt",

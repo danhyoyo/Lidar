@@ -156,6 +156,26 @@ class TestLossStrategies(unittest.TestCase):
         out_uwag["loss"].backward()
         self.assertTrue(pred_uwag["offset"].grad is not None)
 
+    def test_allow_override_loss_strategy_registration(self):
+        @register_loss_strategy("temp_loss_override_test")
+        class LossV1(BaseLossStrategy):
+            def forward(self, pred, target):
+                return {"loss": torch.tensor(1.0)}
+
+        with self.assertRaises(KeyError):
+            @register_loss_strategy("temp_loss_override_test")
+            class LossV2(BaseLossStrategy):
+                def forward(self, pred, target):
+                    return {"loss": torch.tensor(2.0)}
+
+        @register_loss_strategy("temp_loss_override_test", allow_override=True)
+        class LossV3(BaseLossStrategy):
+            def forward(self, pred, target):
+                return {"loss": torch.tensor(3.0)}
+
+        strat = build_loss_strategy("temp_loss_override_test", "gaussian")
+        self.assertEqual(strat(self.pred, self.target)["loss"].item(), 3.0)
+
 
 if __name__ == "__main__":
     unittest.main()

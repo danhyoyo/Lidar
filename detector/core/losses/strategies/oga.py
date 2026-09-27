@@ -22,7 +22,7 @@ class OgaLossStrategy(BaseLossStrategy):
         super().__init__(cls_encoding, config)
         config = self.config
 
-        self.eps = float(config.get("epsilon", 1e-4))
+        self.eps = float(config.get("epsilon", 1e-6))
         self.max_abs_log_size = float(config.get("max_abs_log_size", 10.0))
         self.corner_beta = float(config.get("corner_beta", 1.0))
         self.temperature = float(config.get("temperature", 2.0))

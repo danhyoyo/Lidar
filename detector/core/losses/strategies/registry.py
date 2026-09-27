@@ -7,11 +7,11 @@ StrategyBuilder = Callable[[str, Dict[str, Any]], BaseLossStrategy]
 _LOSS_STRATEGY_REGISTRY: Dict[str, StrategyBuilder] = {}
 
 
-def register_loss_strategy(name: str):
+def register_loss_strategy(name: str, allow_override: bool = False):
     """Decorator to register a loss strategy class or builder."""
     def decorator(cls_or_builder: Any):
         key = str(name).lower()
-        if key in _LOSS_STRATEGY_REGISTRY:
+        if key in _LOSS_STRATEGY_REGISTRY and not allow_override:
             raise KeyError(f"Loss strategy {name!r} is already registered.")
         _LOSS_STRATEGY_REGISTRY[key] = cls_or_builder
         return cls_or_builder

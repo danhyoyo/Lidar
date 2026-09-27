@@ -8,11 +8,11 @@ BackboneBuilder = Callable[[Dict[str, Any], int], nn.Module]
 _BACKBONE_REGISTRY: Dict[str, BackboneBuilder] = {}
 
 
-def register_backbone(name: str):
+def register_backbone(name: str, allow_override: bool = False):
     """Decorator to register a backbone builder function or class."""
     def decorator(builder: BackboneBuilder):
         key = name.lower()
-        if key in _BACKBONE_REGISTRY:
+        if key in _BACKBONE_REGISTRY and not allow_override:
             raise KeyError(f"Backbone {name!r} is already registered.")
         _BACKBONE_REGISTRY[key] = builder
         return builder
