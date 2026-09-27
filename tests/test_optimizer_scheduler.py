@@ -7,7 +7,7 @@ import torch.nn as nn
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
-from train import build_optimizer
+from train import build_optimizer, build_scheduler
 
 
 class DummyModel(nn.Module):
@@ -64,6 +64,93 @@ class TestOptimizerBuilder(unittest.TestCase):
         optimizer = build_optimizer(model, criterion, config)
         self.assertIsInstance(optimizer, torch.optim.Adam)
         self.assertEqual(optimizer.param_groups[0]["lr"], 0.005)
+
+
+class TestSchedulerBuilder(unittest.TestCase):
+    def test_build_scheduler_cosine_warmup(self):
+        model = DummyModel()
+        criterion = DummyCriterion()
+        config = {
+            "train": {
+                "optimizer": "adamw",
+                "learning_rate": 0.002,
+                "scheduler": "cosine",
+                "warmup_epochs": 5,
+                "min_lr": 1e-6,
+            }
+        }
+        epochs = 100
+        optimizer = build_optimizer(model, criterion, config)
+        scheduler = build_scheduler(optimizer, config, epochs)
+
+        # Initial LR before any step (first warmup epoch start)
+        self.assertLess(optimizer.param_groups[0]["lr"], 0.002)
+
+        # Step through 5 warmup epochs
+        for ep in range(5):
+            scheduler.step()
+
+        # At end of warmup (milestone epoch 5), LR reaches peak 0.002
+        self.assertAlmostEqual(optimizer.param_groups[0]["lr"], 0.002, places=5)
+
+        # Step remaining 95 epochs
+        for ep in range(95):
+            scheduler.step()
+
+        # At end of 100 epochs, LR reaches min_lr
+        self.assertAlmostEqual(optimizer.param_groups[0]["lr"], 1e-6, places=5)
+
+    def test_build_scheduler_multistep_compatibility(self):
+        model = DummyModel()
+        criterion = DummyCriterion()
+        config = {
+            "train": {
+                "learning_rate": 0.005,
+                "scheduler": "multistep",
+                "lr_decay_at": [65, 85],
+            }
+        }
+        optimizer = build_optimizer(model, criterion, config)
+        scheduler = build_scheduler(optimizer, config, 100)
+        self.assertIsInstance(scheduler, torch.optim.lr_scheduler.MultiStepLR)
+
+    def test_build_scheduler_state_dict_save_load(self):
+        model = DummyModel()
+        criterion = DummyCriterion()
+        config = {
+            "train": {
+                "optimizer": "adamw",
+                "learning_rate": 0.002,
+                "scheduler": "cosine",
+                "warmup_epochs": 5,
+                "min_lr": 1e-6,
+            }
+        }
+        optimizer1 = build_optimizer(model, criterion, config)
+        scheduler1 = build_scheduler(optimizer1, config, 100)
+        for _ in range(10):
+            scheduler1.step()
+        sd = scheduler1.state_dict()
+        opt_sd = optimizer1.state_dict()
+
+        optimizer2 = build_optimizer(model, criterion, config)
+        scheduler2 = build_scheduler(optimizer2, config, 100)
+        optimizer2.load_state_dict(opt_sd)
+        scheduler2.load_state_dict(sd)
+        self.assertAlmostEqual(
+            optimizer1.param_groups[0]["lr"],
+            optimizer2.param_groups[0]["lr"],
+            places=6,
+        )
+        self.assertEqual(scheduler1.get_last_lr(), scheduler2.get_last_lr())
+
+        scheduler1.step()
+        scheduler2.step()
+        self.assertAlmostEqual(
+            optimizer1.param_groups[0]["lr"],
+            optimizer2.param_groups[0]["lr"],
+            places=6,
+        )
 
 
 if __name__ == "__main__":

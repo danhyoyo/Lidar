@@ -205,6 +205,52 @@ def build_optimizer(
         raise ValueError(f"Unsupported optimizer type: {opt_type}")
 
 
+def build_scheduler(
+    optimizer: torch.optim.Optimizer,
+    config: dict,
+    epochs: int,
+) -> torch.optim.lr_scheduler.LRScheduler:
+    train_cfg = config.get("train", {})
+    sched_type = train_cfg.get("scheduler", "cosine").lower()
+    base_lr = float(train_cfg["learning_rate"])
+
+    if sched_type == "cosine":
+        warmup_epochs = int(train_cfg.get("warmup_epochs", 5))
+        min_lr = float(train_cfg.get("min_lr", 1e-6))
+        if warmup_epochs > 0:
+            start_factor = min(1.0, max(1e-4, min_lr / base_lr))
+            warmup = torch.optim.lr_scheduler.LinearLR(
+                optimizer,
+                start_factor=start_factor,
+                end_factor=1.0,
+                total_iters=warmup_epochs,
+            )
+            cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                T_max=max(1, epochs - warmup_epochs),
+                eta_min=min_lr,
+            )
+            return torch.optim.lr_scheduler.SequentialLR(
+                optimizer,
+                schedulers=[warmup, cosine],
+                milestones=[warmup_epochs],
+            )
+        else:
+            return torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                T_max=epochs,
+                eta_min=min_lr,
+            )
+    elif sched_type == "multistep":
+        milestones = list(train_cfg.get("lr_decay_at", [65, 85]))
+        gamma = float(train_cfg.get("lr_decay_gamma", 0.1))
+        return torch.optim.lr_scheduler.MultiStepLR(
+            optimizer, milestones=milestones, gamma=gamma
+        )
+    else:
+        raise ValueError(f"Unsupported scheduler type: {sched_type}")
+
+
 def main(argv=None) -> None:
     configure_matmul_precision()
     args = build_parser().parse_args(argv)
@@ -305,9 +351,7 @@ def main(argv=None) -> None:
         device
     )
     optimizer = build_optimizer(model, criterion, config)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer, milestones=list(config["train"]["lr_decay_at"]), gamma=0.1
-    )
+    scheduler = build_scheduler(optimizer, config, epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
 
     loss_name = config.get("loss", {}).get("name", "baseline")
