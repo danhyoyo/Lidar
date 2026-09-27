@@ -43,6 +43,7 @@ outputs/
 
 *.pdf
 *.xlsx
+*.dot
 
 # AI Agents
 .agents/
