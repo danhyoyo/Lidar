@@ -1,6 +1,6 @@
 # Kế hoạch Thực thi: Khắc phục Lỗ hổng T-SBUW & Các Vấn đề Tiềm ẩn trong OGA-Loss
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Khắc phục triệt để hiện tượng sụp đổ đơn hình (simplex collapse / loss cheating) trong `TemperatureSoftmaxUncertainty` bằng cơ chế chuẩn hóa quy mô chạy (EMA Scale Calibration), đồng thời sửa lỗi xác thực `reg_mask`, bắt lỗi chữ hoa/thường trong `CustomModel`, bổ sung cờ ghi đè Registry và củng cố độ bao phủ kiểm thử cho toàn bộ hệ thống.
 
@@ -29,7 +29,7 @@
 - Consumes: `task_losses: Dict[str, torch.Tensor]` từ `OgaLossStrategy.forward`.
 - Produces: `total_loss: torch.Tensor` (0-dim), `weights_dict: Dict[str, torch.Tensor]` với các trọng số $w_i$ cân bằng ổn định quanh $1.0$ ngay cả khi các giá trị loss chênh lệch cả chục lần.
 
-- [ ] **Step 1: Viết bài test chứng minh lỗi sụp đổ đơn hình và kiểm chứng cơ chế chuẩn hóa EMA**
+- [x] **Step 1: Viết bài test chứng minh lỗi sụp đổ đơn hình và kiểm chứng cơ chế chuẩn hóa EMA**
 
 Thêm test `test_scale_calibration_prevents_simplex_collapse` vào `tests/test_uncertainty_weighting.py`:
 
@@ -67,7 +67,7 @@ Thêm test `test_scale_calibration_prevents_simplex_collapse` vào `tests/test_u
         self.assertAlmostEqual(sum(final_weights.values()), 5.0, places=4)
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+- [x] **Step 2: Chạy test để xác nhận test thất bại**
 
 Run:
 ```bash
@@ -75,7 +75,7 @@ PYTHONPATH=detector:detector/core/datasets /home/duyennh/miniconda3/envs/AI_env/
 ```
 Expected: FAIL với assertion `Task cls bị chiếm dụng trọng số quá cao` (trọng số `cls` vọt lên ~3.7 mà không có EMA calibration).
 
-- [ ] **Step 3: Cập nhật `TemperatureSoftmaxUncertainty` với cơ chế EMA Scale Calibration**
+- [x] **Step 3: Cập nhật `TemperatureSoftmaxUncertainty` với cơ chế EMA Scale Calibration**
 
 Cập nhật file `detector/core/losses/uncertainty_weighting.py`:
 
@@ -203,7 +203,7 @@ class TemperatureSoftmaxUncertainty(nn.Module):
         return total_loss, weights_dict
 ```
 
-- [ ] **Step 4: Chạy lại toàn bộ test của uncertainty weighting để xác nhận PASS**
+- [x] **Step 4: Chạy lại toàn bộ test của uncertainty weighting để xác nhận PASS**
 
 Run:
 ```bash
@@ -211,7 +211,7 @@ PYTHONPATH=detector:detector/core/datasets /home/duyennh/miniconda3/envs/AI_env/
 ```
 Expected: PASS (tất cả 6 tests).
 
-- [ ] **Step 5: Commit thay đổi Task 1**
+- [x] **Step 5: Commit thay đổi Task 1**
 
 ```bash
 git add detector/core/losses/uncertainty_weighting.py tests/test_uncertainty_weighting.py
@@ -230,7 +230,7 @@ git commit -m "fix(loss): resolve simplex collapse via running loss scale calibr
 - Consumes: `pred: Dict[str, torch.Tensor]`, `target: Dict[str, torch.Tensor]`.
 - Produces: Xác thực chặt chẽ các khóa bắt buộc (`"cls"`, `"offset"`, `"size"`, `"yaw"`, `"reg_mask"`) và kiểm tra kích thước `reg_mask` tương thích `(B, H, W)`.
 
-- [ ] **Step 1: Viết test cho việc thiếu/sai `reg_mask` và trường hợp mask rỗng trên Baseline/UWAG**
+- [x] **Step 1: Viết test cho việc thiếu/sai `reg_mask` và trường hợp mask rỗng trên Baseline/UWAG**
 
 Thêm các test cases vào `tests/test_loss_strategies.py`:
 
@@ -272,7 +272,7 @@ Thêm các test cases vào `tests/test_loss_strategies.py`:
         self.assertTrue(pred_uwag["offset"].grad is not None)
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+- [x] **Step 2: Chạy test để xác nhận test thất bại**
 
 Run:
 ```bash
@@ -280,7 +280,7 @@ PYTHONPATH=detector:detector/core/datasets /home/duyennh/miniconda3/envs/AI_env/
 ```
 Expected: FAIL với assertion `KeyError: 'reg_mask'` không như mong đợi hoặc lỗi không bắt đúng `ValueError`.
 
-- [ ] **Step 3: Cập nhật `_validate_inputs` trong `detector/core/losses/strategies/base.py`**
+- [x] **Step 3: Cập nhật `_validate_inputs` trong `detector/core/losses/strategies/base.py`**
 
 Thay thế hàm `_validate_inputs` trong `detector/core/losses/strategies/base.py`:
 
@@ -328,7 +328,7 @@ Thay thế hàm `_validate_inputs` trong `detector/core/losses/strategies/base.p
             raise ValueError("yaw must have 2 channels")
 ```
 
-- [ ] **Step 4: Chạy test xác nhận toàn bộ `test_loss_strategies.py` pass**
+- [x] **Step 4: Chạy test xác nhận toàn bộ `test_loss_strategies.py` pass**
 
 Run:
 ```bash
@@ -336,7 +336,7 @@ PYTHONPATH=detector:detector/core/datasets /home/duyennh/miniconda3/envs/AI_env/
 ```
 Expected: PASS (tất cả 9 tests).
 
-- [ ] **Step 5: Commit thay đổi Task 2**
+- [x] **Step 5: Commit thay đổi Task 2**
 
 ```bash
 git add detector/core/losses/strategies/base.py tests/test_loss_strategies.py
@@ -355,7 +355,7 @@ git commit -m "fix(loss): add reg_mask validation and empty-mask test coverage"
 - Consumes: `cfg: Dict[str, Any]` (chấp nhận bất kể chữ hoa hay chữ thường cho `"backbone": "BEVNeXt"`, `"bevnext"`).
 - Produces: `CustomModel` kích hoạt đúng `use_bn=True` và `act="silu"` cho mọi biến thể chữ hoa/thường của `bevnext`.
 
-- [ ] **Step 1: Viết test kiểm tra tính không phân biệt hoa/thường của BEVNeXt trong CustomModel**
+- [x] **Step 1: Viết test kiểm tra tính không phân biệt hoa/thường của BEVNeXt trong CustomModel**
 
 Thêm test vào `tests/test_model_registry.py`:
 
@@ -378,7 +378,7 @@ Thêm test vào `tests/test_model_registry.py`:
         self.assertIsNotNone(model)
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+- [x] **Step 2: Chạy test để xác nhận test thất bại**
 
 Run:
 ```bash
@@ -386,7 +386,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: FAIL với assertion `False is not true` (do `cfg.get("backbone") == "bevnext"` bị lệch hoa/thường).
 
-- [ ] **Step 3: Cập nhật `detector/core/models/model.py`**
+- [x] **Step 3: Cập nhật `detector/core/models/model.py`**
 
 Chỉnh sửa `detector/core/models/model.py`:
 
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     print(f"Header output channels: {model.header.out_channels}")
 ```
 
-- [ ] **Step 4: Chạy test xác nhận toàn bộ `test_model_registry.py` pass**
+- [x] **Step 4: Chạy test xác nhận toàn bộ `test_model_registry.py` pass**
 
 Run:
 ```bash
@@ -448,7 +448,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: PASS (tất cả 7 tests).
 
-- [ ] **Step 5: Commit thay đổi Task 3**
+- [x] **Step 5: Commit thay đổi Task 3**
 
 ```bash
 git add detector/core/models/model.py tests/test_model_registry.py
@@ -470,7 +470,7 @@ git commit -m "fix(model): handle case-insensitive backbone naming and safe conf
 - Consumes: `@register_backbone(name, allow_override=False)`, `@register_loss_strategy(name, allow_override=False)`.
 - Produces: Cho phép ghi đè trong các tình huống mock kiểm thử hoặc tải lại module khi `allow_override=True`. Đồng nhất mặc định `epsilon=1e-6` cho `OgaLossStrategy`.
 
-- [ ] **Step 1: Viết test cho tính năng ghi đè `allow_override=True`**
+- [x] **Step 1: Viết test cho tính năng ghi đè `allow_override=True`**
 
 Thêm test vào `tests/test_model_registry.py`:
 
@@ -495,7 +495,7 @@ Thêm test vào `tests/test_model_registry.py`:
         self.assertIsInstance(bb, nn.ReLU)
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+- [x] **Step 2: Chạy test để xác nhận test thất bại**
 
 Run:
 ```bash
@@ -503,7 +503,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: FAIL với `TypeError: register_backbone() takes 1 positional argument but 2 were given`.
 
-- [ ] **Step 3: Cập nhật registry cho backbone, loss strategy và epsilon trong OgaLossStrategy**
+- [x] **Step 3: Cập nhật registry cho backbone, loss strategy và epsilon trong OgaLossStrategy**
 
 1. Cập nhật `detector/core/models/backbones/registry.py`:
 ```python
@@ -537,7 +537,7 @@ def register_loss_strategy(name: str, allow_override: bool = False):
         self.eps = float(config.get("epsilon", 1e-6))
 ```
 
-- [ ] **Step 4: Chạy test xác nhận PASS**
+- [x] **Step 4: Chạy test xác nhận PASS**
 
 Run:
 ```bash
@@ -545,7 +545,7 @@ PYTHONPATH=detector:detector/core/datasets /home/duyennh/miniconda3/envs/AI_env/
 ```
 Expected: PASS toàn bộ.
 
-- [ ] **Step 5: Commit thay đổi Task 4**
+- [x] **Step 5: Commit thay đổi Task 4**
 
 ```bash
 git add detector/core/models/backbones/registry.py detector/core/losses/strategies/registry.py detector/core/losses/strategies/oga.py tests/test_model_registry.py
@@ -563,7 +563,7 @@ git commit -m "feat(registry): add allow_override option and harmonize default e
 **Interfaces:**
 - Đảm bảo toàn bộ luồng huấn luyện `test_training_pipeline_oga.py` và 59+ bài test chạy trơn tru mà không có cảnh báo/lỗi bất thường.
 
-- [ ] **Step 1: Chạy toàn bộ test suite của dự án**
+- [x] **Step 1: Chạy toàn bộ test suite của dự án**
 
 Run:
 ```bash
@@ -571,7 +571,7 @@ PYTHONPATH=detector:detector/core/datasets:tools/kitti_training_pipeline /home/d
 ```
 Expected: 100% tests PASS (không có test nào bị lỗi hoặc crash).
 
-- [ ] **Step 2: Chạy kiểm tra chạy thử script model.py**
+- [x] **Step 2: Chạy kiểm tra chạy thử script model.py**
 
 Run:
 ```bash
@@ -579,7 +579,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/python detector/cor
 ```
 Expected: Exited with code 0 và in ra thông tin cấu hình `CustomModel`.
 
-- [ ] **Step 3: Chạy test quy trình huấn luyện tích hợp OGA**
+- [x] **Step 3: Chạy test quy trình huấn luyện tích hợp OGA**
 
 Run:
 ```bash
@@ -587,7 +587,7 @@ PYTHONPATH=detector:detector/core/datasets:tools/kitti_training_pipeline /home/d
 ```
 Expected: PASS.
 
-- [ ] **Step 4: Commit và tổng kết**
+- [x] **Step 4: Commit và tổng kết**
 
 ```bash
 git status
