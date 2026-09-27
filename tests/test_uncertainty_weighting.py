@@ -49,6 +49,8 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
 
     def test_smooth_tanh_gradient_non_zero_at_saturation(self):
         weighting = TemperatureSoftmaxUncertainty(task_names=("t1", "t2"), temperature=1.0, clamp_bound=3.0)
+        # Establish baseline scales first so step 2 observes a deviation
+        weighting({"t1": torch.tensor(1.0), "t2": torch.tensor(1.0)})
         # Initialize at extreme boundary past clamp_bound
         with torch.no_grad():
             weighting.log_scales.copy_(torch.tensor([5.0, -5.0]))
@@ -65,6 +67,36 @@ class TestTemperatureSoftmaxUncertainty(unittest.TestCase):
         incomplete_losses = {"cls": torch.tensor(1.0), "offset": torch.tensor(2.0)}
         with self.assertRaises(KeyError):
             weighting(incomplete_losses)
+
+    def test_scale_calibration_prevents_simplex_collapse(self):
+        # Disparate loss scales: cls=0.03, geo=0.60
+        weighting = TemperatureSoftmaxUncertainty(
+            task_names=["cls", "offset", "size", "yaw", "geo"],
+            temperature=2.0,
+            clamp_bound=3.0,
+            ema_momentum=0.9,
+        )
+        opt = torch.optim.Adam(weighting.parameters(), lr=0.05)
+
+        losses = {
+            "cls": torch.tensor(0.03),
+            "offset": torch.tensor(0.20),
+            "size": torch.tensor(0.25),
+            "yaw": torch.tensor(0.30),
+            "geo": torch.tensor(0.60),
+        }
+
+        for _ in range(100):
+            opt.zero_grad()
+            total_loss, weights = weighting(losses)
+            total_loss.backward()
+            opt.step()
+
+        final_weights = weighting.get_task_weights()
+        for name, w in final_weights.items():
+            self.assertGreater(w, 0.4, f"Task {name} suffered simplex collapse: weight {w} < 0.4")
+            self.assertLess(w, 2.0, f"Task {name} monopolized weight budget: weight {w} > 2.0")
+        self.assertAlmostEqual(sum(final_weights.values()), 5.0, places=4)
 
 
 if __name__ == "__main__":
