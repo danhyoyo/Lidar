@@ -129,10 +129,16 @@ depthwise blocks, LiteMLA refinement, and a scale-gated FPN. It replaces the
 former backbone name in model configs and code. The architecture is described
 in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
 
-The RichBEV-8 configuration with OGA loss is
+The RichBEV-8 configuration with OGA loss (Baseline M0) is
 [`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json).
 The MobilePixorNeXt configuration with baseline loss is
 [`configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json`](configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json).
-Use either config with the training command above by replacing its `--config`
-argument. OGA changes training loss only; the four prediction heads and BEV
-postprocessing keep the same output format.
+
+Pillar improvement configurations:
+- **Pillar 1 (M1 - Structural Reparameterization):** [`configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`](configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json)
+- **Pillar 2 (M2 - Multi-Scale LiteMLA + QK-RMSNorm):** [`configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json`](configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json)
+- **Pillar 4 (M4 - IoU-Aware Quality Header & Joint NMS):** [`configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`](configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json)
+- **Cumulative (M1 + M2 + M4):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json)
+
+Use any config with the training command above by replacing its `--config`
+argument.

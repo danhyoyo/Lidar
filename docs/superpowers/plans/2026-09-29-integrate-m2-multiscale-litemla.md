@@ -50,7 +50,7 @@
 - `LiteMLARefinement._normalize_qk(query: Tensor, key: Tensor) -> tuple[Tensor, Tensor]`
 - Maintains compatibility defaults: `scales=(5,)`, `qk_norm="none"`.
 
-- [ ] **Step 1: Write unit tests in `tests/test_ms_litemla.py` for module behavior**
+- [x] **Step 1: Write unit tests in `tests/test_ms_litemla.py` for module behavior**
 
 Create `tests/test_ms_litemla.py` incorporating the unit tests from M2 (testing `scales=(3, 5)`, `qk_norm="rmsnorm"`, `_normalize_qk` on `head_dim`, TorchScript scripting, and BF16 stability):
 
@@ -214,7 +214,7 @@ def test_multiscale_litemla_bf16_extreme_values_are_finite():
     )
 ```
 
-- [ ] **Step 2: Run tests to verify failure on current codebase**
+- [x] **Step 2: Run tests to verify failure on current codebase**
 
 Run:
 ```bash
@@ -222,7 +222,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: FAIL (`TypeError: LiteMLARefinement.__init__() got an unexpected keyword argument 'qk_norm'`)
 
-- [ ] **Step 3: Implement QK normalization and multi-scale aggregation in `LiteMLARefinement`**
+- [x] **Step 3: Implement QK normalization and multi-scale aggregation in `LiteMLARefinement`**
 
 Update `LiteMLARefinement` in `detector/core/models/backbones/mobilepixornext_blocks.py`:
 - Add `qk_norm: str = "none"` to `__init__`.
@@ -238,7 +238,7 @@ Update `LiteMLARefinement` in `detector/core/models/backbones/mobilepixornext_bl
   ```
 - In `_linear_attention_core`, call `_normalize_qk` before `.relu()`.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 ```bash
@@ -246,7 +246,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: PASS (all tests pass)
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/core/models/backbones/mobilepixornext_blocks.py tests/test_ms_litemla.py
@@ -268,7 +268,7 @@ git commit -m "feat(attention): implement robust multi-scale LiteMLA with QK-RMS
 - `MobilePixorNeXtBackbone.__init__(input_channels=8, backbone_out_dim=16, c4_attention="litemla", c4_attention_scales=(5,), c4_attention_qk_norm="none", scale_gated_fpn=True, expansion=2.5, use_reparam=False, deploy=False)`
 - `_build_mobilepixornext(cfg, input_channels)` forwards `c4_attention_scales` and `c4_attention_qk_norm`.
 
-- [ ] **Step 1: Add backbone wiring tests in `tests/test_ms_litemla.py`**
+- [x] **Step 1: Add backbone wiring tests in `tests/test_ms_litemla.py`**
 
 Append to `tests/test_ms_litemla.py`:
 ```python
@@ -313,7 +313,7 @@ def test_registry_builds_mobilepixornext_with_m2_options():
     assert model.use_reparam is True
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run:
 ```bash
@@ -321,7 +321,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: FAIL (`TypeError: MobilePixorNeXtBackbone.__init__() got unexpected keyword arguments`)
 
-- [ ] **Step 3: Modify `MobilePixorNeXtBackbone` and `registry.py`**
+- [x] **Step 3: Modify `MobilePixorNeXtBackbone` and `registry.py`**
 
 In `detector/core/models/backbones/mobilepixornext.py`:
 - Update `__init__` signature to include `c4_attention_scales: tuple = (5,)` and `c4_attention_qk_norm: str = "none"`.
@@ -333,7 +333,7 @@ In `detector/core/models/backbones/registry.py`:
   c4_attention_qk_norm=cfg.get("c4_attention_qk_norm", "none"),
   ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 ```bash
@@ -341,7 +341,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: PASS
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/core/models/backbones/mobilepixornext.py detector/core/models/backbones/registry.py tests/test_ms_litemla.py
@@ -358,7 +358,7 @@ git commit -m "feat(backbone): wire multi-scale LiteMLA options through backbone
 - Create: `configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`
 - Modify: `tests/test_ms_litemla.py`
 
-- [ ] **Step 1: Create isolated M2 configs in `configs/kitti/multiscale_attention/`**
+- [x] **Step 1: Create isolated M2 configs in `configs/kitti/multiscale_attention/`**
 
 Create `configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json`:
 - Base on `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`.
@@ -368,7 +368,7 @@ Create `configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.
 Create `configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_no_norm_oga.json`:
 - Same as above, but with `"c4_attention_qk_norm": "none"`.
 
-- [ ] **Step 2: Create cumulative $M_1 + M_2 + M_4$ config in `configs/kitti/cumulative/`**
+- [x] **Step 2: Create cumulative $M_1 + M_2 + M_4$ config in `configs/kitti/cumulative/`**
 
 Create `configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`:
 - Base on `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json` (which already has `"use_reparam": true`, `"header_use_iou": true`, `"nms_alpha": 0.5`).
@@ -376,7 +376,7 @@ Create `configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`:
 - Add `"c4_attention_qk_norm": "rmsnorm"`.
 - Set note: `"mobilepixornext_m1_m2_m4_cumulative_oga"`.
 
-- [ ] **Step 3: Update config integration tests in `tests/test_ms_litemla.py`**
+- [x] **Step 3: Update config integration tests in `tests/test_ms_litemla.py`**
 
 Add tests to `tests/test_ms_litemla.py`:
 ```python
@@ -452,7 +452,7 @@ def test_cumulative_m1_m2_m4_config_instantiates_full_model():
     assert loss_strategy.uncertainty.num_tasks == 6
 ```
 
-- [ ] **Step 4: Run test to verify config validity**
+- [x] **Step 4: Run test to verify config validity**
 
 Run:
 ```bash
@@ -460,7 +460,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest tests/test_m
 ```
 Expected: PASS (all tests pass)
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add configs/kitti/multiscale_attention/ configs/kitti/cumulative/ tests/test_ms_litemla.py
@@ -475,7 +475,7 @@ git commit -m "feat(config): establish M2 multiscale attention and cumulative M1
 - Modify: `docs/plans/mobilepixornext_improvements/00_ABLATION_STUDY_PROTOCOL.md` (sync M2 status)
 - Modify: `README.md` (document M2 and cumulative configs)
 
-- [ ] **Step 1: Run the full test suite**
+- [x] **Step 1: Run the full test suite**
 
 Run:
 ```bash
@@ -483,7 +483,7 @@ PYTHONPATH=detector /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch
 ```
 Expected: PASS with 124+ passed tests and 0 failures.
 
-- [ ] **Step 2: Run a 1-epoch / limited-batches training smoke test with BF16**
+- [x] **Step 2: Run a 1-epoch / limited-batches training smoke test with BF16**
 
 Execute a fast training smoke test:
 ```bash
@@ -520,11 +520,11 @@ print('Smoke training step successful! Loss:', loss.item())
 ```
 Expected: Prints `Smoke training step successful! Loss: ...` with zero NaN/Inf.
 
-- [ ] **Step 3: Update documentation and ablation study roadmap**
+- [x] **Step 3: Update documentation and ablation study roadmap**
 
 Update `README.md` and `docs/plans/mobilepixornext_improvements/00_ABLATION_STUDY_PROTOCOL.md` to reference the modular `configs/kitti/multiscale_attention/` and `configs/kitti/cumulative/` files.
 
-- [ ] **Step 4: Commit final documentation update**
+- [x] **Step 4: Commit final documentation update**
 
 ```bash
 git add README.md docs/plans/mobilepixornext_improvements/00_ABLATION_STUDY_PROTOCOL.md
