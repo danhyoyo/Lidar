@@ -51,6 +51,41 @@ class TestTrainingPipelineOGA(unittest.TestCase):
         self.assertTrue(has_model_grad)
         self.assertTrue(has_crit_grad)
 
+    def test_pipeline_forward_backward_with_oga_iqa_bf16(self):
+        config_path = (
+            REPO_ROOT
+            / "configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+        )
+        with open(config_path) as f:
+            config = json.load(f)
+
+        device = torch.device("cpu")
+        model = build_model(config).to(device)
+        criterion = LossFunction(config["model"]["cls_encoding"], config["loss"]).to(device)
+
+        B = 2
+        voxel = torch.randn(B, 8, 64, 64, device=device)
+        with torch.autocast(device_type="cpu", dtype=torch.bfloat16):
+            outputs = model(voxel)
+            H_out, W_out = outputs["cls"].shape[2], outputs["cls"].shape[3]
+            batch = {
+                "cls": torch.zeros(B, 3, H_out, W_out, device=device),
+                "offset": torch.zeros(B, 2, H_out, W_out, device=device),
+                "size": torch.zeros(B, 2, H_out, W_out, device=device),
+                "yaw": torch.tensor([1.0, 0.0], device=device).view(1, 2, 1, 1).expand(B, 2, H_out, W_out),
+                "reg_mask": torch.ones(B, H_out, W_out, device=device),
+            }
+            loss_dict = criterion(outputs, batch)
+            loss = loss_dict["loss"]
+
+        self.assertTrue(torch.isfinite(loss))
+        self.assertIn("iou", loss_dict)
+        loss.backward()
+        has_model_grad = any(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())
+        has_crit_grad = any(p.grad is not None and torch.isfinite(p.grad).all() for p in criterion.parameters())
+        self.assertTrue(has_model_grad)
+        self.assertTrue(has_crit_grad)
+
 
 if __name__ == "__main__":
     unittest.main()

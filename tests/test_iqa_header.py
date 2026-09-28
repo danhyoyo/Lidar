@@ -48,7 +48,11 @@ def test_custom_model_threads_iou_flag():
     assert pred["iou"].shape == (2, 1, 200, 176)
 
 
-from core.losses.iou_targets import compute_iou_targets
+from core.losses.iou_targets import (
+    compute_iou_targets,
+    compute_mgiou_targets,
+    compute_yaw_footprint_targets,
+)
 
 
 def test_compute_iou_targets_identical_boxes():
@@ -334,6 +338,37 @@ def test_compute_iou_targets_mixed_precision(dtype, method):
     assert torch.isfinite(target_iou).all()
 
 
+@pytest.mark.parametrize("method", ["mgiou", "yaw_footprint"])
+def test_compute_iou_targets_under_bf16_autocast(method):
+    """IQA targets stay FP32 when training wraps the loss in BF16 autocast."""
+    offset = torch.zeros(1, 2, 2, 2)
+    size = torch.zeros_like(offset)
+    yaw = torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand_as(offset)
+    pred = {"offset": offset, "size": size, "yaw": yaw}
+    target = {**pred, "reg_mask": torch.ones(1, 2, 2, dtype=torch.bool)}
+
+    expected = compute_iou_targets(pred, target, method=method)
+    with torch.autocast(device_type="cpu", dtype=torch.bfloat16):
+        actual = compute_iou_targets(pred, target, method=method)
+        if method == "mgiou":
+            direct_actual = compute_mgiou_targets(
+                pred["offset"], pred["size"], pred["yaw"],
+                target["offset"], target["size"], target["yaw"],
+                target["reg_mask"],
+            )
+        else:
+            direct_actual = compute_yaw_footprint_targets(
+                pred["offset"], pred["size"], pred["yaw"],
+                target["offset"], target["size"], target["yaw"],
+                target["reg_mask"],
+            )
+
+    assert actual.dtype == torch.float32
+    assert direct_actual.dtype == torch.float32
+    torch.testing.assert_close(actual, expected)
+    torch.testing.assert_close(direct_actual, expected)
+
+
 def test_filter_pred_floating_point_error_on_nan_or_inf():
     """Verify filter_pred raises FloatingPointError when pred['iou'] contains NaN or Inf."""
     config = {
@@ -497,4 +532,3 @@ def test_evaluate_kitti_bev_nms_alpha_argument():
         "--nms-alpha", "0.5",
     ])
     assert args.nms_alpha == 0.5
-
