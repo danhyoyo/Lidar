@@ -95,6 +95,13 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     if pred["yaw"].shape[1] != 2:
         raise ValueError("yaw head must contain exactly two channels")
 
+    has_iou = "iou" in pred and pred["iou"] is not None
+    if has_iou:
+        if pred["iou"].ndim != 4 or pred["iou"].shape[0] != 1 or pred["iou"].shape[1] != 1:
+            raise ValueError("iou head must have shape [1, 1, H, W]")
+        if pred["iou"].shape[-2:] != spatial_shape:
+            raise ValueError("All prediction heads must have the same spatial shape")
+
     if not 0.0 <= thres <= 1.0:
         raise ValueError("score threshold must be between 0 and 1")
     if nms_thres is not None and not 0.0 <= nms_thres <= 1.0:
@@ -106,9 +113,12 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     offset_pred = pred["offset"].squeeze(0).detach()
     size_pred = pred["size"].squeeze(0).detach()
     yaw_pred = pred["yaw"].squeeze(0).detach()
+    tensors_to_check = [cls_pred, offset_pred, size_pred, yaw_pred]
+    if has_iou:
+        tensors_to_check.append(pred["iou"].squeeze(0).detach())
     if not torch.stack([
         torch.isfinite(value).all()
-        for value in (cls_pred, offset_pred, size_pred, yaw_pred)
+        for value in tensors_to_check
     ]).all():
         raise FloatingPointError("non-finite detector output")
 
@@ -123,10 +133,15 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     # Note:
     #   nms_alpha == 0.0: Reverts to standard / old NMS based purely on cls_probs.
     #   nms_alpha == 0.5: Calibrated joint NMS S_final = (P_cls)^(1-alpha) * (S_iou)^alpha.
-    has_iou = "iou" in pred and pred["iou"] is not None
-    alpha = float(config.get("nms_alpha", 0.5)) if has_iou else 0.0
+    if has_iou:
+        alpha = float(config.get("nms_alpha", 0.5))
+        if not (0.0 <= alpha <= 1.0):
+            raise ValueError(f"nms_alpha must be between 0 and 1, got {alpha}")
+    else:
+        alpha = 0.0
+
     if has_iou and alpha > 0.0:
-        iou_logit = pred["iou"].squeeze(0).squeeze(0).detach()
+        iou_logit = pred["iou"][0, 0].detach()
         iou_score = torch.sigmoid(iou_logit)
         ranking_scores = (cls_probs ** (1.0 - alpha)) * (iou_score ** alpha)
     else:

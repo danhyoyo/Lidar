@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [
     str(ROOT / "detector"),
     str(ROOT / "detector" / "core" / "datasets"),
+    str(ROOT / "tools" / "kitti_training_pipeline"),
 ]
 
 from core.models.heads.cnn import Header
@@ -309,3 +310,191 @@ def test_full_iqa_pipeline_integration():
     assert "iou" in out
     assert "weight_iou" in out
     out["loss"].backward()
+
+
+@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
+@pytest.mark.parametrize("method", ["mgiou", "yaw_footprint"])
+def test_compute_iou_targets_mixed_precision(dtype, method):
+    """Verify target generation executes cleanly and returns float32 when inputs are half/bfloat precision."""
+    B, H, W = 2, 6, 6
+    pred = {
+        "offset": torch.randn(B, 2, H, W, dtype=dtype),
+        "size": torch.randn(B, 2, H, W, dtype=dtype),
+        "yaw": torch.tensor([1.0, 0.0], dtype=dtype).view(1, 2, 1, 1).expand(B, 2, H, W),
+    }
+    target = {
+        "offset": torch.randn(B, 2, H, W, dtype=dtype),
+        "size": torch.randn(B, 2, H, W, dtype=dtype),
+        "yaw": torch.tensor([1.0, 0.0], dtype=dtype).view(1, 2, 1, 1).expand(B, 2, H, W),
+        "reg_mask": torch.ones(B, H, W, dtype=torch.bool),
+    }
+    target_iou = compute_iou_targets(pred, target, method=method)
+    assert target_iou.dtype == torch.float32
+    assert target_iou.shape == (B, H, W)
+    assert torch.isfinite(target_iou).all()
+
+
+def test_filter_pred_floating_point_error_on_nan_or_inf():
+    """Verify filter_pred raises FloatingPointError when pred['iou'] contains NaN or Inf."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.5,
+    }
+    H, W = 200, 176
+    base_pred = {
+        "cls": torch.zeros(1, 1, H, W),
+        "offset": torch.zeros(1, 2, H, W),
+        "size": torch.zeros(1, 2, H, W),
+        "yaw": torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W),
+    }
+
+    # Case 1: NaN in iou
+    pred_nan = dict(base_pred)
+    pred_nan["iou"] = torch.zeros(1, 1, H, W)
+    pred_nan["iou"][0, 0, 10, 10] = float("nan")
+    with pytest.raises(FloatingPointError, match="non-finite detector output"):
+        filter_pred(pred_nan, config, out_size_factor=4, thres=0.3)
+
+    # Case 2: Inf in iou
+    pred_inf = dict(base_pred)
+    pred_inf["iou"] = torch.zeros(1, 1, H, W)
+    pred_inf["iou"][0, 0, 10, 10] = float("inf")
+    with pytest.raises(FloatingPointError, match="non-finite detector output"):
+        filter_pred(pred_inf, config, out_size_factor=4, thres=0.3)
+
+
+def test_filter_pred_iou_shape_validation():
+    """Verify filter_pred raises ValueError when pred['iou'] has invalid shape or mismatch."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.5,
+    }
+    H, W = 200, 176
+    base_pred = {
+        "cls": torch.zeros(1, 1, H, W),
+        "offset": torch.zeros(1, 2, H, W),
+        "size": torch.zeros(1, 2, H, W),
+        "yaw": torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W),
+    }
+
+    # Invalid dimension count (3D instead of 4D)
+    pred_3d = dict(base_pred)
+    pred_3d["iou"] = torch.zeros(1, H, W)
+    with pytest.raises(ValueError, match="iou head must have shape \\[1, 1, H, W\\]"):
+        filter_pred(pred_3d, config, out_size_factor=4, thres=0.3)
+
+    # Invalid batch dimension (B=2 instead of 1)
+    pred_b2 = dict(base_pred)
+    pred_b2["iou"] = torch.zeros(2, 1, H, W)
+    with pytest.raises(ValueError, match="iou head must have shape \\[1, 1, H, W\\]"):
+        filter_pred(pred_b2, config, out_size_factor=4, thres=0.3)
+
+    # Spatial mismatch (100x100 instead of 200x176)
+    pred_spatial = dict(base_pred)
+    pred_spatial["iou"] = torch.zeros(1, 1, 100, 100)
+    with pytest.raises(ValueError, match="All prediction heads must have the same spatial shape"):
+        filter_pred(pred_spatial, config, out_size_factor=4, thres=0.3)
+
+
+def test_filter_pred_nms_alpha_validation():
+    """Verify filter_pred raises ValueError when nms_alpha is outside [0.0, 1.0]."""
+    H, W = 200, 176
+    pred = {
+        "cls": torch.zeros(1, 1, H, W),
+        "offset": torch.zeros(1, 2, H, W),
+        "size": torch.zeros(1, 2, H, W),
+        "yaw": torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W),
+        "iou": torch.zeros(1, 1, H, W),
+    }
+    cfg_low = {
+        "geometry": {"x_min": 0, "x_max": 70.4, "x_res": 0.1, "y_min": -40, "y_max": 40, "y_res": 0.1},
+        "nms_alpha": -0.1,
+    }
+    with pytest.raises(ValueError, match="nms_alpha must be between 0 and 1"):
+        filter_pred(pred, cfg_low, out_size_factor=4, thres=0.3)
+
+    cfg_high = {
+        "geometry": {"x_min": 0, "x_max": 70.4, "x_res": 0.1, "y_min": -40, "y_max": 40, "y_res": 0.1},
+        "nms_alpha": 1.5,
+    }
+    with pytest.raises(ValueError, match="nms_alpha must be between 0 and 1"):
+        filter_pred(pred, cfg_high, out_size_factor=4, thres=0.3)
+
+
+def test_oga_loss_strategy_missing_iou_head_raises():
+    """Verify OgaLossStrategy raises KeyError when use_iou=True but pred lacks 'iou' head."""
+    config = {"use_iou": True, "iou_target_type": "mgiou"}
+    strategy = OgaLossStrategy(cls_encoding="gaussian", config=config)
+
+    B, C, H, W = 2, 3, 20, 20
+    pred_without_iou = {
+        "cls": torch.randn(B, C, H, W),
+        "offset": torch.randn(B, 2, H, W),
+        "size": torch.randn(B, 2, H, W),
+        "yaw": torch.randn(B, 2, H, W),
+    }
+    target = {
+        "cls": torch.rand(B, C, H, W),
+        "offset": torch.randn(B, 2, H, W),
+        "size": torch.randn(B, 2, H, W),
+        "yaw": torch.randn(B, 2, H, W),
+        "reg_mask": torch.ones(B, H, W, dtype=torch.bool),
+    }
+    with pytest.raises(KeyError, match="Missing required prediction head: 'iou'"):
+        strategy(pred_without_iou, target)
+
+
+def test_oga_loss_strategy_all_zero_reg_mask():
+    """Verify OgaLossStrategy handles empty positive masks cleanly without NaN or division error."""
+    config = {"use_iou": True, "iou_target_type": "mgiou"}
+    strategy = OgaLossStrategy(cls_encoding="gaussian", config=config)
+
+    B, C, H, W = 2, 3, 20, 20
+    pred = {
+        "cls": torch.randn(B, C, H, W, requires_grad=True),
+        "offset": torch.randn(B, 2, H, W, requires_grad=True),
+        "size": torch.randn(B, 2, H, W, requires_grad=True),
+        "yaw": torch.randn(B, 2, H, W, requires_grad=True),
+        "iou": torch.randn(B, 1, H, W, requires_grad=True),
+    }
+    target = {
+        "cls": torch.zeros(B, C, H, W),
+        "offset": torch.zeros(B, 2, H, W),
+        "size": torch.zeros(B, 2, H, W),
+        "yaw": torch.zeros(B, 2, H, W),
+        "reg_mask": torch.zeros(B, H, W, dtype=torch.bool),  # all zero
+    }
+    out = strategy(pred, target)
+    assert "loss" in out
+    assert torch.isfinite(out["loss"])
+    assert out["iou"] == 0.0
+    out["loss"].backward()
+    assert pred["iou"].grad is not None
+    assert torch.isfinite(pred["iou"].grad).all()
+
+
+from evaluate_kitti_bev import parser as eval_parser
+
+
+def test_evaluate_kitti_bev_nms_alpha_argument():
+    """Verify evaluate_kitti_bev argument parser accepts --nms-alpha."""
+    p = eval_parser()
+    args = p.parse_args([
+        "--name", "test_exp",
+        "--backend", "pytorch",
+        "--model", "dummy.pth",
+        "--config", "dummy.json",
+        "--detector-root", "/dummy",
+        "--kitti-root", "/dummy",
+        "--split", "dummy.txt",
+        "--output", "/dummy",
+        "--nms-alpha", "0.5",
+    ])
+    assert args.nms_alpha == 0.5
+

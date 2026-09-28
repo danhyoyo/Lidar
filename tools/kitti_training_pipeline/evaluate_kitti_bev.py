@@ -400,7 +400,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    device: str = "cuda", score_threshold: float = 0.05,
                    nms_threshold: float = 0.10, max_detections: int = 500,
                    warmup_frames: int = 10, max_frames: int | None = None,
-                   progress_every: int = 50) -> Dict[str, Any]:
+                   progress_every: int = 50,
+                   nms_alpha: float | None = None) -> Dict[str, Any]:
     started = time.time()
     if backend not in {"pytorch", "tensorrt"}:
         raise ValueError(f"Unsupported backend: {backend!r}")
@@ -416,6 +417,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         raise ValueError("max_frames must be positive when provided")
     if progress_every < 0:
         raise ValueError("progress_every must be non-negative")
+    if nms_alpha is not None and not 0.0 <= nms_alpha <= 1.0:
+        raise ValueError("nms_alpha must be between 0 and 1")
     for path in (model_path, config_path, split_path):
         if not path.is_file():
             raise FileNotFoundError(path)
@@ -452,7 +455,14 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         input_tensor, transfer_ms = runner.transfer(sample["voxel"])
         output, model_ms = runner.infer(input_tensor)
         part_start = time.perf_counter()
-        boxes = filter_pred(output, config["data"]["kitti"],
+        pred_config = dict(config["data"]["kitti"])
+        if nms_alpha is not None:
+            pred_config["nms_alpha"] = nms_alpha
+        elif "nms_alpha" in config:
+            pred_config["nms_alpha"] = config["nms_alpha"]
+        elif "nms_alpha" in config["data"]["kitti"]:
+            pred_config["nms_alpha"] = config["data"]["kitti"]["nms_alpha"]
+        boxes = filter_pred(output, pred_config,
                             config["data"]["out_size_factor"],
                             score_threshold, nms_threshold)
         if uses_cuda:
@@ -516,6 +526,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "neighbour_class_ignores": {k: sorted(v) for k, v in NEIGHBOURS.items()},
             "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
             "score_threshold": score_threshold, "nms_threshold": nms_threshold,
+            "nms_alpha": pred_config.get("nms_alpha", None),
             "max_detections_per_frame": max_detections,
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),
             "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
@@ -557,6 +568,8 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--warmup-frames", type=int, default=10)
     value.add_argument("--max-frames", type=int)
     value.add_argument("--progress-every", type=int, default=50)
+    value.add_argument("--nms-alpha", type=float, default=None,
+                       help="NMS alpha weighting for IoU branch (0.0 = old/cls-only, 0.5 = joint)")
     return value
 
 
@@ -568,6 +581,8 @@ def main(argv=None):
     args = parser().parse_args(argv)
     if not 0 <= args.score_threshold <= 1 or not 0 <= args.nms_threshold <= 1:
         raise ValueError("score/NMS thresholds must be between 0 and 1")
+    if args.nms_alpha is not None and not 0 <= args.nms_alpha <= 1:
+        raise ValueError("--nms-alpha must be between 0 and 1")
     if args.max_detections <= 0 or args.warmup_frames < 0:
         raise ValueError("invalid max detections or warmup")
     if args.max_frames is not None and args.max_frames <= 0:
@@ -578,6 +593,7 @@ def main(argv=None):
         kitti_root=args.kitti_root, split_path=args.split,
         output_path=args.output, device=args.device,
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
+        nms_alpha=args.nms_alpha,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
         max_frames=args.max_frames, progress_every=args.progress_every)
     accuracy = result["accuracy"]

@@ -31,15 +31,15 @@ def compute_mgiou_targets(
     if not pos_mask.any():
         return target_iou
 
-    # Select positive anchors: [N, 2]
+    # Select positive anchors: [N, 2] in FP32 to support mixed-precision training
     # IMPORTANT: pred inputs are detached to isolate gradients
-    p_off = pred_offset.detach().permute(0, 2, 3, 1)[pos_mask]
-    p_sz = pred_size.detach().permute(0, 2, 3, 1)[pos_mask]
-    p_yaw = pred_yaw.detach().permute(0, 2, 3, 1)[pos_mask]
+    p_off = pred_offset.detach().permute(0, 2, 3, 1)[pos_mask].float()
+    p_sz = pred_size.detach().permute(0, 2, 3, 1)[pos_mask].float()
+    p_yaw = pred_yaw.detach().permute(0, 2, 3, 1)[pos_mask].float()
 
-    t_off = target_offset.permute(0, 2, 3, 1)[pos_mask]
-    t_sz = target_size.permute(0, 2, 3, 1)[pos_mask]
-    t_yaw = target_yaw.permute(0, 2, 3, 1)[pos_mask]
+    t_off = target_offset.permute(0, 2, 3, 1)[pos_mask].float()
+    t_sz = target_size.permute(0, 2, 3, 1)[pos_mask].float()
+    t_yaw = target_yaw.permute(0, 2, 3, 1)[pos_mask].float()
 
     pred_c, pred_ax, _, _ = box_corners(p_off, p_sz, p_yaw, epsilon=epsilon, max_abs_log_size=max_abs_log_size)
     tgt_c, tgt_ax, _, _ = box_corners(t_off, t_sz, t_yaw, epsilon=epsilon, max_abs_log_size=max_abs_log_size)
@@ -89,13 +89,13 @@ def compute_yaw_footprint_targets(
     if not pos_mask.any():
         return target_iou
 
-    p_off = pred_offset.detach().permute(0, 2, 3, 1)[pos_mask]
-    p_sz = pred_size.detach().permute(0, 2, 3, 1)[pos_mask]
-    p_yaw = pred_yaw.detach().permute(0, 2, 3, 1)[pos_mask]
+    p_off = pred_offset.detach().permute(0, 2, 3, 1)[pos_mask].float()
+    p_sz = pred_size.detach().permute(0, 2, 3, 1)[pos_mask].float()
+    p_yaw = pred_yaw.detach().permute(0, 2, 3, 1)[pos_mask].float()
 
-    t_off = target_offset.permute(0, 2, 3, 1)[pos_mask]
-    t_sz = target_size.permute(0, 2, 3, 1)[pos_mask]
-    t_yaw = target_yaw.permute(0, 2, 3, 1)[pos_mask]
+    t_off = target_offset.permute(0, 2, 3, 1)[pos_mask].float()
+    t_sz = target_size.permute(0, 2, 3, 1)[pos_mask].float()
+    t_yaw = target_yaw.permute(0, 2, 3, 1)[pos_mask].float()
 
     # Footprint 2D axis-aligned IoU
     p_w = torch.exp(p_sz[:, 0].clamp(-max_abs_log_size, max_abs_log_size))

@@ -40,6 +40,7 @@
         "z_res": 0.1
       },
       "location": "data/kitti/processed",
+      "nms_alpha": 0.5,
       "objects": {
         "Car": 0,
         "Cyclist": 2,
