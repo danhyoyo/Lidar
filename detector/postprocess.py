@@ -95,6 +95,13 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     if pred["yaw"].shape[1] != 2:
         raise ValueError("yaw head must contain exactly two channels")
 
+    has_iou = "iou" in pred and pred["iou"] is not None
+    if has_iou:
+        if pred["iou"].ndim != 4 or pred["iou"].shape[0] != 1 or pred["iou"].shape[1] != 1:
+            raise ValueError("iou head must have shape [1, 1, H, W]")
+        if pred["iou"].shape[-2:] != spatial_shape:
+            raise ValueError("All prediction heads must have the same spatial shape")
+
     if not 0.0 <= thres <= 1.0:
         raise ValueError("score threshold must be between 0 and 1")
     if nms_thres is not None and not 0.0 <= nms_thres <= 1.0:
@@ -106,9 +113,12 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     offset_pred = pred["offset"].squeeze(0).detach()
     size_pred = pred["size"].squeeze(0).detach()
     yaw_pred = pred["yaw"].squeeze(0).detach()
+    tensors_to_check = [cls_pred, offset_pred, size_pred, yaw_pred]
+    if has_iou:
+        tensors_to_check.append(pred["iou"].squeeze(0).detach())
     if not torch.stack([
         torch.isfinite(value).all()
-        for value in (cls_pred, offset_pred, size_pred, yaw_pred)
+        for value in tensors_to_check
     ]).all():
         raise FloatingPointError("non-finite detector output")
 
@@ -118,6 +128,24 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
     cls_pred = torch.sigmoid(cls_pred)
     cls_probs, cls_ids = torch.max(cls_pred, dim = 0)
+
+    # Pillar 4: Joint IoU-Aware Quality Scoring
+    # Note:
+    #   nms_alpha == 0.0: Reverts to standard / old NMS based purely on cls_probs.
+    #   nms_alpha == 0.5: Calibrated joint NMS S_final = (P_cls)^(1-alpha) * (S_iou)^alpha.
+    if has_iou:
+        alpha = float(config.get("nms_alpha", 0.5))
+        if not (0.0 <= alpha <= 1.0):
+            raise ValueError(f"nms_alpha must be between 0 and 1, got {alpha}")
+    else:
+        alpha = 0.0
+
+    if has_iou and alpha > 0.0:
+        iou_logit = pred["iou"][0, 0].detach()
+        iou_score = torch.sigmoid(iou_logit)
+        ranking_scores = (cls_probs ** (1.0 - alpha)) * (iou_score ** alpha)
+    else:
+        ranking_scores = cls_probs
 
     output_shape = [int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / out_size_factor),
                     int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / out_size_factor)]
@@ -144,16 +172,18 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
     if nms_thres is None:
         pooled = F.max_pool2d(
-            cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        selected_idxs = torch.logical_and(cls_probs == pooled, cls_probs > thres)
+            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
+        selected_idxs = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
         if not selected_idxs.any():
             return _empty_detections()
+        export_scores = ranking_scores
     else:
         pooled = F.max_pool2d(
-            cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        candidate_mask = torch.logical_and(cls_probs == pooled, cls_probs > thres)
+            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
+        candidate_mask = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
         if not candidate_mask.any():
             return _empty_detections()
+        export_scores = ranking_scores[candidate_mask]
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -169,7 +199,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         front_left_y = center_y + l/2 * sin_t + w/2 * cos_t
 
         candidate_cls_ids = cls_ids[candidate_mask]
-        candidate_scores = cls_probs[candidate_mask]
+        candidate_scores = export_scores
         kept_by_class = []
         if pred["cls"].is_cuda and _torchvision_nms_rotated is not None:
             candidate_boxes = torch.stack(
@@ -210,7 +240,6 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
             ]
 
         cls_ids = cls_ids[candidate_mask]
-        cls_probs = cls_probs[candidate_mask]
         center_x = center_x[candidate_mask]
         center_y = center_y[candidate_mask]
         l = l[candidate_mask]
@@ -219,7 +248,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
 
     fields = [cls_ids[selected_idxs].cpu().numpy(),
-              cls_probs[selected_idxs].cpu().numpy(),
+              export_scores[selected_idxs].cpu().numpy(),
               center_x[selected_idxs].cpu().numpy(),
               center_y[selected_idxs].cpu().numpy(),
               l[selected_idxs].cpu().numpy(),
