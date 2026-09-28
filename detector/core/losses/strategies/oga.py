@@ -2,21 +2,24 @@
 
 from typing import Any, Dict
 import torch
+import torch.nn.functional as F
 
 from core.losses.l1_loss import smooth_l1_loss
 from core.losses.oriented_geometry_loss import OrientedGeometryLoss
 from core.losses.uncertainty_weighting import TemperatureSoftmaxUncertainty
 from core.losses.strategies.base import BaseLossStrategy
+from core.losses.iou_targets import compute_iou_targets
 
 
 class OgaLossStrategy(BaseLossStrategy):
     """Oriented Geometric Alignment & Adaptive loss combining dual-stream supervision,
 
     scale-normalized pi-symmetric corner distance, multi-axis projection GIoU,
-    and temperature-softmax bounded uncertainty balancing (T-SBUW).
+    temperature-softmax bounded uncertainty balancing (T-SBUW), and optional
+    IoU-Aware Quality supervision.
     """
 
-    TASKS = ("cls", "offset", "size", "yaw", "geo")
+    DEFAULT_TASKS = ("cls", "offset", "size", "yaw", "geo")
 
     def __init__(self, cls_encoding: str, config: Dict[str, Any] = None):
         super().__init__(cls_encoding, config)
@@ -28,6 +31,15 @@ class OgaLossStrategy(BaseLossStrategy):
         self.temperature = float(config.get("temperature", 2.0))
         self.clamp_bound = float(config.get("clamp_bound", 3.0))
         self.ema_momentum = float(config.get("ema_momentum", 0.99))
+
+        self.use_iou = bool(config.get("use_iou", False))
+        self.iou_target_type = str(config.get("iou_target_type", "mgiou"))
+        self.iou_loss_weight = float(config.get("iou_loss_weight", 1.0))
+
+        if self.use_iou:
+            self.TASKS = ("cls", "offset", "size", "yaw", "geo", "iou")
+        else:
+            self.TASKS = self.DEFAULT_TASKS
 
         if self.eps <= 0:
             raise ValueError("epsilon must be positive")
@@ -77,6 +89,29 @@ class OgaLossStrategy(BaseLossStrategy):
             "yaw": yaw_loss,
             "geo": geo_loss,
         }
+
+        if self.use_iou:
+            if "iou" not in pred:
+                raise KeyError("Missing required prediction head: 'iou' when use_iou=True")
+            iou_target = compute_iou_targets(
+                pred,
+                target,
+                method=self.iou_target_type,
+                epsilon=self.eps,
+                max_abs_log_size=self.max_abs_log_size,
+            )
+            pos_mask = target["reg_mask"].bool()
+            if pos_mask.any():
+                pred_iou_pos = pred["iou"].squeeze(1)[pos_mask]
+                target_iou_pos = iou_target[pos_mask]
+                iou_loss = F.binary_cross_entropy_with_logits(pred_iou_pos, target_iou_pos)
+                mean_target_iou = target_iou_pos.mean().detach()
+            else:
+                iou_loss = 0.0 * pred["iou"].sum()
+                mean_target_iou = torch.zeros((), device=pred["iou"].device)
+
+            task_losses["iou"] = self.iou_loss_weight * iou_loss
+
         loss, weights = self.weighting(task_losses)
 
         loss_dict = {
@@ -91,6 +126,10 @@ class OgaLossStrategy(BaseLossStrategy):
             "clamp_count": geo_metrics.get("clamp_count", 0),
             "fallback_count": geo_metrics.get("fallback_count", 0),
         }
+        if self.use_iou:
+            loss_dict["iou"] = iou_loss.detach()
+            loss_dict["mean_iou_target"] = mean_target_iou
+
         for task, w in weights.items():
             loss_dict[f"weight_{task}"] = w
 

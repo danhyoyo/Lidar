@@ -6,6 +6,7 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [
     str(ROOT / "detector"),
+    str(ROOT / "detector" / "core" / "datasets"),
 ]
 
 from core.models.heads.cnn import Header
@@ -99,3 +100,80 @@ def test_compute_iou_targets_distant_boxes():
     for method in ["mgiou", "yaw_footprint"]:
         target_iou = compute_iou_targets(pred, target, method=method)
         assert torch.all(target_iou == 0.0)
+
+
+from core.losses.strategies.oga import OgaLossStrategy
+
+
+def test_oga_loss_strategy_with_iou():
+    """Verify OgaLossStrategy computes iou loss and uncertainty weight when use_iou=True."""
+    config = {
+        "use_iou": True,
+        "iou_target_type": "mgiou",
+        "iou_loss_weight": 1.0,
+    }
+    strategy = OgaLossStrategy(cls_encoding="gaussian", config=config)
+    assert "iou" in strategy.TASKS
+
+    B, C, H, W = 2, 3, 20, 20
+    pred = {
+        "cls": torch.randn(B, C, H, W, requires_grad=True),
+        "offset": torch.randn(B, 2, H, W, requires_grad=True),
+        "size": torch.randn(B, 2, H, W, requires_grad=True),
+        "yaw": torch.randn(B, 2, H, W, requires_grad=True),
+        "iou": torch.randn(B, 1, H, W, requires_grad=True),
+    }
+    target = {
+        "cls": torch.rand(B, C, H, W),
+        "offset": torch.randn(B, 2, H, W),
+        "size": torch.randn(B, 2, H, W),
+        "yaw": torch.randn(B, 2, H, W),
+        "reg_mask": torch.randint(0, 2, (B, H, W), dtype=torch.bool),
+    }
+
+    out = strategy(pred, target)
+    assert "loss" in out
+    assert "iou" in out
+    assert "weight_iou" in out
+    assert out["loss"].requires_grad
+
+    # Test gradient flow to pred["iou"]
+    out["loss"].backward()
+    assert pred["iou"].grad is not None
+    assert torch.isfinite(pred["iou"].grad).all()
+
+
+def test_oga_loss_gradient_isolation_on_regression():
+    """Verify that pred['offset'], pred['size'], pred['yaw'] do NOT receive gradient from iou_target."""
+    config = {"use_iou": True, "iou_target_type": "mgiou"}
+    strategy = OgaLossStrategy(cls_encoding="gaussian", config=config)
+
+    B, C, H, W = 1, 1, 10, 10
+    pred = {
+        "cls": torch.zeros(B, C, H, W),
+        "offset": torch.zeros(B, 2, H, W, requires_grad=True),
+        "size": torch.zeros(B, 2, H, W, requires_grad=True),
+        "yaw": torch.zeros(B, 2, H, W, requires_grad=True),
+        "iou": torch.zeros(B, 1, H, W, requires_grad=True),
+    }
+    target = {
+        "cls": torch.zeros(B, C, H, W),
+        "offset": torch.zeros(B, 2, H, W),
+        "size": torch.zeros(B, 2, H, W),
+        "yaw": torch.zeros(B, 2, H, W),
+        "reg_mask": torch.ones(B, H, W, dtype=torch.bool),
+    }
+
+    # Compute ONLY iou loss isolated
+    target_iou = compute_iou_targets(pred, target, method="mgiou")
+    loss_iou = torch.nn.functional.binary_cross_entropy_with_logits(
+        pred["iou"].squeeze(1), target_iou
+    )
+    loss_iou.backward()
+
+    # Regression heads must receive ZERO gradient
+    assert pred["offset"].grad is None or (pred["offset"].grad == 0).all()
+    assert pred["size"].grad is None or (pred["size"].grad == 0).all()
+    assert pred["yaw"].grad is None or (pred["yaw"].grad == 0).all()
+    # iou logit head MUST receive valid gradient
+    assert pred["iou"].grad is not None and not (pred["iou"].grad == 0).all()
