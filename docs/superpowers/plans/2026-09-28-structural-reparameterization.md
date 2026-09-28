@@ -40,7 +40,7 @@
   - `get_equivalent_kernel_bias(self) -> Tuple[torch.Tensor, torch.Tensor]`
   - `switch_to_deploy(self)`
 
-- [ ] **Step 1: Write failing unit test for `RepConv7x7` numerical equivalence and gradient flow**
+- [x] **Step 1: Write failing unit test for `RepConv7x7` numerical equivalence and gradient flow**
 
 Create `tests/test_rep_block.py`:
 ```python
@@ -140,7 +140,7 @@ def test_repconv7x7_gradient_flow():
     assert x.grad is not None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -148,7 +148,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: FAIL with `ModuleNotFoundError: No module named 'core.models.backbones.rep_blocks'`
 
-- [ ] **Step 3: Write implementation in `detector/core/models/backbones/rep_blocks.py`**
+- [x] **Step 3: Write implementation in `detector/core/models/backbones/rep_blocks.py`**
 
 Create `detector/core/models/backbones/rep_blocks.py`:
 ```python
@@ -314,7 +314,7 @@ class RepConv7x7(nn.Module):
         self.deploy = True
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -322,7 +322,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: PASS (4 tests passed).
 
-- [ ] **Step 5: Git commit task 1**
+- [x] **Step 5: Git commit task 1**
 
 ```bash
 git add detector/core/models/backbones/rep_blocks.py tests/test_rep_block.py
@@ -342,7 +342,7 @@ git commit -m "feat(backbone): implement RepConv7x7 structural reparameterizatio
 - Produces: `MobilePixorNeXtBlock(channels: int, expansion: float = 2.5, layer_scale_init: float = 1e-5, use_reparam: bool = False)`
 - Produces: `MobilePixorNeXtBlock.switch_to_deploy()`
 
-- [ ] **Step 1: Write failing unit test for `MobilePixorNeXtBlock` with reparameterization**
+- [x] **Step 1: Write failing unit test for `MobilePixorNeXtBlock` with reparameterization**
 
 Append to `tests/test_rep_block.py`:
 ```python
@@ -384,7 +384,7 @@ def test_mobilepixornext_block_reparam_equivalence():
     assert diff < 1e-5, f"Block diff {diff} exceeds tolerance 1e-5"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -392,7 +392,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: FAIL with `TypeError: MobilePixorNeXtBlock.__init__() got an unexpected keyword argument 'use_reparam'`
 
-- [ ] **Step 3: Modify `detector/core/models/backbones/mobilepixornext_blocks.py`**
+- [x] **Step 3: Modify `detector/core/models/backbones/mobilepixornext_blocks.py`**
 
 In `detector/core/models/backbones/mobilepixornext_blocks.py`:
 Import `RepConv7x7`:
@@ -470,7 +470,7 @@ class MobilePixorNeXtBlock(nn.Module):
             self.dw_block.switch_to_deploy()
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -478,7 +478,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: PASS (6 tests passed).
 
-- [ ] **Step 5: Git commit task 2**
+- [x] **Step 5: Git commit task 2**
 
 ```bash
 git add detector/core/models/backbones/mobilepixornext_blocks.py tests/test_rep_block.py
@@ -499,7 +499,7 @@ git commit -m "feat(backbone): integrate RepConv7x7 into MobilePixorNeXtBlock"
 - Produces: `MobilePixorNeXtBackbone(..., use_reparam: bool = False)` with `switch_to_deploy()`
 - Produces: `CustomModel.switch_to_deploy()`
 
-- [ ] **Step 1: Write failing unit test for full model reparameterization flow**
+- [x] **Step 1: Write failing unit test for full model reparameterization flow**
 
 Append to `tests/test_rep_block.py`:
 ```python
@@ -549,7 +549,7 @@ def test_custom_model_reparam_flow():
         assert diff < 1e-5, f"Head {head_name} diff {diff} exceeds tolerance 1e-5"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -557,7 +557,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: FAIL with `TypeError: MobilePixorNeXtBackbone.__init__() got an unexpected keyword argument 'use_reparam'`
 
-- [ ] **Step 3: Modify `mobilepixornext.py`, `registry.py`, and `model.py`**
+- [x] **Step 3: Modify `mobilepixornext.py`, `registry.py`, and `model.py`**
 
 In `detector/core/models/backbones/mobilepixornext.py`:
 Add `use_reparam: bool = False` to `MobilePixorNeXtBackbone.__init__`:
@@ -635,7 +635,7 @@ Add `switch_to_deploy` method to `CustomModel`:
             self.backbone.switch_to_deploy()
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -643,7 +643,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: PASS (8 tests passed).
 
-- [ ] **Step 5: Git commit task 3**
+- [x] **Step 5: Git commit task 3**
 
 ```bash
 git add detector/core/models/backbones/mobilepixornext.py detector/core/models/backbones/registry.py detector/core/models/model.py tests/test_rep_block.py
@@ -663,7 +663,7 @@ git commit -m "feat(model): wire structural reparameterization through backbone,
 - Consumes: `CustomModel` with config
 - Produces: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json`
 
-- [ ] **Step 1: Write unit test validating parameter reduction and config parity**
+- [x] **Step 1: Write unit test validating parameter reduction and config parity**
 
 Append to `tests/test_rep_block.py`:
 ```python
@@ -702,7 +702,7 @@ def test_config_reparam_loading_and_parameter_reduction():
     )
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -710,14 +710,14 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: FAIL with `AssertionError: Reparam config must exist`
 
-- [ ] **Step 3: Update anchor config and create reparam config**
+- [x] **Step 3: Update anchor config and create reparam config**
 
 In `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`:
 Add `"use_reparam": false` to explicitly state anchor baseline configuration.
 
 Create `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json` matching `kitti_mobilepixornext_litemla_oga.json` with `"use_reparam": true`.
 
-- [ ] **Step 4: Run full test suite across the repository**
+- [x] **Step 4: Run full test suite across the repository**
 
 Run:
 ```bash
@@ -725,7 +725,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected: All 81+ tests PASS (0 failures, 0 errors).
 
-- [ ] **Step 5: Git commit task 4**
+- [x] **Step 5: Git commit task 4**
 
 ```bash
 git add configs/kitti/mobilepixornext_oga/ tests/test_rep_block.py
