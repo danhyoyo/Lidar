@@ -155,3 +155,44 @@ def test_multiscale_litemla_bf16_extreme_values_are_finite():
         for parameter in module.parameters()
         if parameter.requires_grad
     )
+
+
+from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+from core.models.backbones.registry import build_backbone
+
+
+def test_backbone_wires_multiscale_and_reparam_together():
+    backbone = MobilePixorNeXtBackbone(
+        input_channels=8,
+        c4_attention="litemla",
+        c4_attention_scales=(3, 5),
+        c4_attention_qk_norm="rmsnorm",
+        use_reparam=True,
+    )
+    assert backbone.c4_attention.scales == (3, 5)
+    assert backbone.c4_attention.qk_norm_name == "rmsnorm"
+    assert backbone.use_reparam is True
+    assert hasattr(backbone.stage2[0], "dw_block")
+
+    # Verify forward pass
+    x = torch.randn(2, 8, 800, 704)
+    out = backbone(x)
+    assert out.shape == (2, 16, 200, 176)
+
+    # Verify switch_to_deploy recursion
+    backbone.eval()
+    backbone.switch_to_deploy()
+    out_deploy = backbone(x)
+    assert out_deploy.shape == (2, 16, 200, 176)
+
+
+def test_registry_builds_mobilepixornext_with_m2_options():
+    cfg = {
+        "c4_attention_scales": [3, 5],
+        "c4_attention_qk_norm": "rmsnorm",
+        "use_reparam": True,
+    }
+    model = build_backbone("mobilepixornext", cfg, input_channels=8)
+    assert model.c4_attention.scales == (3, 5)
+    assert model.c4_attention.qk_norm_name == "rmsnorm"
+    assert model.use_reparam is True
