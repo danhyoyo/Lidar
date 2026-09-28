@@ -70,10 +70,10 @@
     "header_act": "silu",
     "header_use_bn": true,
     "scale_gated_fpn": true,
-    "use_reparam": false
+    "use_reparam": true
   },
   "multi_gpu": false,
-  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_oga_loss",
+  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_oga_loss_reparam",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
