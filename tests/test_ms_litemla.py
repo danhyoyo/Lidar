@@ -6,7 +6,11 @@ import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "detector"))
+sys.path[:0] = [
+    str(ROOT / "detector"),
+    str(ROOT / "detector" / "core" / "datasets"),
+    str(ROOT / "tools" / "kitti_training_pipeline"),
+]
 
 from core.models.backbones.mobilepixornext_blocks import LiteMLARefinement
 
@@ -196,3 +200,80 @@ def test_registry_builds_mobilepixornext_with_m2_options():
     assert model.c4_attention.scales == (3, 5)
     assert model.c4_attention.qk_norm_name == "rmsnorm"
     assert model.use_reparam is True
+
+
+def test_m2_config_wires_multiscale_rmsnorm():
+    config_path = (
+        ROOT
+        / "configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json"
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
+
+    assert backbone.c4_attention.scales == (3, 5)
+    assert backbone.c4_attention.qk_norm_name == "rmsnorm"
+    assert len(backbone.c4_attention.aggregations) == 2
+    assert sum(parameter.numel() for parameter in backbone.parameters()) < 2_000_000
+
+
+def test_scale_only_ablation_config_disables_qk_norm():
+    config_path = (
+        ROOT
+        / "configs/kitti/multiscale_attention/"
+        "kitti_mobilepixornext_ms_litemla_no_norm_oga.json"
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
+
+    assert backbone.c4_attention.scales == (3, 5)
+    assert backbone.c4_attention.qk_norm_name == "none"
+    assert isinstance(backbone.c4_attention.query_norm, torch.nn.Identity)
+
+
+def test_cumulative_m1_m2_m4_config_instantiates_full_model():
+    from core.models.model import CustomModel
+    from core.losses.strategies.oga import OgaLossStrategy
+
+    config_path = (
+        ROOT
+        / "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json"
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    model = CustomModel(config["model"], input_channels=8)
+
+    # 1. Verify M1 (use_reparam)
+    assert model.backbone.use_reparam is True
+
+    # 2. Verify M2 (scales=(3, 5), rmsnorm)
+    assert model.backbone.c4_attention.scales == (3, 5)
+    assert model.backbone.c4_attention.qk_norm_name == "rmsnorm"
+
+    # 3. Verify M4 (Header with 5 branches including IoU)
+    assert model.header.use_iou is True
+    assert hasattr(model.header, "iou")
+
+    # 4. Verify Parameter budget
+    train_params = sum(p.numel() for p in model.parameters())
+    assert train_params < 2_000_000
+
+    # 5. Forward pass
+    x = torch.randn(2, 8, 800, 704)
+    preds = model(x)
+    assert "cls" in preds and "offset" in preds and "size" in preds and "yaw" in preds and "iou" in preds
+    assert preds["iou"].shape == (2, 1, 200, 176)
+
+    # 6. Verify switch_to_deploy
+    model.eval()
+    model.switch_to_deploy()
+    deploy_params = sum(p.numel() for p in model.parameters())
+    assert deploy_params < train_params
+
+    # 7. Verify Loss Strategy compatibility
+    loss_strategy = OgaLossStrategy(
+        cls_encoding=config["model"].get("cls_encoding", "gaussian"),
+        config=config["loss"],
+    )
+    assert loss_strategy.use_iou is True
+    assert len(loss_strategy.TASKS) == 6
+    assert "iou" in loss_strategy.TASKS
+    assert loss_strategy.weighting.num_tasks == 6
