@@ -34,12 +34,15 @@ class Head(nn.Module):
         return head
 
 class Header(nn.Module):
-    def __init__(self, num_classes, in_channels, use_bn=False, act="none"):
+    def __init__(self, num_classes, in_channels, use_bn=False, act="none", use_iou=False):
         super(Header, self).__init__()
+        self.use_iou = use_iou
         self.cls = Head(in_channels, num_classes, use_bn=use_bn, act=act)
         self.offset = Head(in_channels, 2, use_bn=use_bn, act=act)
         self.size = Head(in_channels, 2, use_bn=use_bn, act=act)
         self.yaw = Head(in_channels, 2, use_bn=use_bn, act=act)
+        if self.use_iou:
+            self.iou = Head(in_channels, 1, use_bn=use_bn, act=act)
 
     def forward(self, x):
         cls = self.cls(x)
@@ -48,5 +51,7 @@ class Header(nn.Module):
         yaw = self.yaw(x)
 
         pred = {"cls": cls, "offset": offset, "size": size, "yaw": yaw}
+        if self.use_iou:
+            pred["iou"] = self.iou(x)
 
         return pred

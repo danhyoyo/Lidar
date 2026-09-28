@@ -21,11 +21,13 @@ class CustomModel(nn.Module):
 
         backbone_out_dim = cfg.get("backbone_out_dim", 16)
 
+        use_iou = bool(cfg.get("header_use_iou", False))
         self.header = Header(
             self.num_classes,
             backbone_out_dim,
             use_bn=use_bn,
             act=act,
+            use_iou=use_iou,
         )
 
     def forward(self, x):
