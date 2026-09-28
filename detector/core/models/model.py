@@ -33,6 +33,12 @@ class CustomModel(nn.Module):
         pred = self.header(features)
         return pred
 
+    def switch_to_deploy(self):
+        """Deploy-time weight fusion for the backbone."""
+        if hasattr(self.backbone, "switch_to_deploy"):
+            self.backbone.switch_to_deploy()
+
+
 
 if __name__ == "__main__":
     cfg = {

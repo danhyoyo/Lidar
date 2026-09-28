@@ -139,3 +139,50 @@ def test_mobilepixornext_block_reparam_equivalence():
     diff = torch.max(torch.abs(out_multi - out_fused)).item()
     assert diff < 1e-5, f"Block diff {diff} exceeds tolerance 1e-5"
 
+
+def test_mobilepixornext_backbone_reparam_equivalence():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+
+    torch.manual_seed(42)
+    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, use_reparam=True)
+    backbone.eval()
+
+    x = torch.randn(1, 8, 400, 352)
+    with torch.no_grad():
+        out_multi = backbone(x)
+
+    backbone.switch_to_deploy()
+
+    with torch.no_grad():
+        out_fused = backbone(x)
+
+    diff = torch.max(torch.abs(out_multi - out_fused)).item()
+    assert diff < 1e-5, f"Backbone diff {diff} exceeds tolerance 1e-5"
+
+
+def test_custom_model_reparam_flow():
+    from core.models.model import CustomModel
+
+    cfg = {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+        "use_reparam": True,
+    }
+    model = CustomModel(cfg, num_classes=3, input_channels=8)
+    model.eval()
+
+    x = torch.randn(1, 8, 400, 352)
+    with torch.no_grad():
+        pred_multi = model(x)
+
+    model.switch_to_deploy()
+
+    with torch.no_grad():
+        pred_fused = model(x)
+
+    for head_name in ("cls", "offset", "size", "yaw"):
+        diff = torch.max(torch.abs(pred_multi[head_name] - pred_fused[head_name])).item()
+        assert diff < 1e-5, f"Head {head_name} diff {diff} exceeds tolerance 1e-5"
+
+

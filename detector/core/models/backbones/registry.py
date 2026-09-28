@@ -67,6 +67,7 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
         c4_attention=cfg.get("c4_attention", "litemla"),
         scale_gated_fpn=cfg.get("scale_gated_fpn", True),
         expansion=cfg.get("expansion", 2.5),
+        use_reparam=cfg.get("use_reparam", False),
     )
 
 

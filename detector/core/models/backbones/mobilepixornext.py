@@ -29,6 +29,7 @@ class MobilePixorNeXtBackbone(nn.Module):
         c4_attention: Attention adapter at Stage 3 ('none' or 'litemla').
         scale_gated_fpn: Whether to use learnable depthwise scale gating in FPN fusion.
         expansion: Channel expansion ratio inside MobilePixorNeXt blocks.
+        use_reparam: Whether to use RepConv7x7 structural reparameterization.
     """
 
     def __init__(
@@ -38,11 +39,13 @@ class MobilePixorNeXtBackbone(nn.Module):
         c4_attention: str = "litemla",
         scale_gated_fpn: bool = True,
         expansion: float = 2.5,
+        use_reparam: bool = False,
     ):
         super().__init__()
         self.input_channels = input_channels
         self.backbone_out_dim = backbone_out_dim
         self.scale_gated_fpn = scale_gated_fpn
+        self.use_reparam = bool(use_reparam)
 
         # -------------------------------------------------------------
         # 1. Stem (Input 800x704 -> 400x352, stride 2, 32 channels)
@@ -61,8 +64,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down2 = DownsampleBlock(32, 48, stride=2)
         self.stage2 = nn.Sequential(
-            MobilePixorNeXtBlock(48, expansion=expansion),
-            MobilePixorNeXtBlock(48, expansion=expansion),
+            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam),
         )
 
         # -------------------------------------------------------------
@@ -71,10 +74,10 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down3 = DownsampleBlock(48, 96, stride=2)
         self.stage3 = nn.Sequential(
-            MobilePixorNeXtBlock(96, expansion=expansion),
-            MobilePixorNeXtBlock(96, expansion=expansion),
-            MobilePixorNeXtBlock(96, expansion=expansion),
-            MobilePixorNeXtBlock(96, expansion=expansion),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
         )
 
         attn_choice = str(c4_attention).lower()
@@ -97,8 +100,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down4 = DownsampleBlock(96, 128, stride=2)
         self.stage4 = nn.Sequential(
-            MobilePixorNeXtBlock(128, expansion=expansion),
-            MobilePixorNeXtBlock(128, expansion=expansion),
+            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam),
         )
 
         # -------------------------------------------------------------
@@ -170,3 +173,10 @@ class MobilePixorNeXtBackbone(nn.Module):
 
         # Final feature map feeding detection header (stride 4, 16ch, 200x176)
         return self.out_conv(p3)
+
+    def switch_to_deploy(self):
+        """Recursively trigger switch_to_deploy across all submodules."""
+        for m in self.modules():
+            if hasattr(m, "switch_to_deploy") and m is not self:
+                m.switch_to_deploy()
+
