@@ -351,6 +351,63 @@ def test_rep_model_torch_jit_trace():
     assert torch.allclose(model(x)["cls"], out_m["cls"])
 
 
+def test_pytorch_runner_deploy_and_save_deploy(tmp_path):
+    sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
+    from core.models.model import CustomModel
+    from evaluate_kitti_bev import PyTorchRunner
+
+    cfg = {
+        "model": {
+            "backbone": "mobilepixornext",
+            "backbone_out_dim": 16,
+            "cls_encoding": "gaussian",
+            "use_reparam": True,
+        },
+        "data": {
+            "num_classes": 3,
+            "kitti": {
+                "geometry": {
+                    "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+                    "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+                    "z_min": -3.0, "z_max": 1.0, "z_res": 0.1,
+                }
+            },
+            "bev_encoding": {"name": "rich8"},
+        },
+    }
+
+    # 1. Create a training checkpoint
+    train_model = CustomModel(cfg["model"], num_classes=3, input_channels=8)
+    ckpt_path = tmp_path / "train_best.pt"
+    torch.save(train_model.state_dict(), ckpt_path)
+
+    # 2. PyTorchRunner with deploy=True and save_deploy
+    deploy_ckpt_path = tmp_path / "saved_deploy.pt"
+    runner = PyTorchRunner(
+        path=ckpt_path,
+        config=cfg,
+        device="cpu",
+        deploy=True,
+        save_deploy=deploy_ckpt_path,
+    )
+
+    assert runner.is_deployed is True
+    assert deploy_ckpt_path.is_file()
+    assert runner.metadata()["deploy"] is True
+    deploy_param_count = runner.metadata()["parameters"]
+    assert deploy_param_count == 692361
+
+    # 3. Load the saved deploy checkpoint directly in another runner
+    runner_from_deploy = PyTorchRunner(
+        path=deploy_ckpt_path,
+        config=cfg,
+        device="cpu",
+    )
+    assert runner_from_deploy.is_deployed is True
+    assert runner_from_deploy.metadata()["parameters"] == 692361
+
+
+
 
 
 

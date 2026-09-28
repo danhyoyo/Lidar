@@ -285,13 +285,61 @@ def device_timed(function, device: torch.device):
 
 
 class PyTorchRunner:
-    def __init__(self, path: Path, config, device: str):
+    def __init__(
+        self,
+        path: Path,
+        config,
+        device: str,
+        deploy: bool = False,
+        save_deploy: Path | None = None,
+    ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
-        self.model = build_model(config)
+
         checkpoint = torch.load(path, map_location="cpu")
-        self.model.load_state_dict(normalize_state_dict(checkpoint), strict=True)
+        state_dict = normalize_state_dict(checkpoint)
+
+        is_checkpoint_deployed = any("rbr_reparam" in k for k in state_dict.keys())
+        should_deploy = bool(
+            deploy
+            or (save_deploy is not None)
+            or is_checkpoint_deployed
+            or config.get("model", {}).get("deploy", False)
+        )
+
+        if is_checkpoint_deployed:
+            import copy
+
+            cfg_model = copy.deepcopy(config)
+            cfg_model["model"]["deploy"] = True
+            self.model = build_model(cfg_model)
+            self.model.load_state_dict(state_dict, strict=True)
+            self.is_deployed = True
+        else:
+            self.model = build_model(config)
+            self.model.load_state_dict(state_dict, strict=True)
+            if should_deploy and hasattr(self.model, "switch_to_deploy"):
+                self.model.switch_to_deploy()
+                self.is_deployed = True
+                print("Switched model to deploy mode (fused reparameterized blocks).", flush=True)
+            else:
+                self.is_deployed = False
+
+        if save_deploy is not None:
+            save_deploy = Path(save_deploy)
+            save_deploy.parent.mkdir(parents=True, exist_ok=True)
+            if hasattr(self.model, "export_deploy_state_dict"):
+                deploy_state = self.model.export_deploy_state_dict()
+            else:
+                deploy_state = self.model.state_dict()
+            torch.save(deploy_state, save_deploy)
+            param_count = sum(p.numel() for p in self.model.parameters())
+            print(
+                f"Saved fused deploy checkpoint to {save_deploy.resolve()} ({param_count:,} parameters).",
+                flush=True,
+            )
+
         self.model = self.model.to(self.device).eval()
 
     def transfer(self, voxel):
@@ -304,9 +352,15 @@ class PyTorchRunner:
             return device_timed(lambda: self.model(tensor), self.device)
 
     def metadata(self):
-        return {"framework": f"PyTorch {torch.__version__}",
-                "device": str(self.device), "precision": "fp32",
-                "parameters": sum(parameter.numel() for parameter in self.model.parameters())}
+        meta = {
+            "framework": f"PyTorch {torch.__version__}",
+            "device": str(self.device),
+            "precision": "fp32",
+            "parameters": sum(parameter.numel() for parameter in self.model.parameters()),
+        }
+        if getattr(self, "is_deployed", False):
+            meta["deploy"] = True
+        return meta
 
 
 class TensorRTRunner:
@@ -400,7 +454,9 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    device: str = "cuda", score_threshold: float = 0.05,
                    nms_threshold: float = 0.10, max_detections: int = 500,
                    warmup_frames: int = 10, max_frames: int | None = None,
-                   progress_every: int = 50) -> Dict[str, Any]:
+                   progress_every: int = 50,
+                   deploy: bool = False,
+                   save_deploy: Path | None = None) -> Dict[str, Any]:
     started = time.time()
     if backend not in {"pytorch", "tensorrt"}:
         raise ValueError(f"Unsupported backend: {backend!r}")
@@ -432,7 +488,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         raise ValueError("Evaluation split is empty")
     dataset = Dataset(str(split_path), config["data"], config["augmentation"],
                       config["model"]["cls_encoding"], task="test")
-    runner = (PyTorchRunner(model_path, config, device) if backend == "pytorch"
+    runner = (PyTorchRunner(model_path, config, device, deploy=deploy, save_deploy=save_deploy) if backend == "pytorch"
               else TensorRTRunner(model_path, config, device))
     uses_cuda = runner.device.type == "cuda"
     if uses_cuda:
@@ -526,6 +582,13 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         "counts": {"detections": detection_count,
                    "detections_per_frame": detection_count / len(frame_ids)},
     }
+    if save_deploy is not None and backend == "pytorch":
+        save_path = Path(save_deploy)
+        if save_path.is_file():
+            result["saved_deploy"] = {
+                "path": str(save_path.resolve()),
+                "sha256": sha256(save_path),
+            }
     if output_path:
         predictions_path = output_path.with_suffix(".predictions.npz")
         predictions_path.parent.mkdir(parents=True, exist_ok=True)
@@ -557,6 +620,17 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--warmup-frames", type=int, default=10)
     value.add_argument("--max-frames", type=int)
     value.add_argument("--progress-every", type=int, default=50)
+    value.add_argument(
+        "--deploy",
+        action="store_true",
+        help="Fuse reparameterized blocks (e.g. RepConv7x7) into deploy mode before evaluation for zero-latency inference.",
+    )
+    value.add_argument(
+        "--save-deploy",
+        type=Path,
+        default=None,
+        help="Optional destination path to save the fused deploy state_dict (implies --deploy).",
+    )
     return value
 
 
@@ -579,7 +653,8 @@ def main(argv=None):
         output_path=args.output, device=args.device,
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
-        max_frames=args.max_frames, progress_every=args.progress_every)
+        max_frames=args.max_frames, progress_every=args.progress_every,
+        deploy=args.deploy, save_deploy=args.save_deploy)
     accuracy = result["accuracy"]
     print(f"mAP Moderate={optional(accuracy['map_moderate_percent'])}%, "
           f"Mean AP-9={optional(accuracy['mean_ap_9_percent'])}%, "
