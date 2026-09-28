@@ -119,6 +119,19 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     cls_pred = torch.sigmoid(cls_pred)
     cls_probs, cls_ids = torch.max(cls_pred, dim = 0)
 
+    # Pillar 4: Joint IoU-Aware Quality Scoring
+    # Note:
+    #   nms_alpha == 0.0: Reverts to standard / old NMS based purely on cls_probs.
+    #   nms_alpha == 0.5: Calibrated joint NMS S_final = (P_cls)^(1-alpha) * (S_iou)^alpha.
+    has_iou = "iou" in pred and pred["iou"] is not None
+    alpha = float(config.get("nms_alpha", 0.5)) if has_iou else 0.0
+    if has_iou and alpha > 0.0:
+        iou_logit = pred["iou"].squeeze(0).squeeze(0).detach()
+        iou_score = torch.sigmoid(iou_logit)
+        ranking_scores = (cls_probs ** (1.0 - alpha)) * (iou_score ** alpha)
+    else:
+        ranking_scores = cls_probs
+
     output_shape = [int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / out_size_factor),
                     int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / out_size_factor)]
 
@@ -144,16 +157,18 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
     if nms_thres is None:
         pooled = F.max_pool2d(
-            cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        selected_idxs = torch.logical_and(cls_probs == pooled, cls_probs > thres)
+            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
+        selected_idxs = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
         if not selected_idxs.any():
             return _empty_detections()
+        export_scores = ranking_scores
     else:
         pooled = F.max_pool2d(
-            cls_probs.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        candidate_mask = torch.logical_and(cls_probs == pooled, cls_probs > thres)
+            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
+        candidate_mask = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
         if not candidate_mask.any():
             return _empty_detections()
+        export_scores = ranking_scores[candidate_mask]
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -169,7 +184,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         front_left_y = center_y + l/2 * sin_t + w/2 * cos_t
 
         candidate_cls_ids = cls_ids[candidate_mask]
-        candidate_scores = cls_probs[candidate_mask]
+        candidate_scores = export_scores
         kept_by_class = []
         if pred["cls"].is_cuda and _torchvision_nms_rotated is not None:
             candidate_boxes = torch.stack(
@@ -210,7 +225,6 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
             ]
 
         cls_ids = cls_ids[candidate_mask]
-        cls_probs = cls_probs[candidate_mask]
         center_x = center_x[candidate_mask]
         center_y = center_y[candidate_mask]
         l = l[candidate_mask]
@@ -219,7 +233,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
 
     fields = [cls_ids[selected_idxs].cpu().numpy(),
-              cls_probs[selected_idxs].cpu().numpy(),
+              export_scores[selected_idxs].cpu().numpy(),
               center_x[selected_idxs].cpu().numpy(),
               center_y[selected_idxs].cpu().numpy(),
               l[selected_idxs].cpu().numpy(),

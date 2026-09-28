@@ -177,3 +177,102 @@ def test_oga_loss_gradient_isolation_on_regression():
     assert pred["yaw"].grad is None or (pred["yaw"].grad == 0).all()
     # iou logit head MUST receive valid gradient
     assert pred["iou"].grad is not None and not (pred["iou"].grad == 0).all()
+
+
+from postprocess import filter_pred
+
+
+def test_filter_pred_score_reordering_with_iou():
+    """Verify that a candidate with high IoU and moderate cls score beats a candidate with high cls and low IoU when nms_alpha=0.5."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.5,
+    }
+    out_size_factor = 4
+    # Grid shape: H=200, W=176
+    H, W = 200, 176
+    cls_pred = torch.full((1, 1, H, W), -10.0)  # all low logits
+    offset_pred = torch.zeros(1, 2, H, W)
+    size_pred = torch.zeros(1, 2, H, W)
+    yaw_pred = torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W)
+    iou_pred = torch.zeros(1, 1, H, W)
+
+    # Candidate A at (50, 50): high cls logit (+4.0 -> p~0.98), low iou logit (-3.0 -> s~0.047)
+    # S_final = sqrt(0.98 * 0.047) ~ 0.21
+    cls_pred[0, 0, 50, 50] = 4.0
+    iou_pred[0, 0, 50, 50] = -3.0
+
+    # Candidate B at (60, 60): moderate cls logit (+1.5 -> p~0.81), high iou logit (+3.0 -> s~0.95)
+    # S_final = sqrt(0.81 * 0.95) ~ 0.87
+    cls_pred[0, 0, 60, 60] = 1.5
+    iou_pred[0, 0, 60, 60] = 3.0
+
+    pred_with_iou = {
+        "cls": cls_pred, "offset": offset_pred, "size": size_pred, "yaw": yaw_pred, "iou": iou_pred
+    }
+
+    # At threshold 0.3: Candidate A (0.21) should be filtered out, Candidate B (0.87) should survive
+    dets = filter_pred(pred_with_iou, config, out_size_factor=out_size_factor, thres=0.3, nms_thres=0.5)
+    assert len(dets) == 1
+    # Candidate B is at grid (60, 60): metric coordinates center_x = 60 * 0.4 + 0 = 24.0, center_y = 60 * 0.4 - 40 = -16.0
+    # Output columns: [cls_id, score, center_x, center_y, l, w, yaw]
+    assert abs(dets[0, 2] - 24.0) < 1.0
+    assert abs(dets[0, 3] - (-16.0)) < 1.0
+
+
+def test_filter_pred_alpha_zero_reverts_to_old_nms():
+    """Verify that when nms_alpha=0.0, NMS uses pure cls_probs (Candidate A survives, Candidate B is ranked lower or both survive based on cls)."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.0,  # 0.0 means standard/old NMS ignoring IoU head
+    }
+    H, W = 200, 176
+    cls_pred = torch.full((1, 1, H, W), -10.0)
+    offset_pred = torch.zeros(1, 2, H, W)
+    size_pred = torch.zeros(1, 2, H, W)
+    yaw_pred = torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W)
+    iou_pred = torch.zeros(1, 1, H, W)
+
+    # Candidate A has high cls logit (+4.0 -> p~0.98), Candidate B has low cls logit (-1.0 -> p~0.27)
+    cls_pred[0, 0, 50, 50] = 4.0
+    iou_pred[0, 0, 50, 50] = -3.0
+
+    cls_pred[0, 0, 60, 60] = -1.0
+    iou_pred[0, 0, 60, 60] = 3.0
+
+    pred_with_iou = {
+        "cls": cls_pred, "offset": offset_pred, "size": size_pred, "yaw": yaw_pred, "iou": iou_pred
+    }
+
+    # At threshold 0.5: With alpha=0.0, Candidate A survives (p=0.98 > 0.5) even though its IoU logit is low
+    dets = filter_pred(pred_with_iou, config, out_size_factor=4, thres=0.5, nms_thres=0.5)
+    assert len(dets) == 1
+    assert abs(dets[0, 2] - 20.0) < 1.0  # 50 * 0.4 = 20.0 (Candidate A)
+
+
+def test_filter_pred_fallback_when_iou_absent():
+    """Verify that filter_pred works identically to baseline when 'iou' head is absent."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.5,
+    }
+    H, W = 200, 176
+    cls_pred = torch.full((1, 1, H, W), -10.0)
+    cls_pred[0, 0, 50, 50] = 3.0  # p~0.95
+    pred_no_iou = {
+        "cls": cls_pred,
+        "offset": torch.zeros(1, 2, H, W),
+        "size": torch.zeros(1, 2, H, W),
+        "yaw": torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W),
+    }
+    dets = filter_pred(pred_no_iou, config, out_size_factor=4, thres=0.3, nms_thres=0.5)
+    assert len(dets) == 1
