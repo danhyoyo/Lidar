@@ -33,7 +33,7 @@
 | `detector/core/losses/iou_targets.py` | Pure PyTorch tensor target generators for MGIoU and Yaw-Footprint with detached inputs. |
 | `detector/core/losses/strategies/oga.py` | Integrate $\mathcal{L}_{\text{iou}}$ (BCEWithLogits) and dynamic 6-task uncertainty weighting into `OgaLossStrategy`. |
 | `detector/postprocess.py` | Update `filter_pred` to compute $S_{\text{final}} = P_{\text{cls}}^{1 - \alpha} \cdot S_{\text{iou}}^{\alpha}$ and sort NMS candidates accordingly. |
-| `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json` | Complete Pillar 4 experiment configuration. |
+| `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json` | Complete Pillar 4 experiment configuration. |
 | `tests/test_iqa_header.py` | Comprehensive test suite for model head, target generation, loss gradients, NMS reordering, and regression. |
 
 ---
@@ -52,7 +52,7 @@
 - `Header.forward(x: torch.Tensor) -> Dict[str, torch.Tensor]` (returns `{"cls", "offset", "size", "yaw", "iou"}` when `use_iou=True`)
 - `CustomModel(cfg: Dict[str, Any], ...)` threads `cfg.get("header_use_iou", False)` into `Header`.
 
-- [ ] **Step 1: Write failing unit test for `Header` and `CustomModel` IoU branch**
+- [x] **Step 1: Write failing unit test for `Header` and `CustomModel` IoU branch**
 
 Create `tests/test_iqa_header.py`:
 ```python
@@ -93,7 +93,7 @@ def test_custom_model_threads_iou_flag():
     assert pred["iou"].shape == (2, 1, 200, 176)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -101,7 +101,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: Fails due to `unexpected keyword argument 'use_iou'`.
 
-- [ ] **Step 3: Implement minimal code in `Header` and `CustomModel`**
+- [x] **Step 3: Implement minimal code in `Header` and `CustomModel`**
 
 In `detector/core/models/heads/cnn.py`:
 ```python
@@ -140,7 +140,7 @@ In `detector/core/models/model.py`:
         )
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -148,7 +148,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: 3 passed in <2s.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/core/models/heads/cnn.py detector/core/models/model.py tests/test_iqa_header.py
@@ -170,7 +170,7 @@ git commit -m "feat(head): add 1-channel IoU prediction branch to Header and Cus
   - Input: tensors of shape `[B, 2, H, W]` and `reg_mask` of shape `[B, H, W]`
   - Output: float tensor of shape `[B, H, W]` bounded in $[0.0, 1.0]$.
 
-- [ ] **Step 1: Write failing unit tests for target generation (MGIoU & Yaw-Footprint)**
+- [x] **Step 1: Write failing unit tests for target generation (MGIoU & Yaw-Footprint)**
 
 Append to `tests/test_iqa_header.py`:
 ```python
@@ -225,7 +225,7 @@ def test_compute_iou_targets_distant_boxes():
         assert torch.all(target_iou == 0.0)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -233,7 +233,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: Fails due to `ModuleNotFoundError: No module named 'core.losses.iou_targets'`.
 
-- [ ] **Step 3: Implement `detector/core/losses/iou_targets.py`**
+- [x] **Step 3: Implement `detector/core/losses/iou_targets.py`**
 
 Create `detector/core/losses/iou_targets.py`:
 ```python
@@ -405,7 +405,7 @@ def compute_iou_targets(
         raise ValueError(f"Unknown IoU target method: {method!r}. Expected 'mgiou' or 'yaw_footprint'.")
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -413,7 +413,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: 6 passed in <3s.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/core/losses/iou_targets.py tests/test_iqa_header.py
@@ -435,7 +435,7 @@ git commit -m "feat(loss): implement pure-PyTorch GPU dynamic IoU target generat
   - Computes $\mathcal{L}_{\text{iou}} = \text{BCEWithLogitsLoss}(pred[\text{"iou"}], y_{\text{iou}})$ on `reg_mask == 1`.
   - Output dictionary contains `"iou"`, `"weight_iou"`, and `"mean_iou_target"`.
 
-- [ ] **Step 1: Write failing unit test for `OgaLossStrategy` with IoU branch & gradient isolation**
+- [x] **Step 1: Write failing unit test for `OgaLossStrategy` with IoU branch & gradient isolation**
 
 Append to `tests/test_iqa_header.py`:
 ```python
@@ -514,7 +514,7 @@ def test_oga_loss_gradient_isolation_on_regression():
     assert pred["iou"].grad is not None and not (pred["iou"].grad == 0).all()
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -522,7 +522,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: Fails due to `assert "iou" in strategy.TASKS`.
 
-- [ ] **Step 3: Update `OgaLossStrategy` in `detector/core/losses/strategies/oga.py`**
+- [x] **Step 3: Update `OgaLossStrategy` in `detector/core/losses/strategies/oga.py`**
 
 Modify `detector/core/losses/strategies/oga.py`:
 - Read `self.use_iou = bool(config.get("use_iou", False))`
@@ -554,7 +554,7 @@ Modify `detector/core/losses/strategies/oga.py`:
   ```
 - Add `"iou": iou_loss.detach()`, `"weight_iou": weights.get("iou", 1.0)` and `"mean_iou_target": iou_target[pos_mask].mean().detach()` (if positive) to telemetry dict.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -562,7 +562,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: 8 passed in <3s.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/core/losses/strategies/oga.py tests/test_iqa_header.py
@@ -584,7 +584,7 @@ git commit -m "feat(loss): integrate IoU quality loss and dynamic uncertainty ba
   - `candidate_mask` uses `S_final > thres`
   - Rotated NMS ranks candidates by `candidate_scores = S_final[candidate_mask]`
 
-- [ ] **Step 1: Write failing unit test for Joint NMS Score Reordering**
+- [x] **Step 1: Write failing unit test for Joint NMS Score Reordering**
 
 Append to `tests/test_iqa_header.py`:
 ```python
@@ -651,7 +651,7 @@ def test_filter_pred_fallback_when_iou_absent():
     assert len(dets) == 1
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 ```bash
@@ -659,7 +659,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: Fails because Candidate A is selected instead of filtered out.
 
-- [ ] **Step 3: Update `filter_pred` in `detector/postprocess.py`**
+- [x] **Step 3: Update `filter_pred` in `detector/postprocess.py`**
 
 In `detector/postprocess.py`:
 - Compute `cls_probs` as usual.
@@ -681,7 +681,7 @@ In `detector/postprocess.py`:
   ```
 - Use `candidate_scores = ranking_scores[candidate_mask]` for both GPU rotated NMS and CPU polygon NMS.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run:
 ```bash
@@ -689,7 +689,7 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: 10 passed in <3s.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 
 ```bash
 git add detector/postprocess.py tests/test_iqa_header.py
@@ -701,13 +701,13 @@ git commit -m "feat(postprocess): implement calibrated joint quality NMS scoring
 ### Task 5: Establish Experiment Configuration & Full Regression Suite
 
 **Files:**
-- Create: `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
+- Create: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
 - Test: Full regression suite (`tests/`)
 
 **Interfaces:**
-- Produces: `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
+- Produces: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
 
-- [ ] **Step 1: Write integration test for full training pipeline with IQA config**
+- [x] **Step 1: Write integration test for full training pipeline with IQA config**
 
 Append to `tests/test_iqa_header.py`:
 ```python
@@ -717,7 +717,7 @@ from core.losses.strategies.oga import OgaLossStrategy
 
 def test_full_iqa_pipeline_integration():
     """Verify that CustomModel and OgaLossStrategy initialize and forward cleanly using config."""
-    config_path = "configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+    config_path = "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
     with open(config_path, "r") as f:
         cfg = json.load(f)
 
@@ -745,9 +745,9 @@ def test_full_iqa_pipeline_integration():
     out["loss"].backward()
 ```
 
-- [ ] **Step 2: Create config file `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`**
+- [x] **Step 2: Create config file `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`**
 
-Create `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
+Create `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
 ```json
 {
   "backbone": "mobilepixornext_reparam",
@@ -782,7 +782,7 @@ Create `configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.js
 }
 ```
 
-- [ ] **Step 3: Run full test suite including regression**
+- [x] **Step 3: Run full test suite including regression**
 
 Run:
 ```bash
@@ -790,9 +790,9 @@ PYTHONPATH=. /home/duyennh/miniconda3/envs/AI_env/bin/pytest -p no:launch_testin
 ```
 Expected output: All 98+ tests pass cleanly (87 existing + 11 new IQA tests).
 
-- [ ] **Step 4: Commit changes and mark plan complete**
+- [x] **Step 4: Commit changes and mark plan complete**
 
 ```bash
-git add configs/kitti/mobilebev/kitti_mobilepixornext_litemla_oga_reparam_iqa.json tests/test_iqa_header.py docs/superpowers/plans/2026-09-28-iou-aware-quality-header.md
+git add configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json tests/test_iqa_header.py docs/superpowers/plans/2026-09-28-iou-aware-quality-header.md
 git commit -m "feat(config): establish MobilePixorNeXt M4 IQA-Header config and end-to-end integration tests"
 ```

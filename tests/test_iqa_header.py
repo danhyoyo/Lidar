@@ -276,3 +276,36 @@ def test_filter_pred_fallback_when_iou_absent():
     }
     dets = filter_pred(pred_no_iou, config, out_size_factor=4, thres=0.3, nms_thres=0.5)
     assert len(dets) == 1
+
+
+import json
+
+
+def test_full_iqa_pipeline_integration():
+    """Verify that CustomModel and OgaLossStrategy initialize, forward, and backward cleanly using IQA config."""
+    config_path = ROOT / "configs" / "kitti" / "mobilepixornext_oga" / "kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+    with open(config_path, "r") as f:
+        cfg = json.load(f)
+
+    model = CustomModel(cfg["model"], num_classes=cfg["data"]["num_classes"], input_channels=35)
+    loss_strategy = OgaLossStrategy(cls_encoding=cfg["model"].get("cls_encoding", "gaussian"), config=cfg["loss"])
+
+    B = 2
+    x = torch.randn(B, 35, 800, 704)
+    pred = model(x)
+    assert "iou" in pred
+    assert pred["iou"].shape == (B, 1, 200, 176)
+
+    target = {
+        "cls": torch.rand(B, 3, 200, 176),
+        "offset": torch.randn(B, 2, 200, 176),
+        "size": torch.randn(B, 2, 200, 176),
+        "yaw": torch.randn(B, 2, 200, 176),
+        "reg_mask": torch.randint(0, 2, (B, 200, 176), dtype=torch.bool),
+    }
+
+    out = loss_strategy(pred, target)
+    assert "loss" in out
+    assert "iou" in out
+    assert "weight_iou" in out
+    out["loss"].backward()
