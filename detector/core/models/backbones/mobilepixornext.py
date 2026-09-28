@@ -27,6 +27,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         input_channels: Number of BEV input slices (e.g. 8 for RichBEV, 35 for binary slices).
         backbone_out_dim: Channels of the output feature map (default 16 for Header).
         c4_attention: Attention adapter at Stage 3 ('none' or 'litemla').
+        c4_attention_scales: Regional kernel scales used by LiteMLA.
+        c4_attention_qk_norm: QK normalization mode ('none', 'rmsnorm', or 'layernorm').
         scale_gated_fpn: Whether to use learnable depthwise scale gating in FPN fusion.
         expansion: Channel expansion ratio inside MobilePixorNeXt blocks.
     """
@@ -36,6 +38,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         input_channels: int = 8,
         backbone_out_dim: int = 16,
         c4_attention: str = "litemla",
+        c4_attention_scales: tuple = (5,),
+        c4_attention_qk_norm: str = "none",
         scale_gated_fpn: bool = True,
         expansion: float = 2.5,
     ):
@@ -84,8 +88,9 @@ class MobilePixorNeXtBackbone(nn.Module):
             self.c4_attention = LiteMLARefinement(
                 channels=96,
                 head_dim=16,
-                scales=(5,),
+                scales=tuple(c4_attention_scales),
                 layer_scale_init=0.01,
+                qk_norm=c4_attention_qk_norm,
             )
         else:
             raise ValueError(f"Unsupported c4_attention {c4_attention!r}; expected 'none' or 'litemla'")

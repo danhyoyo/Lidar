@@ -131,6 +131,11 @@ in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md
 
 The RichBEV-8 configuration with OGA loss is
 [`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json).
+Pillar 2 adds configurable multi-scale LiteMLA. Use
+[`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_ms_litemla_oga.json`](configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_ms_litemla_oga.json)
+for the `(3, 5)` + QK-RMSNorm M2 variant, and
+[`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_ms_litemla_no_norm_oga.json`](configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_ms_litemla_no_norm_oga.json)
+to isolate the multi-scale contribution without QK normalization.
 The backbone-only configuration is
 [`configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`](configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json).
 Use either config with the training command above by replacing its `--config`
