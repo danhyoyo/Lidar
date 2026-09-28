@@ -224,5 +224,48 @@ def test_config_reparam_loading_and_parameter_reduction():
     assert params_m1_deploy < params_m0
 
 
+def test_repconv7x7_dtype_preservation():
+    channels = 32
+    rep_bf16 = RepConv7x7(channels=channels, deploy=False).to(torch.bfloat16)
+    rep_bf16.eval()
+
+    x = torch.randn(2, channels, 16, 16, dtype=torch.bfloat16)
+    rep_bf16.switch_to_deploy()
+
+    assert rep_bf16.rbr_reparam.weight.dtype == torch.bfloat16
+    assert rep_bf16.rbr_reparam.bias.dtype == torch.bfloat16
+
+    out = rep_bf16(x)
+    assert out.dtype == torch.bfloat16
+    assert out.shape == (2, channels, 16, 16)
+
+
+def test_direct_deploy_instantiation():
+    from core.models.model import CustomModel
+
+    cfg = {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+        "use_reparam": True,
+        "deploy": True,
+    }
+    model_direct = CustomModel(cfg, num_classes=3, input_channels=8)
+    model_direct.eval()
+
+    # Verify that submodules are directly in deploy mode
+    for m in model_direct.modules():
+        if isinstance(m, RepConv7x7):
+            assert m.deploy
+            assert hasattr(m, "rbr_reparam")
+            assert not hasattr(m, "rbr_conv7")
+
+    x = torch.randn(1, 8, 400, 352)
+    pred = model_direct(x)
+    assert "cls" in pred
+    assert pred["cls"].shape[1] == 3
+
+
+
 
 

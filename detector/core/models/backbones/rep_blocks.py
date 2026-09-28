@@ -50,8 +50,7 @@ def trans_identity_bn_to_kernel_bias(
     # Depthwise identity kernel (groups=channels) has shape (channels, 1, K, K)
     kernel = torch.zeros((channels, 1, kernel_size, kernel_size), device=bn.weight.device, dtype=bn.weight.dtype)
     center = kernel_size // 2
-    for c in range(channels):
-        kernel[c, 0, center, center] = 1.0
+    kernel[:, 0, center, center] = 1.0
 
     t = (gamma / std).reshape(-1, 1, 1, 1)
     kernel = kernel * t
@@ -122,6 +121,7 @@ class RepConv7x7(nn.Module):
             return self.rbr_reparam(x)
         return self.rbr_conv7(x) + self.rbr_conv3(x) + self.rbr_identity(x)
 
+    @torch.no_grad()
     def get_equivalent_kernel_bias(self) -> Tuple[Tensor, Tensor]:
         """Compute the equivalent single 7x7 DW kernel and bias from the 3 branches."""
         assert not self.deploy, "Already deployed; cannot get equivalent kernel."
@@ -137,10 +137,14 @@ class RepConv7x7(nn.Module):
         bias_fused = bias7 + bias3 + bias_id
         return kernel_fused, bias_fused
 
+    @torch.no_grad()
     def switch_to_deploy(self):
         """Fuse all branches into a single 7x7 Conv2d and delete training branches."""
         if self.deploy:
             return
+        if self.training:
+            self.eval()
+
         kernel, bias = self.get_equivalent_kernel_bias()
         self.rbr_reparam = nn.Conv2d(
             self.channels,
@@ -150,9 +154,11 @@ class RepConv7x7(nn.Module):
             padding=3,
             groups=self.channels,
             bias=True,
+            device=kernel.device,
+            dtype=kernel.dtype,
         )
-        self.rbr_reparam.weight.data.copy_(kernel)
-        self.rbr_reparam.bias.data.copy_(bias)
+        self.rbr_reparam.weight.copy_(kernel)
+        self.rbr_reparam.bias.copy_(bias)
 
         self.__delattr__("rbr_conv7")
         self.__delattr__("rbr_conv3")

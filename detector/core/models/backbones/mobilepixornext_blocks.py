@@ -36,6 +36,7 @@ class MobilePixorNeXtBlock(nn.Module):
         expansion: float = 2.5,
         layer_scale_init: float = 1e-5,
         use_reparam: bool = False,
+        deploy: bool = False,
     ):
         super().__init__()
         if channels < 1:
@@ -46,10 +47,11 @@ class MobilePixorNeXtBlock(nn.Module):
         hidden_dim = int(round(channels * expansion))
         self.channels = channels
         self.use_reparam = bool(use_reparam)
+        self.deploy = bool(deploy)
 
         # 1. Spatial aggregation with a 7x7 kernel or RepConv7x7 multi-branch
         if self.use_reparam:
-            self.dw_block = RepConv7x7(channels)
+            self.dw_block = RepConv7x7(channels, deploy=self.deploy)
             self.dwconv = nn.Identity()
             self.norm1 = nn.Identity()
         else:

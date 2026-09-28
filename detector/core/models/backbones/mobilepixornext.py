@@ -40,12 +40,14 @@ class MobilePixorNeXtBackbone(nn.Module):
         scale_gated_fpn: bool = True,
         expansion: float = 2.5,
         use_reparam: bool = False,
+        deploy: bool = False,
     ):
         super().__init__()
         self.input_channels = input_channels
         self.backbone_out_dim = backbone_out_dim
         self.scale_gated_fpn = scale_gated_fpn
         self.use_reparam = bool(use_reparam)
+        self.deploy = bool(deploy)
 
         # -------------------------------------------------------------
         # 1. Stem (Input 800x704 -> 400x352, stride 2, 32 channels)
@@ -64,8 +66,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down2 = DownsampleBlock(32, 48, stride=2)
         self.stage2 = nn.Sequential(
-            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam),
-            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
+            MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
         )
 
         # -------------------------------------------------------------
@@ -74,10 +76,10 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down3 = DownsampleBlock(48, 96, stride=2)
         self.stage3 = nn.Sequential(
-            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
-            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
-            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
-            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
+            MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
         )
 
         attn_choice = str(c4_attention).lower()
@@ -100,8 +102,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down4 = DownsampleBlock(96, 128, stride=2)
         self.stage4 = nn.Sequential(
-            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam),
-            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam),
+            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
+            MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy),
         )
 
         # -------------------------------------------------------------
