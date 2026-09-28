@@ -131,8 +131,8 @@ in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md
 
 The RichBEV-8 configuration with OGA loss is
 [`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json).
-The backbone-only configuration is
-[`configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`](configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json).
+The MobilePixorNeXt configuration with baseline loss is
+[`configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json`](configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json).
 Use either config with the training command above by replacing its `--config`
 argument. OGA changes training loss only; the four prediction heads and BEV
 postprocessing keep the same output format.

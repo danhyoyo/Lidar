@@ -63,10 +63,11 @@
     "scale_gated_fpn": true,
     "expansion": 2.5,
     "header_use_bn": true,
-    "header_act": "silu"
+    "header_act": "silu",
+    "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn",
+  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_baseline_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
