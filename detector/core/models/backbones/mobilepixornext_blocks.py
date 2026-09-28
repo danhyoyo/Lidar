@@ -135,20 +135,28 @@ class LiteMLARefinement(nn.Module):
         scales: tuple = (5,),
         eps: float = 1e-6,
         layer_scale_init: float = 0.01,
+        qk_norm: str = "none",
     ):
         super().__init__()
         if type(head_dim) is not int or head_dim < 1 or channels % head_dim:
             raise ValueError(f"head_dim ({head_dim}) must divide channels ({channels})")
-        if not isinstance(scales, (list, tuple)) or any(
+        if not isinstance(scales, (list, tuple)) or not scales or any(
             type(scale) is not int or scale < 3 or scale % 2 == 0 for scale in scales
         ) or len(set(scales)) != len(scales):
             raise ValueError("scales must contain distinct odd integers >= 3")
         if isinstance(eps, bool) or not math.isfinite(eps) or eps <= 0:
             raise ValueError("eps must be finite and positive")
+        qk_norm = str(qk_norm).lower()
+        if qk_norm not in {"none", "rmsnorm", "layernorm"}:
+            raise ValueError(
+                "qk_norm must be one of 'none', 'rmsnorm', or 'layernorm'"
+            )
 
         self.channels = channels
         self.head_dim = head_dim
         self.eps = float(eps)
+        self.scales = tuple(scales)
+        self.qk_norm_name = qk_norm
         heads = channels // head_dim
 
         self.qkv = nn.Conv2d(channels, 3 * channels, 1, bias=False)
@@ -170,18 +178,36 @@ class LiteMLARefinement(nn.Module):
                     bias=False,
                 ),
             )
-            for scale in scales
+            for scale in self.scales
         ])
         self.output_projection = nn.Sequential(
-            nn.Conv2d(channels * (1 + len(scales)), channels, 1, bias=False),
+            nn.Conv2d(channels * (1 + len(self.scales)), channels, 1, bias=False),
             nn.BatchNorm2d(channels),
         )
+        if qk_norm == "rmsnorm":
+            self.query_norm = nn.RMSNorm(head_dim, eps=self.eps)
+            self.key_norm = nn.RMSNorm(head_dim, eps=self.eps)
+        elif qk_norm == "layernorm":
+            self.query_norm = nn.LayerNorm(head_dim, eps=self.eps)
+            self.key_norm = nn.LayerNorm(head_dim, eps=self.eps)
+        else:
+            self.query_norm = nn.Identity()
+            self.key_norm = nn.Identity()
         self.layer_scale = _layer_scale(channels, layer_scale_init)
+
+    def _normalize_qk(self, query: Tensor, key: Tensor) -> tuple[Tensor, Tensor]:
+        """Normalize Q/K over head_dim, never over the spatial token axis."""
+        query = self.query_norm(query.transpose(-1, -2)).transpose(-1, -2)
+        key = self.key_norm(key.transpose(-1, -2)).transpose(-1, -2)
+        return query, key
 
     def _linear_attention_core(self, qkv: Tensor) -> Tensor:
         batch, _, height, width = qkv.shape
         packed = qkv.reshape(batch, -1, 3 * self.head_dim, height * width)
         query, key, value = packed.split(self.head_dim, dim=2)
+        query, key = self._normalize_qk(query, key)
+        # Preserve the positive feature map required by the linear-attention
+        # denominator after applying the selected normalization.
         query, key = query.relu(), key.relu()
         numerator = (value @ key.transpose(-1, -2)) @ query
         denominator = key.sum(dim=-1, keepdim=True).transpose(-1, -2) @ query
