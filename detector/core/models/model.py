@@ -37,6 +37,12 @@ class CustomModel(nn.Module):
         """Deploy-time weight fusion for the backbone."""
         if hasattr(self.backbone, "switch_to_deploy"):
             self.backbone.switch_to_deploy()
+        return self
+
+    def export_deploy_state_dict(self):
+        """Switch to deploy mode and return the fused state_dict."""
+        self.switch_to_deploy()
+        return self.state_dict()
 
 
 

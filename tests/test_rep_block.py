@@ -266,6 +266,92 @@ def test_direct_deploy_instantiation():
     assert pred["cls"].shape[1] == 3
 
 
+def test_repconv7x7_train_to_eval_auto_switch():
+    channels = 16
+    rep = RepConv7x7(channels=channels, deploy=False)
+    rep.train()
+    assert rep.training
+
+    # Calling switch_to_deploy on a training model automatically forces eval mode
+    rep.switch_to_deploy()
+    assert not rep.training
+    assert rep.deploy
+    assert hasattr(rep, "rbr_reparam")
+
+
+def test_repconv7x7_float16_preservation():
+    channels = 16
+    rep_fp16 = RepConv7x7(channels=channels, deploy=False).to(torch.float16)
+    rep_fp16.eval()
+
+    x = torch.randn(2, channels, 16, 16, dtype=torch.float16)
+    rep_fp16.switch_to_deploy()
+
+    assert rep_fp16.rbr_reparam.weight.dtype == torch.float16
+    assert rep_fp16.rbr_reparam.bias.dtype == torch.float16
+
+    out = rep_fp16(x)
+    assert out.dtype == torch.float16
+
+
+def test_state_dict_save_and_direct_load():
+    from core.models.model import CustomModel
+
+    cfg_train = {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+        "use_reparam": True,
+    }
+    model_train = CustomModel(cfg_train, num_classes=3, input_channels=8).eval()
+    deploy_state_dict = model_train.export_deploy_state_dict()
+
+    cfg_deploy = {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+        "use_reparam": True,
+        "deploy": True,
+    }
+    model_deploy = CustomModel(cfg_deploy, num_classes=3, input_channels=8).eval()
+    model_deploy.load_state_dict(deploy_state_dict)
+
+    x = torch.randn(1, 8, 400, 352)
+    with torch.no_grad():
+        out1 = model_train(x)["cls"]
+        out2 = model_deploy(x)["cls"]
+
+    diff = torch.max(torch.abs(out1 - out2)).item()
+    assert diff == 0.0, f"Expected exact 0 diff between export and loaded model, got {diff}"
+
+
+def test_rep_model_torch_jit_trace():
+    from core.models.model import CustomModel
+
+    cfg = {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 16,
+        "cls_encoding": "gaussian",
+        "use_reparam": True,
+    }
+    model = CustomModel(cfg, num_classes=3, input_channels=8).eval()
+    model.switch_to_deploy()
+
+    x = torch.randn(1, 8, 400, 352)
+
+    # 1. Trace backbone directly (single Tensor output)
+    traced_backbone = torch.jit.trace(model.backbone, x)
+    out_bb = traced_backbone(x)
+    assert out_bb.shape == (1, 16, 100, 88)
+
+    # 2. Trace full model (dict output with strict=False)
+    traced_model = torch.jit.trace(model, x, strict=False)
+    out_m = traced_model(x)
+    assert "cls" in out_m
+    assert torch.allclose(model(x)["cls"], out_m["cls"])
+
+
+
 
 
 
