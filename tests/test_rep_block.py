@@ -99,3 +99,43 @@ def test_repconv7x7_gradient_flow():
     assert rep.rbr_conv3[1].weight.grad is not None
     assert rep.rbr_identity.weight.grad is not None
     assert x.grad is not None
+
+
+def test_mobilepixornext_block_backward_compat():
+    from core.models.backbones.mobilepixornext_blocks import MobilePixorNeXtBlock
+
+    torch.manual_seed(42)
+    block_default = MobilePixorNeXtBlock(48)
+    assert not getattr(block_default, "use_reparam", False)
+    assert hasattr(block_default, "dwconv")
+    assert hasattr(block_default, "norm1")
+
+    x = torch.randn(2, 48, 20, 20)
+    out = block_default(x)
+    assert out.shape == (2, 48, 20, 20)
+
+
+def test_mobilepixornext_block_reparam_equivalence():
+    from core.models.backbones.mobilepixornext_blocks import MobilePixorNeXtBlock
+
+    torch.manual_seed(42)
+    block = MobilePixorNeXtBlock(48, use_reparam=True)
+    block.eval()
+
+    x = torch.randn(2, 48, 20, 20)
+    with torch.no_grad():
+        out_multi = block(x)
+
+    assert block.use_reparam
+    assert hasattr(block, "dw_block")
+    assert not block.dw_block.deploy
+
+    block.switch_to_deploy()
+    assert block.dw_block.deploy
+
+    with torch.no_grad():
+        out_fused = block(x)
+
+    diff = torch.max(torch.abs(out_multi - out_fused)).item()
+    assert diff < 1e-5, f"Block diff {diff} exceeds tolerance 1e-5"
+
