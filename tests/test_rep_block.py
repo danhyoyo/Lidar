@@ -190,7 +190,7 @@ def test_config_reparam_loading_and_parameter_reduction():
     import json
     from core.models.model import CustomModel
 
-    config_path = ROOT / "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json"
+    config_path = ROOT / "configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json"
     assert config_path.exists(), "Reparam config must exist"
 
     with open(config_path, "r") as f:

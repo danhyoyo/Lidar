@@ -284,7 +284,7 @@ import json
 
 def test_full_iqa_pipeline_integration():
     """Verify that CustomModel and OgaLossStrategy initialize, forward, and backward cleanly using IQA config."""
-    config_path = ROOT / "configs" / "kitti" / "mobilepixornext_oga" / "kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+    config_path = ROOT / "configs" / "kitti" / "iou_aware_header" / "kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
     with open(config_path, "r") as f:
         cfg = json.load(f)
 

@@ -659,7 +659,7 @@ git commit -m "feat(dataset): implement physics-consistent online GT sampler wit
 **Files:**
 - Modify: `detector/core/datasets/dataset.py:135-155`
 - Modify: `detector/core/datasets/dataset.py:498-520`
-- Modify: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`
+- Modify: `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`
 - Test: `tests/test_standard_training_notebook.py`
 - Test: `tests/test_physics_augmentation_e2e.py`
 
@@ -712,7 +712,7 @@ Expected: 74+ passed, 0 failures.
 - [ ] **Step 5: Git commit task 5**
 
 ```bash
-git add detector/core/datasets/dataset.py configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json tests/test_physics_augmentation_e2e.py
+git add detector/core/datasets/dataset.py configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json tests/test_physics_augmentation_e2e.py
 git commit -m "feat(dataset): wire physics-consistent augmentation into KittiDataset and OGA config"
 ```
 

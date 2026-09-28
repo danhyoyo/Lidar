@@ -33,7 +33,7 @@
 | `detector/core/losses/iou_targets.py` | Pure PyTorch tensor target generators for MGIoU and Yaw-Footprint with detached inputs. |
 | `detector/core/losses/strategies/oga.py` | Integrate $\mathcal{L}_{\text{iou}}$ (BCEWithLogits) and dynamic 6-task uncertainty weighting into `OgaLossStrategy`. |
 | `detector/postprocess.py` | Update `filter_pred` to compute $S_{\text{final}} = P_{\text{cls}}^{1 - \alpha} \cdot S_{\text{iou}}^{\alpha}$ and sort NMS candidates accordingly. |
-| `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json` | Complete Pillar 4 experiment configuration. |
+| `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json` | Complete Pillar 4 experiment configuration. |
 | `tests/test_iqa_header.py` | Comprehensive test suite for model head, target generation, loss gradients, NMS reordering, and regression. |
 
 ---
@@ -701,11 +701,11 @@ git commit -m "feat(postprocess): implement calibrated joint quality NMS scoring
 ### Task 5: Establish Experiment Configuration & Full Regression Suite
 
 **Files:**
-- Create: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
+- Create: `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
 - Test: Full regression suite (`tests/`)
 
 **Interfaces:**
-- Produces: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
+- Produces: `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`
 
 - [x] **Step 1: Write integration test for full training pipeline with IQA config**
 
@@ -717,7 +717,7 @@ from core.losses.strategies.oga import OgaLossStrategy
 
 def test_full_iqa_pipeline_integration():
     """Verify that CustomModel and OgaLossStrategy initialize and forward cleanly using config."""
-    config_path = "configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+    config_path = "configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
     with open(config_path, "r") as f:
         cfg = json.load(f)
 
@@ -745,9 +745,9 @@ def test_full_iqa_pipeline_integration():
     out["loss"].backward()
 ```
 
-- [x] **Step 2: Create config file `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`**
+- [x] **Step 2: Create config file `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`**
 
-Create `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
+Create `configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
 ```json
 {
   "backbone": "mobilepixornext_reparam",
@@ -793,6 +793,6 @@ Expected output: All 98+ tests pass cleanly (87 existing + 11 new IQA tests).
 - [x] **Step 4: Commit changes and mark plan complete**
 
 ```bash
-git add configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json tests/test_iqa_header.py docs/superpowers/plans/2026-09-28-iou-aware-quality-header.md
+git add configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json tests/test_iqa_header.py docs/superpowers/plans/2026-09-28-iou-aware-quality-header.md
 git commit -m "feat(config): establish MobilePixorNeXt M4 IQA-Header config and end-to-end integration tests"
 ```

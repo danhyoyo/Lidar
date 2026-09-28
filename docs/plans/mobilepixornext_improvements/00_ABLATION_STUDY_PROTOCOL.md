@@ -28,7 +28,7 @@ All experiments MUST be strictly compared against the official baseline defined 
 | **Detection Header** | 4-Task Decoupled Heads | Conv $3\times 3$ + BN + SiLU $\to$ $1\times 1$ Conv:<br/>1. Classification: 3 ch (Car, Ped, Cyc)<br/>2. Offset: 2 ch ($dx, dy$)<br/>3. Size: 2 ch ($\log l, \log w$)<br/>4. Yaw: 2 ch ($\cos \theta, \sin \theta$) |
 | **Loss Function** | Oriented Geometric Adaptive Loss (OGA) | • **Regression**: MGIoU (Metric-Guided Rotated 3D IoU)<br/>• **Classification**: Dynamic Gaussian Focal Loss with distance-adaptive $\beta$<br/>• **Heading**: Smooth $L_1$ + Continuous angular consistency<br/>• **Multi-Task Balance**: `TemperatureSoftmaxUncertainty` ($T=2.0$) |
 | **Optimizer & Schedule** | AdamW + Cosine Warmup | • Optimizer: AdamW ($lr=1\times 10^{-3}$, $\beta=(0.9, 0.999)$, weight decay $=1\times 10^{-4}$)<br/>• Warmup: 5 epochs linear warmup from $1\times 10^{-6}$<br/>• Annealing: Cosine Annealing to 100 epochs ($lr_{min}=1\times 10^{-6}$)<br/>• Batch size: 16<br/>• Precision: BF16 mixed-precision (`torch.cuda.amp.autocast`) + TF32 enabled |
-| **Config File** | `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json` | Fully synchronized in repository |
+| **Config File** | `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json` | Fully synchronized in repository |
 
 ---
 
@@ -176,17 +176,17 @@ All ablation results must be logged in the following standardized Markdown forma
 ### 7.1. Running the Baseline ($M_0$)
 ```bash
 # Run training in background with BF16 and 100 epochs
-python train.py --config configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json --work-dir runs/ablation_m0_baseline
+python train.py --config configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json --work-dir runs/ablation_m0_baseline
 
 # Evaluate checkpoint on KITTI Validation Set (R40)
-python evaluate.py --config configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json --checkpoint runs/ablation_m0_baseline/best_checkpoint.pth --eval-r40
+python evaluate.py --config configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json --checkpoint runs/ablation_m0_baseline/best_checkpoint.pth --eval-r40
 ```
 
 ### 7.2. Benchmark Speed & Profile Resources
 ```bash
 # Profile FPS, latency, and memory allocation
 python tools/benchmark_model.py \
-    --config configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json \
+    --config configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json \
     --device cuda:0 \
     --warmup 100 \
     --iters 500 \

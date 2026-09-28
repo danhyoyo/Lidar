@@ -45,7 +45,7 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/kitti_uwag_coordatt_aug.json \
+  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name uwag_coordatt_aug_bf16_seed42 \
@@ -68,7 +68,7 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --name uwag_coordatt_aug_bf16_seed42_best \
   --backend pytorch \
   --model /path/to/best.pt \
-  --config configs/kitti/kitti_uwag_coordatt_aug.json \
+  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \
@@ -130,7 +130,7 @@ former backbone name in model configs and code. The architecture is described
 in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
 
 The RichBEV-8 configuration with OGA loss is
-[`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json).
+[`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json).
 The backbone-only configuration is
 [`configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json`](configs/kitti/backbone_branch/kitti_mobilepixornext_litemla.json).
 Use either config with the training command above by replacing its `--config`

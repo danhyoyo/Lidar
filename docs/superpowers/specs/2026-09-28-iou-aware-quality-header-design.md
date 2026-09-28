@@ -115,7 +115,7 @@ $$\mathcal{L}_{\text{iou}} = 0.0 \times \text{pred\_logits}_{\text{iou}}.\text{s
 ## 6. Configuration Management
 
 ### 6.1. Full Pillar 4 Configuration
-`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
+`configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`:
 ```json
 {
   "header_use_iou": true,

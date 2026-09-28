@@ -655,13 +655,13 @@ git commit -m "feat(model): wire structural reparameterization through backbone,
 ### Task 4: Add Experiment Config, Parameter Count Validation & Full Suite Regression Test
 
 **Files:**
-- Modify: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`
-- Create: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json`
+- Modify: `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`
+- Create: `configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`
 - Modify: `tests/test_rep_block.py`
 
 **Interfaces:**
 - Consumes: `CustomModel` with config
-- Produces: `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json`
+- Produces: `configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`
 
 - [x] **Step 1: Write unit test validating parameter reduction and config parity**
 
@@ -672,7 +672,7 @@ from pathlib import Path
 
 
 def test_config_reparam_loading_and_parameter_reduction():
-    config_path = Path("configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json")
+    config_path = Path("configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json")
     assert config_path.exists(), "Reparam config must exist"
 
     with open(config_path, "r") as f:
@@ -712,10 +712,10 @@ Expected: FAIL with `AssertionError: Reparam config must exist`
 
 - [x] **Step 3: Update anchor config and create reparam config**
 
-In `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`:
+In `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`:
 Add `"use_reparam": false` to explicitly state anchor baseline configuration.
 
-Create `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json` matching `kitti_mobilepixornext_litemla_oga.json` with `"use_reparam": true`.
+Create `configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json` matching `kitti_mobilepixornext_litemla_oga.json` with `"use_reparam": true`.
 
 - [x] **Step 4: Run full test suite across the repository**
 

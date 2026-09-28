@@ -98,9 +98,9 @@ Contains:
 4. **`detector/core/models/model.py`**:
    - In `CustomModel`: add `switch_to_deploy(self)` calling `self.backbone.switch_to_deploy()`.
 
-5. **`configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga.json`**:
+5. **`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`**:
    - Add `"use_reparam": false` to anchor config for full backward compatibility.
-   - Create experiment config `configs/kitti/mobilepixornext_oga/kitti_mobilepixornext_litemla_oga_reparam.json` with `"use_reparam": true`.
+   - Create experiment config `configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json` with `"use_reparam": true`.
 
 ---
 
