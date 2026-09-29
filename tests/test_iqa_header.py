@@ -532,3 +532,32 @@ def test_evaluate_kitti_bev_nms_alpha_argument():
         "--nms-alpha", "0.5",
     ])
     assert args.nms_alpha == 0.5
+
+
+def test_filter_pred_blocks_low_cls_background_with_high_iou():
+    """Verify that a background point with low cls_prob (< thres) is blocked even if its IoU score is high."""
+    config = {
+        "geometry": {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        },
+        "nms_alpha": 0.5,
+    }
+    H, W = 200, 176
+    cls_pred = torch.full((1, 1, H, W), -10.0)
+    offset_pred = torch.zeros(1, 2, H, W)
+    size_pred = torch.zeros(1, 2, H, W)
+    yaw_pred = torch.tensor([1.0, 0.0]).view(1, 2, 1, 1).expand(1, 2, H, W)
+    iou_pred = torch.zeros(1, 1, H, W)
+
+    # Pixel (10, 10): cls logit = -4.0 (sigmoid ~ 0.018 < 0.05)
+    # IoU logit = +2.0 (sigmoid ~ 0.88)
+    # Without cls_probs > thres check, ranking_score = sqrt(0.018 * 0.88) ~ 0.126 > 0.05 (leaked!)
+    # With cls_probs > thres check, it must be rejected!
+    cls_pred[0, 0, 10, 10] = -4.0
+    iou_pred[0, 0, 10, 10] = 2.0
+
+    pred = {"cls": cls_pred, "offset": offset_pred, "size": size_pred, "yaw": yaw_pred, "iou": iou_pred}
+    dets = filter_pred(pred, config, out_size_factor=4, thres=0.05, nms_thres=0.5)
+    assert len(dets) == 0, f"Expected 0 detections, got {len(dets)} leaked false positives"
+

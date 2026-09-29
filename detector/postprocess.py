@@ -173,14 +173,20 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     if nms_thres is None:
         pooled = F.max_pool2d(
             ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        selected_idxs = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
+        selected_idxs = torch.logical_and(
+            ranking_scores == pooled,
+            torch.logical_and(ranking_scores > thres, cls_probs > thres),
+        )
         if not selected_idxs.any():
             return _empty_detections()
         export_scores = ranking_scores
     else:
         pooled = F.max_pool2d(
             ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        candidate_mask = torch.logical_and(ranking_scores == pooled, ranking_scores > thres)
+        candidate_mask = torch.logical_and(
+            ranking_scores == pooled,
+            torch.logical_and(ranking_scores > thres, cls_probs > thres),
+        )
         if not candidate_mask.any():
             return _empty_detections()
         export_scores = ranking_scores[candidate_mask]
