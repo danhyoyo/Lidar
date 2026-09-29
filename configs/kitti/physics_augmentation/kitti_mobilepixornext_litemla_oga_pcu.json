@@ -5,9 +5,9 @@
       "enable_gt_sampling": true,
       "gt_database_path": "data/kitti/kitti_gt_database.pkl",
       "sample_counts": {
-        "Car": 8,
-        "Pedestrian": 6,
-        "Cyclist": 6
+        "Car": 3,
+        "Pedestrian": 5,
+        "Cyclist": 5
       },
       "enable_shadow_masking": true,
       "enable_density_subsample": true,
@@ -111,7 +111,7 @@
   },
   "val": {
     "data": "splits/kitti/val.txt",
-    "physical_batch_size": 2,
+    "physical_batch_size": 32,
     "val_every": 1
   },
   "ver": 1

@@ -15,6 +15,7 @@ from typing import Any, Dict
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from common import (
     atomic_torch_save,
@@ -110,12 +111,27 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
     samples = 0
     synchronize_device(device)
     started = time.perf_counter()
-    for batch_index, batch in enumerate(loader, start=1):
+    total_batches = min(len(loader), max_batches) if max_batches else len(loader)
+    val_bar = tqdm(
+        enumerate(loader, start=1),
+        total=total_batches,
+        desc="[Val]",
+        leave=False,
+        dynamic_ncols=True,
+        mininterval=0.5,
+    )
+    for batch_index, batch in val_bar:
         batch = move_tensor_batch(batch, device)
         batch_size = int(batch["voxel"].shape[0])
         with autocast_context(device, precision):
             outputs = model(batch["voxel"])
             losses = criterion(outputs, batch)
+        loss_val = (
+            float(losses["loss"].detach().item())
+            if torch.is_tensor(losses["loss"])
+            else float(losses["loss"])
+        )
+        val_bar.set_postfix({"loss": f"{loss_val:.4f}"})
         for name, value in losses.items():
             scalar = value.detach() if torch.is_tensor(value) else torch.as_tensor(
                 value, device=device
@@ -426,7 +442,15 @@ def main(argv=None) -> None:
         )
         if batches_this_epoch == 0:
             raise RuntimeError("Training loader produced no batches")
-        for batch_index, batch in enumerate(train_loader, start=1):
+        train_bar = tqdm(
+            enumerate(train_loader, start=1),
+            total=batches_this_epoch,
+            desc=f"Epoch {epoch:03d}/{epochs} [Train]",
+            leave=False,
+            dynamic_ncols=True,
+            mininterval=0.5,
+        )
+        for batch_index, batch in train_bar:
             batch = move_tensor_batch(batch, device)
             batch_size = int(batch["voxel"].shape[0])
             with autocast_context(device, precision):
@@ -452,6 +476,12 @@ def main(argv=None) -> None:
                 # and deliberately skipped optimizer.step().
                 if not scaler_enabled or scaler.get_scale() >= previous_scale:
                     update_count += 1
+            train_bar.set_postfix(
+                {
+                    "loss": f"{objective.detach().item():.4f}",
+                    "lr": f"{optimizer.param_groups[0]['lr']:.2e}",
+                }
+            )
             training_sum = training_sum + objective.detach() * batch_size
             training_samples += batch_size
             if batch_index >= batches_this_epoch:
