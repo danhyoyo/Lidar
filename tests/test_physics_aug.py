@@ -1,5 +1,14 @@
+import sys
+from pathlib import Path
 import numpy as np
 import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [
+    str(ROOT / "detector"),
+    str(ROOT / "detector" / "core" / "datasets"),
+]
+
 from core.datasets.utils_1.physics_aug import (
     random_flip_3d,
     distance_adaptive_subsample,
