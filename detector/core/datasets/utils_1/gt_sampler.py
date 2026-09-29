@@ -87,30 +87,19 @@ class GTSampler:
                 for attempt in range(20):
                     # Tries 0-9: Corridor sampling (|Y| <= 14.0m)
                     # Tries 10-19: Fallback to full FOV cone
-                    if attempt < 10:
-                        # Longitudinal depth dispersion: blend database range with uniform road depth
-                        if np.random.random() < 0.6:
-                            r_target = np.random.uniform(8.0, 52.0)
-                        else:
-                            r_target = np.clip(
-                                r_orig + np.random.uniform(-15.0, 15.0),
-                                6.0,
-                                55.0,
-                            )
-                        azimuth_target = np.random.uniform(
-                            -np.pi / 4.0, np.pi / 4.0
-                        )
-                        t_x = r_target * np.cos(azimuth_target)
-                        t_y = np.clip(
-                            r_target * np.sin(azimuth_target), -14.0, 14.0
-                        )
+                    if attempt < 14:
+                        # Depth X: spread evenly along road depth (8m to 52m) to avoid clumping near Ego
+                        t_x = np.random.uniform(8.0, 52.0)
+                        # Lateral Y: spread across driving lanes, bike paths, and sidewalks
+                        if cls_name == "Pedestrian":
+                            t_y = np.random.uniform(-15.0, 15.0)
+                        elif cls_name == "Cyclist":
+                            t_y = np.random.uniform(-13.0, 13.0)
+                        else:  # Car
+                            t_y = np.random.uniform(-9.5, 9.5)
                     else:
-                        r_target = np.random.uniform(6.0, 60.0)
-                        azimuth_target = np.random.uniform(
-                            -np.pi / 4.0, np.pi / 4.0
-                        )
-                        t_x = r_target * np.cos(azimuth_target)
-                        t_y = r_target * np.sin(azimuth_target)
+                        t_x = np.random.uniform(6.0, 60.0)
+                        t_y = np.random.uniform(-25.0, 25.0)
 
                     cand_box = sample["box"].copy()
                     if not is_8col and len(cand_box) >= 8:
@@ -142,22 +131,11 @@ class GTSampler:
                         continue
 
                     if self.enable_physics:
-                        # 2. Ground surface support verification (rejects voids & off-ground)
+                        # 2. Ground surface support verification (range-adaptive ground check)
                         if has_spatial_points:
-                            min_ground_pts = (
-                                6
-                                if r_target > 35.0
-                                else (
-                                    8
-                                    if cls_name in ["Pedestrian", "Cyclist"]
-                                    else 12
-                                )
-                            )
                             has_support, ground_z = check_ground_support(
                                 cand_box,
                                 cur_points,
-                                min_points=min_ground_pts,
-                                radius=2.5,
                             )
                             if not has_support:
                                 continue
@@ -180,6 +158,7 @@ class GTSampler:
                         cand_box = snap_box_to_ground(cand_box, cur_points)
 
                     placed = True
+                    placed_r_target = float(np.sqrt(t_x**2 + t_y**2))
                     break
 
                 if not placed:
@@ -188,10 +167,10 @@ class GTSampler:
                 obj_pts = sample["points"].copy()
                 if self.enable_physics:
                     obj_pts = distance_adaptive_subsample(
-                        obj_pts, cand_box, r_orig, r_target
+                        obj_pts, cand_box, r_orig, placed_r_target
                     )
                     obj_pts = radiometric_intensity_calibrate(
-                        obj_pts, r_orig, r_target
+                        obj_pts, r_orig, placed_r_target
                     )
 
                 # Transform canonical points to target world coordinates

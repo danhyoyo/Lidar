@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 import numpy as np
 from shapely.geometry import Polygon
 
@@ -113,24 +113,39 @@ def snap_box_to_ground(box: np.ndarray, points: np.ndarray) -> np.ndarray:
 def check_ground_support(
     box: np.ndarray,
     points: np.ndarray,
-    min_points: int = 15,
-    radius: float = 2.5,
+    min_points: Optional[int] = None,
+    radius: Optional[float] = None,
 ) -> Tuple[bool, float]:
     """Verifies that a candidate location is supported by a real ground surface.
 
     Returns (has_support, ground_z). Rejects empty voids (e.g. behind buildings).
+    Adapts search radius and point count to LiDAR beam divergence at range.
     """
     if len(points) == 0:
         return False, -1.6
 
     b = box[1:] if len(box) >= 8 else box
     bx, by = b[3], b[4]
+    r_target = float(np.sqrt(bx**2 + by**2))
+
+    if radius is None:
+        radius = float(np.clip(2.5 + 0.03 * max(0.0, r_target - 15.0), 2.5, 4.0))
+
+    if min_points is None:
+        if r_target <= 15.0:
+            min_pts = 6
+        elif r_target <= 30.0:
+            min_pts = 4
+        else:
+            min_pts = 2
+    else:
+        min_pts = min_points
 
     dist_sq = (points[:, 0] - bx) ** 2 + (points[:, 1] - by) ** 2
     local_pts = points[dist_sq <= radius**2]
 
     # Must have minimum points on road
-    if len(local_pts) < min_points:
+    if len(local_pts) < min_pts:
         return False, -1.6
 
     # 5th percentile represents ground level
@@ -140,7 +155,7 @@ def check_ground_support(
 
     # Ground height spread: road surface points must be reasonably consistent
     z_road = local_pts[local_pts[:, 2] <= z_est + 0.35, 2]
-    if len(z_road) < min_points:
+    if len(z_road) < min_pts:
         return False, -1.6
 
     return True, z_est
