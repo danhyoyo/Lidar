@@ -32,9 +32,21 @@ class GTSampler:
             self.database = pickle.load(f)
 
     def __call__(
-        self, lidar: np.ndarray, boxes: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        self,
+        lidar: np.ndarray,
+        boxes: np.ndarray,
+        return_metadata: bool = False,
+    ):
+        meta = {
+            "inserted_boxes": [],
+            "inserted_points": [],
+            "inserted_class_names": [],
+            "num_original_points": len(lidar),
+            "num_original_boxes": len(boxes),
+        }
         if np.random.random() > self.p or len(self.database) == 0:
+            if return_metadata:
+                return lidar, boxes, meta
             return lidar, boxes
 
         new_boxes_list = [b.copy() for b in boxes]
@@ -172,10 +184,19 @@ class GTSampler:
                 new_boxes_list.append(cand_box)
                 inserted += 1
 
+                if return_metadata:
+                    meta["inserted_boxes"].append(cand_box.copy())
+                    meta["inserted_points"].append(world_pts.copy())
+                    meta["inserted_class_names"].append(cls_name)
+
         target_cols = 8 if is_8col else 7
         final_boxes = (
             np.array(new_boxes_list, dtype=np.float32)
             if len(new_boxes_list) > 0
             else np.zeros((0, target_cols), dtype=np.float32)
         )
+        if return_metadata:
+            meta["final_boxes"] = final_boxes
+            meta["num_inserted"] = len(meta["inserted_boxes"])
+            return cur_points.astype(np.float32), final_boxes, meta
         return cur_points.astype(np.float32), final_boxes
