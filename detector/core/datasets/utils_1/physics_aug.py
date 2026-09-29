@@ -40,6 +40,7 @@ def radiometric_intensity_calibrate(
     """Calibrates point intensity according to radar range attenuation equation."""
     if len(points) == 0 or points.shape[1] < 4 or r_origin <= 0 or r_target <= 0:
         return points
+    points = points.copy()
     attenuation = (r_origin / r_target) ** max(0.0, 2.0 - gamma)
     points[:, 3] = np.clip(points[:, 3] * attenuation, 0.0, 1.0)
     return points
@@ -60,15 +61,13 @@ def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
     if r_box < 1.0:
         return bg_points
 
-    # Elevation center is bz + h / 2.0 because bz is bottom
-    z_center = bz + h / 2.0
+    # Exact angular extents from sensor origin
     half_diag = np.sqrt(l**2 + w**2) / 2.0
     delta_azimuth = np.arctan2(half_diag, r_box)
     azimuth_box = np.arctan2(by, bx)
 
-    half_h = h / 2.0
-    delta_elev = np.arctan2(half_h, r_box)
-    elev_box = np.arctan2(z_center, r_box)
+    elev_min = np.arctan2(bz, r_box)
+    elev_max = np.arctan2(bz + h, r_box)
 
     # Spherical coordinates of background points
     r_bg = np.sqrt(bg_points[:, 0] ** 2 + bg_points[:, 1] ** 2)
@@ -77,11 +76,10 @@ def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
 
     # Angular difference with wrap-around in [-pi, pi]
     az_diff = np.abs((azimuth_bg - azimuth_box + np.pi) % (2 * np.pi) - np.pi)
-    elev_diff = np.abs(elev_bg - elev_box)
 
     in_range = r_bg > (r_box + half_diag)
     in_azimuth = az_diff <= delta_azimuth
-    in_elev = elev_diff <= delta_elev
+    in_elev = (elev_bg >= elev_min) & (elev_bg <= elev_max)
 
     shadow_mask = in_range & in_azimuth & in_elev
     return bg_points[~shadow_mask]

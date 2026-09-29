@@ -73,3 +73,14 @@ def test_ground_plane_snapping_bottom():
     )
     snapped_8 = snap_box_to_ground(floating_box_8, ground_pts)
     assert np.isclose(snapped_8[6], z_ground, atol=1e-4)
+
+
+def test_estimate_local_ground_z_outlier_rejection():
+    # Points on overhead structure at z = +1.0
+    overhead_pts = np.zeros((50, 4), dtype=np.float32)
+    overhead_pts[:, 0] = np.random.uniform(8.0, 12.0, 50)
+    overhead_pts[:, 1] = np.random.uniform(-2.0, 2.0, 50)
+    overhead_pts[:, 2] = 1.0
+
+    z_fallback = estimate_local_ground_z(overhead_pts, center_x=10.0, center_y=0.0)
+    assert z_fallback == -1.6  # Default fallback due to outlier rejection

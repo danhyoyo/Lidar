@@ -204,19 +204,20 @@ class Dataset(Dataset):
 
         boxes = self.get_boxes(idx)
 
-        if self.task == "train" and boxes.shape[0] != 0:
+        if self.task == "train":
             if getattr(self, "use_pcu_aug", False):
-                # 1. GT Sampling
+                # 1. GT Sampling (can populate empty scenes)
                 if self.gt_sampler is not None:
                     points, boxes = self.gt_sampler(points, boxes)
-                # 2. Horizontal Flip 3D
-                if getattr(self, "flip_p", 0.0) > 0:
-                    points, boxes = self.random_flip_3d(points, boxes, p=self.flip_p)
-                # 3. Geometric jitter transforms
-                for t in self.transforms:
-                    if boxes.shape[0] > 0:
-                        points, boxes[:, 1:] = t(points, boxes[:, 1:8])
-            else:
+                if boxes.shape[0] != 0:
+                    # 2. Horizontal Flip 3D
+                    if getattr(self, "flip_p", 0.0) > 0:
+                        points, boxes = self.random_flip_3d(points, boxes, p=self.flip_p)
+                    # 3. Geometric jitter transforms
+                    for t in self.transforms:
+                        if boxes.shape[0] > 0:
+                            points, boxes[:, 1:] = t(points, boxes[:, 1:8])
+            elif boxes.shape[0] != 0:
                 points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
         boxes = self.filter_boxes(boxes, data_type)

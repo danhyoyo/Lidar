@@ -42,7 +42,10 @@ def check_box_collision_2d(
 
     b_new = new_box[1:] if len(new_box) >= 8 else new_box
     new_w, new_l, new_x, new_y = b_new[1], b_new[2], b_new[3], b_new[4]
-    new_r = np.sqrt(new_w**2 + new_l**2) / 2.0 + min_margin
+    new_r = (
+        np.sqrt((new_w + 2.0 * min_margin) ** 2 + (new_l + 2.0 * min_margin) ** 2)
+        / 2.0
+    )
 
     b_exist = (
         existing_boxes[:, 1:]
@@ -83,7 +86,10 @@ def estimate_local_ground_z(
     local_pts = points[dist_sq <= radius**2]
     if len(local_pts) < 10:
         return default_z
-    return float(np.percentile(local_pts[:, 2], 5))
+    z_est = float(np.percentile(local_pts[:, 2], 5))
+    if z_est > -0.8 or z_est < -2.5:
+        return default_z
+    return z_est
 
 
 def snap_box_to_ground(box: np.ndarray, points: np.ndarray) -> np.ndarray:

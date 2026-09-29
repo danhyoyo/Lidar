@@ -92,3 +92,47 @@ def test_build_kitti_gt_database_mock(tmp_path):
     assert sample["num_points"] == 10
     assert sample["box"].shape == (8,)
     assert np.isclose(sample["r_origin"], 10.0)
+
+
+def test_build_kitti_gt_database_canonical_yaw_rotation(tmp_path):
+    import pickle
+
+    processed_dir = tmp_path / "processed"
+    pointcloud_dir = processed_dir / "training" / "pointcloud"
+    label_dir = processed_dir / "training" / "label"
+    pointcloud_dir.mkdir(parents=True)
+    label_dir.mkdir(parents=True)
+
+    sample_id = "000002"
+    # Car oriented at yaw = pi/2 (heading along +Y)
+    # Box: h=2.0, w=2.0, l=4.0, x=10.0, y=0.0, z=-1.0, yaw=pi/2
+    # In sensor frame, length 4.0 is along Y, width 2.0 is along X.
+    pts = np.zeros((10, 4), dtype=np.float32)
+    pts[:, 0] = 10.0  # Center of width
+    pts[:, 1] = np.linspace(-1.5, 1.5, 10)  # Along length (in Y)
+    pts[:, 2] = -0.5
+    pts[:, 3] = 0.8
+    pts.tofile(str(pointcloud_dir / f"{sample_id}.bin"))
+
+    label_content = f"Car 2.0 2.0 4.0 10.0 0.0 -1.0 {np.pi/2:.6f}\n"
+    (label_dir / f"{sample_id}.txt").write_text(label_content, encoding="utf-8")
+
+    train_ids_file = tmp_path / "train.txt"
+    train_ids_file.write_text(f"{sample_id}\n", encoding="utf-8")
+
+    out_pkl = tmp_path / "gt_database.pkl"
+    build_kitti_gt_database(
+        str(processed_dir), str(train_ids_file), str(out_pkl), min_points=5
+    )
+
+    with open(out_pkl, "rb") as f:
+        db = pickle.load(f)
+
+    sample = db["Car"][0]
+    can_pts = sample["points"]
+    # In canonical frame (heading along +X), length 4.0 must be along X, width along Y!
+    assert np.all(np.abs(can_pts[:, 0]) <= 2.0)  # l / 2 = 2.0
+    assert np.all(np.abs(can_pts[:, 1]) <= 1.0)  # w / 2 = 1.0
+    # The spread along X must be > 2.0 and along Y must be ~0
+    assert np.ptp(can_pts[:, 0]) > 2.0
+    assert np.ptp(can_pts[:, 1]) < 0.1

@@ -79,8 +79,13 @@ class GTSampler:
                     z_idx = 6 if len(cand_box) >= 8 else 5
                     yaw_idx = 7 if len(cand_box) >= 8 else 6
 
-                    cand_box[x_idx] = r_target * np.cos(azimuth_target)
-                    cand_box[y_idx] = r_target * np.sin(azimuth_target)
+                    t_x = r_target * np.cos(azimuth_target)
+                    t_y = r_target * np.sin(azimuth_target)
+                    if not (2.0 <= t_x <= 65.0 and -35.0 <= t_y <= 35.0):
+                        continue
+
+                    cand_box[x_idx] = t_x
+                    cand_box[y_idx] = t_y
                     cand_box[yaw_idx] = np.random.uniform(-np.pi, np.pi)
 
                     existing_arr = (
@@ -131,7 +136,36 @@ class GTSampler:
                     ]
                 )
 
-                if self.enable_physics:
+                if self.enable_physics and len(cur_points) > 0:
+                    # 1. Remove background points inside newly placed box volume
+                    pts_trans = cur_points[:, :3] - np.array([bx, by, bz])
+                    cos_y_inv = np.cos(-yaw)
+                    sin_y_inv = np.sin(-yaw)
+                    x_rot = (
+                        pts_trans[:, 0] * cos_y_inv
+                        - pts_trans[:, 1] * sin_y_inv
+                    )
+                    y_rot = (
+                        pts_trans[:, 0] * sin_y_inv
+                        + pts_trans[:, 1] * cos_y_inv
+                    )
+                    z_rot = pts_trans[:, 2]
+
+                    b_dim = (
+                        cand_box[1:4]
+                        if len(cand_box) >= 8
+                        else cand_box[:3]
+                    )
+                    h_val, w_val, l_val = b_dim[0], b_dim[1], b_dim[2]
+                    inside_box = (
+                        (np.abs(x_rot) <= l_val / 2.0)
+                        & (np.abs(y_rot) <= w_val / 2.0)
+                        & (z_rot >= 0.0)
+                        & (z_rot <= h_val)
+                    )
+                    cur_points = cur_points[~inside_box]
+
+                    # 2. Mask line-of-sight shadow points behind box
                     cur_points = mask_shadow_points(cur_points, cand_box)
 
                 cur_points = np.vstack([cur_points, world_pts])

@@ -83,11 +83,24 @@ def build_kitti_gt_database(
                 if len(obj_pts) < min_points:
                     continue
 
-                # Canonical points relative to bottom center
-                canonical_pts = obj_pts.copy()
-                canonical_pts[:, 0] -= x
-                canonical_pts[:, 1] -= y
-                canonical_pts[:, 2] -= z
+                # Canonical points relative to bottom center:
+                # 1. Translate to bottom center (x, y, z)
+                # 2. Rotate by -yaw so canonical box heading is along +x (yaw = 0)
+                pts_trans = obj_pts[:, :3] - np.array([x, y, z])
+                cos_y = np.cos(-yaw)
+                sin_y = np.sin(-yaw)
+                x_canonical = pts_trans[:, 0] * cos_y - pts_trans[:, 1] * sin_y
+                y_canonical = pts_trans[:, 0] * sin_y + pts_trans[:, 1] * cos_y
+                z_canonical = pts_trans[:, 2]
+
+                canonical_pts = np.hstack(
+                    [
+                        np.stack(
+                            [x_canonical, y_canonical, z_canonical], axis=1
+                        ),
+                        obj_pts[:, 3:],
+                    ]
+                ).astype(np.float32)
 
                 database[cls_name].append(
                     {

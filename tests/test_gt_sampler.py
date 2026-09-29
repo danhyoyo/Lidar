@@ -73,3 +73,50 @@ def test_gt_sampler_probability_zero(tmp_path):
     aug_points, aug_boxes = sampler(init_points, init_boxes)
     assert len(aug_boxes) == 0
     assert len(aug_points) == 50
+
+
+def test_gt_sampler_removes_interior_background_points(tmp_path):
+    np.random.seed(42)
+    db_file = tmp_path / "mock_db.pkl"
+    # Canonical car points (centered at 0, bottom at 0)
+    car_points = np.zeros((20, 4), dtype=np.float32)
+    car_points[:, 0] = np.linspace(-1.0, 1.0, 20)  # within l=4.5
+    car_points[:, 1] = np.linspace(-0.5, 0.5, 20)  # within w=1.8
+    car_points[:, 2] = np.linspace(0.1, 1.4, 20)  # within h=1.5
+    car_points[:, 3] = 0.9
+
+    mock_db = {
+        "Car": [
+            {
+                "box": np.array(
+                    [0.0, 1.5, 1.8, 4.5, 15.0, 0.0, -1.6, 0.0],
+                    dtype=np.float32,
+                ),
+                "points": car_points,
+                "r_origin": 15.0,
+                "num_points": 20,
+            }
+        ]
+    }
+    with open(db_file, "wb") as f:
+        pickle.dump(mock_db, f)
+
+    sampler = GTSampler(
+        str(db_file), sample_counts={"Car": 1}, p=1.0, enable_physics=True
+    )
+    # Background scene with ground points and a cluster of noise points
+    bg_pts = []
+    for x in np.linspace(5, 40, 30):
+        for y in np.linspace(-10, 10, 20):
+            bg_pts.append([x, y, -1.6, 0.5])
+    init_points = np.array(bg_pts, dtype=np.float32)
+    init_boxes = np.zeros((0, 8), dtype=np.float32)
+
+    aug_points, aug_boxes = sampler(init_points, init_boxes)
+    assert len(aug_boxes) == 1
+    # Verify placed car is within BEV bounds
+    bx = aug_boxes[0, 4]
+    by = aug_boxes[0, 5]
+    assert 2.0 <= bx <= 65.0
+    assert -35.0 <= by <= 35.0
+    assert len(aug_points) > 0
