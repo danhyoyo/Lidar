@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 from shapely.geometry import Polygon
 
@@ -107,3 +108,83 @@ def snap_box_to_ground(box: np.ndarray, points: np.ndarray) -> np.ndarray:
     )
     box_snapped[z_idx] = z_ground
     return box_snapped
+
+
+def check_ground_support(
+    box: np.ndarray,
+    points: np.ndarray,
+    min_points: int = 15,
+    radius: float = 2.5,
+) -> Tuple[bool, float]:
+    """Verifies that a candidate location is supported by a real ground surface.
+
+    Returns (has_support, ground_z). Rejects empty voids (e.g. behind buildings).
+    """
+    if len(points) == 0:
+        return False, -1.6
+
+    b = box[1:] if len(box) >= 8 else box
+    bx, by = b[3], b[4]
+
+    dist_sq = (points[:, 0] - bx) ** 2 + (points[:, 1] - by) ** 2
+    local_pts = points[dist_sq <= radius**2]
+
+    # Must have minimum points on road
+    if len(local_pts) < min_points:
+        return False, -1.6
+
+    # 5th percentile represents ground level
+    z_est = float(np.percentile(local_pts[:, 2], 5))
+    if not (-2.5 <= z_est <= -0.8):
+        return False, -1.6
+
+    # Ground height spread: road surface points must be reasonably consistent
+    z_road = local_pts[local_pts[:, 2] <= z_est + 0.35, 2]
+    if len(z_road) < min_points:
+        return False, -1.6
+
+    return True, z_est
+
+
+def check_static_obstacle_collision(
+    box: np.ndarray,
+    points: np.ndarray,
+    max_obstacle_points: int = 3,
+    min_height_above_ground: float = 0.35,
+) -> bool:
+    """Checks whether the 3D volume of box overlaps with elevated non-ground obstacle points.
+
+    Returns True if collision detected (e.g. wall, pole, hedge, building), False if clear.
+    """
+    if len(points) == 0:
+        return False
+
+    b = box[1:] if len(box) >= 8 else box
+    h, w, l, bx, by, bz, yaw = b[:7]
+
+    # Broad-phase cylinder pre-filter
+    diag = np.sqrt(w**2 + l**2) / 2.0
+    dist_sq = (points[:, 0] - bx) ** 2 + (points[:, 1] - by) ** 2
+    cand_mask = dist_sq <= (diag + 0.2) ** 2
+    if not np.any(cand_mask):
+        return False
+
+    cand_pts = points[cand_mask]
+
+    # Local box coordinates
+    dx = cand_pts[:, 0] - bx
+    dy = cand_pts[:, 1] - by
+    cos_y = np.cos(-yaw)
+    sin_y = np.sin(-yaw)
+    x_rot = dx * cos_y - dy * sin_y
+    y_rot = dx * sin_y + dy * cos_y
+    z_rot = cand_pts[:, 2] - bz
+
+    in_footprint = (np.abs(x_rot) <= l / 2.0) & (np.abs(y_rot) <= w / 2.0)
+    is_elevated = (z_rot >= min_height_above_ground) & (
+        z_rot <= max(h + 1.5, 3.5)
+    )
+
+    obstacle_count = np.sum(in_footprint & is_elevated)
+    return bool(obstacle_count > max_obstacle_points)
+

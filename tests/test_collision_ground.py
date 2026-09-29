@@ -11,6 +11,8 @@ sys.path[:0] = [
 
 from core.datasets.utils_1.collision_ground import (
     check_box_collision_2d,
+    check_ground_support,
+    check_static_obstacle_collision,
     estimate_local_ground_z,
     snap_box_to_ground,
 )
@@ -84,3 +86,67 @@ def test_estimate_local_ground_z_outlier_rejection():
 
     z_fallback = estimate_local_ground_z(overhead_pts, center_x=10.0, center_y=0.0)
     assert z_fallback == -1.6  # Default fallback due to outlier rejection
+
+
+def test_ground_support_valid_road():
+    # Flat ground around (20, 0) with z = -1.6
+    xs = np.linspace(18, 22, 10)
+    ys = np.linspace(-2, 2, 10)
+    xx, yy = np.meshgrid(xs, ys)
+    ground_pts = np.column_stack(
+        [xx.ravel(), yy.ravel(), np.full(100, -1.6), np.ones(100)]
+    ).astype(np.float32)
+
+    cand_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 20.0, 0.0, -1.6, 0.0], dtype=np.float32
+    )
+    has_support, ground_z = check_ground_support(cand_box, ground_pts)
+    assert has_support is True
+    assert -1.7 <= ground_z <= -1.5
+
+
+def test_ground_support_rejects_empty_void():
+    empty_pts = np.zeros((0, 4), dtype=np.float32)
+    cand_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 35.0, 25.0, -1.6, 0.0], dtype=np.float32
+    )
+    has_support, _ = check_ground_support(cand_box, empty_pts)
+    assert has_support is False
+
+
+def test_obstacle_collision_rejects_wall():
+    # Ground at z=-1.6 plus an elevated vertical wall cluster at (20, 0) with z in [-1.0, 1.5]
+    wall_pts = np.array(
+        [
+            [20.0, 0.0, -0.5, 0.5],
+            [20.1, 0.1, 0.0, 0.5],
+            [19.9, -0.1, 0.5, 0.5],
+            [20.0, 0.2, 1.0, 0.5],
+        ],
+        dtype=np.float32,
+    )
+
+    cand_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 20.0, 0.0, -1.6, 0.0], dtype=np.float32
+    )
+    collides = check_static_obstacle_collision(cand_box, wall_pts)
+    assert collides is True
+
+
+def test_obstacle_collision_allows_clean_road():
+    # Points only on the road surface (z = -1.6, local z <= 0.0)
+    road_pts = np.array(
+        [
+            [20.0, 0.0, -1.6, 0.5],
+            [20.1, 0.1, -1.58, 0.5],
+            [19.9, -0.1, -1.62, 0.5],
+        ],
+        dtype=np.float32,
+    )
+
+    cand_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 20.0, 0.0, -1.6, 0.0], dtype=np.float32
+    )
+    collides = check_static_obstacle_collision(cand_box, road_pts)
+    assert collides is False
+
