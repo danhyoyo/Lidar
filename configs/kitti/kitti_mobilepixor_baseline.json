@@ -67,7 +67,7 @@
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.002,
+    "learning_rate": 0.0003,
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,

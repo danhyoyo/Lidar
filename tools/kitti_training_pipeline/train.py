@@ -311,6 +311,9 @@ def main(argv=None) -> None:
     epochs = int(args.epochs if args.epochs is not None else config["train"]["epochs"])
     if epochs < 1:
         raise ValueError("epochs must be positive")
+    config["train"]["physical_batch_size"] = physical_batch_size
+    config["train"]["accumulation_steps"] = accumulation_steps
+    config["train"]["epochs"] = epochs
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
