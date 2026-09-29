@@ -3,9 +3,12 @@ from typing import Dict, Optional, Tuple
 import numpy as np
 from core.datasets.utils_1.collision_ground import (
     check_box_collision_2d,
+    check_ground_support,
+    check_static_obstacle_collision,
     snap_box_to_ground,
 )
 from core.datasets.utils_1.physics_aug import (
+    check_line_of_sight_occlusion,
     distance_adaptive_subsample,
     mask_shadow_points,
     radiometric_intensity_calibrate,
@@ -53,6 +56,12 @@ class GTSampler:
         cur_points = lidar.copy()
         is_8col = boxes.shape[1] >= 8 if len(boxes) > 0 else True
 
+        # Check if the scene contains spatial background points
+        has_spatial_points = len(cur_points) > 0 and (
+            float(np.ptp(cur_points[:, 0])) > 2.0
+            or float(np.ptp(cur_points[:, 1])) > 2.0
+        )
+
         for cls_name, count in self.sample_counts.items():
             if (
                 cls_name not in self.database
@@ -75,12 +84,29 @@ class GTSampler:
                 r_orig = sample["r_origin"]
 
                 placed = False
-                for _ in range(10):
-                    # Pick valid target location in sensor FOV (5m to 65m, azimuth [-45 deg, +45 deg])
-                    r_target = np.clip(
-                        r_orig + np.random.uniform(-5.0, 5.0), 5.0, 65.0
-                    )
-                    azimuth_target = np.random.uniform(-np.pi / 4.0, np.pi / 4.0)
+                for attempt in range(20):
+                    # Tries 0-9: Corridor sampling (|Y| <= 14.0m)
+                    # Tries 10-19: Fallback to full FOV cone
+                    if attempt < 10:
+                        r_target = np.clip(
+                            r_orig + np.random.uniform(-5.0, 5.0), 5.0, 60.0
+                        )
+                        azimuth_target = np.random.uniform(
+                            -np.pi / 4.0, np.pi / 4.0
+                        )
+                        t_x = r_target * np.cos(azimuth_target)
+                        t_y = np.clip(
+                            r_target * np.sin(azimuth_target), -14.0, 14.0
+                        )
+                    else:
+                        r_target = np.clip(
+                            r_orig + np.random.uniform(-5.0, 5.0), 5.0, 65.0
+                        )
+                        azimuth_target = np.random.uniform(
+                            -np.pi / 4.0, np.pi / 4.0
+                        )
+                        t_x = r_target * np.cos(azimuth_target)
+                        t_y = r_target * np.sin(azimuth_target)
 
                     cand_box = sample["box"].copy()
                     if not is_8col and len(cand_box) >= 8:
@@ -91,8 +117,6 @@ class GTSampler:
                     z_idx = 6 if len(cand_box) >= 8 else 5
                     yaw_idx = 7 if len(cand_box) >= 8 else 6
 
-                    t_x = r_target * np.cos(azimuth_target)
-                    t_y = r_target * np.sin(azimuth_target)
                     if not (2.0 <= t_x <= 65.0 and -35.0 <= t_y <= 35.0):
                         continue
 
@@ -100,21 +124,60 @@ class GTSampler:
                     cand_box[y_idx] = t_y
                     cand_box[yaw_idx] = np.random.uniform(-np.pi, np.pi)
 
+                    # 1. Box-to-box collision check
                     existing_arr = (
                         np.array(new_boxes_list)
                         if len(new_boxes_list) > 0
                         else np.zeros((0, len(cand_box)))
                     )
-                    if not check_box_collision_2d(
+                    if check_box_collision_2d(
                         cand_box, existing_arr, min_margin=0.3
                     ):
-                        placed = True
-                        break
+                        continue
+
+                    if self.enable_physics:
+                        # 2. Ground surface support verification (rejects voids & off-ground)
+                        if has_spatial_points:
+                            min_ground_pts = (
+                                6
+                                if r_target > 35.0
+                                else (
+                                    8
+                                    if cls_name in ["Pedestrian", "Cyclist"]
+                                    else 12
+                                )
+                            )
+                            has_support, ground_z = check_ground_support(
+                                cand_box,
+                                cur_points,
+                                min_points=min_ground_pts,
+                                radius=2.5,
+                            )
+                            if not has_support:
+                                continue
+                            cand_box[z_idx] = ground_z
+                        else:
+                            cand_box = snap_box_to_ground(cand_box, cur_points)
+
+                        # 3. Static obstacle collision check (walls, trees, poles)
+                        if check_static_obstacle_collision(
+                            cand_box, cur_points, max_obstacle_points=2
+                        ):
+                            continue
+
+                        # 4. Foreground line-of-sight occlusion check (behind buildings/walls)
+                        if check_line_of_sight_occlusion(
+                            cand_box, cur_points
+                        ):
+                            continue
+                    else:
+                        cand_box = snap_box_to_ground(cand_box, cur_points)
+
+                    placed = True
+                    break
 
                 if not placed:
                     continue
-
-                cand_box = snap_box_to_ground(cand_box, cur_points)
 
                 obj_pts = sample["points"].copy()
                 if self.enable_physics:

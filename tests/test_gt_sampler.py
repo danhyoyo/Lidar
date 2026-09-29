@@ -120,3 +120,40 @@ def test_gt_sampler_removes_interior_background_points(tmp_path):
     assert 2.0 <= bx <= 65.0
     assert -35.0 <= by <= 35.0
     assert len(aug_points) > 0
+
+
+def test_gt_sampler_rejects_placement_inside_wall(tmp_path):
+    db_file = tmp_path / "mock_db.pkl"
+    mock_db = {
+        "Car": [
+            {
+                "box": np.array(
+                    [0.0, 1.5, 1.8, 4.5, 15.0, 0.0, -1.6, 0.0],
+                    dtype=np.float32,
+                ),
+                "points": np.ones((50, 4), dtype=np.float32),
+                "r_origin": 15.0,
+                "num_points": 50,
+            }
+        ]
+    }
+    with open(db_file, "wb") as f:
+        pickle.dump(mock_db, f)
+
+    sampler = GTSampler(
+        str(db_file), sample_counts={"Car": 1}, p=1.0, enable_physics=True
+    )
+
+    # Empty scene with only a massive wall at x in [5, 65], y in [-35, 35], z in [-0.5, 3.0]
+    # No valid flat ground anywhere
+    xs = np.linspace(5, 65, 30)
+    ys = np.linspace(-30, 30, 30)
+    xx, yy = np.meshgrid(xs, ys)
+    wall_pts = np.column_stack(
+        [xx.ravel(), yy.ravel(), np.full(900, 1.0), np.ones(900)]
+    ).astype(np.float32)
+
+    aug_pts, aug_boxes = sampler(wall_pts, np.zeros((0, 8), dtype=np.float32))
+    # Since only elevated obstacles exist and no road support exists, placement must be safely rejected
+    assert len(aug_boxes) == 0
+
