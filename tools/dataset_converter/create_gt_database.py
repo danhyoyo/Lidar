@@ -46,11 +46,39 @@ def build_kitti_gt_database(
     training/pointcloud/{id}.bin and training/label/{id}.txt
     """
     processed_path = Path(processed_dir)
-    pointcloud_dir = processed_path / "training" / "pointcloud"
-    label_dir = processed_path / "training" / "label"
+    if (processed_path / "pointcloud").is_dir():
+        pointcloud_dir = processed_path / "pointcloud"
+        label_dir = (
+            processed_path / "label"
+            if (processed_path / "label").is_dir()
+            else processed_path / "training" / "label"
+        )
+    elif (processed_path / "training" / "pointcloud").is_dir():
+        pointcloud_dir = processed_path / "training" / "pointcloud"
+        label_dir = (
+            processed_path / "training" / "label"
+            if (processed_path / "training" / "label").is_dir()
+            else processed_path / "label"
+        )
+    else:
+        pointcloud_dir = processed_path / "pointcloud"
+        label_dir = processed_path / "label"
+
+    if not pointcloud_dir.is_dir():
+        print(f"Warning: pointcloud directory not found at {pointcloud_dir}")
+    if not label_dir.is_dir():
+        print(f"Warning: label directory not found at {label_dir}")
 
     with open(train_ids_file, "r", encoding="utf-8") as f:
-        identifiers = [line.strip() for line in f if line.strip()]
+        identifiers = []
+        for line in f:
+            val = line.strip()
+            if not val:
+                continue
+            # Handle manifest format like "000000;kitti" or "000000"
+            frame_id = val.split(";")[0].strip()
+            if frame_id:
+                identifiers.append(frame_id)
 
     database: Dict[str, List[Dict[str, Any]]] = {
         "Car": [],
@@ -115,6 +143,12 @@ def build_kitti_gt_database(
     with open(output_file, "wb") as f:
         pickle.dump(database, f)
     total_samples = sum(len(v) for v in database.values())
+    print(f"Processed {len(identifiers)} frames from {train_ids_file}.")
+    print(
+        f"Extracted: Car={len(database['Car'])}, "
+        f"Pedestrian={len(database['Pedestrian'])}, "
+        f"Cyclist={len(database['Cyclist'])}."
+    )
     print(f"Saved GT database to {output_file} with {total_samples} objects.")
 
 
