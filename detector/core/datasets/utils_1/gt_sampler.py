@@ -88,8 +88,17 @@ class GTSampler:
                     # Tries 0-9: Corridor sampling (|Y| <= 14.0m)
                     # Tries 10-19: Fallback to full FOV cone
                     if attempt < 14:
-                        # Depth X: spread evenly along road depth (8m to 52m) to avoid clumping near Ego
-                        t_x = np.random.uniform(8.0, 52.0)
+                        # 3-tier stratified range sampling across full LiDAR range (8m to 65.5m)
+                        # 30% near (8-25m), 40% mid (25-45m), 30% far (45-65.5m) for robust 50-70m mAP
+                        tier = np.random.random()
+                        if tier < 0.30:
+                            t_x = np.random.uniform(8.0, 25.0)
+                        elif tier < 0.70:
+                            t_x = np.random.uniform(25.0, 45.0)
+                        else:
+                            x_far_max = 64.0 if cls_name == "Car" else 65.5
+                            t_x = np.random.uniform(45.0, x_far_max)
+
                         # Lateral Y: spread across driving lanes, bike paths, and sidewalks
                         if cls_name == "Pedestrian":
                             t_y = np.random.uniform(-15.0, 15.0)
@@ -98,7 +107,8 @@ class GTSampler:
                         else:  # Car
                             t_y = np.random.uniform(-9.5, 9.5)
                     else:
-                        t_x = np.random.uniform(6.0, 60.0)
+                        # Fallback sampling across full bounds
+                        t_x = np.random.uniform(6.0, 65.0)
                         t_y = np.random.uniform(-25.0, 25.0)
 
                     cand_box = sample["box"].copy()
@@ -110,7 +120,7 @@ class GTSampler:
                     z_idx = 6 if len(cand_box) >= 8 else 5
                     yaw_idx = 7 if len(cand_box) >= 8 else 6
 
-                    if not (2.0 <= t_x <= 65.0 and -35.0 <= t_y <= 35.0):
+                    if not (2.0 <= t_x <= 66.0 and -35.0 <= t_y <= 35.0):
                         continue
 
                     cand_box[x_idx] = t_x
