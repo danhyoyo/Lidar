@@ -83,3 +83,53 @@ def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
 
     shadow_mask = in_range & in_azimuth & in_elev
     return bg_points[~shadow_mask]
+
+
+def check_line_of_sight_occlusion(
+    box: np.ndarray,
+    points: np.ndarray,
+    max_blocking_points: int = 5,
+    min_obstacle_height: float = 0.4,
+) -> bool:
+    """Verifies that line-of-sight from Ego (0, 0, 0) to box is not blocked by foreground obstacles.
+
+    Returns True if occluded (e.g. placed behind a building, wall, or another vehicle), False if line-of-sight is clear.
+    """
+    if len(points) == 0:
+        return False
+
+    b = box[1:] if len(box) >= 8 else box
+    h, w, l, bx, by, bz, _ = b[:7]
+    r_target = np.sqrt(bx**2 + by**2)
+    if r_target < 3.0:
+        return False
+
+    # Angular wedge spanned by candidate box
+    diag = np.sqrt(w**2 + l**2) / 2.0
+    delta_azimuth = np.arctan2(diag, r_target)
+    azimuth_target = np.arctan2(by, bx)
+
+    # Spherical coordinates of background points
+    r_pts = np.sqrt(points[:, 0] ** 2 + points[:, 1] ** 2)
+
+    # Only consider foreground points between Ego and candidate box (with 1.5m buffer)
+    fg_mask = (r_pts >= 2.0) & (r_pts < (r_target - 1.5))
+    if not np.any(fg_mask):
+        return False
+
+    fg_pts = points[fg_mask]
+    r_fg = r_pts[fg_mask]
+    azimuth_fg = np.arctan2(fg_pts[:, 1], fg_pts[:, 0])
+
+    # Angular difference with wrap-around in [-pi, pi]
+    az_diff = np.abs((azimuth_fg - azimuth_target + np.pi) % (2 * np.pi) - np.pi)
+    in_azimuth = az_diff <= (delta_azimuth * 0.95)
+
+    # Height of ray from Ego (0,0,0) to box bottom at distance r_fg
+    z_ray_bottom = r_fg * (bz / r_target)
+    is_blocking_ray = fg_pts[:, 2] >= (z_ray_bottom - 0.15)
+    is_tall = fg_pts[:, 2] > (bz + min_obstacle_height)
+
+    blocking_count = np.sum(in_azimuth & is_blocking_ray & is_tall)
+    return bool(blocking_count >= max_blocking_points)
+

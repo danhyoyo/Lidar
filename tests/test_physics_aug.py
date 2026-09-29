@@ -14,6 +14,7 @@ from core.datasets.utils_1.physics_aug import (
     distance_adaptive_subsample,
     radiometric_intensity_calibrate,
     mask_shadow_points,
+    check_line_of_sight_occlusion,
 )
 
 
@@ -91,3 +92,35 @@ def test_mask_shadow_points_elevation_and_wrap():
     assert np.allclose(retained[0, :3], [5.0, 0.0, 0.0])
     assert np.allclose(retained[1, :3], [20.0, 10.0, 0.0])
     assert np.allclose(retained[2, :3], [20.0, 0.0, 5.0])
+
+
+def test_line_of_sight_occlusion_behind_wall():
+    # Wall located at x=15, y=0, z in [-1.0, 2.0]
+    wall_ys = np.linspace(-3, 3, 20)
+    wall_zs = np.linspace(-1.0, 2.0, 10)
+    wy, wz = np.meshgrid(wall_ys, wall_zs)
+    wall_pts = np.column_stack(
+        [np.full(200, 15.0), wy.ravel(), wz.ravel(), np.ones(200)]
+    ).astype(np.float32)
+
+    # Target car at x=30, y=0, z=-1.6 (directly behind the wall from Ego at (0,0))
+    car_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 30.0, 0.0, -1.6, 0.0], dtype=np.float32
+    )
+    is_occluded = check_line_of_sight_occlusion(car_box, wall_pts)
+    assert is_occluded is True
+
+
+def test_line_of_sight_occlusion_clear_path():
+    # Ground surface only at z=-1.6, no elevated obstacle between Ego and car
+    road_xs = np.linspace(5, 25, 20)
+    road_pts = np.column_stack(
+        [road_xs, np.zeros(20), np.full(20, -1.6), np.ones(20)]
+    ).astype(np.float32)
+
+    car_box = np.array(
+        [1.0, 1.5, 2.0, 4.5, 30.0, 0.0, -1.6, 0.0], dtype=np.float32
+    )
+    is_occluded = check_line_of_sight_occlusion(car_box, road_pts)
+    assert is_occluded is False
+
