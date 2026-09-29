@@ -301,42 +301,59 @@ def main():
     )
     parser.add_argument(
         "--data-dir",
+        "--data_dir",
+        dest="data_dir",
         type=str,
         default="data/kitti/processed",
         help="Path to processed KITTI dataset.",
     )
     parser.add_argument(
         "--gt-database",
+        "--gt_database",
+        dest="gt_database",
         type=str,
         default="data/kitti/kitti_gt_database.pkl",
         help="Path to kitti_gt_database.pkl.",
     )
     parser.add_argument(
         "--frame-id",
+        "--frame_id",
+        "--frame",
+        dest="frame_id",
         type=str,
         default=None,
         help="Specific frame ID to visualize (e.g. 000001). If omitted, picks randomly.",
     )
     parser.add_argument(
         "--cars",
+        "--car",
+        dest="cars",
         type=int,
-        default=4,
+        default=3,
         help="Number of cars to sample.",
     )
     parser.add_argument(
         "--pedestrians",
+        "--pedestrian",
+        "--peds",
+        dest="pedestrians",
         type=int,
-        default=3,
+        default=6,
         help="Number of pedestrians to sample.",
     )
     parser.add_argument(
         "--cyclists",
+        "--cyclist",
+        "--cycs",
+        dest="cyclists",
         type=int,
-        default=2,
+        default=5,
         help="Number of cyclists to sample.",
     )
     parser.add_argument(
         "--output",
+        "-o",
+        dest="output",
         type=str,
         default="outputs/pcu_augmentation_visualization.png",
         help="Output image path for saving visualization.",
