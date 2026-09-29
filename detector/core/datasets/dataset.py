@@ -137,8 +137,33 @@ class Dataset(Dataset):
         if cls_encoding == "binary":
             self.num_classes += 1
 
-        self.transforms = self.get_transforms(aug_config)
-        self.augment = OneOf(self.transforms, aug_config["p"])
+        self.use_pcu_aug = bool(aug_config.get("use_pcu_aug", False))
+        if self.use_pcu_aug:
+            from utils_1.gt_sampler import GTSampler
+            from utils_1.physics_aug import random_flip_3d
+            self.random_flip_3d = random_flip_3d
+            pcu_cfg = aug_config.get("pcu_aug", {})
+            gt_db_path = pcu_cfg.get("gt_database_path", "")
+            if pcu_cfg.get("enable_gt_sampling", False) and os.path.exists(gt_db_path):
+                self.gt_sampler = GTSampler(
+                    database_path=gt_db_path,
+                    sample_counts=pcu_cfg.get("sample_counts", {"Car": 8, "Pedestrian": 6, "Cyclist": 6}),
+                    p=pcu_cfg.get("p", 1.0),
+                    enable_physics=pcu_cfg.get("enable_shadow_masking", True),
+                )
+            else:
+                self.gt_sampler = None
+            self.flip_p = (
+                aug_config.get("flip_y", {}).get("p", 0.5)
+                if aug_config.get("flip_y", {}).get("use", False)
+                else 0.0
+            )
+            self.transforms = self.get_transforms(aug_config)
+            self.augment = None
+        else:
+            self.gt_sampler = None
+            self.transforms = self.get_transforms(aug_config)
+            self.augment = OneOf(self.transforms, aug_config.get("p", 0.5))
 
         # downsample ratio
         self.out_size_factor = config["out_size_factor"]
@@ -180,7 +205,19 @@ class Dataset(Dataset):
         boxes = self.get_boxes(idx)
 
         if self.task == "train" and boxes.shape[0] != 0:
-            points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
+            if getattr(self, "use_pcu_aug", False):
+                # 1. GT Sampling
+                if self.gt_sampler is not None:
+                    points, boxes = self.gt_sampler(points, boxes)
+                # 2. Horizontal Flip 3D
+                if getattr(self, "flip_p", 0.0) > 0:
+                    points, boxes = self.random_flip_3d(points, boxes, p=self.flip_p)
+                # 3. Geometric jitter transforms
+                for t in self.transforms:
+                    if boxes.shape[0] > 0:
+                        points, boxes[:, 1:] = t(points, boxes[:, 1:8])
+            else:
+                points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
         boxes = self.filter_boxes(boxes, data_type)
 

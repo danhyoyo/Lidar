@@ -62,33 +62,39 @@ class GTSampler:
                 sample = candidates[idx]
                 r_orig = sample["r_origin"]
 
-                # Pick valid target location in sensor FOV (5m to 65m, azimuth [-45 deg, +45 deg])
-                r_target = np.clip(
-                    r_orig + np.random.uniform(-5.0, 5.0), 5.0, 65.0
-                )
-                azimuth_target = np.random.uniform(-np.pi / 4.0, np.pi / 4.0)
+                placed = False
+                for _ in range(10):
+                    # Pick valid target location in sensor FOV (5m to 65m, azimuth [-45 deg, +45 deg])
+                    r_target = np.clip(
+                        r_orig + np.random.uniform(-5.0, 5.0), 5.0, 65.0
+                    )
+                    azimuth_target = np.random.uniform(-np.pi / 4.0, np.pi / 4.0)
 
-                cand_box = sample["box"].copy()
-                if not is_8col and len(cand_box) >= 8:
-                    cand_box = cand_box[1:]  # match 7-col format if needed
+                    cand_box = sample["box"].copy()
+                    if not is_8col and len(cand_box) >= 8:
+                        cand_box = cand_box[1:]  # match 7-col format if needed
 
-                x_idx = 4 if len(cand_box) >= 8 else 3
-                y_idx = 5 if len(cand_box) >= 8 else 4
-                z_idx = 6 if len(cand_box) >= 8 else 5
-                yaw_idx = 7 if len(cand_box) >= 8 else 6
+                    x_idx = 4 if len(cand_box) >= 8 else 3
+                    y_idx = 5 if len(cand_box) >= 8 else 4
+                    z_idx = 6 if len(cand_box) >= 8 else 5
+                    yaw_idx = 7 if len(cand_box) >= 8 else 6
 
-                cand_box[x_idx] = r_target * np.cos(azimuth_target)
-                cand_box[y_idx] = r_target * np.sin(azimuth_target)
-                cand_box[yaw_idx] = np.random.uniform(-np.pi, np.pi)
+                    cand_box[x_idx] = r_target * np.cos(azimuth_target)
+                    cand_box[y_idx] = r_target * np.sin(azimuth_target)
+                    cand_box[yaw_idx] = np.random.uniform(-np.pi, np.pi)
 
-                existing_arr = (
-                    np.array(new_boxes_list)
-                    if len(new_boxes_list) > 0
-                    else np.zeros((0, len(cand_box)))
-                )
-                if check_box_collision_2d(
-                    cand_box, existing_arr, min_margin=0.3
-                ):
+                    existing_arr = (
+                        np.array(new_boxes_list)
+                        if len(new_boxes_list) > 0
+                        else np.zeros((0, len(cand_box)))
+                    )
+                    if not check_box_collision_2d(
+                        cand_box, existing_arr, min_margin=0.3
+                    ):
+                        placed = True
+                        break
+
+                if not placed:
                     continue
 
                 cand_box = snap_box_to_ground(cand_box, cur_points)

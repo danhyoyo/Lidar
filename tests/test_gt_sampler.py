@@ -14,6 +14,7 @@ from core.datasets.utils_1.gt_sampler import GTSampler
 
 
 def test_gt_sampler_with_8col_boxes(tmp_path):
+    np.random.seed(42)
     db_file = tmp_path / "mock_db.pkl"
     mock_db = {
         "Car": [
