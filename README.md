@@ -138,7 +138,9 @@ Pillar improvement configurations:
 - **Pillar 1 (M1 - Structural Reparameterization):** [`configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`](configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json)
 - **Pillar 2 (M2 - Multi-Scale LiteMLA + QK-RMSNorm):** [`configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json`](configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json)
 - **Pillar 4 (M4 - IoU-Aware Quality Header & Joint NMS):** [`configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`](configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json)
+- **Pillar 5 (M5 - Physics-Consistent 3D Augmentation / PCU-Aug):** [`configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json`](configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json)
 - **Cumulative (M1 + M2 + M4):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json)
+- **Cumulative SOTA (M1 + M2 + M4 + M5):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json)
 
 Use any config with the training command above by replacing its `--config`
 argument.
