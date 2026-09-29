@@ -147,7 +147,10 @@ class Dataset(Dataset):
             if pcu_cfg.get("enable_gt_sampling", False) and os.path.exists(gt_db_path):
                 self.gt_sampler = GTSampler(
                     database_path=gt_db_path,
-                    sample_counts=pcu_cfg.get("sample_counts", {"Car": 8, "Pedestrian": 6, "Cyclist": 6}),
+                    sample_counts=pcu_cfg.get(
+                        "sample_counts",
+                        {"Pedestrian": 6, "Cyclist": 5, "Car": 3},
+                    ),
                     p=pcu_cfg.get("p", 1.0),
                     enable_physics=pcu_cfg.get("enable_shadow_masking", True),
                 )

@@ -26,9 +26,9 @@ class GTSampler:
     ):
         self.p = p
         self.sample_counts = sample_counts or {
-            "Car": 8,
             "Pedestrian": 6,
-            "Cyclist": 6,
+            "Cyclist": 5,
+            "Car": 3,
         }
         self.enable_physics = enable_physics
         with open(database_path, "rb") as f:
@@ -88,9 +88,15 @@ class GTSampler:
                     # Tries 0-9: Corridor sampling (|Y| <= 14.0m)
                     # Tries 10-19: Fallback to full FOV cone
                     if attempt < 10:
-                        r_target = np.clip(
-                            r_orig + np.random.uniform(-5.0, 5.0), 5.0, 60.0
-                        )
+                        # Longitudinal depth dispersion: blend database range with uniform road depth
+                        if np.random.random() < 0.6:
+                            r_target = np.random.uniform(8.0, 52.0)
+                        else:
+                            r_target = np.clip(
+                                r_orig + np.random.uniform(-15.0, 15.0),
+                                6.0,
+                                55.0,
+                            )
                         azimuth_target = np.random.uniform(
                             -np.pi / 4.0, np.pi / 4.0
                         )
@@ -99,9 +105,7 @@ class GTSampler:
                             r_target * np.sin(azimuth_target), -14.0, 14.0
                         )
                     else:
-                        r_target = np.clip(
-                            r_orig + np.random.uniform(-5.0, 5.0), 5.0, 65.0
-                        )
+                        r_target = np.random.uniform(6.0, 60.0)
                         azimuth_target = np.random.uniform(
                             -np.pi / 4.0, np.pi / 4.0
                         )
@@ -124,14 +128,16 @@ class GTSampler:
                     cand_box[y_idx] = t_y
                     cand_box[yaw_idx] = np.random.uniform(-np.pi, np.pi)
 
-                    # 1. Box-to-box collision check
+                    # 1. Box-to-box collision check with realistic traffic safety margin
+                    # (1.0m for cars, 0.8m for pedestrians & cyclists to avoid clumping)
+                    box_margin = 1.0 if cls_name == "Car" else 0.8
                     existing_arr = (
                         np.array(new_boxes_list)
                         if len(new_boxes_list) > 0
                         else np.zeros((0, len(cand_box)))
                     )
                     if check_box_collision_2d(
-                        cand_box, existing_arr, min_margin=0.3
+                        cand_box, existing_arr, min_margin=box_margin
                     ):
                         continue
 

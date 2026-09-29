@@ -168,7 +168,7 @@ def plot_pcu_augmentation_sample(
     orig_points, orig_boxes = load_kitti_frame(data_dir, frame_id)
 
     # Instantiate GTSampler with physics enabled
-    counts = sample_counts or {"Car": 4, "Pedestrian": 3, "Cyclist": 2}
+    counts = sample_counts or {"Pedestrian": 6, "Cyclist": 5, "Car": 3}
     sampler = GTSampler(
         database_path=str(gt_database_path),
         sample_counts=counts,
