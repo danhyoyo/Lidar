@@ -176,3 +176,126 @@ def test_build_kitti_gt_database_direct_layout_and_manifest_tags(tmp_path):
     assert "Car" in db
     assert len(db["Car"]) == 1
     assert db["Car"][0]["num_points"] == 10
+
+
+def _write_builder_frame(tmp_path, *, num_points=5, label="Car 2 2 4 10 0 -1 0\n"):
+    processed_dir = tmp_path / "processed"
+    pointcloud_dir = processed_dir / "pointcloud"
+    label_dir = processed_dir / "label"
+    pointcloud_dir.mkdir(parents=True)
+    label_dir.mkdir(parents=True)
+    points = np.tile(np.array([10, 0, 0, 0.5], dtype=np.float32), (num_points, 1))
+    points.tofile(pointcloud_dir / "000001.bin")
+    (label_dir / "000001.txt").write_text(label, encoding="utf-8")
+    train_ids_file = tmp_path / "train.txt"
+    train_ids_file.write_text("000001;kitti\n", encoding="utf-8")
+    return processed_dir, train_ids_file
+
+
+def test_builder_accepts_bare_output_filename(tmp_path, monkeypatch):
+    import pickle
+
+    processed_dir, train_ids_file = _write_builder_frame(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    build_kitti_gt_database(str(processed_dir), str(train_ids_file), "database.pkl")
+
+    with open("database.pkl", "rb") as f:
+        database = pickle.load(f)
+    assert set(database) == {"Car", "Pedestrian", "Cyclist"}
+    assert len(database["Car"]) == 1
+    assert database["Car"][0]["num_points"] == 5
+
+
+@pytest.mark.parametrize("missing_part", ["pointcloud", "label", "both"])
+def test_builder_rejects_all_missing_frames_with_stats(tmp_path, missing_part):
+    processed_dir, train_ids_file = _write_builder_frame(tmp_path)
+    if missing_part in ("pointcloud", "both"):
+        (processed_dir / "pointcloud" / "000001.bin").unlink()
+    if missing_part in ("label", "both"):
+        (processed_dir / "label" / "000001.txt").unlink()
+    output_file = tmp_path / "new_output" / "database.pkl"
+
+    with pytest.raises(ValueError, match="No GT objects extracted") as exc:
+        build_kitti_gt_database(str(processed_dir), str(train_ids_file), str(output_file))
+
+    message = str(exc.value)
+    assert "frames_requested=1" in message
+    assert "frames_processed=0" in message
+    assert "frames_missing=1" in message
+    assert "objects_extracted=0" in message
+    assert str(train_ids_file) in message
+    assert not output_file.parent.exists()
+
+
+@pytest.mark.parametrize(
+    ("num_points", "label", "candidate_objects", "objects_below_min_points"),
+    [
+        (4, "Car 2 2 4 10 0 -1 0\n", 1, 1),
+        (0, "Car 2 2 4 10 0 -1 0\n", 1, 1),
+        (5, "DontCare 2 2 4 10 0 -1 0\n", 0, 0),
+        (5, "", 0, 0),
+    ],
+)
+def test_builder_rejects_no_samples_without_overwriting_output(
+    tmp_path, num_points, label, candidate_objects, objects_below_min_points
+):
+    processed_dir, train_ids_file = _write_builder_frame(
+        tmp_path, num_points=num_points, label=label
+    )
+    output_file = tmp_path / "database.pkl"
+    output_file.write_bytes(b"existing database")
+
+    with pytest.raises(ValueError, match="No GT objects extracted") as exc:
+        build_kitti_gt_database(str(processed_dir), str(train_ids_file), str(output_file))
+
+    message = str(exc.value)
+    assert "frames_requested=1" in message
+    assert "frames_processed=1" in message
+    assert "frames_missing=0" in message
+    assert f"candidate_objects={candidate_objects}" in message
+    assert f"objects_below_min_points={objects_below_min_points}" in message
+    assert "objects_extracted=0" in message
+    assert "min_points=5" in message
+    assert output_file.read_bytes() == b"existing database"
+
+
+def test_builder_rejects_empty_manifest_with_stats(tmp_path):
+    processed_dir, train_ids_file = _write_builder_frame(tmp_path)
+    train_ids_file.write_text("\n  \n;kitti\n", encoding="utf-8")
+    output_file = tmp_path / "database.pkl"
+
+    with pytest.raises(ValueError, match="No GT objects extracted") as exc:
+        build_kitti_gt_database(str(processed_dir), str(train_ids_file), str(output_file))
+
+    assert "frames_requested=0" in str(exc.value)
+    assert "frames_processed=0" in str(exc.value)
+    assert "frames_missing=0" in str(exc.value)
+    assert not output_file.exists()
+
+
+def test_builder_keeps_valid_samples_when_other_frames_are_missing(tmp_path, capsys):
+    import pickle
+
+    processed_dir, train_ids_file = _write_builder_frame(tmp_path)
+    train_ids_file.write_text("000001;kitti\n000002;kitti\n", encoding="utf-8")
+    output_file = tmp_path / "new_output" / "database.pkl"
+
+    build_kitti_gt_database(str(processed_dir), str(train_ids_file), str(output_file))
+
+    with output_file.open("rb") as f:
+        database = pickle.load(f)
+    assert len(database["Car"]) == 1
+    assert "Processed 1/2 frames" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("min_points", [0, -1, 1.5, True])
+def test_builder_rejects_invalid_min_points(tmp_path, min_points):
+    processed_dir, train_ids_file = _write_builder_frame(tmp_path, num_points=0)
+    output_file = tmp_path / "database.pkl"
+
+    with pytest.raises(ValueError, match="min_points must be a positive integer"):
+        build_kitti_gt_database(
+            str(processed_dir), str(train_ids_file), str(output_file), min_points=min_points
+        )
+
+    assert not output_file.exists()

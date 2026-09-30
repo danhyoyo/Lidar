@@ -46,9 +46,10 @@ def create_mock_dataset_env(tmp_path):
                     [0.0, 1.5, 1.8, 4.5, 15.0, 0.0, -1.6, 0.0],
                     dtype=np.float32,
                 ),
-                "points": np.random.uniform(-0.5, 0.5, size=(40, 4)).astype(
-                    np.float32
-                ),
+                "points": np.c_[
+                    np.random.uniform(-0.5, 0.5, size=(40, 3)),
+                    np.full((40, 1), 0.9),
+                ].astype(np.float32),
                 "r_origin": 15.0,
                 "num_points": 40,
             }
@@ -216,3 +217,53 @@ def test_pcu_e2e_training_step(tmp_path):
         for p in model.parameters()
     )
     assert has_grad
+
+
+@pytest.mark.parametrize('task', ['val', 'test'])
+def test_nontrain_database_not_loaded(tmp_path, task):
+    split, cfg, _ = create_mock_dataset_env(tmp_path)
+    aug = {'use_pcu_aug': True, 'pcu_aug': {'enable_gt_sampling': True,
+           'gt_database_path': str(tmp_path / 'missing.pkl')}}
+    ds = Dataset(split, cfg, aug, cls_encoding='gaussian', task=task)
+    assert ds.gt_sampler is None
+    assert torch.isfinite(ds[0]['voxel']).all()
+
+
+@pytest.mark.parametrize('kind', ['missing', 'directory', 'invalid_pickle'])
+def test_training_database_failure_reports_path(tmp_path, kind):
+    split, cfg, _ = create_mock_dataset_env(tmp_path)
+    path = tmp_path / 'bad_database.pkl'
+    if kind == 'directory':
+        path.mkdir()
+    elif kind == 'invalid_pickle':
+        path.write_text('invalid pickle')
+    aug = {'use_pcu_aug': True, 'pcu_aug': {'enable_gt_sampling': True, 'gt_database_path': str(path)}}
+    with pytest.raises((OSError, ValueError), match='bad_database.pkl'):
+        Dataset(split, cfg, aug, cls_encoding='gaussian', task='train')
+
+
+@pytest.mark.parametrize('shadow,density,radiometric', [(True,False,False), (False,True,True)])
+def test_dataset_flags_change_real_output(tmp_path, monkeypatch, shadow, density, radiometric):
+    split, cfg, db = create_mock_dataset_env(tmp_path)
+    # No geometry jitter; sampler-only effects remain visible in encoded BEV.
+    scene = np.array([[50,0,-.3,.3]], np.float32)
+    scene.tofile(Path(cfg['kitti']['location']) / 'pointcloud/000001.bin')
+    aug = {'use_pcu_aug':True, 'pcu_aug':{'enable_gt_sampling':True, 'gt_database_path':db,
+           'sample_counts':{'Car':1}, 'enable_physics':False,
+           'enable_shadow_masking':shadow,'enable_density_subsample':density,
+           'enable_radiometric_calibration':radiometric}}
+    ds = Dataset(split, cfg, aug, cls_encoding='gaussian', task='train')
+    monkeypatch.setattr(ds.gt_sampler, '_propose_pose', lambda cls, attempt:(30,0,0))
+    np.random.seed(5)
+    points, boxes, meta = ds.gt_sampler(scene, ds.get_boxes(0), True)
+    assert len(meta['inserted_points'][0]) == (pytest.approx(10, abs=5) if density else 40)
+    assert np.any(points[:,3] == .3) == (not shadow)
+    np.random.seed(5)
+    item = ds[0]
+    expected = torch.from_numpy(ds.voxelize(points, cfg['kitti']['geometry'])).permute(2,0,1)
+    torch.testing.assert_close(item['voxel'], expected)
+    inserted = meta['inserted_points'][0]
+    if radiometric:
+        assert inserted[:,3].max() < .9
+    else:
+        np.testing.assert_allclose(inserted[:,3], .9)

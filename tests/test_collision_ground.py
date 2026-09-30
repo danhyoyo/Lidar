@@ -150,3 +150,12 @@ def test_obstacle_collision_allows_clean_road():
     collides = check_static_obstacle_collision(cand_box, road_pts)
     assert collides is False
 
+
+
+def test_ground_support_neighborhood_does_not_prove_full_footprint():
+    # This preserved heuristic accepts support outside a narrow footprint.
+    # It documents the limitation for future slope/curb/footprint work.
+    box = np.array([2,.5,4,20,0,-1.6,0], np.float32)
+    points = np.array([[20,1.5,-1.6,.2]] * 4, np.float32)
+    support, height = check_ground_support(box, points)
+    assert support and height == pytest.approx(-1.6)

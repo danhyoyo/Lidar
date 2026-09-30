@@ -1,5 +1,4 @@
 import argparse
-import os
 from pathlib import Path
 import pickle
 from typing import Any, Dict, List
@@ -41,10 +40,17 @@ def build_kitti_gt_database(
     output_file: str,
     min_points: int = 5,
 ):
-    """Extracts objects directly from data/kitti/processed layout:
+    """Extract objects from direct or training/ KITTI processed layouts.
 
-    training/pointcloud/{id}.bin and training/label/{id}.txt
+    Raise ValueError with extraction statistics if no objects can be exported.
     """
+    if (
+        isinstance(min_points, (bool, np.bool_))
+        or not isinstance(min_points, (int, np.integer))
+        or min_points <= 0
+    ):
+        raise ValueError("min_points must be a positive integer")
+
     processed_path = Path(processed_dir)
     if (processed_path / "pointcloud").is_dir():
         pointcloud_dir = processed_path / "pointcloud"
@@ -86,20 +92,27 @@ def build_kitti_gt_database(
         "Cyclist": [],
     }
     class_map = {"Car": 0, "Pedestrian": 1, "Cyclist": 2}
+    frames_processed = 0
+    frames_missing = 0
+    candidate_objects = 0
+    objects_below_min_points = 0
 
     for identifier in identifiers:
         bin_path = pointcloud_dir / f"{identifier}.bin"
         txt_path = label_dir / f"{identifier}.txt"
         if not bin_path.exists() or not txt_path.exists():
+            frames_missing += 1
             continue
 
         points = np.fromfile(bin_path, dtype=np.float32).reshape(-1, 4)
+        frames_processed += 1
 
         with open(txt_path, "r", encoding="utf-8") as f:
             for line in f:
                 parts = line.strip().split()
                 if not parts or parts[0] not in class_map:
                     continue
+                candidate_objects += 1
                 cls_name = parts[0]
                 cls_id = class_map[cls_name]
                 h, w, l, x, y, z, yaw = map(float, parts[1:8])
@@ -109,6 +122,7 @@ def build_kitti_gt_database(
 
                 obj_pts = extract_object_points(points, box_8)
                 if len(obj_pts) < min_points:
+                    objects_below_min_points += 1
                     continue
 
                 # Canonical points relative to bottom center:
@@ -139,11 +153,26 @@ def build_kitti_gt_database(
                     }
                 )
 
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    with open(output_file, "wb") as f:
-        pickle.dump(database, f)
     total_samples = sum(len(v) for v in database.values())
-    print(f"Processed {len(identifiers)} frames from {train_ids_file}.")
+    if total_samples == 0:
+        raise ValueError(
+            f"No GT objects extracted from {train_ids_file}: "
+            f"frames_requested={len(identifiers)}, "
+            f"frames_processed={frames_processed}, frames_missing={frames_missing}, "
+            f"candidate_objects={candidate_objects}, "
+            f"objects_below_min_points={objects_below_min_points}, "
+            f"objects_extracted={total_samples}, min_points={min_points}. "
+            f"Pointcloud directory: {pointcloud_dir}; label directory: {label_dir}"
+        )
+
+    output_path = Path(output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("wb") as f:
+        pickle.dump(database, f)
+    print(
+        f"Processed {frames_processed}/{len(identifiers)} frames from {train_ids_file} "
+        f"(missing={frames_missing})."
+    )
     print(
         f"Extracted: Car={len(database['Car'])}, "
         f"Pedestrian={len(database['Pedestrian'])}, "

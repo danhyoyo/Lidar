@@ -139,21 +139,12 @@ class Dataset(Dataset):
 
         self.use_pcu_aug = bool(aug_config.get("use_pcu_aug", False))
         if self.use_pcu_aug:
-            from utils_1.gt_sampler import GTSampler
+            from utils_1.gt_sampler import build_gt_sampler
             from utils_1.physics_aug import random_flip_3d
             self.random_flip_3d = random_flip_3d
             pcu_cfg = aug_config.get("pcu_aug", {})
-            gt_db_path = pcu_cfg.get("gt_database_path", "")
-            if pcu_cfg.get("enable_gt_sampling", False) and os.path.exists(gt_db_path):
-                self.gt_sampler = GTSampler(
-                    database_path=gt_db_path,
-                    sample_counts=pcu_cfg.get(
-                        "sample_counts",
-                        {"Pedestrian": 6, "Cyclist": 5, "Car": 3},
-                    ),
-                    p=pcu_cfg.get("p", 1.0),
-                    enable_physics=pcu_cfg.get("enable_shadow_masking", True),
-                )
+            if self.task == "train" and pcu_cfg.get("enable_gt_sampling", False):
+                self.gt_sampler = build_gt_sampler(pcu_cfg)
             else:
                 self.gt_sampler = None
             self.flip_p = (
@@ -166,7 +157,11 @@ class Dataset(Dataset):
         else:
             self.gt_sampler = None
             self.transforms = self.get_transforms(aug_config)
-            self.augment = OneOf(self.transforms, aug_config.get("p", 0.5))
+            self.augment = (
+                OneOf(self.transforms, aug_config.get("p", 0.5))
+                if self.transforms
+                else None
+            )
 
         # downsample ratio
         self.out_size_factor = config["out_size_factor"]
@@ -221,7 +216,8 @@ class Dataset(Dataset):
                         if boxes.shape[0] > 0:
                             points, boxes[:, 1:] = t(points, boxes[:, 1:8])
             elif boxes.shape[0] != 0:
-                points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
+                if self.augment is not None:
+                    points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
         boxes = self.filter_boxes(boxes, data_type)
 
@@ -538,16 +534,16 @@ class Dataset(Dataset):
 
     def get_transforms(self, config):
         transforms = []
-        if config["rotation"]["use"]:
+        if config.get("rotation", {}).get("use", False):
             limit_angle = config["rotation"]["limit_angle"]
             p = config["rotation"]["p"]
             transforms.append(Random_Rotation(limit_angle, p))
-        if config["scaling"]["use"]:
+        if config.get("scaling", {}).get("use", False):
             range = config["scaling"]["range"]
             p = config["scaling"]["p"]
             transforms.append(Random_Scaling(range, p))
 
-        if config["translation"]["use"]:
+        if config.get("translation", {}).get("use", False):
             scale = config["translation"]["scale"]
             p = config["translation"]["p"]
             transforms.append(Random_Translation(scale, p))

@@ -9,9 +9,15 @@
         "Pedestrian": 5,
         "Cyclist": 5
       },
+      "enable_physics": true,
+      "enable_ground_validation": true,
+      "enable_static_collision": true,
+      "enable_line_of_sight": true,
       "enable_shadow_masking": true,
       "enable_density_subsample": true,
-      "enable_radiometric_calibration": true
+      "enable_radiometric_calibration": true,
+      "min_visible_points": 5,
+      "min_visible_ratio": 0.5
     },
     "flip_y": {
       "use": true,
