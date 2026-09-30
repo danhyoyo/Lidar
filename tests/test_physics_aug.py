@@ -14,6 +14,7 @@ from core.datasets.utils_1.physics_aug import (
     distance_adaptive_subsample,
     radiometric_intensity_calibrate,
     mask_shadow_points,
+    shadow_point_mask,
     check_line_of_sight_occlusion,
 )
 
@@ -162,3 +163,14 @@ def test_zero_origin_points_do_not_raise_floating_errors():
     with np.errstate(invalid='raise'):
         np.testing.assert_array_equal(mask_shadow_points(points, box), points)
         assert not check_line_of_sight_occlusion(box, points)
+
+
+def test_shadow_and_los_spatial_culling_invariance():
+    box = np.array([2.0, 2.0, 4.0, 20.0, 0.0, -1.0, 0.0], np.float32)
+    # Point at x=10 (in front) must never be shadow
+    in_front = np.array([[10.0, 0.0, 0.0, 0.5]], np.float32)
+    assert not np.any(shadow_point_mask(in_front, box))
+    # Point at x=30 (behind) must never be LOS blocker
+    behind = np.array([[30.0, 0.0, 0.0, 0.5]], np.float32)
+    assert not check_line_of_sight_occlusion(box, behind)
+

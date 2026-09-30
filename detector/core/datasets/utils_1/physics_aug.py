@@ -51,13 +51,47 @@ def shadow_point_mask(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
     """Mask rays that leave the solid oriented box before reaching the point.
 
     Entry/exit are exact box geometry; a 1e-8 meter distance tolerance keeps
-    surface and interior points out of the shadow deletion mask.
+    surface and interior points out of the shadow deletion mask. Uses
+    conservative range and azimuthal sector pre-filtering for acceleration.
     """
-    hit, _, leave = ray_box_intervals(bg_points, box)
-    lengths = np.linalg.norm(bg_points[:, :3], axis=1)
-    mask = np.zeros(len(bg_points), dtype=bool)
-    mask[hit] = (1.0 - leave[hit]) * lengths[hit] > GEOMETRY_EPS_M
-    return mask
+    if len(bg_points) == 0:
+        return np.zeros(0, dtype=bool)
+
+    b = np.asarray(box)[-7:]
+    h, w, l, bx, by, bz, yaw = b
+    r_center = np.hypot(bx, by)
+    r_box = np.hypot(l * 0.5, w * 0.5)
+    r_min = max(0.0, r_center - r_box - GEOMETRY_EPS_M)
+
+    pt_ranges_sq = bg_points[:, 0] ** 2 + bg_points[:, 1] ** 2
+    r_cand = pt_ranges_sq >= (r_min * r_min)
+    if not np.any(r_cand):
+        return np.zeros(len(bg_points), dtype=bool)
+
+    if r_center > r_box:
+        theta_box = np.arctan2(by, bx)
+        sin_dtheta = min(1.0, r_box / r_center)
+        dtheta = np.arcsin(sin_dtheta) + 0.05
+        cand_indices = np.where(r_cand)[0]
+        sub_pts = bg_points[cand_indices]
+        theta_pts = np.arctan2(sub_pts[:, 1], sub_pts[:, 0])
+        angle_diff = np.abs(np.arctan2(np.sin(theta_pts - theta_box), np.cos(theta_pts - theta_box)))
+        angle_cand = angle_diff <= dtheta
+        if not np.any(angle_cand):
+            return np.zeros(len(bg_points), dtype=bool)
+        full_cand = cand_indices[angle_cand]
+    else:
+        full_cand = np.where(r_cand)[0]
+
+    sub_pts = bg_points[full_cand]
+    hit, _, leave = ray_box_intervals(sub_pts, box)
+    sub_lengths = np.sqrt(sub_pts[:, 0] ** 2 + sub_pts[:, 1] ** 2 + sub_pts[:, 2] ** 2)
+    sub_mask = np.zeros(len(sub_pts), dtype=bool)
+    sub_mask[hit] = (1.0 - leave[hit]) * sub_lengths[hit] > GEOMETRY_EPS_M
+
+    out = np.zeros(len(bg_points), dtype=bool)
+    out[full_cand] = sub_mask
+    return out
 
 
 def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
@@ -74,16 +108,43 @@ def check_line_of_sight_occlusion(
     """Heuristic foreground blocker count using exact ray-box intersections.
 
     Only rays entering the box beyond their foreground point can block it.
-    Retain the 2m near-sensor exclusion, height above candidate ground, and
-    1.5m entry-face buffer. Five blockers is a heuristic, not surface coverage.
+    Retains the 2m near-sensor exclusion, height above candidate ground, and
+    1.5m entry-face buffer. Pre-filters points outside bounding range and angle.
     """
-    hit, enter, _ = ray_box_intervals(points, box)
+    if len(points) == 0:
+        return False
+
     b = np.asarray(box)[-7:]
-    ranges = np.linalg.norm(points[:, :2], axis=1)
-    lengths = np.linalg.norm(points[:, :3], axis=1)
-    gap = np.zeros(len(points), dtype=float)
-    gap[hit] = (enter[hit] - 1.0) * lengths[hit]
-    blockers = (hit & (enter > 1.0) & (ranges >= 2.0)
-                & (gap > 1.5)
-                & (points[:, 2] > b[5] + min_obstacle_height))
+    h, w, l, bx, by, bz, yaw = b
+    r_center = np.hypot(bx, by)
+    r_box = np.hypot(l * 0.5, w * 0.5)
+    r_max = r_center + r_box + GEOMETRY_EPS_M
+
+    pt_ranges_sq = points[:, 0] ** 2 + points[:, 1] ** 2
+    cand = (
+        (pt_ranges_sq >= 4.0)
+        & (pt_ranges_sq <= r_max * r_max)
+        & (points[:, 2] > bz + min_obstacle_height)
+    )
+    if np.count_nonzero(cand) < max_blocking_points:
+        return False
+
+    cand_indices = np.where(cand)[0]
+    sub_pts = points[cand_indices]
+
+    if r_center > r_box:
+        theta_box = np.arctan2(by, bx)
+        sin_dtheta = min(1.0, r_box / r_center)
+        dtheta = np.arcsin(sin_dtheta) + 0.05
+        theta_pts = np.arctan2(sub_pts[:, 1], sub_pts[:, 0])
+        angle_diff = np.abs(np.arctan2(np.sin(theta_pts - theta_box), np.cos(theta_pts - theta_box)))
+        angle_cand = angle_diff <= dtheta
+        if np.count_nonzero(angle_cand) < max_blocking_points:
+            return False
+        sub_pts = sub_pts[angle_cand]
+
+    hit, enter, _ = ray_box_intervals(sub_pts, box)
+    sub_lengths = np.sqrt(sub_pts[:, 0] ** 2 + sub_pts[:, 1] ** 2 + sub_pts[:, 2] ** 2)
+    gap = (enter - 1.0) * sub_lengths
+    blockers = hit & (enter > 1.0) & (gap > 1.5)
     return bool(np.count_nonzero(blockers) >= max_blocking_points)
