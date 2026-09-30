@@ -42,6 +42,7 @@ def seed_worker(worker_id: int) -> None:
     worker_seed = torch.initial_seed() % (2**32)
     random.seed(worker_seed)
     np.random.seed(worker_seed)
+    torch.set_num_threads(1)
 
 
 def move_tensor_batch(batch: Dict[str, Any], device: torch.device) -> Dict[str, Any]:
