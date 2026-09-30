@@ -4,10 +4,11 @@
     "pcu_aug": {
       "enable_gt_sampling": true,
       "gt_database_path": "data/kitti/kitti_gt_database.pkl",
+      "p": 0.5,
       "sample_counts": {
-        "Car": 8,
-        "Pedestrian": 6,
-        "Cyclist": 6
+        "Car": 3,
+        "Pedestrian": 5,
+        "Cyclist": 5
       },
       "enable_physics": true,
       "enable_ground_validation": true,

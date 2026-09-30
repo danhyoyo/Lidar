@@ -80,16 +80,18 @@ def _create_mock_env(tmp_path):
     return str(split_file), str(data_dir), str(db_file)
 
 
-@pytest.mark.parametrize("config_path,expected_counts", [
-    (PCU_CONFIG_PATH, {"Car": 3, "Pedestrian": 5, "Cyclist": 5}),
-    (CUMULATIVE_CONFIG_PATH, {"Car": 8, "Pedestrian": 6, "Cyclist": 6}),
+@pytest.mark.parametrize("config_path", [
+    PCU_CONFIG_PATH,
+    CUMULATIVE_CONFIG_PATH,
 ])
-def test_real_configs_effective_settings(tmp_path, config_path, expected_counts):
+def test_real_configs_effective_settings(tmp_path, config_path):
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
 
     pcu_cfg = cfg["augmentation"]["pcu_aug"]
     assert pcu_cfg["enable_gt_sampling"] is True
+    assert pcu_cfg.get("p", 1.0) == 0.5
+    expected_counts = {"Car": 3, "Pedestrian": 5, "Cyclist": 5}
     assert pcu_cfg["sample_counts"] == expected_counts
     for flag in PHYSICS_FLAGS:
         assert flag in pcu_cfg
