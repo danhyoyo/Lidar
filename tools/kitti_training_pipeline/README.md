@@ -86,3 +86,28 @@ submission to KITTI's hidden official test server. The reproduced report is in
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+## Physics-Consistent GT Augmentation (PCU-Aug / GTSampler)
+
+The online copy-paste augmentation framework (`GTSampler`) inserts 3D bounding boxes from a pre-extracted GT database (`kitti_gt_database.pkl`) into training scenes with physical heuristics:
+
+- **Core Copy-Paste Semantics**:
+  - Box collision checks (2D oriented bounding box intersection) and clearing interior scene points within the newly placed box volume **always apply** when an object is placed, even when physics flags are disabled (`enable_physics=False`).
+  - `sample_counts`: Specifies the maximum number of objects to insert per class. Specifying `{}` or count `0` means no objects will be sampled for that class; it does not represent target scene totals.
+  - Active only during training (`task='train'`); validation and testing sets do not instantiate the sampler or load database artifacts.
+
+- **Physics Flags and Precedence**:
+  - `enable_physics`: Legacy preset flag.
+  - Explicit keyword flags override `enable_physics`:
+    - `enable_ground_validation`: Rejects placement if the local LiDAR point neighborhood does not support the object bottom (fallback ground snapping only occurs if ground validation is explicitly disabled).
+    - `enable_static_collision`: Checks if the proposed bounding box collides with existing foreground scene obstacles.
+    - `enable_line_of_sight`: Rejects candidate placement if foreground points occlude the object along sensor rays.
+    - `enable_shadow_masking`: Employs exact ray-oriented box slab intersection to mask background points falling in the ray shadow behind the inserted object.
+    - `enable_density_subsample`: Subsamples points inversely proportional to $(r_{\text{origin}} / r_{\text{target}})^2$ with a 5-point floor to maintain object identification when points $\ge 5$.
+    - `enable_radiometric_calibration`: Attenuates intensity based on radar/lidar range equations.
+  - **Visibility Protection**:
+    - Protects existing and earlier inserted objects: candidate placements that occlude existing objects below `min_visible_points` (default: 5) or `min_visible_ratio` (default: 0.5) are rejected.
+  - **Candidate Pose Proposal**:
+    - Tries 14 corridor attempts (stratified along forward range $X$ near/mid/far with 30%/40%/30% distribution) followed by 6 full-rectangle attempts.
+  - **Heuristic Disclaimer**:
+    - Ray-box intersections use oriented bounding box geometry as an approximation of object volume; they do not simulate detailed vehicle mesh surfaces or LiDAR multi-beam scan lines. Previous claims (such as `<2ms/frame` overhead or mAP gains) are heuristic design goals that must be validated through empirical benchmarking with audit tools (`tools/visualization/audit_gt_sampler.py`).

@@ -168,7 +168,7 @@ def plot_pcu_augmentation_sample(
     orig_points, orig_boxes = load_kitti_frame(data_dir, frame_id)
 
     # Instantiate GTSampler with physics enabled
-    counts = sample_counts or {"Pedestrian": 6, "Cyclist": 5, "Car": 3}
+    counts = {"Pedestrian": 6, "Cyclist": 5, "Car": 3} if sample_counts is None else sample_counts
     sampler = GTSampler(
         database_path=str(gt_database_path),
         sample_counts=counts,
@@ -267,7 +267,7 @@ def plot_pcu_augmentation_sample(
     num_inserted = len(inserted_boxes)
     ax2.set_title(
         f"PCU-Aug Augmented Scene (Physics-Consistent)\n"
-        f"Original: {len(orig_boxes)} + Pasted: {num_inserted} = Total {len(final_boxes)} objects",
+        f"Original: {len(orig_boxes)} + Pasted: {num_inserted} (Inserted: {num_inserted}) = Total {len(final_boxes)} objects",
         fontsize=14,
         color="#FF007F",
         pad=12,

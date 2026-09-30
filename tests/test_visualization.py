@@ -66,3 +66,16 @@ def test_visualize_pcu_aug_mock_scene(tmp_path):
     assert out_img.is_file()
     assert out_img.stat().st_size > 1000
     matplotlib.pyplot.close(fig)
+
+
+def test_visualization_explicit_empty_counts_no_insertions(tmp_path):
+    processed = tmp_path / 'processed'
+    (processed / 'pointcloud').mkdir(parents=True)
+    (processed / 'label').mkdir()
+    np.array([[10,0,-1.6,.5]], np.float32).tofile(processed / 'pointcloud/000001.bin')
+    (processed / 'label/000001.txt').write_text('')
+    database = tmp_path / 'empty.pkl'
+    database.write_bytes(pickle.dumps({}))
+    fig = plot_pcu_augmentation_sample(processed, database, frame_id='000001', sample_counts={})
+    assert 'Inserted: 0' in fig.axes[1].get_title()
+    matplotlib.pyplot.close(fig)
