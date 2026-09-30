@@ -6,9 +6,9 @@
       "gt_database_path": "data/kitti/kitti_gt_database.pkl",
       "p": 0.5,
       "sample_counts": {
-        "Car": 3,
-        "Pedestrian": 5,
-        "Cyclist": 5
+        "Car": 1,
+        "Pedestrian": 3,
+        "Cyclist": 3
       },
       "enable_physics": true,
       "enable_ground_validation": true,
