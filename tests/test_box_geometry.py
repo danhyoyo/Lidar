@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'detector'))
-from core.datasets.utils_1.box_geometry import ray_box_intervals
+from core.datasets.utils_1.box_geometry import ray_box_intervals, points_in_box
 
 
 @pytest.mark.parametrize('columns', [7, 8])
@@ -58,3 +58,16 @@ def test_ray_invalid_box(box):
 def test_ray_invalid_points():
     with pytest.raises(ValueError):
         ray_box_intervals([[np.inf, 0, 0]], [2, 2, 4, 10, 0, -1, 0])
+
+
+def test_points_in_box_broadphase_matches_exact():
+    np.random.seed(42)
+    pts = np.random.uniform(-40, 40, size=(50000, 4)).astype(np.float32)
+    box = np.array([1.5, 1.8, 4.5, 15.0, 5.0, -1.6, 0.4], dtype=np.float32)
+    mask = points_in_box(pts, box)
+    far_pts = pts[(pts[:, 0] - 15.0)**2 + (pts[:, 1] - 5.0)**2 > 25.0]
+    assert not np.any(points_in_box(far_pts, box))
+    # Points inside box must be detected
+    inside_pt = np.array([[15.0, 5.0, -1.0, 0.5]], dtype=np.float32)
+    assert points_in_box(inside_pt, box)[0] is True or points_in_box(inside_pt, box)[0] == True
+

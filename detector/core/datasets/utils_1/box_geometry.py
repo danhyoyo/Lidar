@@ -31,11 +31,30 @@ def _local_points(points, b):
 def points_in_box(points, box):
     """Return inclusive volume membership, preserving overlapping memberships."""
     b = _box_values(box)
-    local = _local_points(points, b)
-    return ((np.abs(local[:, 0]) <= b[2] / 2 + GEOMETRY_EPS_M)
-            & (np.abs(local[:, 1]) <= b[1] / 2 + GEOMETRY_EPS_M)
-            & (local[:, 2] >= -GEOMETRY_EPS_M)
-            & (local[:, 2] <= b[0] + GEOMETRY_EPS_M))
+    pts = np.asarray(points, dtype=np.float64)
+    if pts.ndim != 2 or pts.shape[1] < 3 or not np.isfinite(pts).all():
+        raise ValueError('points must have shape (N, >=3) and finite values')
+    if len(pts) == 0:
+        return np.zeros(0, dtype=bool)
+
+    h, w, l, bx, by, bz, yaw = b
+    r_sq = (w * 0.5) ** 2 + (l * 0.5) ** 2 + GEOMETRY_EPS_M
+    dx = pts[:, 0] - bx
+    dy = pts[:, 1] - by
+    dz = pts[:, 2] - bz
+    cand = (dx * dx + dy * dy <= r_sq) & (dz >= -GEOMETRY_EPS_M) & (dz <= h + GEOMETRY_EPS_M)
+    if not np.any(cand):
+        return np.zeros(len(pts), dtype=bool)
+
+    cand_indices = np.where(cand)[0]
+    local = _local_points(pts[cand_indices], b)
+    sub_mask = ((np.abs(local[:, 0]) <= l * 0.5 + GEOMETRY_EPS_M)
+                & (np.abs(local[:, 1]) <= w * 0.5 + GEOMETRY_EPS_M)
+                & (local[:, 2] >= -GEOMETRY_EPS_M)
+                & (local[:, 2] <= h + GEOMETRY_EPS_M))
+    out = np.zeros(len(pts), dtype=bool)
+    out[cand_indices] = sub_mask
+    return out
 
 
 def ray_box_intervals(points, box):
