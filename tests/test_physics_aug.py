@@ -124,3 +124,41 @@ def test_line_of_sight_occlusion_clear_path():
     is_occluded = check_line_of_sight_occlusion(car_box, road_pts)
     assert is_occluded is False
 
+
+
+@pytest.mark.parametrize('yaw,side,behind', [(0, [20, 3, 0, .3], [12.1, 0, 0, .4]),
+                                            (np.pi/2, [20, 5, 0, .3], [11.1, 0, 0, .4])])
+def test_shadow_exact_oriented_box_regressions(yaw, side, behind):
+    box = np.array([2, 2, 4, 10, 0, -1, yaw])
+    points = np.array([side, behind, [5, 0, 0, .5], [20, 0, 5, .6], [20, 0, -5, .7]])
+    retained = mask_shadow_points(points, box)
+    np.testing.assert_array_equal(retained, points[[0, 2, 3, 4]])
+
+
+def test_shadow_keeps_surface_and_interior():
+    box = np.array([2, 2, 4, 10, 0, -1, 0])
+    points = np.array([[12, 0, 0, .2], [10, 0, 0, .3], [12.0001, 0, 0, .4]])
+    np.testing.assert_array_equal(mask_shadow_points(points, box), points[:2])
+
+
+@pytest.mark.parametrize('point', [[15, 0, 5, .5], [40, 0, -.3, .5], [15, 5, -.3, .5]])
+def test_line_of_sight_excludes_non_intersecting_foreground(point):
+    box = np.array([1.5, 2, 4.5, 30, 0, -1.6, 0])
+    assert not check_line_of_sight_occlusion(box, np.tile(point, (5, 1)))
+
+
+def test_line_of_sight_yaw_and_entry_face_buffer():
+    box = np.array([2, 2, 10, 30, 0, -1, 0])
+    # x=24 is only 1m ahead of the entry face, despite being 6m from center.
+    assert not check_line_of_sight_occlusion(box, np.tile([24, 0, 0, .5], (5, 1)))
+    # Rotation makes the entry face x=29, so the same foreground now blocks it.
+    box[-1] = np.pi / 2
+    assert check_line_of_sight_occlusion(box, np.tile([24, 0, 0, .5], (5, 1)))
+
+
+def test_zero_origin_points_do_not_raise_floating_errors():
+    box = np.array([2, 2, 4, 10, 0, -1, 0])
+    points = np.zeros((3, 4))
+    with np.errstate(invalid='raise'):
+        np.testing.assert_array_equal(mask_shadow_points(points, box), points)
+        assert not check_line_of_sight_occlusion(box, points)

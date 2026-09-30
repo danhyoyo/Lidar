@@ -1,4 +1,5 @@
 import numpy as np
+from core.datasets.utils_1.box_geometry import GEOMETRY_EPS_M, ray_box_intervals
 
 
 def random_flip_3d(points: np.ndarray, boxes: np.ndarray, p: float = 0.5):
@@ -46,43 +47,22 @@ def radiometric_intensity_calibrate(
     return points
 
 
-def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
-    """Removes background points lying in the line-of-sight shadow frustum behind box.
+def shadow_point_mask(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
+    """Mask rays that leave the solid oriented box before reaching the point.
 
-    box: 7 elements [h, w, l, bx, by, bz, yaw] (bz is BOTTOM center)
-         or 8 elements [cls, h, w, l, bx, by, bz, yaw]
+    Entry/exit are exact box geometry; a 1e-8 meter distance tolerance keeps
+    surface and interior points out of the shadow deletion mask.
     """
-    if len(bg_points) == 0:
-        return bg_points
+    hit, _, leave = ray_box_intervals(bg_points, box)
+    lengths = np.linalg.norm(bg_points[:, :3], axis=1)
+    mask = np.zeros(len(bg_points), dtype=bool)
+    mask[hit] = (1.0 - leave[hit]) * lengths[hit] > GEOMETRY_EPS_M
+    return mask
 
-    b = box[1:] if len(box) >= 8 else box
-    h, w, l, bx, by, bz, yaw = b[:7]
-    r_box = np.sqrt(bx**2 + by**2)
-    if r_box < 1.0:
-        return bg_points
 
-    # Exact angular extents from sensor origin
-    half_diag = np.sqrt(l**2 + w**2) / 2.0
-    delta_azimuth = np.arctan2(half_diag, r_box)
-    azimuth_box = np.arctan2(by, bx)
-
-    elev_min = np.arctan2(bz, r_box)
-    elev_max = np.arctan2(bz + h, r_box)
-
-    # Spherical coordinates of background points
-    r_bg = np.sqrt(bg_points[:, 0] ** 2 + bg_points[:, 1] ** 2)
-    azimuth_bg = np.arctan2(bg_points[:, 1], bg_points[:, 0])
-    elev_bg = np.arctan2(bg_points[:, 2], np.maximum(r_bg, 1e-6))
-
-    # Angular difference with wrap-around in [-pi, pi]
-    az_diff = np.abs((azimuth_bg - azimuth_box + np.pi) % (2 * np.pi) - np.pi)
-
-    in_range = r_bg > (r_box + half_diag)
-    in_azimuth = az_diff <= delta_azimuth
-    in_elev = (elev_bg >= elev_min) & (elev_bg <= elev_max)
-
-    shadow_mask = in_range & in_azimuth & in_elev
-    return bg_points[~shadow_mask]
+def mask_shadow_points(bg_points: np.ndarray, box: np.ndarray) -> np.ndarray:
+    """Remove points behind the oriented box, keeping point order/features."""
+    return bg_points[~shadow_point_mask(bg_points, box)]
 
 
 def check_line_of_sight_occlusion(
@@ -91,45 +71,19 @@ def check_line_of_sight_occlusion(
     max_blocking_points: int = 5,
     min_obstacle_height: float = 0.4,
 ) -> bool:
-    """Verifies that line-of-sight from Ego (0, 0, 0) to box is not blocked by foreground obstacles.
+    """Heuristic foreground blocker count using exact ray-box intersections.
 
-    Returns True if occluded (e.g. placed behind a building, wall, or another vehicle), False if line-of-sight is clear.
+    Only rays entering the box beyond their foreground point can block it.
+    Retain the 2m near-sensor exclusion, height above candidate ground, and
+    1.5m entry-face buffer. Five blockers is a heuristic, not surface coverage.
     """
-    if len(points) == 0:
-        return False
-
-    b = box[1:] if len(box) >= 8 else box
-    h, w, l, bx, by, bz, _ = b[:7]
-    r_target = np.sqrt(bx**2 + by**2)
-    if r_target < 3.0:
-        return False
-
-    # Angular wedge spanned by candidate box
-    diag = np.sqrt(w**2 + l**2) / 2.0
-    delta_azimuth = np.arctan2(diag, r_target)
-    azimuth_target = np.arctan2(by, bx)
-
-    # Spherical coordinates of background points
-    r_pts = np.sqrt(points[:, 0] ** 2 + points[:, 1] ** 2)
-
-    # Only consider foreground points between Ego and candidate box (with 1.5m buffer)
-    fg_mask = (r_pts >= 2.0) & (r_pts < (r_target - 1.5))
-    if not np.any(fg_mask):
-        return False
-
-    fg_pts = points[fg_mask]
-    r_fg = r_pts[fg_mask]
-    azimuth_fg = np.arctan2(fg_pts[:, 1], fg_pts[:, 0])
-
-    # Angular difference with wrap-around in [-pi, pi]
-    az_diff = np.abs((azimuth_fg - azimuth_target + np.pi) % (2 * np.pi) - np.pi)
-    in_azimuth = az_diff <= (delta_azimuth * 0.95)
-
-    # Height of ray from Ego (0,0,0) to box bottom at distance r_fg
-    z_ray_bottom = r_fg * (bz / r_target)
-    is_blocking_ray = fg_pts[:, 2] >= (z_ray_bottom - 0.15)
-    is_tall = fg_pts[:, 2] > (bz + min_obstacle_height)
-
-    blocking_count = np.sum(in_azimuth & is_blocking_ray & is_tall)
-    return bool(blocking_count >= max_blocking_points)
-
+    hit, enter, _ = ray_box_intervals(points, box)
+    b = np.asarray(box)[-7:]
+    ranges = np.linalg.norm(points[:, :2], axis=1)
+    lengths = np.linalg.norm(points[:, :3], axis=1)
+    gap = np.zeros(len(points), dtype=float)
+    gap[hit] = (enter[hit] - 1.0) * lengths[hit]
+    blockers = (hit & (enter > 1.0) & (ranges >= 2.0)
+                & (gap > 1.5)
+                & (points[:, 2] > b[5] + min_obstacle_height))
+    return bool(np.count_nonzero(blockers) >= max_blocking_points)
