@@ -17,6 +17,69 @@ def read_json(path: Path | str) -> Dict[str, Any]:
         return json.load(stream)
 
 
+def generate_run_name(
+    config: Dict[str, Any],
+    seed: int | None = None,
+    effective_batch_size: int | None = None,
+    extra_tags: list[str] | None = None,
+) -> str:
+    """Generate standardized run name following:
+    {backbone}-{augmentation}-{loss}-{bev_encoder}-{iou}[-{extra}]
+    """
+    model_cfg = config.get("model", {})
+    backbone = str(model_cfg.get("backbone", "unknown")).lower()
+
+    # Augmentation
+    aug_cfg = config.get("augmentation", {})
+    if aug_cfg.get("use_pcu_aug", False):
+        augmentation = "pcu"
+    elif aug_cfg.get("p", 0.0) > 0.0 and any(
+        isinstance(v, dict) and v.get("use", False) for v in aug_cfg.values()
+    ):
+        augmentation = "standard_aug"
+    elif aug_cfg.get("p", 0.0) > 0.0:
+        augmentation = "standard_aug"
+    else:
+        augmentation = "noaug"
+
+    # Loss
+    loss_cfg = config.get("loss", {})
+    loss_raw = str(loss_cfg.get("name", "baseline")).lower()
+    loss_name = loss_raw if loss_raw.endswith("_loss") else f"{loss_raw}_loss"
+
+    # BEV encoder
+    bev_cfg = config.get("data", {}).get("bev_encoding", {})
+    bev_name = bev_cfg.get("name")
+    if bev_name == "rich8":
+        bev_encoder = "rich8"
+    else:
+        bev_encoder = "legacy35"
+
+    # IOU Quality Aware
+    if model_cfg.get("header_use_iou", False) or loss_cfg.get("use_iou", False):
+        iou = "iqa"
+    else:
+        iou = "baseline_iou"
+
+    parts = [backbone, augmentation, loss_name, bev_encoder, iou]
+
+    extras: list[str] = []
+    if model_cfg.get("scale_gated_fpn", False):
+        extras.append("sgfpn")
+    if model_cfg.get("use_reparam", False):
+        extras.append("reparam")
+    if seed is not None:
+        extras.append(f"s{seed}")
+    if effective_batch_size is not None:
+        extras.append(f"eb{effective_batch_size}")
+    if extra_tags:
+        extras.extend(extra_tags)
+
+    if extras:
+        return f"{'-'.join(parts)}-{'-'.join(extras)}"
+    return "-".join(parts)
+
+
 def write_json(path: Path | str, value: Any) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

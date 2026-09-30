@@ -15,12 +15,12 @@ from typing import Any, Dict
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 from common import (
     atomic_torch_save,
     build_model,
     configure_detector_imports,
+    generate_run_name,
     normalize_state_dict,
     read_json,
     write_json,
@@ -105,7 +105,15 @@ def checkpoint_payload(
 
 
 @torch.no_grad()
-def validate(model, criterion, loader, device, precision, max_batches=0):
+def validate(
+    model,
+    criterion,
+    loader,
+    device,
+    precision,
+    max_batches=0,
+    log_interval: int = 20,
+):
     model.eval()
     criterion.eval()
     sums: Dict[str, torch.Tensor] = {}
@@ -113,15 +121,7 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
     synchronize_device(device)
     started = time.perf_counter()
     total_batches = min(len(loader), max_batches) if max_batches else len(loader)
-    val_bar = tqdm(
-        enumerate(loader, start=1),
-        total=total_batches,
-        desc="[Val]",
-        leave=False,
-        dynamic_ncols=True,
-        mininterval=0.5,
-    )
-    for batch_index, batch in val_bar:
+    for batch_index, batch in enumerate(loader, start=1):
         batch = move_tensor_batch(batch, device)
         batch_size = int(batch["voxel"].shape[0])
         with autocast_context(device, precision):
@@ -132,13 +132,19 @@ def validate(model, criterion, loader, device, precision, max_batches=0):
             if torch.is_tensor(losses["loss"])
             else float(losses["loss"])
         )
-        val_bar.set_postfix({"loss": f"{loss_val:.4f}"})
         for name, value in losses.items():
             scalar = value.detach() if torch.is_tensor(value) else torch.as_tensor(
                 value, device=device
             )
             sums[name] = sums.get(name, torch.zeros_like(scalar)) + scalar * batch_size
         samples += batch_size
+        if log_interval > 0 and (
+            batch_index % log_interval == 0 or batch_index == total_batches
+        ):
+            print(
+                f"[Val] Step {batch_index:03d}/{total_batches:03d} | Loss: {loss_val:.4f}",
+                flush=True,
+            )
         if max_batches and batch_index >= max_batches:
             break
     if not samples:
@@ -177,6 +183,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--amp", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-train-batches", type=int, default=0)
     parser.add_argument("--max-val-batches", type=int, default=0)
+    parser.add_argument(
+        "--log-interval",
+        type=int,
+        default=20,
+        help="batch interval for progress logging",
+    )
     return parser
 
 
@@ -372,10 +384,7 @@ def main(argv=None) -> None:
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
 
     loss_name = config.get("loss", {}).get("name", "baseline")
-    default_name = (
-        f"{config['model']['backbone']}_{loss_name}_{precision}_"
-        f"seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    )
+    default_name = generate_run_name(config, seed=seed)
     run_dir = args.output_root.expanduser().resolve() / (args.run_name or default_name)
     checkpoints_dir = run_dir / "checkpoints"
     best_dir = run_dir / "best_checkpoints"
@@ -433,15 +442,17 @@ def main(argv=None) -> None:
             print(f"torch.compile warmup skipped: {exc}")
 
     log_path = run_dir / "metrics.jsonl"
-    print(f"Run directory: {run_dir}")
+    print(f"Run directory: {run_dir}", flush=True)
     print(
         f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-        f"precision={precision}"
+        f"precision={precision}",
+        flush=True,
     )
     print(
         f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
         f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
-        f"effective batch={physical_batch_size * accumulation_steps}"
+        f"effective batch={physical_batch_size * accumulation_steps}",
+        flush=True,
     )
 
     for epoch in range(start_epoch + 1, epochs + 1):
@@ -460,15 +471,7 @@ def main(argv=None) -> None:
         )
         if batches_this_epoch == 0:
             raise RuntimeError("Training loader produced no batches")
-        train_bar = tqdm(
-            enumerate(train_loader, start=1),
-            total=batches_this_epoch,
-            desc=f"Epoch {epoch:03d}/{epochs} [Train]",
-            leave=False,
-            dynamic_ncols=True,
-            mininterval=0.5,
-        )
-        for batch_index, batch in train_bar:
+        for batch_index, batch in enumerate(train_loader, start=1):
             batch = move_tensor_batch(batch, device)
             batch_size = int(batch["voxel"].shape[0])
             with autocast_context(device, precision):
@@ -494,12 +497,18 @@ def main(argv=None) -> None:
                 # and deliberately skipped optimizer.step().
                 if not scaler_enabled or scaler.get_scale() >= previous_scale:
                     update_count += 1
-            train_bar.set_postfix(
-                {
-                    "loss": f"{objective.detach().item():.4f}",
-                    "lr": f"{optimizer.param_groups[0]['lr']:.2e}",
-                }
-            )
+            if args.log_interval > 0 and (
+                batch_index % args.log_interval == 0
+                or batch_index == batches_this_epoch
+            ):
+                current_loss = float(objective.detach().item())
+                current_lr = float(optimizer.param_groups[0]["lr"])
+                print(
+                    f"[Epoch {epoch:03d}/{epochs:03d}] [Train] "
+                    f"Step {batch_index:03d}/{batches_this_epoch:03d} | "
+                    f"Loss: {current_loss:.4f} | LR: {current_lr:.2e}",
+                    flush=True,
+                )
             training_sum = training_sum + objective.detach() * batch_size
             training_samples += batch_size
             if batch_index >= batches_this_epoch:
@@ -508,13 +517,20 @@ def main(argv=None) -> None:
         synchronize_device(device)
         training_seconds = time.perf_counter() - started
         validation = validate(
-            model, criterion, val_loader, device, precision, args.max_val_batches
+            model,
+            criterion,
+            val_loader,
+            device,
+            precision,
+            args.max_val_batches,
+            log_interval=args.log_interval,
         )
         if update_count:
             scheduler.step()
         else:
             print(
-                f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced"
+                f"WARNING: epoch {epoch} had no finite optimizer update; LR scheduler not advanced",
+                flush=True,
             )
         train_objective = float((training_sum / max(training_samples, 1)).cpu())
         current_val = float(validation["loss"])
@@ -564,11 +580,12 @@ def main(argv=None) -> None:
         print(
             f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
             f"val={current_val:.6f} retained={retained} "
-            f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}"
+            f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}",
+            flush=True,
         )
 
-    print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
-    print(f"Selection record: {loss_selection_dir / 'selection.json'}")
+    print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}", flush=True)
+    print(f"Selection record: {loss_selection_dir / 'selection.json'}", flush=True)
 
 
 if __name__ == "__main__":
