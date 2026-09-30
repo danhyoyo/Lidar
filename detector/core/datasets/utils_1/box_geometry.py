@@ -183,3 +183,15 @@ def ray_box_intervals(points, box):
         except Exception:
             pass
     return _ray_box_numpy_fallback(xyz3, lower, upper, origin, c, s, GEOMETRY_EPS_M)
+
+
+if _HAS_NUMBA:
+    try:
+        # Pre-compile Numba kernel at import time so workers inherit compiled machine code
+        _dummy_xyz = np.zeros((1, 3), dtype=np.float64)
+        _dummy_lower = np.array([-1.0, -1.0, 0.0], dtype=np.float64)
+        _dummy_upper = np.array([1.0, 1.0, 1.0], dtype=np.float64)
+        _dummy_orig = np.zeros(3, dtype=np.float64)
+        _ray_box_numba_kernel(_dummy_xyz, _dummy_lower, _dummy_upper, _dummy_orig, 1.0, 0.0, GEOMETRY_EPS_M)
+    except Exception:
+        pass

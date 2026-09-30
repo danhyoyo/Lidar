@@ -414,6 +414,23 @@ def main(argv=None) -> None:
         if not hasattr(torch, "compile"):
             raise RuntimeError("--compile-model requires PyTorch 2.0 or newer")
         model = torch.compile(model)
+        try:
+            print("Warming up torch.compile kernels...")
+            geom = config["data"]["kitti"]["geometry"]
+            in_ch = 8 if config.get("data", {}).get("bev_encoding", {}).get("name") == "rich8" else 35
+            h = int(round((geom["x_max"] - geom["x_min"]) / geom["x_res"]))
+            w = int(round((geom["y_max"] - geom["y_min"]) / geom["y_res"]))
+            dummy_voxel = torch.zeros((physical_batch_size, in_ch, h, w), device=device)
+            with autocast_context(device, precision):
+                dummy_out = model(dummy_voxel)
+                if isinstance(dummy_out, dict) and "cls" in dummy_out:
+                    dummy_loss = dummy_out["cls"].sum()
+                    dummy_loss.backward()
+            optimizer.zero_grad(set_to_none=True)
+            synchronize_device(device)
+            print("Warmup torch.compile completed.")
+        except Exception as exc:
+            print(f"torch.compile warmup skipped: {exc}")
 
     log_path = run_dir / "metrics.jsonl"
     print(f"Run directory: {run_dir}")
