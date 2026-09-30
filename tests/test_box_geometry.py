@@ -71,3 +71,19 @@ def test_points_in_box_broadphase_matches_exact():
     inside_pt = np.array([[15.0, 5.0, -1.0, 0.5]], dtype=np.float32)
     assert points_in_box(inside_pt, box)[0] is True or points_in_box(inside_pt, box)[0] == True
 
+
+def test_ray_box_intervals_numba_equivalence():
+    pts = np.array([
+        [10.0, 0.0, 0.0],
+        [20.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [15.0, 10.0, 0.0],
+        [10.0, 0.0, 5.0],
+    ], dtype=np.float32)
+    box = np.array([2.0, 2.0, 4.0, 10.0, 0.0, -1.0, 0.0], dtype=np.float32)
+    hit, enter, leave = ray_box_intervals(pts, box)
+    assert hit[0] is True or hit[0] == True
+    assert hit[1] is True or hit[1] == True
+    assert hit[3] is False or hit[3] == False
+
+

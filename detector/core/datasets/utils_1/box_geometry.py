@@ -57,6 +57,103 @@ def points_in_box(points, box):
     return out
 
 
+try:
+    import numba
+    _HAS_NUMBA = True
+except ImportError:
+    _HAS_NUMBA = False
+
+if _HAS_NUMBA:
+    @numba.njit(fastmath=True)
+    def _ray_box_numba_kernel(xyz, lower, upper, orig, c, s, eps_m):
+        N = xyz.shape[0]
+        hit = np.ones(N, dtype=numba.boolean)
+        enter = np.full(N, np.inf, dtype=numba.float64)
+        leave = np.full(N, -np.inf, dtype=numba.float64)
+
+        for i in range(N):
+            dx = xyz[i, 0] * c + xyz[i, 1] * s
+            dy = -xyz[i, 0] * s + xyz[i, 1] * c
+            dz = xyz[i, 2]
+
+            ray_len = np.sqrt(dx * dx + dy * dy + dz * dz)
+            if ray_len == 0.0:
+                hit[i] = False
+                continue
+
+            t_enter = 0.0
+            t_leave = np.inf
+            is_hit = True
+
+            # Axis 0 (x / length)
+            if dx == 0.0:
+                if orig[0] < lower[0] - eps_m or orig[0] > upper[0] + eps_m:
+                    is_hit = False
+            else:
+                inv_d = 1.0 / dx
+                t1 = (lower[0] - orig[0]) * inv_d
+                t2 = (upper[0] - orig[0]) * inv_d
+                t_enter = max(t_enter, min(t1, t2))
+                t_leave = min(t_leave, max(t1, t2))
+
+            # Axis 1 (y / width)
+            if is_hit:
+                if dy == 0.0:
+                    if orig[1] < lower[1] - eps_m or orig[1] > upper[1] + eps_m:
+                        is_hit = False
+                else:
+                    inv_d = 1.0 / dy
+                    t1 = (lower[1] - orig[1]) * inv_d
+                    t2 = (upper[1] - orig[1]) * inv_d
+                    t_enter = max(t_enter, min(t1, t2))
+                    t_leave = min(t_leave, max(t1, t2))
+
+            # Axis 2 (z / height)
+            if is_hit:
+                if dz == 0.0:
+                    if orig[2] < lower[2] - eps_m or orig[2] > upper[2] + eps_m:
+                        is_hit = False
+                else:
+                    inv_d = 1.0 / dz
+                    t1 = (lower[2] - orig[2]) * inv_d
+                    t2 = (upper[2] - orig[2]) * inv_d
+                    t_enter = max(t_enter, min(t1, t2))
+                    t_leave = min(t_leave, max(t1, t2))
+
+            if is_hit and t_leave >= 0.0 and (t_enter - t_leave) * ray_len <= eps_m:
+                hit[i] = True
+                enter[i] = t_enter
+                leave[i] = t_leave
+            else:
+                hit[i] = False
+
+        return hit, enter, leave
+
+
+def _ray_box_numpy_fallback(xyz, lower, upper, origin, c, s, eps_m):
+    directions = np.column_stack((xyz[:, 0] * c + xyz[:, 1] * s,
+                                  -xyz[:, 0] * s + xyz[:, 1] * c, xyz[:, 2]))
+    enter = np.zeros(len(xyz), dtype=np.float64)
+    leave = np.full(len(xyz), np.inf)
+    hit = np.any(directions != 0, axis=1)
+    for axis in range(3):
+        direction = directions[:, axis]
+        parallel = direction == 0
+        hit &= ~parallel | ((origin[axis] >= lower[axis] - eps_m)
+                            & (origin[axis] <= upper[axis] + eps_m))
+        moving = ~parallel
+        ta = (lower[axis] - origin[axis]) / direction[moving]
+        tb = (upper[axis] - origin[axis]) / direction[moving]
+        enter[moving] = np.maximum(enter[moving], np.minimum(ta, tb))
+        leave[moving] = np.minimum(leave[moving], np.maximum(ta, tb))
+    ray_length = np.sqrt(directions[:, 0] ** 2 + directions[:, 1] ** 2 + directions[:, 2] ** 2)
+    moving_rays = ray_length > 0
+    distance_gap = np.full(len(xyz), np.inf)
+    distance_gap[moving_rays] = (enter[moving_rays] - leave[moving_rays]) * ray_length[moving_rays]
+    hit &= (leave >= 0) & (distance_gap <= eps_m)
+    return hit, np.where(hit, enter, np.inf), np.where(hit, leave, -np.inf)
+
+
 def ray_box_intervals(points, box):
     """Intersect rays ``t * points[:,:3]`` (t >= 0) with an oriented box.
 
@@ -64,36 +161,25 @@ def ray_box_intervals(points, box):
     represented by (+inf, -inf). Entry is clipped to zero for sensors inside
     the box. Zero-length rays never hit. Parallel axes use slab membership;
     denominators are never clipped. Boundary tolerance is 1e-8 meters.
+    Accelerated with Numba JIT when available.
     """
     b = _box_values(box)
     xyz = np.asarray(points, dtype=np.float64)
     # Validate and obtain sensor position in the box frame.
     if xyz.ndim != 2 or xyz.shape[1] < 3 or not np.isfinite(xyz).all():
         raise ValueError("points must have shape (N, >=3) and finite values")
+    if len(xyz) == 0:
+        return np.zeros(0, dtype=bool), np.zeros(0, dtype=np.float64), np.zeros(0, dtype=np.float64)
+
     origin = _local_points(np.zeros((1, 3)), b)[0]
-    # Rotate directions directly to avoid subtracting large translated values.
     c, s = np.cos(b[6]), np.sin(b[6])
-    directions = np.column_stack((xyz[:, 0] * c + xyz[:, 1] * s,
-                                  -xyz[:, 0] * s + xyz[:, 1] * c, xyz[:, 2]))
-    lower = np.array([-b[2] / 2, -b[1] / 2, 0.0])
-    upper = np.array([b[2] / 2, b[1] / 2, b[0]])
-    enter = np.zeros(len(xyz), dtype=np.float64)
-    leave = np.full(len(xyz), np.inf)
-    hit = np.any(directions != 0, axis=1)
-    for axis in range(3):
-        direction = directions[:, axis]
-        parallel = direction == 0
-        hit &= ~parallel | ((origin[axis] >= lower[axis] - GEOMETRY_EPS_M)
-                            & (origin[axis] <= upper[axis] + GEOMETRY_EPS_M))
-        moving = ~parallel
-        ta = (lower[axis] - origin[axis]) / direction[moving]
-        tb = (upper[axis] - origin[axis]) / direction[moving]
-        enter[moving] = np.maximum(enter[moving], np.minimum(ta, tb))
-        leave[moving] = np.minimum(leave[moving], np.maximum(ta, tb))
-    # Express intersection tolerance as a distance along the sensor ray.
-    ray_length = np.linalg.norm(directions, axis=1)
-    moving_rays = ray_length > 0
-    distance_gap = np.full(len(xyz), np.inf)
-    distance_gap[moving_rays] = (enter[moving_rays] - leave[moving_rays]) * ray_length[moving_rays]
-    hit &= (leave >= 0) & (distance_gap <= GEOMETRY_EPS_M)
-    return hit, np.where(hit, enter, np.inf), np.where(hit, leave, -np.inf)
+    lower = np.array([-b[2] / 2, -b[1] / 2, 0.0], dtype=np.float64)
+    upper = np.array([b[2] / 2, b[1] / 2, b[0]], dtype=np.float64)
+    xyz3 = np.ascontiguousarray(xyz[:, :3], dtype=np.float64)
+
+    if _HAS_NUMBA:
+        try:
+            return _ray_box_numba_kernel(xyz3, lower, upper, origin, c, s, GEOMETRY_EPS_M)
+        except Exception:
+            pass
+    return _ray_box_numpy_fallback(xyz3, lower, upper, origin, c, s, GEOMETRY_EPS_M)
