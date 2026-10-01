@@ -21,6 +21,11 @@
     }
   },
   "data": {
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    },
     "gaussian_overlap": 0.1,
     "kitti": {
       "geometry": {
@@ -43,12 +48,7 @@
     },
     "min_radius": 4,
     "num_classes": 3,
-    "out_size_factor": 4,
-    "bev_encoding": {
-      "density_norm": 32,
-      "intensity_scale": 1,
-      "name": "rich8"
-    }
+    "out_size_factor": 4
   },
   "date": "reproducible",
   "device": "cuda",
@@ -58,12 +58,12 @@
   "model": {
     "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
-    "cls_encoding": "gaussian",
     "c4_attention": "litemla",
-    "scale_gated_fpn": true,
+    "cls_encoding": "gaussian",
     "expansion": 2.5,
-    "header_use_bn": true,
     "header_act": "silu",
+    "header_use_bn": true,
+    "scale_gated_fpn": true,
     "use_reparam": false
   },
   "multi_gpu": false,
@@ -73,6 +73,7 @@
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
+    "grad_clip_norm": 10.0,
     "learning_rate": 0.0007,
     "min_lr": 1e-06,
     "optimizer": "adamw",
@@ -81,7 +82,7 @@
     "save_every": 5,
     "scheduler": "cosine",
     "warmup_epochs": 8,
-    "weight_decay": 0.0001
+    "weight_decay": 0.001
   },
   "val": {
     "data": "splits/kitti/val.txt",

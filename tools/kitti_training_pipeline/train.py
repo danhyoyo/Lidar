@@ -213,6 +213,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="disable tqdm progress bar and use periodic or epoch summary logging only",
     )
+    parser.add_argument(
+        "--grad-clip-norm",
+        type=float,
+        default=None,
+        help="maximum norm for gradient clipping (default: 10.0 or train.grad_clip_norm in config; <=0 disables)",
+    )
     return parser
 
 
@@ -343,6 +349,12 @@ def main(argv=None) -> None:
     config["train"]["compile_model"] = args.compile_model
     config["train"]["num_workers"] = args.num_workers
     scaler_enabled = precision == "fp16"
+    grad_clip_norm = float(
+        args.grad_clip_norm
+        if args.grad_clip_norm is not None
+        else config["train"].get("grad_clip_norm", 10.0)
+    )
+    config["train"]["grad_clip_norm"] = grad_clip_norm
 
     physical_batch_size = int(
         args.physical_batch_size
@@ -470,7 +482,7 @@ def main(argv=None) -> None:
     print(f"Run directory: {run_dir}", flush=True)
     print(
         f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-        f"precision={precision}",
+        f"precision={precision}; grad_clip_norm={grad_clip_norm}",
         flush=True,
     )
     print(
@@ -525,6 +537,13 @@ def main(argv=None) -> None:
                 or batch_index == batches_this_epoch
             )
             if should_update:
+                if grad_clip_norm > 0.0:
+                    if scaler_enabled:
+                        scaler.unscale_(optimizer)
+                    grad_params = [p for p in model.parameters() if p.requires_grad] + [
+                        p for p in criterion.parameters() if p.requires_grad
+                    ]
+                    torch.nn.utils.clip_grad_norm_(grad_params, max_norm=grad_clip_norm)
                 previous_scale = scaler.get_scale()
                 scaler.step(optimizer)
                 scaler.update()

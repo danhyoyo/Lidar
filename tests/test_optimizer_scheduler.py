@@ -7,7 +7,7 @@ import torch.nn as nn
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
-from train import build_optimizer, build_scheduler
+from train import build_optimizer, build_scheduler, build_parser
 
 
 class DummyModel(nn.Module):
@@ -156,5 +156,53 @@ class TestSchedulerBuilder(unittest.TestCase):
         )
 
 
+class TestGradClippingAndParser(unittest.TestCase):
+    def test_parser_grad_clip_norm(self):
+        parser = build_parser()
+        args = parser.parse_args([
+            "--config", "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json",
+            "--detector-root", "detector",
+            "--output-root", "artifacts/kitti",
+            "--grad-clip-norm", "5.0",
+        ])
+        self.assertEqual(args.grad_clip_norm, 5.0)
+
+    def test_gradient_clipping_bounds_norm(self):
+        model = DummyModel()
+        criterion = DummyCriterion()
+        optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
+
+        x = torch.randn(2, 8, 16, 16)
+        out = model(x)
+        loss = out.sum() * 10000.0
+        loss.backward()
+
+        params = [p for p in model.parameters() if p.requires_grad] + [
+            p for p in criterion.parameters() if p.requires_grad
+        ]
+        pre_clip_norm = torch.sqrt(sum(p.grad.norm() ** 2 for p in params if p.grad is not None))
+        self.assertGreater(pre_clip_norm.item(), 10.0)
+
+        torch.nn.utils.clip_grad_norm_(params, max_norm=10.0)
+        post_clip_norm = torch.sqrt(sum(p.grad.norm() ** 2 for p in params if p.grad is not None))
+        self.assertAlmostEqual(post_clip_norm.item(), 10.0, places=3)
+        optimizer.step()
+
+    def test_build_optimizer_weight_decay_0001(self):
+        model = DummyModel()
+        criterion = DummyCriterion()
+        config = {
+            "train": {
+                "optimizer": "adamw",
+                "learning_rate": 0.0007,
+                "weight_decay": 0.001,
+            }
+        }
+        optimizer = build_optimizer(model, criterion, config)
+        self.assertEqual(optimizer.param_groups[0]["weight_decay"], 0.001)
+        self.assertEqual(optimizer.param_groups[1]["weight_decay"], 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()
+

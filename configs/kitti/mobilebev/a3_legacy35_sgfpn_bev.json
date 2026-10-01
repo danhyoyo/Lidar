@@ -21,6 +21,11 @@
     }
   },
   "data": {
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "binary_slices"
+    },
     "gaussian_overlap": 0.1,
     "kitti": {
       "geometry": {
@@ -43,12 +48,7 @@
     },
     "min_radius": 4,
     "num_classes": 3,
-    "out_size_factor": 4,
-    "bev_encoding": {
-      "density_norm": 32,
-      "intensity_scale": 1,
-      "name": "binary_slices"
-    }
+    "out_size_factor": 4
   },
   "date": "reproducible",
   "device": "cuda",
@@ -68,9 +68,9 @@
     "backbone": "mobilepixor_coordatt",
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
-    "scale_gated_fpn": true,
+    "header_act": "none",
     "header_use_bn": false,
-    "header_act": "none"
+    "scale_gated_fpn": true
   },
   "multi_gpu": false,
   "note": "mobilebev_lightweight_ablation",
@@ -79,15 +79,16 @@
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
+    "grad_clip_norm": 10.0,
     "learning_rate": 0.0007,
+    "min_lr": 1e-06,
+    "optimizer": "adamw",
     "physical_batch_size": 32,
     "precision": "bf16",
     "save_every": 5,
-    "weight_decay": 0.0001,
-    "optimizer": "adamw",
     "scheduler": "cosine",
     "warmup_epochs": 8,
-    "min_lr": 1e-06
+    "weight_decay": 0.001
   },
   "val": {
     "data": "splits/kitti/val.txt",
