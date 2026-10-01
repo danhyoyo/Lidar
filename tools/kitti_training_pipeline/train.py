@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import math
 import random
 import time
@@ -422,6 +423,7 @@ def main(argv=None) -> None:
     if args.compile_model:
         if not hasattr(torch, "compile"):
             raise RuntimeError("--compile-model requires PyTorch 2.0 or newer")
+        logging.getLogger("torch.utils._sympy.interp").setLevel(logging.ERROR)
         model = torch.compile(model)
         try:
             print("Warming up torch.compile kernels...")
