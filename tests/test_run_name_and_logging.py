@@ -66,7 +66,8 @@ class TestRunNameAndLogging(unittest.TestCase):
             cfg = json.load(f)
         run_name = generate_run_name(cfg, seed=42)
         self.assertEqual(
-            run_name, "mobilepixor-noaug-baseline_loss-rich8-baseline_iou-s42"
+            run_name,
+            "mobilepixor-standard_aug-baseline_loss-rich8-baseline_iou-s42",
         )
 
     def test_all_configs_generate_valid_run_name_format(self):
