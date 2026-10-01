@@ -88,11 +88,11 @@ class TestRunNameAndLogging(unittest.TestCase):
             self.assertIn(parts[3], {"rich8", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})
 
-    def test_trainer_does_not_contain_tqdm(self):
+    def test_trainer_contains_tqdm(self):
         trainer_code = (
             REPO_ROOT / "tools" / "kitti_training_pipeline" / "train.py"
         ).read_text(encoding="utf-8")
-        self.assertNotIn("tqdm", trainer_code)
+        self.assertIn("tqdm", trainer_code)
 
     def test_trainer_has_log_interval_argument(self):
         trainer_code = (
