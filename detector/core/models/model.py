@@ -12,7 +12,7 @@ class CustomModel(nn.Module):
     def __init__(self, cfg, num_classes=4, input_channels=35):
         super(CustomModel, self).__init__()
         if cfg["backbone"] == "mobilepixor":
-            self.backbone = MobilePixorBackBone()
+            self.backbone = MobilePixorBackBone(input_channels=input_channels)
         elif cfg["backbone"] == "mobilepixor_coordatt":
             self.backbone = MobilePixorCoordAttBackBone(
                 input_channels=input_channels,
