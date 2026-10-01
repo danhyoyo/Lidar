@@ -8,6 +8,7 @@ import json
 import logging
 import math
 import random
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -16,6 +17,7 @@ from typing import Any, Dict
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from common import (
     atomic_torch_save,
@@ -113,7 +115,10 @@ def validate(
     device,
     precision,
     max_batches=0,
-    log_interval: int = 20,
+    epoch: int = 0,
+    epochs: int = 0,
+    log_interval: int = 0,
+    disable_tqdm: bool = False,
 ):
     model.eval()
     criterion.eval()
@@ -122,7 +127,18 @@ def validate(
     synchronize_device(device)
     started = time.perf_counter()
     total_batches = min(len(loader), max_batches) if max_batches else len(loader)
-    for batch_index, batch in enumerate(loader, start=1):
+    desc = f"Epoch {epoch:03d}/{epochs:03d} [Val]" if epochs else "[Val]"
+    pbar = tqdm(
+        loader,
+        total=total_batches,
+        desc=desc,
+        leave=False,
+        dynamic_ncols=True,
+        mininterval=0.2,
+        file=sys.stdout,
+        disable=disable_tqdm,
+    )
+    for batch_index, batch in enumerate(pbar, start=1):
         batch = move_tensor_batch(batch, device)
         batch_size = int(batch["voxel"].shape[0])
         with autocast_context(device, precision):
@@ -139,7 +155,9 @@ def validate(
             )
             sums[name] = sums.get(name, torch.zeros_like(scalar)) + scalar * batch_size
         samples += batch_size
-        if log_interval > 0 and (
+        if not disable_tqdm:
+            pbar.set_postfix(val_loss=f"{loss_val:.4f}", refresh=False)
+        elif log_interval > 0 and (
             batch_index % log_interval == 0 or batch_index == total_batches
         ):
             print(
@@ -188,7 +206,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--log-interval",
         type=int,
         default=20,
-        help="batch interval for progress logging",
+        help="batch interval for progress logging when tqdm is disabled",
+    )
+    parser.add_argument(
+        "--disable-tqdm",
+        action="store_true",
+        help="disable tqdm progress bar and use periodic or epoch summary logging only",
     )
     return parser
 
@@ -473,7 +496,18 @@ def main(argv=None) -> None:
         )
         if batches_this_epoch == 0:
             raise RuntimeError("Training loader produced no batches")
-        for batch_index, batch in enumerate(train_loader, start=1):
+        desc = f"Epoch {epoch:03d}/{epochs:03d} [Train]"
+        pbar = tqdm(
+            train_loader,
+            total=batches_this_epoch,
+            desc=desc,
+            leave=False,
+            dynamic_ncols=True,
+            mininterval=0.2,
+            file=sys.stdout,
+            disable=args.disable_tqdm,
+        )
+        for batch_index, batch in enumerate(pbar, start=1):
             batch = move_tensor_batch(batch, device)
             batch_size = int(batch["voxel"].shape[0])
             with autocast_context(device, precision):
@@ -499,12 +533,18 @@ def main(argv=None) -> None:
                 # and deliberately skipped optimizer.step().
                 if not scaler_enabled or scaler.get_scale() >= previous_scale:
                     update_count += 1
-            if args.log_interval > 0 and (
+            current_loss = float(objective.detach().item())
+            current_lr = float(optimizer.param_groups[0]["lr"])
+            if not args.disable_tqdm:
+                pbar.set_postfix(
+                    loss=f"{current_loss:.4f}",
+                    lr=f"{current_lr:.2e}",
+                    refresh=False,
+                )
+            elif args.log_interval > 0 and (
                 batch_index % args.log_interval == 0
                 or batch_index == batches_this_epoch
             ):
-                current_loss = float(objective.detach().item())
-                current_lr = float(optimizer.param_groups[0]["lr"])
                 print(
                     f"[Epoch {epoch:03d}/{epochs:03d}] [Train] "
                     f"Step {batch_index:03d}/{batches_this_epoch:03d} | "
@@ -525,7 +565,10 @@ def main(argv=None) -> None:
             device,
             precision,
             args.max_val_batches,
+            epoch=epoch,
+            epochs=epochs,
             log_interval=args.log_interval,
+            disable_tqdm=args.disable_tqdm,
         )
         if update_count:
             scheduler.step()
@@ -579,10 +622,13 @@ def main(argv=None) -> None:
         }
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
+        retained_flag = " [BEST]" if retained else ""
         print(
-            f"Epoch {epoch:03d}/{epochs} train={train_objective:.6f} "
-            f"val={current_val:.6f} retained={retained} "
-            f"train_s={training_seconds:.1f} val_s={validation['seconds']:.1f}",
+            f"Epoch {epoch:03d}/{epochs:03d} | "
+            f"Train Loss: {train_objective:.4f} | "
+            f"Val Loss: {current_val:.4f} | "
+            f"LR: {optimizer.param_groups[0]['lr']:.2e} | "
+            f"Time: train={training_seconds:.1f}s, val={validation['seconds']:.1f}s{retained_flag}",
             flush=True,
         )
 
