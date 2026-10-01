@@ -45,6 +45,20 @@ class TestRunNameAndLogging(unittest.TestCase):
         run_name = generate_run_name(cfg, seed=42)
         self.assertEqual(run_name, "mobilepixor_coordatt-standard_aug-uwag_loss-rich8-baseline_iou-sgfpn-s42")
 
+    def test_run_name_format_mobilepixor_ablation(self):
+        cfg_path = REPO_ROOT / "configs/kitti/mobilepixor_ablation/00_mobilepixor_baseline.json"
+        with open(cfg_path) as f:
+            cfg = json.load(f)
+        run_name = generate_run_name(cfg, seed=42)
+        self.assertEqual(run_name, "mobilepixor-standard_aug-baseline_loss-rich8-baseline_iou-s42")
+
+    def test_run_name_format_mobilepixor_pcu(self):
+        cfg_path = REPO_ROOT / "configs/kitti/mobilepixor_ablation/05_mobilepixor_full_pcu.json"
+        with open(cfg_path) as f:
+            cfg = json.load(f)
+        run_name = generate_run_name(cfg, seed=42)
+        self.assertEqual(run_name, "mobilepixor-pcu-oga_loss-rich8-iqa-sgfpn-s42")
+
     def test_all_configs_generate_valid_run_name_format(self):
         configs = list((REPO_ROOT / "configs").rglob("*.json"))
         self.assertGreater(len(configs), 5)

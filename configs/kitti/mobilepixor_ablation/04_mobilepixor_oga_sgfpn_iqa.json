@@ -60,7 +60,25 @@
     "iou_loss_weight": 1.0
   },
   "augmentation": {
-    "p": 0.0
+    "p": 0.5,
+    "rotation": {
+      "limit_angle": 20,
+      "p": 1,
+      "use": true
+    },
+    "scaling": {
+      "p": 1,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "use": true
+    },
+    "translation": {
+      "p": 1,
+      "scale": 0.4,
+      "use": true
+    }
   },
   "train": {
     "data": "splits/kitti/train.txt",
