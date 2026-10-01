@@ -55,11 +55,11 @@ python3 tools/kitti_training_pipeline/train.py \
 The config uses MobilePIXOR with Coordinate Attention, UWAG task weighting,
 adaptive Gaussian targets and one geometric transform with probability 0.5:
 rotation +/-20 degrees, scaling 0.95-1.05, or Gaussian translation scale 0.4.
-Optimization uses Adam, learning rate 3e-4, weight decay 5e-4, 100 epochs,
-physical batch 2, accumulation 2, BF16 and seed 42.
+Optimization uses AdamW, learning rate 7e-4, weight decay 1e-3, cosine
+annealing with 8-epoch linear warmup (min LR 1e-6), gradient clipping
+(max norm 10.0), 100 epochs, physical batch 32, BF16 and seed 42.
 
-Resume with `--resume /path/to/checkpoint.pt`. The reproduced run became
-non-finite at epoch 81, so its selected evaluation checkpoint is epoch 55.
+Resume with `--resume /path/to/checkpoint.pt`.
 
 ## Evaluate
 
