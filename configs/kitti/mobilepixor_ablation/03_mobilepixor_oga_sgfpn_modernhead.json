@@ -1,7 +1,7 @@
 {
   "date": "reproducible",
   "ver": 1,
-  "note": "02_mobilepixor_oga_sgfpn_rich8",
+  "note": "03_mobilepixor_oga_sgfpn_modernhead_rich8",
   "seed": 42,
   "device": "cuda",
   "multi_gpu": false,
@@ -41,8 +41,8 @@
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
     "scale_gated_fpn": true,
-    "header_use_bn": false,
-    "header_act": "none",
+    "header_use_bn": true,
+    "header_act": "silu",
     "header_use_iou": false
   },
   "loss": {

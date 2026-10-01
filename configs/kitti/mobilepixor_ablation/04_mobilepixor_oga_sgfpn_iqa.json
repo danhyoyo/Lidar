@@ -1,16 +1,18 @@
 {
   "date": "reproducible",
   "ver": 1,
-  "note": "02_mobilepixor_oga_sgfpn_rich8",
+  "note": "04_mobilepixor_oga_sgfpn_iqa_rich8",
   "seed": 42,
   "device": "cuda",
   "multi_gpu": false,
+  "nms_alpha": 0.5,
   "data": {
     "location": "data/kitti/processed",
     "num_classes": 3,
     "out_size_factor": 4,
     "gaussian_overlap": 0.1,
     "min_radius": 4,
+    "nms_alpha": 0.5,
     "bev_encoding": {
       "name": "rich8",
       "density_norm": 32,
@@ -41,9 +43,9 @@
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
     "scale_gated_fpn": true,
-    "header_use_bn": false,
-    "header_act": "none",
-    "header_use_iou": false
+    "header_use_bn": true,
+    "header_act": "silu",
+    "header_use_iou": true
   },
   "loss": {
     "name": "oga",
@@ -52,7 +54,10 @@
     "corner_beta": 1.0,
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
-    "max_abs_log_size": 10.0
+    "max_abs_log_size": 10.0,
+    "use_iou": true,
+    "iou_target_type": "mgiou",
+    "iou_loss_weight": 1.0
   },
   "augmentation": {
     "p": 0.0

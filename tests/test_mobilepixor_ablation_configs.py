@@ -20,7 +20,9 @@ class TestMobilePixorAblationConfigs(unittest.TestCase):
         "00_mobilepixor_baseline.json",
         "01_mobilepixor_oga.json",
         "02_mobilepixor_oga_sgfpn.json",
+        "03_mobilepixor_oga_sgfpn_modernhead.json",
         "03_mobilepixor_oga_sgfpn_iqa.json",
+        "04_mobilepixor_oga_sgfpn_iqa.json",
         "04_mobilepixor_oga_sgfpn_iqa_rich8.json",
         "05_mobilepixor_full_pcu.json",
     ]

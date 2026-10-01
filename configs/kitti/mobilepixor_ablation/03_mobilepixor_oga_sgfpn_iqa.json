@@ -1,7 +1,7 @@
 {
   "date": "reproducible",
   "ver": 1,
-  "note": "03_mobilepixor_oga_sgfpn_iqa",
+  "note": "03_mobilepixor_oga_sgfpn_iqa_rich8",
   "seed": 42,
   "device": "cuda",
   "multi_gpu": false,
@@ -14,7 +14,9 @@
     "min_radius": 4,
     "nms_alpha": 0.5,
     "bev_encoding": {
-      "name": "binary_slices"
+      "name": "rich8",
+      "density_norm": 32,
+      "intensity_scale": 1
     },
     "kitti": {
       "location": "data/kitti/processed",

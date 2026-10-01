@@ -1,7 +1,7 @@
 {
   "date": "reproducible",
   "ver": 1,
-  "note": "00_mobilepixor_baseline_legacy35_sumfpn_l1",
+  "note": "00_mobilepixor_baseline_rich8_sumfpn_l1",
   "seed": 42,
   "device": "cuda",
   "multi_gpu": false,
@@ -12,7 +12,9 @@
     "gaussian_overlap": 0.1,
     "min_radius": 4,
     "bev_encoding": {
-      "name": "binary_slices"
+      "name": "rich8",
+      "density_norm": 32,
+      "intensity_scale": 1
     },
     "kitti": {
       "location": "data/kitti/processed",
