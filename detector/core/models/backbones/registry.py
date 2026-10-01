@@ -48,7 +48,10 @@ from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
 @register_backbone("mobilepixor")
 def _build_mobilepixor(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
-    return MobilePixorBackBone()
+    return MobilePixorBackBone(
+        input_channels=input_channels,
+        scale_gated_fpn=cfg.get("scale_gated_fpn", False),
+    )
 
 
 @register_backbone("mobilepixor_coordatt")

@@ -166,13 +166,20 @@ class InvertedResidual(nn.Module):
 
 class MobilePixorBackBone(nn.Module):
 
-    def __init__(self, block = InvertedResidual, use_bn=True):
+    def __init__(
+        self,
+        block=InvertedResidual,
+        use_bn: bool = True,
+        input_channels: int = 35,
+        scale_gated_fpn: bool = False,
+    ):
         super(MobilePixorBackBone, self).__init__()
 
         self.use_bn = use_bn
+        self.scale_gated_fpn = bool(scale_gated_fpn)
 
         # Block 1
-        self.conv1 = conv3x3(35, 32)
+        self.conv1 = conv3x3(input_channels, 32)
         self.conv2 = conv3x3(32, 32)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(32)
@@ -186,10 +193,6 @@ class MobilePixorBackBone(nn.Module):
         self.block4 = self._make_layer(block, 6, 64, 4, 2)
         self.block5 = self._make_layer(block, 6, 96, 3, 2)
 
-        # self.block3 = self._make_layer(block, 48, num_blocks=num_block[1])
-        # self.block4 = self._make_layer(block, 64, num_blocks=num_block[2])
-        # self.block5 = self._make_layer(block, 96, num_blocks=num_block[3])
-
         # Lateral layers
         self.latlayer1 = nn.Conv2d(96, 64, kernel_size=1, stride=1, padding=0)
         self.latlayer2 = nn.Conv2d(64, 32, kernel_size=1, stride=1, padding=0)
@@ -199,6 +202,14 @@ class MobilePixorBackBone(nn.Module):
         self.deconv1 = nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
         p = 1
         self.deconv2 = nn.ConvTranspose2d(32, 16, kernel_size=3, stride=2, padding=1, output_padding=(1, p))
+
+        if self.scale_gated_fpn:
+            self.gate_c4 = nn.Conv2d(32, 32, kernel_size=3, padding=1, groups=32, bias=True)
+            self.gate_c3 = nn.Conv2d(16, 16, kernel_size=3, padding=1, groups=16, bias=True)
+            nn.init.zeros_(self.gate_c4.weight)
+            nn.init.zeros_(self.gate_c4.bias)
+            nn.init.zeros_(self.gate_c3.weight)
+            nn.init.zeros_(self.gate_c3.bias)
 
     def forward(self, x):
         #print("x.shape")
@@ -221,9 +232,18 @@ class MobilePixorBackBone(nn.Module):
 
         l5 = self.latlayer1(c5)
         l4 = self.latlayer2(c4)
-        p5 = l4 + self.deconv1(l5)
+        u4 = self.deconv1(l5)
+        if self.scale_gated_fpn:
+            p5 = u4 + 2 * torch.sigmoid(self.gate_c4(l4 + u4)) * l4
+        else:
+            p5 = l4 + u4
+
         l3 = self.latlayer3(c3)
-        p4 = l3 + self.deconv2(p5)
+        u3 = self.deconv2(p5)
+        if self.scale_gated_fpn:
+            p4 = u3 + 2 * torch.sigmoid(self.gate_c3(l3 + u3)) * l3
+        else:
+            p4 = l3 + u3
 
         return p4
 
