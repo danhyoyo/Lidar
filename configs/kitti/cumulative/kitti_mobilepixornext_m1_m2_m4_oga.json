@@ -102,7 +102,7 @@
   },
   "val": {
     "data": "splits/kitti/val.txt",
-    "physical_batch_size": 64,
+    "physical_batch_size": 32,
     "val_every": 1
   },
   "ver": 1
