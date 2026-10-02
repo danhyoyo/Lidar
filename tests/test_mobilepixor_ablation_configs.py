@@ -19,6 +19,8 @@ class TestMobilePixorAblationConfigs(unittest.TestCase):
     EXPECTED_CONFIGS = [
         "00_mobilepixor_baseline.json",
         "01_mobilepixor_oga.json",
+        "01_mobilepixor_q_oga.json",
+        "01_mobilepixor_gw_qal.json",
         "02_mobilepixor_oga_sgfpn.json",
         "03_mobilepixor_oga_sgfpn_modernhead.json",
         "03_mobilepixor_oga_sgfpn_iqa.json",
