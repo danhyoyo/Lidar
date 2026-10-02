@@ -70,6 +70,19 @@ class TestRunNameAndLogging(unittest.TestCase):
             "mobilepixor-standard_aug-baseline_loss-rich8-baseline_iou-s42",
         )
 
+    def test_run_name_format_mobilepixornext_pure_baseline(self):
+        cfg_path = (
+            REPO_ROOT
+            / "configs/kitti/baselines/kitti_mobilepixornext_pure_baseline.json"
+        )
+        with open(cfg_path) as f:
+            cfg = json.load(f)
+        run_name = generate_run_name(cfg, seed=42)
+        self.assertEqual(
+            run_name,
+            "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-s42",
+        )
+
     def test_all_configs_generate_valid_run_name_format(self):
         configs = list((REPO_ROOT / "configs").rglob("*.json"))
         self.assertGreater(len(configs), 5)
