@@ -113,6 +113,18 @@ class TestRunNameAndLogging(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("--log-interval", trainer_code)
 
+    def test_trainer_writes_clean_train_log_and_gates_item_calls(self):
+        trainer_code = (
+            REPO_ROOT / "tools" / "kitti_training_pipeline" / "train.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn('train_log_path = run_dir / "train.log"', trainer_code)
+        self.assertIn("log_line(epoch_summary)", trainer_code)
+        self.assertIn("if should_log:\n            loss_val = (", trainer_code)
+        self.assertIn(
+            "if should_log:\n                current_loss = float(objective.detach().item())",
+            trainer_code,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
