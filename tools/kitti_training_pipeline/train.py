@@ -144,26 +144,30 @@ def validate(
         with autocast_context(device, precision):
             outputs = model(batch["voxel"])
             losses = criterion(outputs, batch)
-        loss_val = (
-            float(losses["loss"].detach().item())
-            if torch.is_tensor(losses["loss"])
-            else float(losses["loss"])
-        )
         for name, value in losses.items():
             scalar = value.detach() if torch.is_tensor(value) else torch.as_tensor(
                 value, device=device
             )
             sums[name] = sums.get(name, torch.zeros_like(scalar)) + scalar * batch_size
         samples += batch_size
-        if not disable_tqdm:
-            pbar.set_postfix(val_loss=f"{loss_val:.4f}", refresh=False)
-        elif log_interval > 0 and (
-            batch_index % log_interval == 0 or batch_index == total_batches
-        ):
-            print(
-                f"[Val] Step {batch_index:03d}/{total_batches:03d} | Loss: {loss_val:.4f}",
-                flush=True,
+        interval = log_interval if log_interval > 0 else 20
+        should_log = (
+            batch_index % interval == 0
+            or batch_index == total_batches
+        )
+        if should_log:
+            loss_val = (
+                float(losses["loss"].detach().item())
+                if torch.is_tensor(losses["loss"])
+                else float(losses["loss"])
             )
+            if not disable_tqdm:
+                pbar.set_postfix(val_loss=f"{loss_val:.4f}", refresh=False)
+            elif log_interval > 0:
+                print(
+                    f"[Val] Step {batch_index:03d}/{total_batches:03d} | Loss: {loss_val:.4f}",
+                    flush=True,
+                )
         if max_batches and batch_index >= max_batches:
             break
     if not samples:
@@ -416,6 +420,12 @@ def main(argv=None) -> None:
     for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
     write_json(run_dir / "config.resolved.json", config)
+    train_log_path = run_dir / "train.log"
+
+    def log_line(text: str) -> None:
+        print(text, flush=True)
+        with train_log_path.open("a", encoding="utf-8") as stream:
+            stream.write(text + "\n")
 
     start_epoch, best_val = 0, math.inf
     if args.resume:
@@ -441,7 +451,7 @@ def main(argv=None) -> None:
                 scaler.load_state_dict(resume["scaler_state_dict"])
             start_epoch = int(resume.get("epoch", 0))
             best_val = float(resume.get("best_validation_objective", math.inf))
-        print(f"Resumed from epoch {start_epoch}: {args.resume}")
+        log_line(f"Resumed from epoch {start_epoch}: {args.resume}")
 
     if args.compile_model:
         if not hasattr(torch, "compile"):
@@ -467,17 +477,15 @@ def main(argv=None) -> None:
             print(f"torch.compile warmup skipped: {exc}")
 
     log_path = run_dir / "metrics.jsonl"
-    print(f"Run directory: {run_dir}", flush=True)
-    print(
+    log_line(f"Run directory: {run_dir}")
+    log_line(
         f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-        f"precision={precision}",
-        flush=True,
+        f"precision={precision}"
     )
-    print(
+    log_line(
         f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
         f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
-        f"effective batch={physical_batch_size * accumulation_steps}",
-        flush=True,
+        f"effective batch={physical_batch_size * accumulation_steps}"
     )
 
     for epoch in range(start_epoch + 1, epochs + 1):
@@ -533,26 +541,29 @@ def main(argv=None) -> None:
                 # and deliberately skipped optimizer.step().
                 if not scaler_enabled or scaler.get_scale() >= previous_scale:
                     update_count += 1
-            current_loss = float(objective.detach().item())
-            current_lr = float(optimizer.param_groups[0]["lr"])
-            if not args.disable_tqdm:
-                pbar.set_postfix(
-                    loss=f"{current_loss:.4f}",
-                    lr=f"{current_lr:.2e}",
-                    refresh=False,
-                )
-            elif args.log_interval > 0 and (
-                batch_index % args.log_interval == 0
-                or batch_index == batches_this_epoch
-            ):
-                print(
-                    f"[Epoch {epoch:03d}/{epochs:03d}] [Train] "
-                    f"Step {batch_index:03d}/{batches_this_epoch:03d} | "
-                    f"Loss: {current_loss:.4f} | LR: {current_lr:.2e}",
-                    flush=True,
-                )
             training_sum = training_sum + objective.detach() * batch_size
             training_samples += batch_size
+            interval = args.log_interval if args.log_interval > 0 else 20
+            should_log = (
+                batch_index % interval == 0
+                or batch_index == batches_this_epoch
+            )
+            if should_log:
+                current_loss = float(objective.detach().item())
+                current_lr = float(optimizer.param_groups[0]["lr"])
+                if not args.disable_tqdm:
+                    pbar.set_postfix(
+                        loss=f"{current_loss:.4f}",
+                        lr=f"{current_lr:.2e}",
+                        refresh=False,
+                    )
+                elif args.log_interval > 0:
+                    print(
+                        f"[Epoch {epoch:03d}/{epochs:03d}] [Train] "
+                        f"Step {batch_index:03d}/{batches_this_epoch:03d} | "
+                        f"Loss: {current_loss:.4f} | LR: {current_lr:.2e}",
+                        flush=True,
+                    )
             if batch_index >= batches_this_epoch:
                 break
 
@@ -623,17 +634,17 @@ def main(argv=None) -> None:
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
         retained_flag = " [BEST]" if retained else ""
-        print(
+        epoch_summary = (
             f"Epoch {epoch:03d}/{epochs:03d} | "
             f"Train Loss: {train_objective:.4f} | "
             f"Val Loss: {current_val:.4f} | "
             f"LR: {optimizer.param_groups[0]['lr']:.2e} | "
-            f"Time: train={training_seconds:.1f}s, val={validation['seconds']:.1f}s{retained_flag}",
-            flush=True,
+            f"Time: train={training_seconds:.1f}s, val={validation['seconds']:.1f}s{retained_flag}"
         )
+        log_line(epoch_summary)
 
-    print(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}", flush=True)
-    print(f"Selection record: {loss_selection_dir / 'selection.json'}", flush=True)
+    log_line(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
+    log_line(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
 
 if __name__ == "__main__":
