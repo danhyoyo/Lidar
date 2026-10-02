@@ -214,10 +214,18 @@ def build_optimizer(
     if crit_params:
         groups.append({"params": crit_params, "weight_decay": 0.0})
 
+    all_params = decay_params + no_decay_params + crit_params
+    use_fused = (
+        torch.cuda.is_available()
+        and len(all_params) > 0
+        and all_params[0].is_cuda
+    )
+    opt_kwargs = {"fused": True} if use_fused else {}
+
     if opt_type == "adam":
-        return torch.optim.Adam(groups, lr=lr)
+        return torch.optim.Adam(groups, lr=lr, **opt_kwargs)
     elif opt_type == "adamw":
-        return torch.optim.AdamW(groups, lr=lr)
+        return torch.optim.AdamW(groups, lr=lr, **opt_kwargs)
     else:
         raise ValueError(f"Unsupported optimizer type: {opt_type}")
 
