@@ -177,6 +177,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum norm for gradient clipping (default: 10.0 or train.grad_clip_norm in config; <=0 disables)",
     )
     parser.add_argument("--val-physical-batch-size", type=int, default=None, help="override validation physical batch size")
+    parser.add_argument(
+        "--override-json",
+        type=str,
+        default=None,
+        help="JSON string of config keys to override dynamically (e.g. '{\"loss\": {\"name\": \"gw_qal\"}}')",
+    )
     return parser
 
 
@@ -284,6 +290,20 @@ def main(argv=None) -> None:
     from core.losses.loss_fn import LossFunction
 
     config = read_json(args.config)
+    if args.override_json:
+        try:
+            overrides = json.loads(args.override_json)
+        except json.JSONDecodeError as err:
+            raise ValueError(f"Invalid JSON string passed to --override-json: {err}")
+
+        def _deep_update(base, update):
+            for k, v in update.items():
+                if isinstance(v, dict) and isinstance(base.get(k), dict):
+                    _deep_update(base[k], v)
+                else:
+                    base[k] = v
+
+        _deep_update(config, overrides)
     if args.num_workers < 0:
         raise ValueError("num_workers must be non-negative")
     if args.max_train_batches < 0 or args.max_val_batches < 0:
