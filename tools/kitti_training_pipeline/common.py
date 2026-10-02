@@ -105,7 +105,7 @@ def configure_detector_imports(detector_root: Path | str) -> Path:
         raise FileNotFoundError(
             "Detector source is incomplete. Missing:\n  " + "\n  ".join(missing)
         )
-    for path in (detector_root, datasets_root):
+    for path in (detector_root.parent, detector_root, datasets_root):
         value = str(path)
         if value not in sys.path:
             sys.path.insert(0, value)

@@ -1,7 +1,11 @@
 import torch
 import torch.nn as nn
-from detector.core.models.encoders.mamba_ops import SelectiveSSM
-from detector.core.models.encoders.pillar_ops import group_and_sort_pillars
+try:
+    from detector.core.models.encoders.mamba_ops import SelectiveSSM
+    from detector.core.models.encoders.pillar_ops import group_and_sort_pillars
+except ImportError:
+    from core.models.encoders.mamba_ops import SelectiveSSM
+    from core.models.encoders.pillar_ops import group_and_sort_pillars
 
 
 class RichMambaEncoder(nn.Module):
