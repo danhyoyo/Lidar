@@ -1,0 +1,99 @@
+{
+  "augmentation": {
+    "p": 0.5,
+    "rotation": {
+      "limit_angle": 20,
+      "p": 1,
+      "use": true
+    },
+    "scaling": {
+      "p": 1,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "use": true
+    },
+    "translation": {
+      "p": 1,
+      "scale": 0.4,
+      "use": true
+    }
+  },
+  "data": {
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    },
+    "gaussian_overlap": 0.1,
+    "kitti": {
+      "geometry": {
+        "x_max": 70.4,
+        "x_min": 0.0,
+        "x_res": 0.1,
+        "y_max": 40.0,
+        "y_min": -40.0,
+        "y_res": 0.1,
+        "z_max": 1.0,
+        "z_min": -2.5,
+        "z_res": 0.1
+      },
+      "location": "data/kitti/processed",
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      }
+    },
+    "location": "data/kitti/processed",
+    "min_radius": 4,
+    "num_classes": 3,
+    "out_size_factor": 4
+  },
+  "date": "reproducible",
+  "device": "cuda",
+  "loss": {
+    "iou_loss_weight": 1.0,
+    "iou_target_type": "mgiou",
+    "name": "baseline",
+    "use_iou": true
+  },
+  "model": {
+    "backbone": "mobilepixornext",
+    "backbone_out_dim": 16,
+    "c4_attention": "litemla",
+    "cls_encoding": "gaussian",
+    "expansion": 2.5,
+    "header_act": "silu",
+    "header_use_bn": true,
+    "header_use_iou": true,
+    "scale_gated_fpn": true,
+    "use_reparam": false
+  },
+  "multi_gpu": false,
+  "nms_alpha": 0.5,
+  "note": "06_anchor_iqa_head_mobilepixornext_rich8_c4_litemla_sgfpn_baseline_loss_iqa",
+  "seed": 42,
+  "train": {
+    "accumulation_steps": 1,
+    "data": "splits/kitti/train.txt",
+    "epochs": 100,
+    "grad_clip_norm": 10.0,
+    "learning_rate": 0.0007,
+    "min_lr": 1e-06,
+    "optimizer": "adamw",
+    "physical_batch_size": 32,
+    "precision": "bf16",
+    "save_every": 5,
+    "scheduler": "cosine",
+    "warmup_epochs": 8,
+    "weight_decay": 0.001
+  },
+  "val": {
+    "data": "splits/kitti/val.txt",
+    "physical_batch_size": 32,
+    "val_every": 1
+  },
+  "ver": 1
+}
