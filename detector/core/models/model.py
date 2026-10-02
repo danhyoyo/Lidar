@@ -1,12 +1,33 @@
+import torch
 import torch.nn as nn
 
-from core.models.backbones.registry import build_backbone
-from core.models.heads.cnn import Header
+try:
+    from detector.core.models.backbones.registry import build_backbone
+    from detector.core.models.heads.cnn import Header
+    from detector.core.models.encoders.rich_mamba import RichMambaEncoder
+except ImportError:
+    from core.models.backbones.registry import build_backbone
+    from core.models.heads.cnn import Header
+    from core.models.encoders.rich_mamba import RichMambaEncoder
 
 
 class CustomModel(nn.Module):
     def __init__(self, cfg, num_classes=4, input_channels=35):
         super(CustomModel, self).__init__()
+        bev_cfg = cfg.get("bev_encoding", {})
+        bev_name = bev_cfg.get("name", "binary_slices")
+        geometry = cfg.get("geometry", {
+            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+            "z_min": -2.5, "z_max": 1.0, "z_res": 0.1,
+        })
+
+        if bev_name == "rich_mamba":
+            self.encoder = RichMambaEncoder(bev_cfg, geometry)
+            input_channels = int(bev_cfg.get("out_channels", 8))
+        else:
+            self.encoder = None
+
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)
 
@@ -31,6 +52,10 @@ class CustomModel(nn.Module):
         )
 
     def forward(self, x):
+        if self.encoder is not None:
+            # Check if input is points rather than already a BEV 4D tensor (B, C, H, W)
+            if isinstance(x, (list, tuple)) or (isinstance(x, torch.Tensor) and x.ndim <= 3):
+                x = self.encoder(x)
         features = self.backbone(x)
         pred = self.header(features)
         return pred
@@ -47,7 +72,6 @@ class CustomModel(nn.Module):
         return self.state_dict()
 
 
-
 if __name__ == "__main__":
     cfg = {
         "backbone": "mobilepixor",
@@ -58,4 +82,3 @@ if __name__ == "__main__":
     model = CustomModel(cfg)
     print("CustomModel initialized successfully with default parameters:")
     print(f"Backbone: {type(model.backbone).__name__}")
-    print(f"Header: {type(model.header).__name__} with heads: cls, offset, size, yaw")
