@@ -13,7 +13,9 @@ except ImportError:
 
 def pure_pytorch_selective_scan(u, delta, A, B, C, D=None):
     """
-    Pure PyTorch sequential fallback for selective scan.
+    Memory-efficient Pure PyTorch sequential fallback for selective scan.
+    Computes discretization per-step to reduce peak VRAM from O(B*L*D*N) to O(B*D*N).
+
     Args:
         u: (B, L, D) input sequence
         delta: (B, L, D) step sizes
@@ -34,18 +36,17 @@ def pure_pytorch_selective_scan(u, delta, A, B, C, D=None):
     B_f32 = B.float()
     C_f32 = C.float()
 
-    # deltaA = exp(delta * A): shape (B, L, D, N)
-    deltaA = torch.exp(delta_f32.unsqueeze(-1) * A_f32.unsqueeze(0).unsqueeze(0))
-    # deltaB_u = (delta * u) * B: shape (B, L, D, N)
-    deltaB_u = (delta_f32 * u_f32).unsqueeze(-1) * B_f32.unsqueeze(2)
-
     h = torch.zeros(batch_size, d_model, d_state, device=u.device, dtype=torch.float32)
     ys = []
 
     for t in range(seq_len):
-        h = deltaA[:, t] * h + deltaB_u[:, t]
-        # y_t = (h_t * C_t).sum(-1): shape (B, D)
-        y_t = torch.einsum("bdn,bn->bd", h, C_f32[:, t])
+        # deltaA_t: (B, D, N)
+        deltaA_t = torch.exp(delta_f32[:, t].unsqueeze(-1) * A_f32.unsqueeze(0))
+        # deltaB_u_t: (B, D, N)
+        deltaB_u_t = (delta_f32[:, t] * u_f32[:, t]).unsqueeze(-1) * B_f32[:, t].unsqueeze(1)
+        h = deltaA_t * h + deltaB_u_t
+        # y_t: (B, D)
+        y_t = (h * C_f32[:, t].unsqueeze(1)).sum(-1)
         ys.append(y_t)
 
     y = torch.stack(ys, dim=1)

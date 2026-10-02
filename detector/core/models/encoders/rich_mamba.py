@@ -8,7 +8,7 @@ class RichMambaEncoder(nn.Module):
     """
     Intra-Pillar Height-Causal State Space BEV Encoder.
     Processes Z-sorted points within each pillar using a Selective SSM,
-    pools features, and scatters into an (8, H, W) BEV pseudo-image.
+    pools features without zero-padding pollution, and scatters into an (8, H, W) BEV pseudo-image.
     """
     def __init__(self, config: dict, geometry: dict):
         super().__init__()
@@ -23,10 +23,10 @@ class RichMambaEncoder(nn.Module):
         self.x_size = int(round((float(geometry["x_max"]) - float(geometry["x_min"])) / float(geometry["x_res"])))
         self.y_size = int(round((float(geometry["y_max"]) - float(geometry["y_min"])) / float(geometry["y_res"])))
 
-        # Point projection: 8 enriched coordinates -> d_model
+        # Point projection: 8 enriched coordinates -> d_model using LayerNorm (safe on any pillar batch size)
         self.in_proj = nn.Sequential(
             nn.Linear(8, self.d_model),
-            nn.BatchNorm1d(self.d_model),
+            nn.LayerNorm(self.d_model),
             nn.SiLU(),
         )
 
@@ -37,7 +37,7 @@ class RichMambaEncoder(nn.Module):
         pooled_dim = self.d_model * 2 if self.use_dual_pooling else self.d_model
         self.out_proj = nn.Sequential(
             nn.Linear(pooled_dim, self.out_channels),
-            nn.BatchNorm1d(self.out_channels),
+            nn.LayerNorm(self.out_channels),
             nn.SiLU(),
         )
 
@@ -70,7 +70,7 @@ class RichMambaEncoder(nn.Module):
         if points.shape[0] == 0:
             return bev_map
 
-        pillar_feats, pillar_indices, num_pillars = group_and_sort_pillars(
+        pillar_feats, pillar_indices, num_pillars, pillar_point_counts = group_and_sort_pillars(
             points,
             self.geometry,
             max_points_per_pillar=self.max_points,
@@ -80,21 +80,27 @@ class RichMambaEncoder(nn.Module):
         if num_pillars == 0:
             return bev_map
 
-        P, K, _ = pillar_feats.shape
-        # Flatten (P, K, 8) -> (P*K, 8) for BatchNorm1d
-        flat_feats = pillar_feats.view(P * K, 8)
-        projected = self.in_proj(flat_feats).view(P, K, self.d_model)
+        # Direct projection with LayerNorm: (P, K, 8) -> (P, K, d_model)
+        projected = self.in_proj(pillar_feats)
 
         # Process through SSM along elevation: (P, K, d_model)
         ssm_out = self.ssm(projected)
 
-        # Dual-pooling: terminal state (P, d_model) + max-pooling across height (P, d_model)
+        P, K, D = ssm_out.shape
+
+        # Dual-pooling without zero-padding pollution:
+        # 1. Terminal state at the actual top point of each pillar
+        terminal_state = ssm_out[torch.arange(P, device=device), pillar_point_counts - 1]
+
+        # 2. Max-pooling strictly over valid points
+        mask = torch.arange(K, device=device).unsqueeze(0) < pillar_point_counts.unsqueeze(1)  # (P, K)
+        ssm_out_valid = ssm_out.masked_fill(~mask.unsqueeze(-1), float("-inf"))
+        max_state = torch.max(ssm_out_valid, dim=1).values
+
         if self.use_dual_pooling:
-            terminal_state = ssm_out[:, -1, :]
-            max_state = torch.max(ssm_out, dim=1).values
             fused = torch.cat([terminal_state, max_state], dim=-1)
         else:
-            fused = torch.max(ssm_out, dim=1).values
+            fused = max_state
 
         # Output projection: (P, out_channels)
         out_feats = self.out_proj(fused)

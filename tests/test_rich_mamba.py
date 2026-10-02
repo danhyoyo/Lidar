@@ -69,3 +69,22 @@ def test_rich_mamba_empty_scene():
     bev = encoder(empty_pts)
     assert bev.shape == (1, 8, 800, 704)
     assert (bev == 0).all()
+
+def test_rich_mamba_single_pillar_training_mode():
+    geometry = {
+        "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
+        "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
+        "z_min": -2.5, "z_max": 1.0, "z_res": 0.1,
+    }
+    encoder = RichMambaEncoder({"d_model": 16, "out_channels": 8}, geometry)
+    encoder.train()  # Explicitly set to training mode
+
+    # Exactly 1 point -> exactly 1 pillar
+    single_pt = torch.tensor([[10.05, 5.05, -0.5, 0.5]], dtype=torch.float32)
+    bev = encoder(single_pt)
+    assert bev.shape == (1, 8, 800, 704)
+    assert torch.isfinite(bev).all()
+    # Gradient flow check
+    loss = bev.sum()
+    loss.backward()
+    assert encoder.in_proj[0].weight.grad is not None

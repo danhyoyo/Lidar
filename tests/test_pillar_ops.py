@@ -19,22 +19,19 @@ def test_group_and_sort_pillars_correctness():
         [3.05, -36.05, -0.8, 0.3],
     ], dtype=torch.float32)
 
-    features, indices, num_pillars = group_and_sort_pillars(
+    features, indices, num_pillars, counts = group_and_sort_pillars(
         points, geometry, max_points_per_pillar=20, max_pillars=32000
     )
     assert num_pillars == 2
     assert features.shape == (2, 20, 8)
     assert indices.shape == (2, 2)
+    assert counts.tolist() == [3, 2]
 
     # Check Z-sorting in both pillars:
     # First pillar has 3 points: z values at channel 5 should be strictly ascending
-    p0_count = (features[0, :, 5] != 0).sum()
-    assert p0_count == 3
     assert features[0, 0, 5] < features[0, 1, 5] < features[0, 2, 5]
 
     # Second pillar has 2 points: z values at channel 5 should be ascending
-    p1_count = (features[1, :, 5] != 0).sum()
-    assert p1_count == 2
     assert features[1, 0, 5] < features[1, 1, 5]
 
 def test_group_and_sort_pillars_empty_and_oob():
@@ -44,15 +41,17 @@ def test_group_and_sort_pillars_empty_and_oob():
         "z_min": -2.5, "z_max": 1.0, "z_res": 0.1,
     }
     # Completely empty point cloud
-    features, indices, num_pillars = group_and_sort_pillars(
+    features, indices, num_pillars, counts = group_and_sort_pillars(
         torch.zeros((0, 4)), geometry
     )
     assert num_pillars == 0
     assert features.shape[0] == 0
+    assert counts.shape[0] == 0
 
     # Points outside ROI
     oob_points = torch.tensor([[-10.0, -50.0, 10.0, 1.0]], dtype=torch.float32)
-    features, indices, num_pillars = group_and_sort_pillars(
+    features, indices, num_pillars, counts = group_and_sort_pillars(
         oob_points, geometry
     )
     assert num_pillars == 0
+    assert counts.shape[0] == 0

@@ -31,6 +31,7 @@ def group_and_sort_pillars(
         pillar_features: (P, max_points_per_pillar, 8)
         pillar_indices: (P, 2) [y_idx, x_idx]
         num_pillars: int
+        pillar_point_counts: (P,) actual point counts in each pillar before zero-padding
     """
     pts = filter_roi_points(points, geometry)
     device = points.device
@@ -40,7 +41,8 @@ def group_and_sort_pillars(
             (0, max_points_per_pillar, 8), dtype=torch.float32, device=device
         )
         empty_idx = torch.zeros((0, 2), dtype=torch.int64, device=device)
-        return empty_feat, empty_idx, 0
+        empty_cnt = torch.zeros((0,), dtype=torch.int64, device=device)
+        return empty_feat, empty_idx, 0, empty_cnt
 
     x_res = float(geometry["x_res"])
     y_res = float(geometry["y_res"])
@@ -51,10 +53,11 @@ def group_and_sort_pillars(
     z_c = (z_min + z_max) / 2.0
 
     x_size = int(round((float(geometry["x_max"]) - x_min) / x_res))
+    y_size = int(round((float(geometry["y_max"]) - y_min) / y_res))
 
-    # Grid indices
-    x_idx = ((pts[:, 0] - x_min) / x_res).long()
-    y_idx = ((pts[:, 1] - y_min) / y_res).long()
+    # Grid indices with defensive clamping
+    x_idx = torch.clamp(((pts[:, 0] - x_min) / x_res).long(), 0, x_size - 1)
+    y_idx = torch.clamp(((pts[:, 1] - y_min) / y_res).long(), 0, y_size - 1)
     flat_ids = y_idx * x_size + x_idx
 
     # Step 1: Lexicographical sort (Z first, then stable sort by flat_id)
@@ -112,4 +115,7 @@ def group_and_sort_pillars(
     )
     pillar_features[pillar_id_kept, intra_idx_kept] = enriched
 
-    return pillar_features, pillar_indices, num_pillars
+    # Compute actual point count per pillar for exact unpadded terminal state extraction
+    pillar_point_counts = torch.bincount(pillar_id_kept, minlength=num_pillars).clamp(min=1)
+
+    return pillar_features, pillar_indices, num_pillars, pillar_point_counts
