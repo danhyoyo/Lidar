@@ -1,5 +1,13 @@
+import sys
+from pathlib import Path
 import pytest
 import torch
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+for path in (str(REPO_ROOT), str(REPO_ROOT / "detector")):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 from detector.core.models.encoders.mamba_ops import SelectiveSSM, pure_pytorch_selective_scan
 
 def test_selective_ssm_shape_and_grad():

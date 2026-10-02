@@ -1,5 +1,13 @@
+import sys
+from pathlib import Path
 import pytest
 import torch
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+for path in (str(REPO_ROOT), str(REPO_ROOT / "detector")):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 from detector.core.models.encoders.rich_mamba import RichMambaEncoder
 
 def test_rich_mamba_encoder_forward_and_backward():

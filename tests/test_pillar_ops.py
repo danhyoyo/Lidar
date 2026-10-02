@@ -1,5 +1,13 @@
+import sys
+from pathlib import Path
 import pytest
 import torch
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+for path in (str(REPO_ROOT), str(REPO_ROOT / "detector")):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 from detector.core.models.encoders.pillar_ops import group_and_sort_pillars
 
 def test_group_and_sort_pillars_correctness():
