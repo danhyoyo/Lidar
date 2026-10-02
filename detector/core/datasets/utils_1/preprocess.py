@@ -23,10 +23,10 @@ def encode_bev(points, geometry, bev_encoding=None):
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
-    if name != "rich8":
+    if name not in {"rich8", "rich_mamba"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
     if points.ndim != 2 or points.shape[1] < 4:
-        raise ValueError("rich8 expects points shaped (N, >=4)")
+        raise ValueError("points must be shaped (N, >=4)")
 
     density_norm = float(encoding.get("density_norm", 32.0))
     intensity_scale = float(encoding.get("intensity_scale", 1.0))
