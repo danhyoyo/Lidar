@@ -101,29 +101,23 @@ class TestRunNameAndLogging(unittest.TestCase):
             self.assertIn(parts[3], {"rich8", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})
 
-    def test_trainer_contains_tqdm(self):
+    def test_trainer_has_no_tqdm_overhead(self):
         trainer_code = (
             REPO_ROOT / "tools" / "kitti_training_pipeline" / "train.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("tqdm", trainer_code)
+        self.assertNotIn("tqdm", trainer_code)
+        self.assertNotIn("--log-interval", trainer_code)
 
-    def test_trainer_has_log_interval_argument(self):
-        trainer_code = (
-            REPO_ROOT / "tools" / "kitti_training_pipeline" / "train.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("--log-interval", trainer_code)
-
-    def test_trainer_writes_clean_train_log_and_gates_item_calls(self):
+    def test_trainer_writes_clean_epoch_summary_to_train_log(self):
         trainer_code = (
             REPO_ROOT / "tools" / "kitti_training_pipeline" / "train.py"
         ).read_text(encoding="utf-8")
         self.assertIn('train_log_path = run_dir / "train.log"', trainer_code)
         self.assertIn("log_line(epoch_summary)", trainer_code)
-        self.assertIn("if should_log:\n            loss_val = (", trainer_code)
-        self.assertIn(
-            "if should_log:\n                current_loss = float(objective.detach().item())",
-            trainer_code,
-        )
+        self.assertIn("Train Loss: {train_objective:.4f}", trainer_code)
+        self.assertIn("Time: train={training_seconds:.1f}s, val=", trainer_code)
+        self.assertNotIn("objective.detach().item()", trainer_code)
+
 
 
 if __name__ == "__main__":
