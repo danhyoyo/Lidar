@@ -59,7 +59,7 @@
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
     "max_abs_log_size": 10.0,
-    "name": "oga",
+    "name": "baseline",
     "temperature": 2.0
   },
   "model": {
