@@ -36,23 +36,23 @@
     "kitti": {
       "geometry": {
         "x_max": 70.4,
-        "x_min": 0,
+        "x_min": 0.0,
         "x_res": 0.1,
-        "y_max": 40,
-        "y_min": -40,
+        "y_max": 40.0,
+        "y_min": -40.0,
         "y_res": 0.1,
-        "z_max": 1,
+        "z_max": 1.0,
         "z_min": -2.5,
         "z_res": 0.1
       },
       "location": "data/kitti/processed",
-      "nms_alpha": 0.5,
       "objects": {
         "Car": 0,
         "Cyclist": 2,
         "Pedestrian": 1
       }
     },
+    "location": "data/kitti/processed",
     "min_radius": 4,
     "num_classes": 3,
     "out_size_factor": 4
@@ -60,16 +60,7 @@
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "clamp_bound": 3.0,
-    "corner_beta": 1.0,
-    "ema_momentum": 0.99,
-    "epsilon": 1e-06,
-    "iou_loss_weight": 1.0,
-    "iou_target_type": "mgiou",
-    "max_abs_log_size": 10.0,
-    "name": "oga",
-    "temperature": 2.0,
-    "use_iou": true
+    "name": "baseline"
   },
   "model": {
     "backbone": "mobilepixornext",
@@ -90,13 +81,12 @@
     "expansion": 2.5,
     "header_act": "silu",
     "header_use_bn": true,
-    "header_use_iou": true,
+    "header_use_iou": false,
     "scale_gated_fpn": true,
-    "use_reparam": true
+    "use_reparam": false
   },
   "multi_gpu": false,
-  "nms_alpha": 0.5,
-  "note": "kitti_mobilepixornext_litemla_richmamba_sgfpn_oga_loss_reparam_iqa",
+  "note": "00_anchor_ablation_mobilepixornext_richmamba_c4_litemla_sgfpn_baseline_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
