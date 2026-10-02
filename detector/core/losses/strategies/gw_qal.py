@@ -32,6 +32,11 @@ class GwQalLossStrategy(BaseLossStrategy):
         self.beta_q = float(config.get("beta_q", 1.0))
         self.rda_gamma = float(config.get("rda_gamma", 1.5))
         self.rda_alpha = float(config.get("rda_alpha", 2.0))
+        self.x_min = float(config.get("x_min", 0.0))
+        self.x_max = float(config.get("x_max", 70.4))
+        self.y_min = float(config.get("y_min", -40.0))
+        self.y_max = float(config.get("y_max", 40.0))
+        self.r_max = float(config.get("r_max", 70.4))
         self.temperature = float(config.get("temperature", 2.0))
         self.clamp_bound = float(config.get("clamp_bound", 3.0))
         self.ema_momentum = float(config.get("ema_momentum", 0.99))
@@ -110,8 +115,19 @@ class GwQalLossStrategy(BaseLossStrategy):
 
         cls_loss = quality_focal_loss(pred["cls"], target["cls"], quality_map, beta=self.beta_q)
 
-        # 3. RDA Spatial Reweighting on Coordinate Streams
-        rda_weights = compute_range_weights(tgt_off_pos, r_max=70.4, gamma=self.rda_gamma, alpha=self.rda_alpha)
+        # 3. RDA Spatial Reweighting on Coordinate Streams with True Metric Coordinates
+        step_x = (self.x_max - self.x_min) / float(W)
+        step_y = (self.y_max - self.y_min) / float(H)
+        y_coords = self.y_min + (torch.arange(H, device=device, dtype=torch.float32) + 0.5) * step_y
+        x_coords = self.x_min + (torch.arange(W, device=device, dtype=torch.float32) + 0.5) * step_x
+        grid_y, grid_x = torch.meshgrid(y_coords, x_coords, indexing="ij")
+        metric_grid = torch.stack((grid_x, grid_y), dim=0).unsqueeze(0).expand(B, 2, H, W)
+        grid_pos = metric_grid.permute(0, 2, 3, 1).reshape(-1, 2)[positive]
+        world_pos = grid_pos + tgt_off_pos
+
+        rda_weights = compute_range_weights(
+            world_pos, r_max=self.r_max, gamma=self.rda_gamma, alpha=self.rda_alpha
+        )
 
         diff_off = F.smooth_l1_loss(pred_off_pos, tgt_off_pos, reduction="none").sum(dim=-1)
         offset_loss = (diff_off * rda_weights).mean()
