@@ -23,6 +23,7 @@ from common import (
     build_model,
     configure_detector_imports,
     generate_run_name,
+    input_shape,
     normalize_state_dict,
     read_json,
     write_json,
@@ -457,10 +458,7 @@ def main(argv=None) -> None:
         model = torch.compile(model)
         try:
             print("Warming up torch.compile kernels...")
-            geom = config["data"]["kitti"]["geometry"]
-            in_ch = 8 if config.get("data", {}).get("bev_encoding", {}).get("name") in {"rich8", "rich_mamba"} else 35
-            h = int(round((geom["x_max"] - geom["x_min"]) / geom["x_res"]))
-            w = int(round((geom["y_max"] - geom["y_min"]) / geom["y_res"]))
+            _, in_ch, h, w = input_shape(config)
             dummy_voxel = torch.zeros((physical_batch_size, in_ch, h, w), device=device)
             with autocast_context(device, precision):
                 dummy_out = model(dummy_voxel)

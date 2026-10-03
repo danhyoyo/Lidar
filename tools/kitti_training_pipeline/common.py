@@ -51,7 +51,11 @@ def generate_run_name(
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
     if bev_name in {"rich8", "rich_mamba"}:
-        bev_encoder = str(bev_name)
+        out_ch = int(bev_cfg.get("out_channels", 8))
+        if bev_name == "rich_mamba" and out_ch != 8:
+            bev_encoder = f"rich_mamba_{out_ch}ch"
+        else:
+            bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
 
@@ -150,7 +154,7 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
     name = encoding.get("name", "binary_slices")
     if name not in {"binary_slices", "rich8", "rich_mamba"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
-    channels = 8 if name in {"rich8", "rich_mamba"} else bins("z")
+    channels = int(encoding.get("out_channels", 8)) if name in {"rich8", "rich_mamba"} else bins("z")
     return (1, channels, bins("y"), bins("x"))
 
 

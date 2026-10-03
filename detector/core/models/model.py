@@ -23,8 +23,16 @@ class CustomModel(nn.Module):
         })
 
         if bev_name == "rich_mamba":
+            if "out_channels" in bev_cfg:
+                out_ch = int(bev_cfg["out_channels"])
+            elif input_channels != 35:
+                out_ch = int(input_channels)
+                bev_cfg["out_channels"] = out_ch
+            else:
+                out_ch = 8
+                bev_cfg["out_channels"] = out_ch
             self.encoder = RichMambaEncoder(bev_cfg, geometry)
-            input_channels = int(bev_cfg.get("out_channels", 8))
+            input_channels = out_ch
         else:
             self.encoder = None
 
@@ -54,7 +62,9 @@ class CustomModel(nn.Module):
     def forward(self, x):
         if self.encoder is not None:
             # Check if input is points rather than already a BEV 4D tensor (B, C, H, W)
-            if isinstance(x, (list, tuple)) or (isinstance(x, torch.Tensor) and x.ndim <= 3):
+            if isinstance(x, dict) and "points" in x:
+                x = self.encoder(x["points"])
+            elif isinstance(x, (list, tuple)) or (isinstance(x, torch.Tensor) and x.ndim <= 3):
                 x = self.encoder(x)
         features = self.backbone(x)
         pred = self.header(features)
