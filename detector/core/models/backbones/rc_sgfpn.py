@@ -26,15 +26,21 @@ class FourierRangeEmbedding(nn.Module):
         super().__init__()
         self.height = height
         self.width = width
+        self.x_bounds = x_bounds
+        self.y_bounds = y_bounds
         self.num_bands = num_bands
         self.out_dim = 2 * num_bands
 
-        x_min, x_max = float(x_bounds[0]), float(x_bounds[1])
-        y_min, y_max = float(y_bounds[0]), float(y_bounds[1])
+        embedding = self._generate_embedding(height, width)
+        self.register_buffer("embedding", embedding, persistent=False)
+
+    def _generate_embedding(self, h: int, w: int) -> Tensor:
+        x_min, x_max = float(self.x_bounds[0]), float(self.x_bounds[1])
+        y_min, y_max = float(self.y_bounds[0]), float(self.y_bounds[1])
 
         # Generate physical metric coordinates in meters
-        y_coords = torch.linspace(y_min, y_max, height, dtype=torch.float32)
-        x_coords = torch.linspace(x_min, x_max, width, dtype=torch.float32)
+        y_coords = torch.linspace(y_min, y_max, h, dtype=torch.float32)
+        x_coords = torch.linspace(x_min, x_max, w, dtype=torch.float32)
         yy, xx = torch.meshgrid(y_coords, x_coords, indexing="ij")
 
         # Absolute Euclidean distance r = sqrt(x^2 + y^2)
@@ -44,17 +50,19 @@ class FourierRangeEmbedding(nn.Module):
 
         # Multi-band sinusoidal basis: [sin(2^b * pi * r), cos(2^b * pi * r)]
         bands = []
-        for b in range(num_bands):
+        for b in range(self.num_bands):
             freq = (2.0**b) * math.pi
             bands.append(torch.sin(freq * r_norm))
             bands.append(torch.cos(freq * r_norm))
 
-        embedding = torch.cat(bands, dim=1)  # (1, 2*num_bands, H, W)
-        self.register_buffer("embedding", embedding, persistent=False)
+        return torch.cat(bands, dim=1)  # (1, 2*num_bands, H, W)
 
-    def forward(self) -> Tensor:
-        return self.embedding
-
+    def forward(self, h: Optional[int] = None, w: Optional[int] = None) -> Tensor:
+        if h is None or w is None or (h == self.height and w == self.width):
+            return self.embedding
+        device = self.embedding.device
+        dtype = self.embedding.dtype
+        return self._generate_embedding(h, w).to(device=device, dtype=dtype)
 
 
 class RangeConditionedScaleGate(nn.Module):
@@ -96,12 +104,16 @@ class RangeConditionedScaleGate(nn.Module):
         nn.init.zeros_(self.range_proj.bias)
 
     def forward(self, l_feat: Tensor, u_feat: Tensor) -> Tensor:
+        _, _, h, w = l_feat.shape
         if self.deploy:
             # Zero-latency path: precomputed spatial bias is folded into buffer
-            gate_logits = self.content_conv(l_feat + u_feat) + self.static_spatial_bias
+            bias = self.static_spatial_bias
+            if bias.shape[-2:] != (h, w):
+                bias = F.interpolate(bias, size=(h, w), mode="bilinear", align_corners=False)
+            gate_logits = self.content_conv(l_feat + u_feat) + bias
         else:
             feat_logits = self.content_conv(l_feat + u_feat)
-            range_logits = self.range_proj(self.fre())
+            range_logits = self.range_proj(self.fre(h, w))
             gate_logits = feat_logits + range_logits
 
         gate = 2.0 * torch.sigmoid(gate_logits)

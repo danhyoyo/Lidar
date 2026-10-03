@@ -66,6 +66,8 @@ class CustomModel(nn.Module):
                 x = self.encoder(x["points"])
             elif isinstance(x, (list, tuple)) or (isinstance(x, torch.Tensor) and x.ndim <= 3):
                 x = self.encoder(x)
+        elif isinstance(x, dict) and "voxel" in x:
+            x = x["voxel"]
         features = self.backbone(x)
         pred = self.header(features)
         return pred

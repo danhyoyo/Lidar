@@ -165,3 +165,45 @@ def test_mobilepixornext_with_rc_sgfpn():
     bb_bi.switch_to_deploy()
     out_bi_deploy = bb_bi(x)
     assert out_bi_deploy.shape == (2, 16, 200, 176)
+
+
+
+from core.models.model import CustomModel
+
+
+def test_custom_model_e2e_with_rc_sgfpn():
+    cfg = {
+        "bev_encoding": {"name": "rich8"},
+        "kitti": {"geometry": {"x_min": 0, "x_max": 70.4, "y_min": -40, "y_max": 40, "x_res": 0.1, "y_res": 0.1}},
+        "num_classes": 3,
+        "backbone": "mobilepixornext",
+        "neck_type": "rc_sgfpn",
+    }
+    model = CustomModel(cfg, num_classes=3, input_channels=8)
+    voxel = torch.randn(2, 8, 800, 704)
+    pred = model({"voxel": voxel})
+
+    assert "cls" in pred
+    assert "offset" in pred
+    assert "size" in pred
+    assert "yaw" in pred
+    assert pred["cls"].shape == (2, 3, 200, 176)
+
+
+def test_custom_model_e2e_with_rc_bisgfpn():
+    cfg = {
+        "bev_encoding": {"name": "rich8"},
+        "kitti": {"geometry": {"x_min": 0, "x_max": 70.4, "y_min": -40, "y_max": 40, "x_res": 0.1, "y_res": 0.1}},
+        "num_classes": 3,
+        "backbone": "mobilepixornext",
+        "neck_type": "rc_bisgfpn",
+    }
+    model = CustomModel(cfg, num_classes=3, input_channels=8)
+    voxel = torch.randn(2, 8, 800, 704)
+    pred = model({"voxel": voxel})
+
+    assert "cls" in pred
+    assert "offset" in pred
+    assert "size" in pred
+    assert "yaw" in pred
+    assert pred["cls"].shape == (2, 3, 200, 176)
