@@ -58,7 +58,11 @@
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
     "max_abs_log_size": 10.0,
-    "name": "oga",
+    "name": "q_oga",
+    "qcfa_beta": 1.0,
+    "rda_alpha": 2.0,
+    "rda_gamma": 1.5,
+    "soft_min_tau": 0.05,
     "temperature": 2.0
   },
   "model": {
@@ -75,7 +79,7 @@
     "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "kitti_mobilepixornext_litemla_rich8_rc_bisgfpn_oga_loss",
+  "note": "kitti_mobilepixornext_litemla_rich8_rc_bisgfpn_q_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
