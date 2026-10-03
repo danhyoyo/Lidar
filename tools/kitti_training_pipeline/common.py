@@ -68,7 +68,10 @@ def generate_run_name(
     parts = [backbone, augmentation, loss_name, bev_encoder, iou]
 
     extras: list[str] = []
-    if model_cfg.get("scale_gated_fpn", False):
+    neck_type = model_cfg.get("neck_type")
+    if neck_type in ("rc_sgfpn", "rc_bisgfpn"):
+        extras.append(neck_type)
+    elif model_cfg.get("scale_gated_fpn", False):
         extras.append("sgfpn")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
