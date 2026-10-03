@@ -207,3 +207,20 @@ def test_custom_model_e2e_with_rc_bisgfpn():
     assert "size" in pred
     assert "yaw" in pred
     assert pred["cls"].shape == (2, 3, 200, 176)
+
+
+def test_mobilepixornext_rc_sgfpn_no_dead_parameters():
+    bb = MobilePixorNeXtBackbone(input_channels=8, neck_type="rc_sgfpn")
+    # Verify baseline FPN layers are not instantiated
+    assert not hasattr(bb, "lat_c5")
+    assert not hasattr(bb, "lat_c4")
+    assert not hasattr(bb, "lat_c3")
+    assert not hasattr(bb, "refine_u4")
+    assert not hasattr(bb, "proj_u3")
+    assert not hasattr(bb, "gate_c4")
+    assert not hasattr(bb, "gate_c3")
+    assert not hasattr(bb, "out_conv")
+
+    # Verify parameter count is lean (around 675k, exactly 674,904)
+    param_count = sum(p.numel() for p in bb.parameters())
+    assert param_count == 674904

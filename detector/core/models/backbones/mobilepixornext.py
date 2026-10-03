@@ -133,43 +133,44 @@ class MobilePixorNeXtBackbone(nn.Module):
         )
 
         # -------------------------------------------------------------
-        # 5. Bilinear Scale-Gated FPN Neck
+        # 5. Bilinear Scale-Gated FPN Neck (instantiated only when rc_neck is None)
         # -------------------------------------------------------------
-        # Lateral projections
-        self.lat_c5 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.lat_c4 = nn.Conv2d(96, 48, kernel_size=1, bias=False)
-        self.lat_c3 = nn.Conv2d(48, 24, kernel_size=1, bias=False)
+        if self.rc_neck is None:
+            # Lateral projections
+            self.lat_c5 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+            self.lat_c4 = nn.Conv2d(96, 48, kernel_size=1, bias=False)
+            self.lat_c3 = nn.Conv2d(48, 24, kernel_size=1, bias=False)
 
-        # Refinement after bilinear interpolation (avoids deconv checkerboards)
-        self.refine_u4 = nn.Sequential(
-            nn.Conv2d(48, 48, kernel_size=3, padding=1, groups=48, bias=False),
-            nn.BatchNorm2d(48),
-            nn.SiLU(inplace=True),
-        )
-        self.proj_u3 = nn.Sequential(
-            nn.Conv2d(48, 24, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(24),
-            nn.SiLU(inplace=True),
-        )
+            # Refinement after bilinear interpolation (avoids deconv checkerboards)
+            self.refine_u4 = nn.Sequential(
+                nn.Conv2d(48, 48, kernel_size=3, padding=1, groups=48, bias=False),
+                nn.BatchNorm2d(48),
+                nn.SiLU(inplace=True),
+            )
+            self.proj_u3 = nn.Sequential(
+                nn.Conv2d(48, 24, kernel_size=3, padding=1, bias=False),
+                nn.BatchNorm2d(24),
+                nn.SiLU(inplace=True),
+            )
 
-        # Zero-initialized scale gates
-        if self.scale_gated_fpn:
-            self.gate_c4 = nn.Conv2d(48, 48, kernel_size=3, padding=1, groups=48, bias=True)
-            self.gate_c3 = nn.Conv2d(24, 24, kernel_size=3, padding=1, groups=24, bias=True)
-            nn.init.zeros_(self.gate_c4.weight)
-            nn.init.zeros_(self.gate_c4.bias)
-            nn.init.zeros_(self.gate_c3.weight)
-            nn.init.zeros_(self.gate_c3.bias)
-        else:
-            self.gate_c4 = nn.Identity()
-            self.gate_c3 = nn.Identity()
+            # Zero-initialized scale gates
+            if self.scale_gated_fpn:
+                self.gate_c4 = nn.Conv2d(48, 48, kernel_size=3, padding=1, groups=48, bias=True)
+                self.gate_c3 = nn.Conv2d(24, 24, kernel_size=3, padding=1, groups=24, bias=True)
+                nn.init.zeros_(self.gate_c4.weight)
+                nn.init.zeros_(self.gate_c4.bias)
+                nn.init.zeros_(self.gate_c3.weight)
+                nn.init.zeros_(self.gate_c3.bias)
+            else:
+                self.gate_c4 = nn.Identity()
+                self.gate_c3 = nn.Identity()
 
-        # Final projection to header input dimension (16 channels at stride 4)
-        self.out_conv = nn.Sequential(
-            nn.Conv2d(24, backbone_out_dim, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(backbone_out_dim),
-            nn.SiLU(inplace=True),
-        )
+            # Final projection to header input dimension (16 channels at stride 4)
+            self.out_conv = nn.Sequential(
+                nn.Conv2d(24, backbone_out_dim, kernel_size=3, padding=1, bias=False),
+                nn.BatchNorm2d(backbone_out_dim),
+                nn.SiLU(inplace=True),
+            )
 
     def forward(self, x: Tensor) -> Tensor:
         # Bottom-up feature hierarchy

@@ -4,11 +4,9 @@ import torch.nn as nn
 try:
     from core.models.backbones.registry import build_backbone
     from core.models.heads.cnn import Header
-    from core.models.encoders.rich_mamba import RichMambaEncoder
 except ImportError:
     from detector.core.models.backbones.registry import build_backbone
     from detector.core.models.heads.cnn import Header
-    from detector.core.models.encoders.rich_mamba import RichMambaEncoder
 
 
 class CustomModel(nn.Module):
@@ -16,31 +14,13 @@ class CustomModel(nn.Module):
         super(CustomModel, self).__init__()
         bev_cfg = cfg.get("bev_encoding", {})
         bev_name = bev_cfg.get("name", "binary_slices")
-        geometry = cfg.get("geometry", {
-            "x_min": 0.0, "x_max": 70.4, "x_res": 0.1,
-            "y_min": -40.0, "y_max": 40.0, "y_res": 0.1,
-            "z_min": -2.5, "z_max": 1.0, "z_res": 0.1,
-        })
 
-        if bev_name == "rich_mamba":
-            if "out_channels" in bev_cfg:
-                out_ch = int(bev_cfg["out_channels"])
-            elif input_channels != 35:
-                out_ch = int(input_channels)
-                bev_cfg["out_channels"] = out_ch
-            else:
-                out_ch = 8
-                bev_cfg["out_channels"] = out_ch
-            self.encoder = RichMambaEncoder(bev_cfg, geometry)
-            input_channels = out_ch
-        else:
-            self.encoder = None
-            if bev_name == "rich8":
-                input_channels = int(bev_cfg.get("out_channels", 8))
-            elif bev_name == "rich10":
-                input_channels = int(bev_cfg.get("out_channels", 10))
-            elif bev_name == "rich12":
-                input_channels = int(bev_cfg.get("out_channels", 12))
+        if bev_name == "rich8":
+            input_channels = int(bev_cfg.get("out_channels", 8))
+        elif bev_name == "rich10":
+            input_channels = int(bev_cfg.get("out_channels", 10))
+        elif bev_name == "rich12":
+            input_channels = int(bev_cfg.get("out_channels", 12))
 
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)
@@ -66,13 +46,7 @@ class CustomModel(nn.Module):
         )
 
     def forward(self, x):
-        if self.encoder is not None:
-            # Check if input is points rather than already a BEV 4D tensor (B, C, H, W)
-            if isinstance(x, dict) and "points" in x:
-                x = self.encoder(x["points"])
-            elif isinstance(x, (list, tuple)) or (isinstance(x, torch.Tensor) and x.ndim <= 3):
-                x = self.encoder(x)
-        elif isinstance(x, dict) and "voxel" in x:
+        if isinstance(x, dict) and "voxel" in x:
             x = x["voxel"]
         features = self.backbone(x)
         pred = self.header(features)

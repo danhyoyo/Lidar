@@ -39,12 +39,12 @@ def encode_bev(points, geometry, bev_encoding=None):
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
-    if name not in {"rich8", "rich10", "rich12", "rich_mamba"}:
+    if name not in {"rich8", "rich10", "rich12"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
     if points.ndim != 2 or points.shape[1] < 4:
         raise ValueError("points must be shaped (N, >=4)")
 
-    if name in {"rich8", "rich_mamba"}:
+    if name == "rich8":
         default_ch = 8
     elif name == "rich10":
         default_ch = 10
