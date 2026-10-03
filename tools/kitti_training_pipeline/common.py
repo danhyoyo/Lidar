@@ -50,8 +50,8 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich_mamba"}:
-        out_ch = int(bev_cfg.get("out_channels", 8))
+    if bev_name in {"rich8", "rich10", "rich12", "rich_mamba"}:
+        out_ch = int(bev_cfg.get("out_channels", 8 if bev_name in {"rich8", "rich_mamba"} else (10 if bev_name == "rich10" else 12)))
         if bev_name == "rich_mamba" and out_ch != 8:
             bev_encoder = f"rich_mamba_{out_ch}ch"
         else:
@@ -155,9 +155,16 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
 
     encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
     name = encoding.get("name", "binary_slices")
-    if name not in {"binary_slices", "rich8", "rich_mamba"}:
+    if name not in {"binary_slices", "rich8", "rich10", "rich12", "rich_mamba"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
-    channels = int(encoding.get("out_channels", 8)) if name in {"rich8", "rich_mamba"} else bins("z")
+    if name in {"rich8", "rich_mamba"}:
+        channels = int(encoding.get("out_channels", 8))
+    elif name == "rich10":
+        channels = int(encoding.get("out_channels", 10))
+    elif name == "rich12":
+        channels = int(encoding.get("out_channels", 12))
+    else:
+        channels = bins("z")
     return (1, channels, bins("y"), bins("x"))
 
 

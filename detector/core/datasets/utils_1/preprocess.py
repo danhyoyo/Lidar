@@ -23,10 +23,22 @@ def encode_bev(points, geometry, bev_encoding=None):
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
-    if name not in {"rich8", "rich_mamba"}:
+    if name not in {"rich8", "rich10", "rich12", "rich_mamba"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
     if points.ndim != 2 or points.shape[1] < 4:
         raise ValueError("points must be shaped (N, >=4)")
+
+    if name in {"rich8", "rich_mamba"}:
+        default_ch = 8
+    elif name == "rich10":
+        default_ch = 10
+    elif name == "rich12":
+        default_ch = 12
+    else:
+        default_ch = 8
+    out_channels = int(encoding.get("out_channels", default_ch))
+    if out_channels < 8:
+        raise ValueError(f"out_channels must be at least 8, got {out_channels}")
 
     density_norm = float(encoding.get("density_norm", 32.0))
     intensity_scale = float(encoding.get("intensity_scale", 1.0))
@@ -36,7 +48,7 @@ def encode_bev(points, geometry, bev_encoding=None):
         raise ValueError("intensity_scale must be finite and greater than 0")
 
     x_size, y_size, _ = _grid_shape(geometry)
-    output = np.zeros((8, y_size * x_size), dtype=np.float32)
+    output = np.zeros((out_channels, y_size * x_size), dtype=np.float32)
     eps = 0.001
     keep = np.isfinite(points[:, :4]).all(axis=1)
     for column, axis in enumerate("xyz"):
@@ -44,7 +56,7 @@ def encode_bev(points, geometry, bev_encoding=None):
         keep &= points[:, column] < float(geometry[f"{axis}_max"]) - eps
     pts = points[keep]
     if not pts.size:
-        return output.reshape(8, y_size, x_size).transpose(1, 2, 0)
+        return output.reshape(out_channels, y_size, x_size).transpose(1, 2, 0)
 
     x_index = ((pts[:, 0] - geometry["x_min"]) // geometry["x_res"]).astype(np.int32)
     y_index = ((pts[:, 1] - geometry["y_min"]) // geometry["y_res"]).astype(np.int32)
@@ -65,7 +77,34 @@ def encode_bev(points, geometry, bev_encoding=None):
     np.maximum.at(output[5], flat, intensity)
     output[6] = np.bincount(flat, weights=intensity, minlength=output.shape[1]) / np.maximum(count, 1)
     output[7] = np.minimum(1.0, np.log1p(count) / np.log1p(density_norm))
-    return output.reshape(8, y_size, x_size).transpose(1, 2, 0).astype(np.float32, copy=False)
+
+    if out_channels >= 10:
+        # Channel 8: Height span Delta_z = z_max - z_min (normalized)
+        z_min_arr = np.full(y_size * x_size, 1.0, dtype=np.float32)
+        np.minimum.at(z_min_arr, flat, z_norm)
+        output[8] = np.where(count > 0, np.maximum(0.0, output[3] - z_min_arr), 0.0).astype(np.float32)
+
+        # Channel 9: Vertical height standard deviation sigma_z = sqrt(max(0, E[z^2] - (E[z])^2))
+        z_sq_mean = np.bincount(flat, weights=z_norm**2, minlength=output.shape[1]) / np.maximum(count, 1)
+        var_z = np.maximum(0.0, z_sq_mean - output[4]**2)
+        output[9] = np.where(count > 1, np.sqrt(var_z), 0.0).astype(np.float32)
+
+    if out_channels >= 12:
+        # Channel 10: Intensity contrast Delta_i = i_max - i_mean
+        output[10] = np.where(count > 0, np.maximum(0.0, output[5] - output[6]), 0.0).astype(np.float32)
+
+        # Channel 11: Range-compensated density (log-density with quadratic range boost)
+        y_coords = (np.arange(y_size, dtype=np.float32) + 0.5) * float(geometry["y_res"]) + float(geometry["y_min"])
+        x_coords = (np.arange(x_size, dtype=np.float32) + 0.5) * float(geometry["x_res"]) + float(geometry["x_min"])
+        r_grid = np.sqrt(y_coords[:, None]**2 + x_coords[None, :]**2).ravel()
+        r_scale = 1.0 + (r_grid / 20.0) ** 2
+        output[11] = np.where(
+            count > 0,
+            np.minimum(1.0, np.log1p(count * r_scale) / np.log1p(density_norm * 16.0)),
+            0.0,
+        ).astype(np.float32)
+
+    return output.reshape(out_channels, y_size, x_size).transpose(1, 2, 0).astype(np.float32, copy=False)
 
 def voxelize(points, geometry):
     x_min = geometry["x_min"]

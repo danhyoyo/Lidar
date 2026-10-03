@@ -35,6 +35,12 @@ class CustomModel(nn.Module):
             input_channels = out_ch
         else:
             self.encoder = None
+            if bev_name == "rich8":
+                input_channels = int(bev_cfg.get("out_channels", 8))
+            elif bev_name == "rich10":
+                input_channels = int(bev_cfg.get("out_channels", 10))
+            elif bev_name == "rich12":
+                input_channels = int(bev_cfg.get("out_channels", 12))
 
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)
