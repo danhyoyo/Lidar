@@ -73,3 +73,43 @@ def test_range_conditioned_scale_gate_switch_to_deploy():
 
     out_deploy = gate_module(l_feat, u_feat)
     assert torch.allclose(out_train, out_deploy, atol=1e-5)
+
+
+
+from core.models.backbones.rc_sgfpn import RangeConditionedSGFPN
+
+
+def test_rc_sgfpn_unidirectional_shape_and_deploy():
+    neck = RangeConditionedSGFPN(bidirectional=False)
+
+    c3 = torch.randn(2, 48, 200, 176)
+    c4 = torch.randn(2, 96, 100, 88)
+    c5 = torch.randn(2, 128, 50, 44)
+
+    out = neck(c3, c4, c5)
+    assert out.shape == (2, 16, 200, 176)
+    assert torch.isfinite(out).all()
+
+    # Test switch_to_deploy
+    neck.switch_to_deploy()
+    out_deploy = neck(c3, c4, c5)
+    assert out_deploy.shape == (2, 16, 200, 176)
+    assert torch.allclose(out, out_deploy, atol=1e-5)
+
+
+def test_rc_sgfpn_bidirectional_shape_and_deploy():
+    neck = RangeConditionedSGFPN(bidirectional=True)
+
+    c3 = torch.randn(2, 48, 200, 176)
+    c4 = torch.randn(2, 96, 100, 88)
+    c5 = torch.randn(2, 128, 50, 44)
+
+    out = neck(c3, c4, c5)
+    assert out.shape == (2, 16, 200, 176)
+    assert torch.isfinite(out).all()
+
+    # Test switch_to_deploy
+    neck.switch_to_deploy()
+    out_deploy = neck(c3, c4, c5)
+    assert out_deploy.shape == (2, 16, 200, 176)
+    assert torch.allclose(out, out_deploy, atol=1e-5)

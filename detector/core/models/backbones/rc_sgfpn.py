@@ -120,3 +120,131 @@ class RangeConditionedScaleGate(nn.Module):
         del self.range_proj
         del self.fre
         self.deploy = True
+
+
+
+class RangeConditionedSGFPN(nn.Module):
+    """Range-Conditioned Scale-Gated Feature Pyramid Network.
+
+    Supports both Unidirectional (top-down) and Bidirectional (top-down + bottom-up)
+    routing pathways, with continuous Fourier Range Embedding modulation.
+    """
+
+    def __init__(
+        self,
+        in_channels: Tuple[int, int, int] = (48, 96, 128),  # C3, C4, C5
+        out_channels: int = 16,
+        lateral_channels: Tuple[int, int, int] = (24, 48, 48),
+        bidirectional: bool = False,
+        num_range_bands: int = 4,
+        geometry: Optional[Dict[str, float]] = None,
+    ):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.lateral_channels = lateral_channels
+        self.bidirectional = bool(bidirectional)
+
+        if geometry is None:
+            geometry = {"x_min": 0.0, "x_max": 70.4, "y_min": -40.0, "y_max": 40.0}
+        x_bounds = (float(geometry.get("x_min", 0.0)), float(geometry.get("x_max", 70.4)))
+        y_bounds = (float(geometry.get("y_min", -40.0)), float(geometry.get("y_max", 40.0)))
+
+        c3_in, c4_in, c5_in = in_channels
+        l3_ch, l4_ch, l5_ch = lateral_channels
+
+        # 1. Lateral Projections (1x1 convs)
+        self.lat_c5 = nn.Conv2d(c5_in, l5_ch, kernel_size=1, bias=False)
+        self.lat_c4 = nn.Conv2d(c4_in, l4_ch, kernel_size=1, bias=False)
+        self.lat_c3 = nn.Conv2d(c3_in, l3_ch, kernel_size=1, bias=False)
+
+        # 2. Top-Down Pathway
+        # Level 4: 50x44 -> 100x88
+        self.refine_u4 = nn.Sequential(
+            nn.Conv2d(l5_ch, l4_ch, kernel_size=3, padding=1, groups=min(l4_ch, l5_ch), bias=False),
+            nn.BatchNorm2d(l4_ch),
+            nn.SiLU(inplace=True),
+        )
+        self.gate_td4 = RangeConditionedScaleGate(
+            l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+        )
+
+        # Level 3: 100x88 -> 200x176
+        self.proj_u3 = nn.Sequential(
+            nn.Conv2d(l4_ch, l3_ch, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(l3_ch),
+            nn.SiLU(inplace=True),
+        )
+        self.gate_td3 = RangeConditionedScaleGate(
+            l3_ch, height=200, width=176, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+        )
+
+        # 3. Bottom-Up Pathway (Active when bidirectional=True)
+        if self.bidirectional:
+            # P3 -> P4: stride 2 downsampling (200x176 -> 100x88)
+            self.down_p3 = nn.Sequential(
+                nn.Conv2d(l3_ch, l4_ch, kernel_size=3, stride=2, padding=1, bias=False),
+                nn.BatchNorm2d(l4_ch),
+                nn.SiLU(inplace=True),
+            )
+            self.gate_bu4 = RangeConditionedScaleGate(
+                l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+            )
+
+            # P4 -> P5: stride 2 downsampling (100x88 -> 50x44)
+            self.down_p4 = nn.Sequential(
+                nn.Conv2d(l4_ch, l5_ch, kernel_size=3, stride=2, padding=1, bias=False),
+                nn.BatchNorm2d(l5_ch),
+                nn.SiLU(inplace=True),
+            )
+            self.gate_bu5 = RangeConditionedScaleGate(
+                l5_ch, height=50, width=44, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+            )
+
+            # Aggregation from reinforced P4 back into P3
+            self.bu_refine_p3 = nn.Sequential(
+                nn.Conv2d(l4_ch, l3_ch, kernel_size=1, bias=False),
+                nn.BatchNorm2d(l3_ch),
+                nn.SiLU(inplace=True),
+            )
+
+        # 4. Final Header Output Projection (Stride 4, 16 channels)
+        self.out_conv = nn.Sequential(
+            nn.Conv2d(l3_ch, out_channels, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.SiLU(inplace=True),
+        )
+
+    def forward(self, c3: Tensor, c4: Tensor, c5: Tensor) -> Tensor:
+        # Lateral feature projections
+        l5 = self.lat_c5(c5)  # (B, 48, 50, 44)
+        l4 = self.lat_c4(c4)  # (B, 48, 100, 88)
+        l3 = self.lat_c3(c3)  # (B, 24, 200, 176)
+
+        # Top-Down Pass
+        u4 = F.interpolate(l5, scale_factor=2.0, mode="bilinear", align_corners=False)
+        u4 = self.refine_u4(u4)
+        p4 = self.gate_td4(l4, u4)  # (B, 48, 100, 88)
+
+        u3 = F.interpolate(p4, scale_factor=2.0, mode="bilinear", align_corners=False)
+        u3 = self.proj_u3(u3)
+        p3 = self.gate_td3(l3, u3)  # (B, 24, 200, 176)
+
+        # Bottom-Up Pass (optional)
+        if self.bidirectional:
+            d4 = self.down_p3(p3)
+            p4_bu = self.gate_bu4(d4, p4) + 0.5 * l4
+
+            d5 = self.down_p4(p4_bu)
+            _ = self.gate_bu5(d5, l5)  # Reinforces P5 state
+
+            p4_up = F.interpolate(p4_bu, scale_factor=2.0, mode="bilinear", align_corners=False)
+            p3 = p3 + self.bu_refine_p3(p4_up)
+
+        return self.out_conv(p3)
+
+    def switch_to_deploy(self):
+        """Recursively delegates switch_to_deploy to internal gates."""
+        for m in self.modules():
+            if hasattr(m, "switch_to_deploy") and m is not self:
+                m.switch_to_deploy()
