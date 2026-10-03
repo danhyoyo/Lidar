@@ -113,3 +113,33 @@ def test_rc_sgfpn_bidirectional_shape_and_deploy():
     out_deploy = neck(c3, c4, c5)
     assert out_deploy.shape == (2, 16, 200, 176)
     assert torch.allclose(out, out_deploy, atol=1e-5)
+
+
+
+def test_rc_sgfpn_gradient_flow_and_autocast_safety():
+    neck = RangeConditionedSGFPN(bidirectional=True)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    neck = neck.to(device)
+
+    c3 = torch.randn(2, 48, 200, 176, device=device, requires_grad=True)
+    c4 = torch.randn(2, 96, 100, 88, device=device, requires_grad=True)
+    c5 = torch.randn(2, 128, 50, 44, device=device, requires_grad=True)
+
+    # Autocast context check
+    amp_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
+    with torch.autocast(device_type=device.type, dtype=amp_dtype, enabled=(device.type == "cuda")):
+        out = neck(c3, c4, c5)
+        loss = out.sum()
+
+    loss.backward()
+
+    # Assert gradients exist and are finite on all inputs
+    assert c3.grad is not None and torch.isfinite(c3.grad).all()
+    assert c4.grad is not None and torch.isfinite(c4.grad).all()
+    assert c5.grad is not None and torch.isfinite(c5.grad).all()
+
+    # Assert gradients exist on trainable gate weights
+    assert neck.gate_td4.content_conv.weight.grad is not None
+    assert neck.gate_td4.range_proj.weight.grad is not None
+    assert torch.isfinite(neck.gate_td4.content_conv.weight.grad).all()
+    assert torch.isfinite(neck.gate_td4.range_proj.weight.grad).all()
