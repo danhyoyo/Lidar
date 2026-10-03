@@ -31,3 +31,45 @@ def test_fourier_range_embedding_shapes_and_values():
         cos_val = origin_feats[2 * b + 1].item()
         assert abs(sin_val) < 1e-5
         assert abs(cos_val - 1.0) < 1e-5
+
+
+from core.models.backbones.rc_sgfpn import RangeConditionedScaleGate
+
+
+def test_range_conditioned_scale_gate_zero_init():
+    channels = 48
+    h, w = 100, 88
+    gate_module = RangeConditionedScaleGate(channels, h, w)
+
+    l_feat = torch.randn(2, channels, h, w)
+    u_feat = torch.randn(2, channels, h, w)
+
+    # At epoch 0 (init), gate must be identically 1.000000
+    out = gate_module(l_feat, u_feat)
+    expected = u_feat + l_feat
+
+    assert torch.allclose(out, expected, atol=1e-6)
+
+
+def test_range_conditioned_scale_gate_switch_to_deploy():
+    channels = 48
+    h, w = 100, 88
+    gate_module = RangeConditionedScaleGate(channels, h, w)
+
+    # Perturb weights slightly to simulate training
+    with torch.no_grad():
+        gate_module.content_conv.weight.add_(torch.randn_like(gate_module.content_conv.weight) * 0.1)
+        gate_module.range_proj.weight.add_(torch.randn_like(gate_module.range_proj.weight) * 0.1)
+
+    l_feat = torch.randn(2, channels, h, w)
+    u_feat = torch.randn(2, channels, h, w)
+
+    out_train = gate_module(l_feat, u_feat)
+    gate_module.switch_to_deploy()
+
+    assert gate_module.deploy is True
+    assert not hasattr(gate_module, "range_proj")
+    assert not hasattr(gate_module, "fre")
+
+    out_deploy = gate_module(l_feat, u_feat)
+    assert torch.allclose(out_train, out_deploy, atol=1e-5)
