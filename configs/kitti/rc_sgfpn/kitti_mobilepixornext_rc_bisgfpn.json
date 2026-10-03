@@ -58,7 +58,7 @@
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
     "max_abs_log_size": 10.0,
-    "name": "q_oga",
+    "name": "baseline",
     "qcfa_beta": 1.0,
     "rda_alpha": 2.0,
     "rda_gamma": 1.5,
