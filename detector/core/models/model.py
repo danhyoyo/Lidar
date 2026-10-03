@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 
 try:
-    from detector.core.models.backbones.registry import build_backbone
-    from detector.core.models.heads.cnn import Header
-    from detector.core.models.encoders.rich_mamba import RichMambaEncoder
-except ImportError:
     from core.models.backbones.registry import build_backbone
     from core.models.heads.cnn import Header
     from core.models.encoders.rich_mamba import RichMambaEncoder
+except ImportError:
+    from detector.core.models.backbones.registry import build_backbone
+    from detector.core.models.heads.cnn import Header
+    from detector.core.models.encoders.rich_mamba import RichMambaEncoder
 
 
 class CustomModel(nn.Module):

@@ -143,3 +143,25 @@ def test_rc_sgfpn_gradient_flow_and_autocast_safety():
     assert neck.gate_td4.range_proj.weight.grad is not None
     assert torch.isfinite(neck.gate_td4.content_conv.weight.grad).all()
     assert torch.isfinite(neck.gate_td4.range_proj.weight.grad).all()
+
+
+
+from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+
+
+def test_mobilepixornext_with_rc_sgfpn():
+    # Test Unidirectional RC-SGFPN
+    bb_uni = MobilePixorNeXtBackbone(input_channels=8, neck_type="rc_sgfpn")
+    x = torch.randn(2, 8, 800, 704)
+    out_uni = bb_uni(x)
+    assert out_uni.shape == (2, 16, 200, 176)
+
+    # Test Bidirectional RC-BiSGFPN
+    bb_bi = MobilePixorNeXtBackbone(input_channels=8, neck_type="rc_bisgfpn")
+    out_bi = bb_bi(x)
+    assert out_bi.shape == (2, 16, 200, 176)
+
+    # Test deploy switch
+    bb_bi.switch_to_deploy()
+    out_bi_deploy = bb_bi(x)
+    assert out_bi_deploy.shape == (2, 16, 200, 176)

@@ -18,6 +18,7 @@ from core.models.backbones.mobilepixornext_blocks import (
     DownsampleBlock,
     LiteMLARefinement,
 )
+from core.models.backbones.rc_sgfpn import RangeConditionedSGFPN
 
 
 class MobilePixorNeXtBackbone(nn.Module):
@@ -32,6 +33,10 @@ class MobilePixorNeXtBackbone(nn.Module):
         scale_gated_fpn: Whether to use learnable depthwise scale gating in FPN fusion.
         expansion: Channel expansion ratio inside MobilePixorNeXt blocks.
         use_reparam: Whether to use RepConv7x7 structural reparameterization.
+        deploy: Whether model is instantiated in deployed state.
+        neck_type: Type of neck ('scale_gated_fpn', 'rc_sgfpn', or 'rc_bisgfpn').
+        num_range_bands: Number of frequency bands for Fourier Range Embedding in RC-SGFPN.
+        geometry: LiDAR metric bounds dictionary.
     """
 
     def __init__(
@@ -45,6 +50,9 @@ class MobilePixorNeXtBackbone(nn.Module):
         expansion: float = 2.5,
         use_reparam: bool = False,
         deploy: bool = False,
+        neck_type: str = "scale_gated_fpn",
+        num_range_bands: int = 4,
+        geometry: dict = None,
     ):
         super().__init__()
         self.input_channels = input_channels
@@ -52,6 +60,19 @@ class MobilePixorNeXtBackbone(nn.Module):
         self.scale_gated_fpn = scale_gated_fpn
         self.use_reparam = bool(use_reparam)
         self.deploy = bool(deploy)
+        self.neck_type = str(neck_type).lower() if neck_type else "scale_gated_fpn"
+
+        if self.neck_type in ("rc_sgfpn", "rc_bisgfpn"):
+            self.rc_neck = RangeConditionedSGFPN(
+                in_channels=(48, 96, 128),
+                out_channels=backbone_out_dim,
+                lateral_channels=(24, 48, 48),
+                bidirectional=(self.neck_type == "rc_bisgfpn"),
+                num_range_bands=num_range_bands,
+                geometry=geometry,
+            )
+        else:
+            self.rc_neck = None
 
         # -------------------------------------------------------------
         # 1. Stem (Input 800x704 -> 400x352, stride 2, 32 channels)
@@ -157,6 +178,9 @@ class MobilePixorNeXtBackbone(nn.Module):
         c3 = self.stage3(self.down3(c2))  # (B, 96, 100, 88)
         c4 = self.c4_attention(c3)     # (B, 96, 100, 88) refined with LiteMLA
         c5 = self.stage4(self.down4(c4))  # (B, 128, 50, 44)
+
+        if self.rc_neck is not None:
+            return self.rc_neck(c2, c4, c5)
 
         # Top-down FPN path
         l5 = self.lat_c5(c5)           # (B, 48, 50, 44)
