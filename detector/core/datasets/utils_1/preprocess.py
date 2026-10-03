@@ -17,6 +17,22 @@ def _grid_shape(geometry):
     return tuple(shape)
 
 
+_R_GRID_CACHE = {}
+
+
+def _get_range_grid(geometry, y_size: int, x_size: int) -> np.ndarray:
+    key = (
+        float(geometry["x_min"]), float(geometry["x_max"]), float(geometry["x_res"]),
+        float(geometry["y_min"]), float(geometry["y_max"]), float(geometry["y_res"]),
+        y_size, x_size,
+    )
+    if key not in _R_GRID_CACHE:
+        y_coords = (np.arange(y_size, dtype=np.float32) + 0.5) * float(geometry["y_res"]) + float(geometry["y_min"])
+        x_coords = (np.arange(x_size, dtype=np.float32) + 0.5) * float(geometry["x_res"]) + float(geometry["x_min"])
+        _R_GRID_CACHE[key] = np.sqrt(y_coords[:, None]**2 + x_coords[None, :]**2).ravel()
+    return _R_GRID_CACHE[key]
+
+
 def encode_bev(points, geometry, bev_encoding=None):
     """Encode KITTI ``(x, y, z, intensity)`` points as legacy or RichBEV."""
     encoding = bev_encoding or {"name": "binary_slices"}
@@ -94,9 +110,7 @@ def encode_bev(points, geometry, bev_encoding=None):
         output[10] = np.where(count > 0, np.maximum(0.0, output[5] - output[6]), 0.0).astype(np.float32)
 
         # Channel 11: Range-compensated density (log-density with quadratic range boost)
-        y_coords = (np.arange(y_size, dtype=np.float32) + 0.5) * float(geometry["y_res"]) + float(geometry["y_min"])
-        x_coords = (np.arange(x_size, dtype=np.float32) + 0.5) * float(geometry["x_res"]) + float(geometry["x_min"])
-        r_grid = np.sqrt(y_coords[:, None]**2 + x_coords[None, :]**2).ravel()
+        r_grid = _get_range_grid(geometry, y_size, x_size)
         r_scale = 1.0 + (r_grid / 20.0) ** 2
         output[11] = np.where(
             count > 0,
