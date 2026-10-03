@@ -30,12 +30,12 @@
     "kitti": {
       "geometry": {
         "x_max": 70.4,
-        "x_min": 0,
+        "x_min": 0.0,
         "x_res": 0.1,
-        "y_max": 40,
-        "y_min": -40,
+        "y_max": 40.0,
+        "y_min": -40.0,
         "y_res": 0.1,
-        "z_max": 1,
+        "z_max": 1.0,
         "z_min": -2.5,
         "z_res": 0.1
       },
@@ -53,35 +53,18 @@
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "clamp_bound": 3.0,
-    "corner_beta": 1.0,
-    "ema_momentum": 0.99,
-    "epsilon": 1e-06,
-    "max_abs_log_size": 10.0,
-    "name": "oga",
-    "temperature": 2.0
+    "name": "baseline"
   },
   "model": {
-    "backbone": "mobilepixornext",
+    "backbone": "mobilepixor",
     "backbone_out_dim": 16,
-    "c4_attention": "litemla",
-    "c4_attention_qk_norm": "rmsnorm",
-    "c4_attention_scales": [
-      3,
-      5
-    ],
     "cls_encoding": "gaussian",
-    "expansion": 2.5,
-    "header_act": "silu",
-    "header_use_bn": true,
-    "header_use_iou": false,
-    "neck_type": "rc_bisgfpn",
-    "num_range_bands": 4,
-    "scale_gated_fpn": true,
-    "use_reparam": true
+    "header_act": "none",
+    "header_use_bn": false,
+    "scale_gated_fpn": false
   },
   "multi_gpu": false,
-  "note": "truc_A_M3_reparam_ms_litemla_rc_bisgfpn_oga",
+  "note": "final_run_01_mobilepixor_rich8_sumfpn_baseline_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

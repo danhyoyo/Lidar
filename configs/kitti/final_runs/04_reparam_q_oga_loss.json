@@ -69,23 +69,15 @@
     "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
     "c4_attention": "litemla",
-    "c4_attention_qk_norm": "rmsnorm",
-    "c4_attention_scales": [
-      3,
-      5
-    ],
     "cls_encoding": "gaussian",
     "expansion": 2.5,
     "header_act": "silu",
     "header_use_bn": true,
-    "header_use_iou": false,
-    "neck_type": "rc_bisgfpn",
-    "num_range_bands": 4,
     "scale_gated_fpn": true,
     "use_reparam": true
   },
   "multi_gpu": false,
-  "note": "truc_B_M3_sota_reparam_ms_litemla_rc_bisgfpn_q_oga",
+  "note": "final_run_04_reparam_q_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

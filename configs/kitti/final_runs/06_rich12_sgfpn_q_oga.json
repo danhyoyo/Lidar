@@ -24,7 +24,8 @@
     "bev_encoding": {
       "density_norm": 32,
       "intensity_scale": 1,
-      "name": "rich8"
+      "name": "rich12",
+      "out_channels": 12
     },
     "gaussian_overlap": 0.1,
     "kitti": {
@@ -53,7 +54,17 @@
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "name": "baseline"
+    "clamp_bound": 3.0,
+    "corner_beta": 1.0,
+    "ema_momentum": 0.99,
+    "epsilon": 1e-06,
+    "max_abs_log_size": 10.0,
+    "name": "q_oga",
+    "qcfa_beta": 1.0,
+    "rda_alpha": 2.0,
+    "rda_gamma": 1.5,
+    "soft_min_tau": 0.05,
+    "temperature": 2.0
   },
   "model": {
     "backbone": "mobilepixornext",
@@ -63,13 +74,11 @@
     "expansion": 2.5,
     "header_act": "silu",
     "header_use_bn": true,
-    "neck_type": "rc_sgfpn",
-    "num_range_bands": 4,
     "scale_gated_fpn": true,
     "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "final_run_01_rc_sgfpn_baseline_loss",
+  "note": "final_run_06_rich12_sgfpn_q_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

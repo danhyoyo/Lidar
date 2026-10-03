@@ -57,12 +57,13 @@
     "corner_beta": 1.0,
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
-    "iou_loss_weight": 1.0,
-    "iou_target_type": "mgiou",
     "max_abs_log_size": 10.0,
-    "name": "oga",
-    "temperature": 2.0,
-    "use_iou": true
+    "name": "q_oga",
+    "qcfa_beta": 1.0,
+    "rda_alpha": 2.0,
+    "rda_gamma": 1.5,
+    "soft_min_tau": 0.05,
+    "temperature": 2.0
   },
   "model": {
     "backbone": "mobilepixornext",
@@ -77,15 +78,12 @@
     "expansion": 2.5,
     "header_act": "silu",
     "header_use_bn": true,
-    "header_use_iou": true,
-    "neck_type": "rc_bisgfpn",
-    "num_range_bands": 4,
+    "header_use_iou": false,
     "scale_gated_fpn": true,
     "use_reparam": true
   },
   "multi_gpu": false,
-  "nms_alpha": 0.5,
-  "note": "truc_A_M4_sota_reparam_ms_litemla_rc_bisgfpn_iqa_oga",
+  "note": "truc_B_M2_sota_reparam_ms_litemla_q_oga",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

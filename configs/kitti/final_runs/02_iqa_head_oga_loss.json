@@ -24,8 +24,7 @@
     "bev_encoding": {
       "density_norm": 32,
       "intensity_scale": 1,
-      "name": "rich10",
-      "out_channels": 10
+      "name": "rich8"
     },
     "gaussian_overlap": 0.1,
     "kitti": {
@@ -58,13 +57,12 @@
     "corner_beta": 1.0,
     "ema_momentum": 0.99,
     "epsilon": 1e-06,
+    "iou_loss_weight": 1.0,
+    "iou_target_type": "mgiou",
     "max_abs_log_size": 10.0,
-    "name": "q_oga",
-    "qcfa_beta": 1.0,
-    "rda_alpha": 2.0,
-    "rda_gamma": 1.5,
-    "soft_min_tau": 0.05,
-    "temperature": 2.0
+    "name": "oga",
+    "temperature": 2.0,
+    "use_iou": true
   },
   "model": {
     "backbone": "mobilepixornext",
@@ -74,11 +72,13 @@
     "expansion": 2.5,
     "header_act": "silu",
     "header_use_bn": true,
+    "header_use_iou": true,
     "scale_gated_fpn": true,
     "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "final_run_08_rich10_sgfpn_q_oga_loss",
+  "nms_alpha": 0.5,
+  "note": "final_run_02_iqa_head_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

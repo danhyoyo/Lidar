@@ -24,7 +24,8 @@
     "bev_encoding": {
       "density_norm": 32,
       "intensity_scale": 1,
-      "name": "rich8"
+      "name": "rich10",
+      "out_channels": 10
     },
     "gaussian_overlap": 0.1,
     "kitti": {
@@ -69,11 +70,6 @@
     "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
     "c4_attention": "litemla",
-    "c4_attention_qk_norm": "rmsnorm",
-    "c4_attention_scales": [
-      3,
-      5
-    ],
     "cls_encoding": "gaussian",
     "expansion": 2.5,
     "header_act": "silu",
@@ -82,7 +78,7 @@
     "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "final_run_06_ms_litemla_q_oga_loss",
+  "note": "final_run_05_rich10_sgfpn_q_oga_loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
