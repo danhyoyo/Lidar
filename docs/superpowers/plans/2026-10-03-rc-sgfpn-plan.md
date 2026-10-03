@@ -29,7 +29,7 @@
 - Produces: `FourierRangeEmbedding(height: int, width: int, x_bounds: tuple[float, float], y_bounds: tuple[float, float], num_bands: int = 4)`
 - Buffer: `self.embedding` of shape $(1, 2 \times \text{num\_bands}, H, W)$ containing $[\sin(2^b \pi r_{\text{norm}}), \cos(2^b \pi r_{\text{norm}})]$.
 
-- [ ] **Step 1: Write failing test for FourierRangeEmbedding**
+- [x] **Step 1: Write failing test for FourierRangeEmbedding**
 
 Create `tests/test_rc_sgfpn.py`:
 ```python
@@ -69,12 +69,12 @@ def test_fourier_range_embedding_shapes_and_values():
         assert abs(cos_val - 1.0) < 0.05
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_fourier_range_embedding_shapes_and_values -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'core.models.backbones.rc_sgfpn'`
 
-- [ ] **Step 3: Implement FourierRangeEmbedding**
+- [x] **Step 3: Implement FourierRangeEmbedding**
 
 Create `detector/core/models/backbones/rc_sgfpn.py`:
 ```python
@@ -136,12 +136,12 @@ class FourierRangeEmbedding(nn.Module):
         return self.embedding
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_fourier_range_embedding_shapes_and_values -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add detector/core/models/backbones/rc_sgfpn.py tests/test_rc_sgfpn.py
@@ -160,7 +160,7 @@ git commit -m "feat(rc_sgfpn): implement FourierRangeEmbedding with metric grid 
 - Produces: `RangeConditionedScaleGate(channels: int, height: int, width: int, x_bounds: tuple, y_bounds: tuple, num_bands: int = 4)`
 - Methods: `forward(l_feat: Tensor, u_feat: Tensor) -> Tensor`, `switch_to_deploy() -> None`
 
-- [ ] **Step 1: Write failing tests for RangeConditionedScaleGate**
+- [x] **Step 1: Write failing tests for RangeConditionedScaleGate**
 
 Append to `tests/test_rc_sgfpn.py`:
 ```python
@@ -206,12 +206,12 @@ def test_range_conditioned_scale_gate_switch_to_deploy():
     assert torch.allclose(out_train, out_deploy, atol=1e-5)
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_range_conditioned_scale_gate_zero_init -v`
 Expected: FAIL with `ImportError: cannot import name 'RangeConditionedScaleGate'`
 
-- [ ] **Step 3: Implement RangeConditionedScaleGate**
+- [x] **Step 3: Implement RangeConditionedScaleGate**
 
 Append to `detector/core/models/backbones/rc_sgfpn.py`:
 ```python
@@ -280,12 +280,12 @@ class RangeConditionedScaleGate(nn.Module):
         self.deploy = True
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py -k "test_range_conditioned_scale_gate" -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add detector/core/models/backbones/rc_sgfpn.py tests/test_rc_sgfpn.py
@@ -317,7 +317,7 @@ git commit -m "feat(rc_sgfpn): implement RangeConditionedScaleGate with zero-ini
 - Input: `c3 (B, 48, 200, 176)`, `c4 (B, 96, 100, 88)`, `c5 (B, 128, 50, 44)`
 - Output: `(B, 16, 200, 176)`
 
-- [ ] **Step 1: Write failing tests for RangeConditionedSGFPN**
+- [x] **Step 1: Write failing tests for RangeConditionedSGFPN**
 
 Append to `tests/test_rc_sgfpn.py`:
 ```python
@@ -360,12 +360,12 @@ def test_rc_sgfpn_bidirectional_shape_and_deploy():
     assert torch.allclose(out, out_deploy, atol=1e-5)
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run: `pytest tests/test_rc_sgfpn.py -k "test_rc_sgfpn_" -v`
 Expected: FAIL with `ImportError: cannot import name 'RangeConditionedSGFPN'`
 
-- [ ] **Step 3: Implement RangeConditionedSGFPN**
+- [x] **Step 3: Implement RangeConditionedSGFPN**
 
 Append to `detector/core/models/backbones/rc_sgfpn.py`:
 ```python
@@ -496,12 +496,12 @@ class RangeConditionedSGFPN(nn.Module):
                 m.switch_to_deploy()
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py -k "test_rc_sgfpn_" -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add detector/core/models/backbones/rc_sgfpn.py tests/test_rc_sgfpn.py
@@ -518,7 +518,7 @@ git commit -m "feat(rc_sgfpn): implement RangeConditionedSGFPN supporting unidir
 **Interfaces:**
 - Validates: End-to-end gradient flow, numerical safety under `torch.bfloat16` and `torch.float16`, zero NaNs with extreme feature values.
 
-- [ ] **Step 1: Write test for BF16/FP16 numerical stability and gradient propagation**
+- [x] **Step 1: Write test for BF16/FP16 numerical stability and gradient propagation**
 
 Append to `tests/test_rc_sgfpn.py`:
 ```python
@@ -551,12 +551,12 @@ def test_rc_sgfpn_gradient_flow_and_autocast_safety():
     assert torch.isfinite(neck.gate_td4.range_proj.weight.grad).all()
 ```
 
-- [ ] **Step 2: Run test to verify it passes**
+- [x] **Step 2: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_rc_sgfpn_gradient_flow_and_autocast_safety -v`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/test_rc_sgfpn.py
@@ -576,7 +576,7 @@ git commit -m "test(rc_sgfpn): add numerical safety and mixed precision gradient
 - `MobilePixorNeXtBackbone.__init__`: accepts `neck_type: str = "scale_gated_fpn"` (options: `"scale_gated_fpn"`, `"rc_sgfpn"`, `"rc_bisgfpn"`), `geometry: Optional[dict] = None`.
 - Routes `(c3, c4, c5)` through `self.neck(c2, c4, c5)` and delegates `switch_to_deploy()`.
 
-- [ ] **Step 1: Write failing test for MobilePixorNeXt integration**
+- [x] **Step 1: Write failing test for MobilePixorNeXt integration**
 
 Append to `tests/test_rc_sgfpn.py`:
 ```python
@@ -601,12 +601,12 @@ def test_mobilepixornext_with_rc_sgfpn():
     assert out_bi_deploy.shape == (2, 16, 200, 176)
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_mobilepixornext_with_rc_sgfpn -v`
 Expected: FAIL (argument `neck_type` unexpected)
 
-- [ ] **Step 3: Update MobilePixorNeXtBackbone**
+- [x] **Step 3: Update MobilePixorNeXtBackbone**
 
 In `detector/core/models/backbones/mobilepixornext.py`, import `RangeConditionedSGFPN` and add `neck_type: str = "scale_gated_fpn"` and `geometry: Optional[dict] = None` to `__init__`.
 If `neck_type in ("rc_sgfpn", "rc_bisgfpn")`, instantiate `RangeConditionedSGFPN` and route forward pass through it. Otherwise, preserve legacy inline SG-FPN path for 100% backward compatibility.
@@ -614,17 +614,17 @@ If `neck_type in ("rc_sgfpn", "rc_bisgfpn")`, instantiate `RangeConditionedSGFPN
 In `detector/core/models/backbones/__init__.py`:
 Export `RangeConditionedSGFPN` and `RangeConditionedScaleGate`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_mobilepixornext_with_rc_sgfpn -v`
 Expected: PASS
 
-- [ ] **Step 5: Run complete test suite to ensure zero regressions**
+- [x] **Step 5: Run complete test suite to ensure zero regressions**
 
 Run: `pytest tests/`
 Expected: ALL PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add detector/core/models/backbones/mobilepixornext.py detector/core/models/backbones/__init__.py tests/test_rc_sgfpn.py
@@ -643,7 +643,7 @@ git commit -m "feat(backbone): integrate RC-SGFPN into MobilePixorNeXt with back
 **Interfaces:**
 - Config schemas setting `"neck_type": "rc_sgfpn"` and `"neck_type": "rc_bisgfpn"` in `model` section.
 
-- [ ] **Step 1: Write E2E CustomModel test with RC-SGFPN config**
+- [x] **Step 1: Write E2E CustomModel test with RC-SGFPN config**
 
 Append to `tests/test_rc_sgfpn.py`:
 ```python
@@ -669,16 +669,16 @@ def test_custom_model_e2e_with_rc_sgfpn():
     assert pred["cls"].shape == (2, 3, 200, 176)
 ```
 
-- [ ] **Step 2: Create production configuration JSON files**
+- [x] **Step 2: Create production configuration JSON files**
 
 Create `configs/kitti/rc_sgfpn/kitti_mobilepixornext_rc_sgfpn.json` and `configs/kitti/rc_sgfpn/kitti_mobilepixornext_rc_bisgfpn.json` mirroring `configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json` with `neck_type` updated.
 
-- [ ] **Step 3: Run test to verify it passes**
+- [x] **Step 3: Run test to verify it passes**
 
 Run: `pytest tests/test_rc_sgfpn.py::test_custom_model_e2e_with_rc_sgfpn -v`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add configs/kitti/rc_sgfpn/ tests/test_rc_sgfpn.py
