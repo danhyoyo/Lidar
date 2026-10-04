@@ -69,6 +69,8 @@ def generate_run_name(
         extras.append(neck_type)
     elif model_cfg.get("scale_gated_fpn", False):
         extras.append("sgfpn")
+    if model_cfg.get("c4_attention_scales") and "ms_litemla" not in extras:
+        extras.append("ms_litemla")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
     if seed is not None:

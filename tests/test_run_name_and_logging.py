@@ -20,7 +20,7 @@ class TestRunNameAndLogging(unittest.TestCase):
         run_name = generate_run_name(cfg, seed=42)
         self.assertEqual(
             run_name,
-            "mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-reparam-s42",
+            "mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-ms_litemla-reparam-s42",
         )
 
     def test_run_name_format_iqa(self):
@@ -81,6 +81,40 @@ class TestRunNameAndLogging(unittest.TestCase):
         self.assertEqual(
             run_name,
             "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-s42",
+        )
+
+    def test_run_name_format_ms_litemla(self):
+        cfg_path = (
+            REPO_ROOT
+            / "configs/kitti/mobilepixornext_ablation/05_anchor_ms_litemla.json"
+        )
+        with open(cfg_path) as f:
+            cfg = json.load(f)
+        run_name = generate_run_name(cfg, seed=42)
+        self.assertEqual(
+            run_name,
+            "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-sgfpn-ms_litemla-s42",
+        )
+
+    def test_run_name_distinguishes_truc_b_variants(self):
+        m1_path = REPO_ROOT / "configs/kitti/final_runs/truc_B_M1_reparam_q_oga.json"
+        m2_path = REPO_ROOT / "configs/kitti/final_runs/truc_B_M2_sota_reparam_ms_litemla_q_oga.json"
+        with open(m1_path) as f:
+            cfg1 = json.load(f)
+        with open(m2_path) as f:
+            cfg2 = json.load(f)
+        name1 = generate_run_name(cfg1, seed=42)
+        name2 = generate_run_name(cfg2, seed=42)
+        self.assertNotEqual(name1, name2)
+        self.assertNotIn("ms_litemla", name1)
+        self.assertIn("ms_litemla", name2)
+        self.assertEqual(
+            name1,
+            "mobilepixornext-standard_aug-q_oga_loss-rich8-baseline_iou-sgfpn-reparam-s42",
+        )
+        self.assertEqual(
+            name2,
+            "mobilepixornext-standard_aug-q_oga_loss-rich8-baseline_iou-sgfpn-ms_litemla-reparam-s42",
         )
 
     def test_all_configs_generate_valid_run_name_format(self):
