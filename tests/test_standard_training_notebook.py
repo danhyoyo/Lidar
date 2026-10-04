@@ -24,14 +24,14 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "main"', source)
+        self.assertIn('BRANCH = "feature/pillar5-pcu-augmentation"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
         config_files = {
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / "configs").rglob("*.json")
         }
-        for variant in (f"A{i}" for i in range(5)):
+        for variant in ("A", "B", "C", "D", "E"):
             match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
             self.assertIsNotNone(match, variant)
             self.assertIn(match.group(1), config_files)
@@ -42,6 +42,25 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertNotIn("import subprocess", source)
         self.assertNotIn("subprocess.", source)
         self.assertIn("!set -o pipefail", source)
+
+    def test_fifty_epoch_schedule_evaluates_the_final_checkpoint(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        source = "\n".join("".join(c.get("source", [])) for c in notebook["cells"])
+        self.assertIn('EPOCHS = 50', source)
+        self.assertNotIn('STOP_AFTER_EPOCH', source)
+        self.assertIn('--epochs {EPOCHS}', source)
+        self.assertIn('f"{EPOCHS}epoch.pt"', source)
+        self.assertIn('"schedule_epochs": EPOCHS', source)
+        self.assertIn('checkpoint_epoch(CHECKPOINT)', source)
+        self.assertIn('pcu_config=config_dict["augmentation"]["pcu_aug"]', source)
+
+    def test_code_cells_have_valid_python_after_ipython_transformation(self):
+        from IPython.core.inputtransformer2 import TransformerManager
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        for i, cell in enumerate(notebook['cells']):
+            if cell['cell_type'] == 'code':
+                source = ''.join(cell.get('source', []))
+                compile(TransformerManager().transform_cell(source), f'cell_{i}', 'exec')
 
     def test_acceleration_options_are_explicit_and_resume_safe(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))

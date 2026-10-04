@@ -7,7 +7,7 @@ import torch.nn as nn
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
-from train import build_optimizer, build_scheduler
+from train import build_optimizer, build_scheduler, resolve_training_epochs, clip_optimizer_gradients
 
 
 class DummyModel(nn.Module):
@@ -67,6 +67,26 @@ class TestOptimizerBuilder(unittest.TestCase):
 
 
 class TestSchedulerBuilder(unittest.TestCase):
+    def test_screening_keeps_the_full_schedule_and_supports_resume(self):
+        cfg = {'epochs': 100, 'stop_after_epoch': 50}
+        self.assertEqual(resolve_training_epochs(cfg), (100, 50))
+        self.assertEqual(resolve_training_epochs(cfg, stop_override=100), (100, 100))
+        self.assertEqual(resolve_training_epochs(cfg, epochs_override=1), (1, 1))
+        for stop in [0, -1, 101]:
+            with self.assertRaises(ValueError):
+                resolve_training_epochs(cfg, stop_override=stop)
+
+    def test_clipping_covers_model_and_criterion_optimizer_parameters(self):
+        model, criterion = DummyModel(), DummyCriterion()
+        optimizer = build_optimizer(model, criterion, {'train': {'learning_rate': .0007}})
+        for group in optimizer.param_groups:
+            for param in group['params']:
+                param.grad = torch.full_like(param, 100.)
+        scaler = torch.amp.GradScaler('cuda', enabled=False)
+        clip_optimizer_gradients(optimizer, scaler, 10.)
+        gradients = [p.grad.flatten() for group in optimizer.param_groups for p in group['params']]
+        self.assertLessEqual(torch.cat(gradients).norm().item(), 10.00001)
+
     def test_build_scheduler_cosine_warmup(self):
         model = DummyModel()
         criterion = DummyCriterion()

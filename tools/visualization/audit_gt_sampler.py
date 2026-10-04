@@ -146,6 +146,7 @@ def run_audit(config_path, frames_path, seed, output_dir, *, warmup=3, max_examp
         "enable_static_collision", "enable_line_of_sight", "enable_shadow_masking",
         "enable_density_subsample", "enable_radiometric_calibration",
         "min_visible_points", "min_visible_ratio",
+        "placement_mode", "range_scale", "azimuth_jitter_deg",
     )
     effective_settings = {name: getattr(sampler, name) for name in setting_names}
     identities = {

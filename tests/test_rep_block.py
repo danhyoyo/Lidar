@@ -190,11 +190,8 @@ def test_config_reparam_loading_and_parameter_reduction():
     import json
     from core.models.model import CustomModel
 
-    config_path = ROOT / "configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json"
-    assert config_path.exists(), "Reparam config must exist"
-
-    with open(config_path, "r") as f:
-        full_cfg = json.load(f)
+    from config_helpers import oga_config
+    full_cfg = oga_config(reparam=True)
 
     cfg_reparam = full_cfg.get("model", full_cfg)
     assert cfg_reparam.get("use_reparam") is True
@@ -405,7 +402,6 @@ def test_pytorch_runner_deploy_and_save_deploy(tmp_path):
     )
     assert runner_from_deploy.is_deployed is True
     assert runner_from_deploy.metadata()["parameters"] == 692361
-
 
 
 

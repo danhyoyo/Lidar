@@ -1,0 +1,131 @@
+{
+  "augmentation": {
+    "mode": "one_of",
+    "p": 0.5,
+    "use_pcu_aug": true,
+    "rotation": {
+      "use": true,
+      "limit_angle": 20,
+      "p": 1
+    },
+    "scaling": {
+      "use": true,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "p": 1
+    },
+    "translation": {
+      "use": true,
+      "scale": 0.4,
+      "scale_z": 0.4,
+      "p": 1
+    },
+    "pcu_aug": {
+      "enable_gt_sampling": true,
+      "gt_database_path": "data/kitti/kitti_gt_database.pkl",
+      "p": 0.2,
+      "sample_counts": {
+        "Pedestrian": 1,
+        "Cyclist": 1
+      },
+      "enable_physics": false,
+      "enable_ground_validation": true,
+      "enable_static_collision": true,
+      "enable_line_of_sight": true,
+      "enable_shadow_masking": false,
+      "enable_density_subsample": true,
+      "enable_radiometric_calibration": false,
+      "min_visible_points": 5,
+      "min_visible_ratio": 0.5,
+      "placement_mode": "source_relative",
+      "range_scale": [
+        0.8,
+        1.2
+      ],
+      "azimuth_jitter_deg": 5.0
+    }
+  },
+  "data": {
+    "gaussian_overlap": 0.1,
+    "kitti": {
+      "geometry": {
+        "x_max": 70.4,
+        "x_min": 0,
+        "x_res": 0.1,
+        "y_max": 40,
+        "y_min": -40,
+        "y_res": 0.1,
+        "z_max": 1,
+        "z_min": -2.5,
+        "z_res": 0.1
+      },
+      "location": "data/kitti/processed",
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      }
+    },
+    "min_radius": 4,
+    "num_classes": 3,
+    "out_size_factor": 4,
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    }
+  },
+  "date": "reproducible",
+  "device": "cuda",
+  "loss": {
+    "name": "baseline"
+  },
+  "model": {
+    "backbone": "mobilepixornext",
+    "backbone_out_dim": 16,
+    "cls_encoding": "gaussian",
+    "c4_attention": "litemla",
+    "scale_gated_fpn": true,
+    "expansion": 2.5,
+    "header_use_bn": true,
+    "header_act": "silu",
+    "use_reparam": false,
+    "c4_attention_scales": [
+      5
+    ],
+    "c4_attention_qk_norm": "none",
+    "header_use_iou": false
+  },
+  "multi_gpu": false,
+  "note": "Controlled augmentation ablation: fixed MobilePIXORNeXt/LiteMLA/SG-FPN/Rich8/baseline loss",
+  "seed": 42,
+  "train": {
+    "accumulation_steps": 1,
+    "data": "splits/kitti/train.txt",
+    "epochs": 50,
+    "learning_rate": 0.0007,
+    "min_lr": 1e-06,
+    "optimizer": "adamw",
+    "physical_batch_size": 16,
+    "precision": "bf16",
+    "save_every": 5,
+    "scheduler": "cosine",
+    "warmup_epochs": 4,
+    "weight_decay": 0.001,
+    "grad_clip_norm": 10.0,
+    "num_workers": 6,
+    "target_backend": "numba",
+    "compile_model": false
+  },
+  "val": {
+    "data": "splits/kitti/val.txt",
+    "physical_batch_size": 32,
+    "val_every": 1
+  },
+  "ver": 1,
+  "experiment": {
+    "name": "c_sampling_density"
+  }
+}

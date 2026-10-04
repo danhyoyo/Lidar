@@ -145,6 +145,11 @@ class Dataset(Dataset):
             self.num_classes += 1
 
         self.use_pcu_aug = bool(aug_config.get("use_pcu_aug", False))
+        self.augmentation_mode = aug_config.get(
+            "mode", "compose" if self.use_pcu_aug else "one_of"
+        )
+        if self.augmentation_mode not in {"one_of", "compose"}:
+            raise ValueError("augmentation.mode must be 'one_of' or 'compose'")
         if self.use_pcu_aug:
             from utils_1.gt_sampler import build_gt_sampler
             from utils_1.physics_aug import random_flip_3d
@@ -160,13 +165,17 @@ class Dataset(Dataset):
                 else 0.0
             )
             self.transforms = self.get_transforms(aug_config)
-            self.augment = None
+            self.augment = (
+                OneOf(self.transforms, aug_config.get("p", 0.5))
+                if self.transforms and self.augmentation_mode == "one_of"
+                else None
+            )
         else:
             self.gt_sampler = None
             self.transforms = self.get_transforms(aug_config)
             self.augment = (
                 OneOf(self.transforms, aug_config.get("p", 0.5))
-                if self.transforms
+                if self.transforms and self.augmentation_mode == "one_of"
                 else None
             )
 
@@ -219,11 +228,18 @@ class Dataset(Dataset):
                     if getattr(self, "flip_p", 0.0) > 0:
                         points, boxes = self.random_flip_3d(points, boxes, p=self.flip_p)
                     # 3. Geometric jitter transforms
-                    for t in self.transforms:
-                        if boxes.shape[0] > 0:
-                            points, boxes[:, 1:] = t(points, boxes[:, 1:8])
+                    if self.augmentation_mode == "one_of":
+                        if self.augment is not None:
+                            points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
+                    else:
+                        for t in self.transforms:
+                            if boxes.shape[0] > 0:
+                                points, boxes[:, 1:] = t(points, boxes[:, 1:8])
             elif boxes.shape[0] != 0:
-                if self.augment is not None:
+                if self.augmentation_mode == "compose":
+                    for t in self.transforms:
+                        points, boxes[:, 1:] = t(points, boxes[:, 1:8])
+                elif self.augment is not None:
                     points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
         boxes = self.filter_boxes(boxes, data_type)

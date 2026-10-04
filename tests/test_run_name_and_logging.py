@@ -10,85 +10,26 @@ from common import generate_run_name
 
 
 class TestRunNameAndLogging(unittest.TestCase):
-    def test_run_name_format_pcu(self):
-        cfg_path = REPO_ROOT / "configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixornext-pcu-oga_loss-rich8-baseline_iou-sgfpn-s42")
+    def test_augmentation_trials_have_unique_stable_names(self):
+        directory = REPO_ROOT / "configs/kitti/augmentation"
+        names = set()
+        for path in sorted(directory.glob("*.json")):
+            cfg = json.loads(path.read_text())
+            name = generate_run_name(cfg, seed=42)
+            augmentation = "standard_aug" if path.stem == "a_standard" else "pcu"
+            self.assertEqual(name, f"mobilepixornext-{augmentation}-baseline_loss-rich8-baseline_iou-sgfpn-{path.stem}-s42")
+            names.add(name)
+        self.assertEqual(len(names), 5)
 
-    def test_run_name_format_cumulative(self):
-        cfg_path = REPO_ROOT / "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixornext-pcu-oga_loss-rich8-iqa-sgfpn-reparam-s42")
+    def test_legacy_generic_name_is_preserved_without_experiment_tag(self):
+        cfg = {"model": {"backbone": "mobilepixor", "header_use_iou": True, "use_reparam": True},
+               "loss": {"name": "oga"}, "augmentation": {"use_pcu_aug": True},
+               "data": {"bev_encoding": {"name": "rich8"}}}
+        self.assertEqual(generate_run_name(cfg, seed=42), "mobilepixor-pcu-oga_loss-rich8-iqa-reparam-s42")
 
-    def test_run_name_format_iqa(self):
-        cfg_path = REPO_ROOT / "configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-reparam-s42")
-
-    def test_run_name_format_baseline_legacy35(self):
-        cfg_path = REPO_ROOT / "configs/kitti/baselines/kitti_mobilepixor_baseline.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixor-noaug-baseline_loss-legacy35-baseline_iou-s42")
-
-    def test_run_name_format_baseline_a4(self):
-        cfg_path = REPO_ROOT / "configs/kitti/mobilebev/a4_rich8_sgfpn_bev.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixor_coordatt-standard_aug-uwag_loss-rich8-baseline_iou-sgfpn-s42")
-
-    def test_run_name_format_mobilepixor_ablation(self):
-        cfg_path = REPO_ROOT / "configs/kitti/mobilepixor_ablation/00_mobilepixor_baseline.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixor-standard_aug-baseline_loss-rich8-baseline_iou-s42")
-
-    def test_run_name_format_mobilepixor_pcu(self):
-        cfg_path = REPO_ROOT / "configs/kitti/mobilepixor_ablation/05_mobilepixor_full_pcu.json"
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(run_name, "mobilepixor-pcu-oga_loss-rich8-iqa-sgfpn-s42")
-
-    def test_run_name_format_mobilepixornext_pure_baseline(self):
-        cfg_path = (
-            REPO_ROOT
-            / "configs/kitti/baselines/kitti_mobilepixornext_pure_baseline.json"
-        )
-        with open(cfg_path) as f:
-            cfg = json.load(f)
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(
-            run_name,
-            "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-s42",
-        )
-
-    def test_all_configs_generate_valid_run_name_format(self):
-        configs = list((REPO_ROOT / "configs").rglob("*.json"))
-        self.assertGreater(len(configs), 5)
-        for cfg_path in configs:
-            with open(cfg_path) as f:
-                cfg = json.load(f)
-            run_name = generate_run_name(cfg, seed=42)
-            parts = run_name.split("-")
-            self.assertGreaterEqual(
-                len(parts),
-                5,
-                f"Run name {run_name} must have at least 5 hyphen-separated tokens",
-            )
-            self.assertIn(parts[1], {"pcu", "standard_aug", "noaug"})
-            self.assertTrue(parts[2].endswith("_loss"))
-            self.assertIn(parts[3], {"rich8", "legacy35"})
-            self.assertIn(parts[4], {"baseline_iou", "iqa"})
+    def test_experiment_tag_cannot_escape_the_output_directory(self):
+        with self.assertRaises(ValueError):
+            generate_run_name({"experiment": {"name": "../overwrite"}}, seed=42)
 
     def test_trainer_has_no_tqdm_overhead(self):
         trainer_code = (

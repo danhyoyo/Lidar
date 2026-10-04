@@ -1,31 +1,29 @@
 {
   "augmentation": {
+    "mode": "one_of",
     "p": 0.5,
+    "use_pcu_aug": false,
     "rotation": {
+      "use": true,
       "limit_angle": 20,
-      "p": 1,
-      "use": true
+      "p": 1
     },
     "scaling": {
-      "p": 1,
+      "use": true,
       "range": [
         0.95,
         1.05
       ],
-      "use": true
+      "p": 1
     },
     "translation": {
-      "p": 1,
+      "use": true,
       "scale": 0.4,
-      "use": true
+      "scale_z": 0.4,
+      "p": 1
     }
   },
   "data": {
-    "bev_encoding": {
-      "density_norm": 32,
-      "intensity_scale": 1,
-      "name": "rich8"
-    },
     "gaussian_overlap": 0.1,
     "kitti": {
       "geometry": {
@@ -48,51 +46,62 @@
     },
     "min_radius": 4,
     "num_classes": 3,
-    "out_size_factor": 4
+    "out_size_factor": 4,
+    "bev_encoding": {
+      "density_norm": 32,
+      "intensity_scale": 1,
+      "name": "rich8"
+    }
   },
   "date": "reproducible",
   "device": "cuda",
   "loss": {
-    "name": "oga",
-    "temperature": 2.0,
-    "clamp_bound": 3.0,
-    "corner_beta": 1.0,
-    "ema_momentum": 0.99,
-    "epsilon": 1e-06,
-    "max_abs_log_size": 10.0
+    "name": "baseline"
   },
   "model": {
     "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
-    "c4_attention": "litemla",
     "cls_encoding": "gaussian",
-    "expansion": 2.5,
-    "header_act": "silu",
-    "header_use_bn": true,
+    "c4_attention": "litemla",
     "scale_gated_fpn": true,
-    "use_reparam": false
+    "expansion": 2.5,
+    "header_use_bn": true,
+    "header_act": "silu",
+    "use_reparam": false,
+    "c4_attention_scales": [
+      5
+    ],
+    "c4_attention_qk_norm": "none",
+    "header_use_iou": false
   },
   "multi_gpu": false,
-  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_oga_loss",
+  "note": "Controlled augmentation ablation: fixed MobilePIXORNeXt/LiteMLA/SG-FPN/Rich8/baseline loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
-    "epochs": 100,
-    "learning_rate": 0.002,
+    "epochs": 50,
+    "learning_rate": 0.0007,
     "min_lr": 1e-06,
     "optimizer": "adamw",
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
     "scheduler": "cosine",
-    "warmup_epochs": 5,
-    "weight_decay": 0.0001
+    "warmup_epochs": 4,
+    "weight_decay": 0.001,
+    "grad_clip_norm": 10.0,
+    "num_workers": 6,
+    "target_backend": "numba",
+    "compile_model": false
   },
   "val": {
     "data": "splits/kitti/val.txt",
-    "physical_batch_size": 2,
+    "physical_batch_size": 32,
     "val_every": 1
   },
-  "ver": 1
+  "ver": 1,
+  "experiment": {
+    "name": "a_standard"
+  }
 }

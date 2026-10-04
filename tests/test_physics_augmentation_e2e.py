@@ -195,7 +195,7 @@ def test_pcu_e2e_training_step(tmp_path):
 
     cfg_file = (
         ROOT
-        / "configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json"
+        / "configs/kitti/augmentation/b_light_sampling.json"
     )
     with open(cfg_file, "r") as f:
         full_cfg = json.load(f)

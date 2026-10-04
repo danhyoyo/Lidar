@@ -11,13 +11,12 @@ sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 import torch
 from common import build_model
 from core.losses.loss_fn import LossFunction
+from config_helpers import oga_config
 
 
 class TestTrainingPipelineOGA(unittest.TestCase):
     def test_pipeline_forward_backward_with_oga(self):
-        config_path = REPO_ROOT / "configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json"
-        with open(config_path) as f:
-            config = json.load(f)
+        config = oga_config()
 
         device = torch.device("cpu")
         model = build_model(config).to(device)
@@ -52,12 +51,7 @@ class TestTrainingPipelineOGA(unittest.TestCase):
         self.assertTrue(has_crit_grad)
 
     def test_pipeline_forward_backward_with_oga_iqa_bf16(self):
-        config_path = (
-            REPO_ROOT
-            / "configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
-        )
-        with open(config_path) as f:
-            config = json.load(f)
+        config = oga_config(iqa=True, reparam=True)
 
         device = torch.device("cpu")
         model = build_model(config).to(device)

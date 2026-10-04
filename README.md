@@ -1,146 +1,105 @@
-# LiDAR BEV object detection
+# KITTI augmentation ablation
 
-This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
+Branch này chỉ giữ cấu hình augmentation trong [`configs/kitti/augmentation`](configs/kitti/augmentation/README.md).
+Model cố định: MobilePIXORNeXt + LiteMLA + SG-FPN, Rich8, baseline loss.
 
-## Environment
+| Run | Config | Thay đổi |
+|---|---|---|
+| A | `a_standard.json` | Standard OneOf, không sampling |
+| B | `b_light_sampling.json` | A + sampling nhẹ |
+| C | `c_sampling_density.json` | B + density subsampling |
+| D | `d_sampling_shadow.json` | B + shadow masking |
+| E | `e_sampling_intensity.json` | B + intensity calibration |
 
-The reproduced run used Python 3.10, PyTorch 2.11.0+cu128, CUDA 12.8 and an
-NVIDIA RTX 5060 Ti. Install a CUDA-compatible PyTorch build first, then run:
+Chạy A/B trước, evaluate cùng epoch 50, rồi mới quyết định thử C/D/E.
+Các run có tên riêng theo config để không ghi đè nhau.
+
+## Môi trường
+
+Cài PyTorch phù hợp GPU/CUDA, sau đó:
 
 ```bash
 python3 -m pip install -r requirements-kitti.txt
 ```
 
-The ONNX package is included for export validation. TensorRT is optional and is
-only required for engine export/evaluation.
+Notebook Colab: [`3D_Lidar_Object_Detection_Notebook_standard.ipynb`](3D_Lidar_Object_Detection_Notebook_standard.ipynb).
+Chọn `VARIANT = "A"` hoặc `"B"`, giữ `EPOCHS = 50`.
 
-## Download KITTI
+## Chuẩn bị KITTI
 
-Download the KITTI Object Detection Velodyne, calibration and training-label
-archives yourself. Do not commit the dataset to this repository. Expected layout:
-
-```text
-/path/to/KITTI/object/training/
-├── velodyne/
-├── calib/
-└── label_2/
-```
-
-## Prepare the data
-
-Run commands from the repository root. The committed manifests reproduce the
-same 5,984/1,497 frame split used by the reported experiment.
+Các manifests trong `splits/kitti/` dùng 5.984 frame train và 1.497 frame validation.
+Chạy từ thư mục gốc repository:
 
 ```bash
 python3 tools/kitti_training_pipeline/prepare_kitti.py \
   --kitti-root /path/to/KITTI/object \
   --output-root data/kitti/processed \
-  --config-output data/kitti/generated_baseline.json \
+  --config-output data/kitti/generated_kitti.json \
   --train-ids splits/kitti/train.txt \
   --val-ids splits/kitti/val.txt
 ```
 
-## Train
+B–E cần GT database tạo từ đúng tập train. Khi chưa chắc nguồn hoặc phiên bản cache, tạo lại:
+
+```bash
+python3 tools/dataset_converter/create_gt_database.py \
+  --processed-dir data/kitti/processed \
+  --train-ids splits/kitti/train.txt \
+  --output-file data/kitti/kitti_gt_database.pkl
+```
+
+## Screening 50 epoch
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
-  --detector-root detector \
-  --output-root artifacts/kitti \
-  --run-name uwag_coordatt_aug_bf16_seed42 \
-  --num-workers 2
+  --config configs/kitti/augmentation/a_standard.json \
+  --detector-root detector --output-root artifacts/kitti \
+  --num-workers 6 --target-backend numba
 ```
 
-The config uses MobilePIXOR with Coordinate Attention, UWAG task weighting,
-adaptive Gaussian targets and one geometric transform with probability 0.5:
-rotation +/-20 degrees, scaling 0.95-1.05, or Gaussian translation scale 0.4.
-Optimization uses Adam, learning rate 3e-4, weight decay 5e-4, 100 epochs,
-physical batch 2, accumulation 2, BF16 and seed 42.
+Config đặt toàn bộ lịch train 50 epoch: warmup 4 epoch, cosine 46 epoch;
+LR cuối lịch đạt `1e-6`. Đổi config để chạy B–E.
+Cùng batch 16, seed 42, AdamW LR 0.0007, weight decay 0.001 và clipping 10.
 
-Resume with `--resume /path/to/checkpoint.pt`. The reproduced run became
-non-finite at epoch 81, so its selected evaluation checkpoint is epoch 55.
-
-## Evaluate
+## Evaluate cùng checkpoint
 
 ```bash
 python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
-  --name uwag_coordatt_aug_bf16_seed42_best \
-  --backend pytorch \
-  --model /path/to/best.pt \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
-  --detector-root detector \
-  --kitti-root /path/to/KITTI/object \
+  --name a_standard_epoch50 --backend pytorch \
+  --model artifacts/kitti/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-sgfpn-a_standard-s42/checkpoints/50epoch.pt \
+  --config configs/kitti/augmentation/a_standard.json \
+  --detector-root detector --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \
-  --output artifacts/kitti/evaluation_best_val.json \
-  --device cuda
+  --output artifacts/kitti/a_standard_epoch50.json --device cuda
 ```
 
-PyTorch evaluation also supports `--device cpu` for functional checks, although
-CPU and CUDA latency numbers should not be compared directly.
+So sánh mAP Moderate và AP từng lớp của A–E tại cùng epoch 50.
+Metric là local KITTI-style rotated BEV AP R40, không phải AP 3D/hidden test chính thức.
+`selected/best.pt` chọn theo minimum validation loss; notebook evaluate checkpoint cuối epoch 50 để giữ cùng ngân sách.
 
-This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
-submission to KITTI's hidden official test server. The reproduced report is in
-`results/kitti/uwag_coordatt_aug_bf16_seed42/`.
-
-Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
-`deploy_engine.py` for deployment experiments. TensorRT engines are tied to
-the local CUDA/TensorRT/GPU environment and should not be committed.
-
-## MobileBEV-Lite
-
-The frozen design and experiment protocol are in
-`docs/mobile_bev_lightweight/SPEC.md` and `docs/mobile_bev_lightweight/PLAN.md`.
-The four controlled BEV variants are under `configs/kitti/mobilebev/`; A1 is
-the 35-channel baseline and A4 enables RichBEV-8 plus SG-FPN.
-
-Run the dependency-free encoder checks with system Python and the full model
-checks with the environment that contains PyTorch and Shapely:
-
-```bash
-python3 tests/test_mobile_bev.py --encoder
-python3 tests/test_mobile_bev.py
-```
-
-Smoke-train A4 after preparing KITTI:
+## Resume run bị gián đoạn
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/mobilebev/a4_rich8_sgfpn_bev.json \
-  --detector-root detector \
-  --output-root artifacts/kitti \
-  --run-name mobilebev_a4_smoke_seed42 \
-  --epochs 1 --max-train-batches 8 --max-val-batches 4 --num-workers 2
+  --config configs/kitti/augmentation/a_standard.json \
+  --detector-root detector --output-root artifacts/kitti \
+  --num-workers 6 --target-backend numba \
+  --resume artifacts/kitti/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-sgfpn-a_standard-s42/checkpoints/last.pt
 ```
 
-For a full run, omit the three smoke limits. Training keeps the checkpoint
-with the minimum validation loss in `<run>/selected/best.pt`.
+Optimizer và scheduler được khôi phục; lịch 50 epoch giữ nguyên.
+Trong notebook chạy lại cell training/evaluation để tiếp tục run bị gián đoạn.
+Muốn thử lịch 100 epoch, tạo run mới và train lại từ đầu với warmup 8.
+So sánh A–E tại 50 epoch; baseline 100 epoch cũ có ngân sách và lịch LR khác.
 
-Use `--seed 42`, `--seed 43` and `--seed 44` with each A1-A4 config for the
-final twelve runs; the resolved seed is stored in each run config/checkpoint.
+## Kiểm chứng
 
-The evaluator writes BEV AP R40, distance bands for Pedestrian/Cyclist,
-input/config/split hashes, and compressed per-frame predictions.
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/lidar-mpl python3 -m pytest -q \
+  tests/test_augmentation_configs.py tests/test_gt_sampler_config.py \
+  tests/test_gt_sampler.py tests/test_optimizer_scheduler.py \
+  tests/test_training_screening.py tests/test_standard_training_notebook.py
+```
 
-## MobilePixorNeXt
-
-`mobilepixornext` is the registry name for the lightweight backbone with 7×7
-depthwise blocks, LiteMLA refinement, and a scale-gated FPN. It replaces the
-former backbone name in model configs and code. The architecture is described
-in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
-
-The RichBEV-8 configuration with OGA loss (Baseline M0) is
-[`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json).
-The MobilePixorNeXt configuration with baseline loss is
-[`configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json`](configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json).
-
-Pillar improvement configurations:
-- **Pillar 1 (M1 - Structural Reparameterization):** [`configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`](configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json)
-- **Pillar 2 (M2 - Multi-Scale LiteMLA + QK-RMSNorm):** [`configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json`](configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json)
-- **Pillar 4 (M4 - IoU-Aware Quality Header & Joint NMS):** [`configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`](configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json)
-- **Pillar 5 (M5 - Physics-Consistent 3D Augmentation / PCU-Aug):** [`configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json`](configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json)
-- **Cumulative (M1 + M2 + M4):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json)
-- **Cumulative SOTA (M1 + M2 + M4 + M5):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json)
-
-Use any config with the training command above by replacing its `--config`
-argument.
+Các model/loss khác vẫn có unit tests nhưng không còn config thực nghiệm trên branch này.
+Xem kiến trúc tại [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).

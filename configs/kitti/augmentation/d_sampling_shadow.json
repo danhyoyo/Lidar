@@ -1,23 +1,50 @@
 {
   "augmentation": {
+    "mode": "one_of",
     "p": 0.5,
+    "use_pcu_aug": true,
     "rotation": {
+      "use": true,
       "limit_angle": 20,
-      "p": 1,
-      "use": true
+      "p": 1
     },
     "scaling": {
-      "p": 1,
+      "use": true,
       "range": [
         0.95,
         1.05
       ],
-      "use": true
+      "p": 1
     },
     "translation": {
-      "p": 1,
+      "use": true,
       "scale": 0.4,
-      "use": true
+      "scale_z": 0.4,
+      "p": 1
+    },
+    "pcu_aug": {
+      "enable_gt_sampling": true,
+      "gt_database_path": "data/kitti/kitti_gt_database.pkl",
+      "p": 0.2,
+      "sample_counts": {
+        "Pedestrian": 1,
+        "Cyclist": 1
+      },
+      "enable_physics": false,
+      "enable_ground_validation": true,
+      "enable_static_collision": true,
+      "enable_line_of_sight": true,
+      "enable_shadow_masking": true,
+      "enable_density_subsample": false,
+      "enable_radiometric_calibration": false,
+      "min_visible_points": 5,
+      "min_visible_ratio": 0.5,
+      "placement_mode": "source_relative",
+      "range_scale": [
+        0.8,
+        1.2
+      ],
+      "azimuth_jitter_deg": 5.0
     }
   },
   "data": {
@@ -64,29 +91,41 @@
     "expansion": 2.5,
     "header_use_bn": true,
     "header_act": "silu",
-    "use_reparam": false
+    "use_reparam": false,
+    "c4_attention_scales": [
+      5
+    ],
+    "c4_attention_qk_norm": "none",
+    "header_use_iou": false
   },
   "multi_gpu": false,
-  "note": "kitti_mobilepixornext_litemla_rich8_sgfpn_baseline_loss",
+  "note": "Controlled augmentation ablation: fixed MobilePIXORNeXt/LiteMLA/SG-FPN/Rich8/baseline loss",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
-    "epochs": 100,
-    "learning_rate": 0.002,
+    "epochs": 50,
+    "learning_rate": 0.0007,
     "min_lr": 1e-06,
     "optimizer": "adamw",
     "physical_batch_size": 16,
     "precision": "bf16",
     "save_every": 5,
     "scheduler": "cosine",
-    "warmup_epochs": 5,
-    "weight_decay": 0.0001
+    "warmup_epochs": 4,
+    "weight_decay": 0.001,
+    "grad_clip_norm": 10.0,
+    "num_workers": 6,
+    "target_backend": "numba",
+    "compile_model": false
   },
   "val": {
     "data": "splits/kitti/val.txt",
-    "physical_batch_size": 2,
+    "physical_batch_size": 32,
     "val_every": 1
   },
-  "ver": 1
+  "ver": 1,
+  "experiment": {
+    "name": "d_sampling_shadow"
+  }
 }

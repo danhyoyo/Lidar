@@ -288,9 +288,8 @@ import json
 
 def test_full_iqa_pipeline_integration():
     """Verify that CustomModel and OgaLossStrategy initialize, forward, and backward cleanly using IQA config."""
-    config_path = ROOT / "configs" / "kitti" / "iou_aware_header" / "kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
-    with open(config_path, "r") as f:
-        cfg = json.load(f)
+    from config_helpers import oga_config
+    cfg = oga_config(iqa=True, reparam=True)
 
     model = CustomModel(cfg["model"], num_classes=cfg["data"]["num_classes"], input_channels=35)
     loss_strategy = OgaLossStrategy(cls_encoding=cfg["model"].get("cls_encoding", "gaussian"), config=cfg["loss"])
@@ -560,4 +559,3 @@ def test_filter_pred_blocks_low_cls_background_with_high_iou():
     pred = {"cls": cls_pred, "offset": offset_pred, "size": size_pred, "yaw": yaw_pred, "iou": iou_pred}
     dets = filter_pred(pred, config, out_size_factor=4, thres=0.05, nms_thres=0.5)
     assert len(dets) == 0, f"Expected 0 detections, got {len(dets)} leaked false positives"
-

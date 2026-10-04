@@ -68,6 +68,13 @@ def generate_run_name(
         extras.append("sgfpn")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
+    experiment_name = config.get("experiment", {}).get("name")
+    if experiment_name:
+        if not isinstance(experiment_name, str) or any(
+            not (character.isalnum() or character == "_") for character in experiment_name
+        ):
+            raise ValueError("experiment.name must contain only letters, numbers and underscores")
+        extras.append(experiment_name)
     if seed is not None:
         extras.append(f"s{seed}")
     if effective_batch_size is not None:

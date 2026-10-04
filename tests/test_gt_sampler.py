@@ -13,6 +13,53 @@ sys.path[:0] = [
 from core.datasets.utils_1.gt_sampler import GTSampler
 
 
+def test_source_relative_pose_preserves_observation_angle_and_limits_range(tmp_path):
+    source_box = np.array([1, 1.7, .6, .8, 20., 4., -1.6, .7], np.float32)
+    path = tmp_path / 'source.pkl'
+    path.write_bytes(pickle.dumps({'Pedestrian': [{
+        'box': source_box, 'points': np.ones((20, 4), np.float32),
+        'r_origin': float(np.hypot(20, 4)), 'num_points': 20,
+    }]}))
+    sampler = GTSampler(str(path), sample_counts={'Pedestrian': 1}, enable_physics=False,
+                        placement_mode='source_relative', range_scale=(.8, 1.2), azimuth_jitter_deg=5)
+    source = sampler.database['Pedestrian'][0]
+    source_angle = np.arctan2(source_box[5], source_box[4])
+    np.random.seed(42)
+    for attempt in range(100):
+        x, y, yaw = sampler._candidate_pose('Pedestrian', attempt, source)
+        ratio = np.hypot(x, y) / source['r_origin']
+        azimuth_change = np.arctan2(y, x) - source_angle
+        assert .8 <= ratio <= 1.2
+        assert abs(azimuth_change) <= np.deg2rad(5) + 1e-7
+        assert yaw - np.arctan2(y, x) == pytest.approx(source_box[7] - source_angle)
+
+
+@pytest.mark.parametrize('kwargs', [
+    {'placement_mode': 'typo'}, {'range_scale': (0, 1)}, {'range_scale': (1.2, .8)},
+    {'range_scale': (1,)}, {'range_scale': (.8, np.nan)}, {'azimuth_jitter_deg': -1},
+])
+def test_invalid_source_relative_settings_fail_early(tmp_path, kwargs):
+    path = tmp_path / 'empty.pkl'
+    path.write_bytes(pickle.dumps({}))
+    with pytest.raises(ValueError):
+        GTSampler(str(path), sample_counts={}, **kwargs)
+
+
+def test_source_relative_sampling_uses_the_stored_pose(tmp_path):
+    box = np.array([1, 1.7, .6, .8, 20, 4, -1.6, .7], np.float32)
+    points = np.column_stack((np.full(20, -.2), np.zeros(20), np.linspace(.1, 1.5, 20), np.full(20, .5))).astype(np.float32)
+    path = tmp_path / 'source.pkl'
+    path.write_bytes(pickle.dumps({'Pedestrian': [{
+        'box': box, 'points': points, 'r_origin': float(np.hypot(20, 4)), 'num_points': 20,
+    }]}))
+    sampler = GTSampler(str(path), sample_counts={'Pedestrian': 1}, enable_physics=False,
+                        placement_mode='source_relative', range_scale=(1., 1.), azimuth_jitter_deg=0.)
+    _, boxes, metadata = sampler(np.empty((0, 4), np.float32), np.empty((0, 8), np.float32), return_metadata=True)
+    assert metadata['num_inserted'] == 1
+    np.testing.assert_allclose(boxes[0], box)
+    np.testing.assert_array_equal(sampler.database['Pedestrian'][0]['points'], points)
+
+
 def test_gt_sampler_with_8col_boxes(tmp_path, monkeypatch):
     np.random.seed(42)
     db_file = tmp_path / "mock_db.pkl"

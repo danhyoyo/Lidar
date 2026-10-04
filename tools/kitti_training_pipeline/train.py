@@ -151,6 +151,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", type=int)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--epochs", type=int)
+    parser.add_argument("--stop-after-epoch", type=int,
+                        help="stop at an absolute epoch without shortening the LR schedule; override train.stop_after_epoch")
+    parser.add_argument("--grad-clip-norm", type=float,
+                        help="override train.grad_clip_norm (default 10); zero disables clipping")
     parser.add_argument("--physical-batch-size", type=int)
     parser.add_argument("--accumulation-steps", type=int)
     parser.add_argument("--num-workers", type=int, default=2)
@@ -172,6 +176,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-val-batches", type=int, default=0)
     parser.add_argument("--val-physical-batch-size", type=int, default=None, help="override validation physical batch size")
     return parser
+
+
+def resolve_training_epochs(train_cfg, epochs_override=None, stop_override=None):
+    epochs = int(epochs_override if epochs_override is not None else train_cfg["epochs"])
+    stop_epoch = (int(stop_override) if stop_override is not None
+                  else min(int(train_cfg.get("stop_after_epoch", epochs)), epochs))
+    if epochs < 1 or not 1 <= stop_epoch <= epochs:
+        raise ValueError("Require 1 <= stop_after_epoch <= epochs")
+    return epochs, stop_epoch
+
+
+def clip_optimizer_gradients(optimizer, scaler, max_norm):
+    if max_norm > 0:
+        if scaler.is_enabled():
+            scaler.unscale_(optimizer)
+        parameters = [p for group in optimizer.param_groups for p in group["params"] if p.grad is not None]
+        torch.nn.utils.clip_grad_norm_(parameters, max_norm=max_norm)
 
 
 def configure_matmul_precision() -> None:
@@ -301,6 +322,11 @@ def main(argv=None) -> None:
     config["train"]["compile_model"] = args.compile_model
     config["train"]["num_workers"] = args.num_workers
     scaler_enabled = precision == "fp16"
+    grad_clip_norm = float(args.grad_clip_norm if args.grad_clip_norm is not None
+                           else config["train"].get("grad_clip_norm", 10.0))
+    if not math.isfinite(grad_clip_norm) or grad_clip_norm < 0:
+        raise ValueError("grad_clip_norm must be finite and non-negative")
+    config["train"]["grad_clip_norm"] = grad_clip_norm
 
     physical_batch_size = int(
         args.physical_batch_size
@@ -315,9 +341,9 @@ def main(argv=None) -> None:
     )
     if physical_batch_size < 1 or accumulation_steps < 1:
         raise ValueError("Batch size and accumulation steps must be positive")
-    epochs = int(args.epochs if args.epochs is not None else config["train"]["epochs"])
-    if epochs < 1:
-        raise ValueError("epochs must be positive")
+    epochs, stop_epoch = resolve_training_epochs(config["train"], args.epochs, args.stop_after_epoch)
+    config["train"].update(epochs=epochs, stop_after_epoch=stop_epoch,
+                           physical_batch_size=physical_batch_size, accumulation_steps=accumulation_steps)
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
@@ -376,7 +402,6 @@ def main(argv=None) -> None:
     loss_selection_dir = run_dir / "selected"
     for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
-    write_json(run_dir / "config.resolved.json", config)
     train_log_path = run_dir / "train.log"
 
     def log_line(text: str) -> None:
@@ -387,6 +412,10 @@ def main(argv=None) -> None:
     start_epoch, best_val = 0, math.inf
     if args.resume:
         resume = torch.load(args.resume, map_location=device)
+        if isinstance(resume, dict):
+            saved_train = resume.get("config", {}).get("train", {})
+            if "stop_after_epoch" in saved_train and int(saved_train["epochs"]) != epochs:
+                raise ValueError("Resume must preserve the checkpoint's LR schedule horizon; change stop_after_epoch instead")
         model.load_state_dict(normalize_state_dict(resume), strict=True)
         if isinstance(resume, dict) and resume.get("criterion_state_dict") is not None:
             criterion.load_state_dict(resume["criterion_state_dict"], strict=True)
@@ -409,6 +438,8 @@ def main(argv=None) -> None:
             start_epoch = int(resume.get("epoch", 0))
             best_val = float(resume.get("best_validation_objective", math.inf))
         log_line(f"Resumed from epoch {start_epoch}: {args.resume}")
+
+    write_json(run_dir / "config.resolved.json", config)
 
     if args.compile_model:
         if not hasattr(torch, "compile"):
@@ -437,7 +468,8 @@ def main(argv=None) -> None:
     log_line(f"Run directory: {run_dir}")
     log_line(
         f"Backbone={config['model']['backbone']}; loss={loss_name}; "
-        f"precision={precision}"
+        f"precision={precision}; grad_clip_norm={grad_clip_norm}; "
+        f"schedule_epochs={epochs}; stop_after_epoch={stop_epoch}"
     )
     log_line(
         f"Frames train={len(train_dataset)} val={len(val_dataset)}; "
@@ -445,7 +477,7 @@ def main(argv=None) -> None:
         f"effective batch={physical_batch_size * accumulation_steps}"
     )
 
-    for epoch in range(start_epoch + 1, epochs + 1):
+    for epoch in range(start_epoch + 1, stop_epoch + 1):
         model.train()
         criterion.train()
         optimizer.zero_grad(set_to_none=True)
@@ -479,6 +511,7 @@ def main(argv=None) -> None:
                 or batch_index == batches_this_epoch
             )
             if should_update:
+                clip_optimizer_gradients(optimizer, scaler, grad_clip_norm)
                 previous_scale = scaler.get_scale()
                 scaler.step(optimizer)
                 scaler.update()
@@ -526,7 +559,7 @@ def main(argv=None) -> None:
             config,
         )
         atomic_torch_save(payload, checkpoints_dir / "last.pt")
-        if epoch % save_every == 0 or epoch == epochs:
+        if epoch % save_every == 0 or epoch == stop_epoch:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
         if retained:
             retained_path = best_dir / f"{epoch}epoch.pt"

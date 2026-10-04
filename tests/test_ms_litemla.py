@@ -203,11 +203,8 @@ def test_registry_builds_mobilepixornext_with_m2_options():
 
 
 def test_m2_config_wires_multiscale_rmsnorm():
-    config_path = (
-        ROOT
-        / "configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    from config_helpers import oga_config
+    config = oga_config(multiscale=True, qk_norm='rmsnorm')
     backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
 
     assert backbone.c4_attention.scales == (3, 5)
@@ -217,12 +214,8 @@ def test_m2_config_wires_multiscale_rmsnorm():
 
 
 def test_scale_only_ablation_config_disables_qk_norm():
-    config_path = (
-        ROOT
-        / "configs/kitti/multiscale_attention/"
-        "kitti_mobilepixornext_ms_litemla_no_norm_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    from config_helpers import oga_config
+    config = oga_config(multiscale=True)
     backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
 
     assert backbone.c4_attention.scales == (3, 5)
@@ -234,11 +227,8 @@ def test_cumulative_m1_m2_m4_config_instantiates_full_model():
     from core.models.model import CustomModel
     from core.losses.strategies.oga import OgaLossStrategy
 
-    config_path = (
-        ROOT
-        / "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    from config_helpers import oga_config
+    config = oga_config(iqa=True, reparam=True, multiscale=True, qk_norm='rmsnorm')
     model = CustomModel(config["model"], input_channels=8)
 
     # 1. Verify M1 (use_reparam)

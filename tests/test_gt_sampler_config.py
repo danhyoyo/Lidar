@@ -15,8 +15,7 @@ from core.datasets.dataset import Dataset
 from core.datasets.utils_1.gt_sampler import build_gt_sampler, PHYSICS_FLAGS
 
 ROOT = Path(__file__).resolve().parents[1]
-PCU_CONFIG_PATH = ROOT / "configs/kitti/physics_augmentation/kitti_mobilepixornext_litemla_oga_pcu.json"
-CUMULATIVE_CONFIG_PATH = ROOT / "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_m5_oga.json"
+CONFIG_DIR = ROOT / "configs/kitti/augmentation"
 
 
 def _create_mock_env(tmp_path):
@@ -81,8 +80,10 @@ def _create_mock_env(tmp_path):
 
 
 @pytest.mark.parametrize("config_path", [
-    PCU_CONFIG_PATH,
-    CUMULATIVE_CONFIG_PATH,
+    CONFIG_DIR / name for name in [
+        'b_light_sampling.json', 'c_sampling_density.json',
+        'd_sampling_shadow.json', 'e_sampling_intensity.json',
+    ]
 ])
 def test_real_configs_effective_settings(tmp_path, config_path):
     with open(config_path, "r", encoding="utf-8") as f:
@@ -90,13 +91,12 @@ def test_real_configs_effective_settings(tmp_path, config_path):
 
     pcu_cfg = cfg["augmentation"]["pcu_aug"]
     assert pcu_cfg["enable_gt_sampling"] is True
-    assert pcu_cfg.get("p", 1.0) == 0.5
-    expected_counts = {"Pedestrian": 3, "Cyclist": 3}
+    assert pcu_cfg.get("p", 1.0) == 0.2
+    expected_counts = {"Pedestrian": 1, "Cyclist": 1}
     assert pcu_cfg["sample_counts"] == expected_counts
     for flag in PHYSICS_FLAGS:
         assert flag in pcu_cfg
         assert isinstance(pcu_cfg[flag], bool)
-        assert pcu_cfg[flag] is True
     assert pcu_cfg["min_visible_points"] == 5
     assert pcu_cfg["min_visible_ratio"] == 0.5
 
@@ -114,8 +114,14 @@ def test_real_configs_effective_settings(tmp_path, config_path):
     )
     assert ds_train.gt_sampler is not None
     assert ds_train.gt_sampler.sample_counts == expected_counts
+    assert ds_train.augmentation_mode == 'one_of'
+    assert ds_train.augment is not None
+    assert ds_train.augment.p == .5
+    assert len(ds_train.augment.transforms) == 3
+    assert ds_train.gt_sampler.placement_mode == 'source_relative'
+    assert ds_train.gt_sampler.range_scale == (.8, 1.2)
     for flag in PHYSICS_FLAGS:
-        assert getattr(ds_train.gt_sampler, flag) is True
+        assert getattr(ds_train.gt_sampler, flag) is pcu_cfg[flag]
     assert ds_train.gt_sampler.min_visible_points == 5
     assert ds_train.gt_sampler.min_visible_ratio == 0.5
 
@@ -161,6 +167,29 @@ def test_explicit_flags_override_legacy_enable_physics(tmp_path):
     assert sampler2.enable_density_subsample is False
     assert sampler2.enable_shadow_masking is True
     assert sampler2.enable_radiometric_calibration is True
+
+
+@pytest.mark.parametrize('pcu,mode,expected_x', [
+    (False, 'one_of', 20.), (True, 'one_of', 20.),
+    (False, 'compose', 21.), (True, 'compose', 21.),
+])
+def test_global_transform_mode_is_independent_of_sampling_switch(tmp_path, monkeypatch, pcu, mode, expected_x):
+    split, location, _ = _create_mock_env(tmp_path)
+    (Path(location) / 'label/000001.txt').write_text('Car 1.5 1.8 4.5 10 0 -1.6 0\n')
+    cfg = json.loads((CONFIG_DIR / 'a_standard.json').read_text())
+    cfg['data']['kitti']['location'] = location
+    augmentation = {
+        'use_pcu_aug': pcu, 'mode': mode, 'p': 1.,
+        'scaling': {'use': True, 'range': [2., 2.], 'p': 1.},
+        'translation': {'use': True, 'scale': .4, 'p': 1.},
+    }
+    dataset = Dataset(split, cfg['data'], augmentation, 'gaussian')
+    monkeypatch.setattr(np.random, 'random', lambda: 0.)
+    monkeypatch.setattr(np.random, 'randint', lambda **kwargs: 0)
+    monkeypatch.setattr(np.random, 'normal', lambda **kwargs: 1.)
+    dataset.get_label = lambda boxes, geometry: {'boxes_seen': boxes.numpy()}
+    sample = dataset[0]
+    assert sample['boxes_seen'][0, 4] == pytest.approx(expected_x)
 
 
 @pytest.mark.parametrize("flag_to_disable", list(PHYSICS_FLAGS))

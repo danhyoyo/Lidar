@@ -48,6 +48,9 @@ def build_gt_sampler(pcu_cfg):
         enable_physics=pcu_cfg.get('enable_physics', True),
         min_visible_points=pcu_cfg.get('min_visible_points', 5),
         min_visible_ratio=pcu_cfg.get('min_visible_ratio', .5), **kwargs,
+        placement_mode=pcu_cfg.get('placement_mode', 'random'),
+        range_scale=pcu_cfg.get('range_scale', (.8, 1.2)),
+        azimuth_jitter_deg=pcu_cfg.get('azimuth_jitter_deg', 5.),
     )
 
 
@@ -57,8 +60,22 @@ class GTSampler:
                  enable_ground_validation=None, enable_static_collision=None,
                  enable_line_of_sight=None, enable_shadow_masking=None,
                  enable_density_subsample=None, enable_radiometric_calibration=None,
-                 min_visible_points=5, min_visible_ratio=.5):
+                 min_visible_points=5, min_visible_ratio=.5,
+                 placement_mode='random', range_scale=(.8, 1.2), azimuth_jitter_deg=5.):
         self.p = _probability(p, 'p')
+        if placement_mode not in {'random', 'source_relative'}:
+            raise ValueError('placement_mode must be random or source_relative')
+        self.placement_mode = placement_mode
+        if (not isinstance(range_scale, (tuple, list)) or len(range_scale) != 2
+                or any(isinstance(v, (bool, np.bool_)) or not isinstance(v, Real)
+                       or not np.isfinite(v) or v <= 0 for v in range_scale)
+                or range_scale[0] > range_scale[1]):
+            raise ValueError('range_scale must contain two ordered finite positive numbers')
+        self.range_scale = tuple(float(v) for v in range_scale)
+        if (isinstance(azimuth_jitter_deg, (bool, np.bool_)) or not isinstance(azimuth_jitter_deg, Real)
+                or not np.isfinite(azimuth_jitter_deg) or not 0 <= azimuth_jitter_deg <= 180):
+            raise ValueError('azimuth_jitter_deg must be finite and in [0, 180]')
+        self.azimuth_jitter_deg = float(azimuth_jitter_deg)
         if not isinstance(enable_physics, (bool, np.bool_)):
             raise ValueError('enable_physics must be bool')
         self.enable_physics = bool(enable_physics)
@@ -145,6 +162,17 @@ class GTSampler:
             x, y = np.random.uniform(6., 65.), np.random.uniform(-25., 25.)
         return x, y, np.random.uniform(-np.pi, np.pi)
 
+    def _candidate_pose(self, cls_name, attempt, sample):
+        if self.placement_mode == 'random':
+            return self._propose_pose(cls_name, attempt)
+        source = np.asarray(sample['box'])
+        scale = np.random.uniform(*self.range_scale)
+        angle = np.deg2rad(np.random.uniform(-self.azimuth_jitter_deg, self.azimuth_jitter_deg))
+        c, s = np.cos(angle), np.sin(angle)
+        x, y = source[-4], source[-3]
+        # Rotate source azimuth and heading together to retain the observed side.
+        return scale * (x * c - y * s), scale * (x * s + y * c), source[-1] + angle
+
     def __call__(self, lidar, boxes, return_metadata=False, *, return_diagnostics=False):
         self._validate_scene(lidar, boxes)
         return_metadata = return_metadata or return_diagnostics
@@ -189,7 +217,7 @@ class GTSampler:
                     for attempt in range(20):
                         if diag is not None:
                             diag['attempted_by_class'][cls_name] += 1
-                        x, y, yaw = self._propose_pose(cls_name, attempt)
+                        x, y, yaw = self._candidate_pose(cls_name, attempt, sample)
                         if not (2 <= x <= 66 and -35 <= y <= 35):
                             reject('bounds')
                             continue

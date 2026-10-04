@@ -145,6 +145,7 @@ def plot_pcu_augmentation_sample(
     sample_counts: Optional[Dict[str, int]] = None,
     output_path: Optional[Union[str, Path]] = None,
     figsize: Tuple[int, int] = (22, 10),
+    pcu_config: Optional[Dict] = None,
 ) -> plt.Figure:
     """Generates a high-contrast side-by-side BEV comparison plot of PCU-Aug.
 
@@ -167,14 +168,15 @@ def plot_pcu_augmentation_sample(
 
     orig_points, orig_boxes = load_kitti_frame(data_dir, frame_id)
 
-    # Instantiate GTSampler with physics enabled
+    # A supplied config uses the same effective sampler settings as training.
     counts = {"Pedestrian": 6, "Cyclist": 5, "Car": 3} if sample_counts is None else sample_counts
-    sampler = GTSampler(
-        database_path=str(gt_database_path),
-        sample_counts=counts,
-        p=1.0,
-        enable_physics=True,
-    )
+    if pcu_config is None:
+        sampler = GTSampler(database_path=str(gt_database_path), sample_counts=counts,
+                            p=1.0, enable_physics=True)
+    else:
+        from core.datasets.utils_1.gt_sampler import build_gt_sampler
+        settings = dict(pcu_config, gt_database_path=str(gt_database_path))
+        sampler = build_gt_sampler(settings)
 
     aug_points, final_boxes, meta = sampler(
         orig_points.copy(), orig_boxes.copy(), return_metadata=True
@@ -266,7 +268,7 @@ def plot_pcu_augmentation_sample(
 
     num_inserted = len(inserted_boxes)
     ax2.set_title(
-        f"PCU-Aug Augmented Scene (Physics-Consistent)\n"
+        f"Configured GT Sampling\n"
         f"Original: {len(orig_boxes)} + Pasted: {num_inserted} (Inserted: {num_inserted}) = Total {len(final_boxes)} objects",
         fontsize=14,
         color="#FF007F",
@@ -276,8 +278,8 @@ def plot_pcu_augmentation_sample(
     ax2.legend(loc="upper right", framealpha=0.4, facecolor="#21262d")
 
     fig.suptitle(
-        f"MobilePIXORNext Pillar 5: Physics-Consistent Online GT Augmentation (PCU-Aug)\n"
-        f"Ray-Frustum Shadow Occlusion & Road Surface Snapping Verification",
+        f"Configured GT Sampling Preview\n"
+        f"Before global augmentation and BEV encoding",
         fontsize=16,
         color="#58a6ff",
         fontweight="bold",
