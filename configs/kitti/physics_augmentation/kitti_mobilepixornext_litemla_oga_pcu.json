@@ -6,7 +6,6 @@
       "gt_database_path": "data/kitti/kitti_gt_database.pkl",
       "p": 0.5,
       "sample_counts": {
-        "Car": 1,
         "Pedestrian": 3,
         "Cyclist": 3
       },
@@ -25,12 +24,12 @@
       "p": 0.5
     },
     "rotation": {
-      "limit_angle": 20,
-      "p": 1,
+      "limit_angle": 15,
+      "p": 0.5,
       "use": true
     },
     "scaling": {
-      "p": 1,
+      "p": 0.5,
       "range": [
         0.95,
         1.05
@@ -38,9 +37,20 @@
       "use": true
     },
     "translation": {
-      "p": 1,
-      "scale": 0.4,
+      "p": 0.5,
+      "scale": 0.15,
+      "scale_z": 0.0,
       "use": true
+    },
+    "point_dropout": {
+      "use": true,
+      "p": 0.5,
+      "max_dropout_ratio": 0.1
+    },
+    "intensity_jitter": {
+      "use": true,
+      "p": 0.5,
+      "std": 0.05
     }
   },
   "data": {
@@ -106,7 +116,7 @@
     "accumulation_steps": 1,
     "data": "splits/kitti/train.txt",
     "epochs": 100,
-    "learning_rate": 0.002,
+    "learning_rate": 0.0007,
     "min_lr": 1e-06,
     "optimizer": "adamw",
     "physical_batch_size": 16,
@@ -114,7 +124,7 @@
     "save_every": 5,
     "scheduler": "cosine",
     "warmup_epochs": 5,
-    "weight_decay": 0.0001
+    "weight_decay": 0.001
   },
   "val": {
     "data": "splits/kitti/val.txt",

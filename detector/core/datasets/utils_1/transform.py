@@ -228,8 +228,9 @@ class Random_Scaling(object):
 
 
 class Random_Translation(object):
-    def __init__(self, scale = 0.1, p = 0.5):
+    def __init__(self, scale=0.1, scale_z=0.0, p=0.5):
         self.scale = scale
+        self.scale_z = scale_z
         self.p = p
 
     def __call__(self, lidar, labels):
@@ -238,15 +239,50 @@ class Random_Translation(object):
         :return:
         """
         if np.random.random() <= self.p:
-            dx = np.random.normal(loc = 0.0, scale = self.scale)
-            dy = np.random.normal(loc = 0.0, scale = self.scale)
-            dz = np.random.normal(loc = 0.0, scale = self.scale)
+            dx = np.random.normal(loc=0.0, scale=self.scale)
+            dy = np.random.normal(loc=0.0, scale=self.scale)
+            dz = (
+                np.random.normal(loc=0.0, scale=self.scale_z)
+                if self.scale_z > 0.0
+                else 0.0
+            )
 
             lidar[:, 0] += dx
             lidar[:, 1] += dy
-            lidar[:, 2] += dz
-            labels[:, 3] +=dx
-            labels[:, 4] +=dy
-            labels[:, 5] +=dz
+            labels[:, 3] += dx
+            labels[:, 4] += dy
 
+            if dz != 0.0:
+                lidar[:, 2] += dz
+                labels[:, 5] += dz
+
+        return lidar, labels
+
+
+class Random_Point_Dropout(object):
+    def __init__(self, max_dropout_ratio=0.1, p=0.5):
+        self.max_dropout_ratio = max_dropout_ratio
+        self.p = p
+
+    def __call__(self, lidar, labels):
+        """Randomly drops a fraction of points in [0.02, max_dropout_ratio]. Preserves labels."""
+        if np.random.random() <= self.p and len(lidar) > 10:
+            drop_ratio = np.random.uniform(0.02, self.max_dropout_ratio)
+            keep_mask = np.random.random(len(lidar)) > drop_ratio
+            if np.any(keep_mask):
+                lidar = lidar[keep_mask]
+        return lidar, labels
+
+
+class Random_Intensity_Jitter(object):
+    def __init__(self, std=0.05, p=0.5):
+        self.std = std
+        self.p = p
+
+    def __call__(self, lidar, labels):
+        """Applies multiplicative Gaussian noise to reflectance intensity (column 3). Preserves labels."""
+        if np.random.random() <= self.p and len(lidar) > 0 and lidar.shape[1] >= 4:
+            lidar = lidar.copy()
+            noise = np.random.normal(loc=1.0, scale=self.std, size=len(lidar)).astype(lidar.dtype)
+            lidar[:, 3] = np.clip(lidar[:, 3] * noise, 0.0, 1.0)
         return lidar, labels

@@ -6,7 +6,14 @@ import math
 
 
 from utils_1.preprocess import encode_bev, get_points_in_a_rotated_box
-from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Random_Translation
+from utils_1.transform import (
+    Random_Rotation,
+    Random_Scaling,
+    OneOf,
+    Random_Translation,
+    Random_Point_Dropout,
+    Random_Intensity_Jitter,
+)
 from utils_1.gaussian import gaussian_radius, draw_heatmap_gaussian
 from utils_1.target_backend import fill_regression_targets_numba
 
@@ -545,8 +552,19 @@ class Dataset(Dataset):
 
         if config.get("translation", {}).get("use", False):
             scale = config["translation"]["scale"]
+            scale_z = config["translation"].get("scale_z", 0.0)
             p = config["translation"]["p"]
-            transforms.append(Random_Translation(scale, p))
+            transforms.append(Random_Translation(scale, scale_z=scale_z, p=p))
+
+        if config.get("point_dropout", {}).get("use", False):
+            max_dropout_ratio = config["point_dropout"].get("max_dropout_ratio", 0.1)
+            p = config["point_dropout"].get("p", 0.5)
+            transforms.append(Random_Point_Dropout(max_dropout_ratio, p=p))
+
+        if config.get("intensity_jitter", {}).get("use", False):
+            std = config["intensity_jitter"].get("std", 0.05)
+            p = config["intensity_jitter"].get("p", 0.5)
+            transforms.append(Random_Intensity_Jitter(std, p=p))
 
         return transforms
 

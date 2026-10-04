@@ -174,3 +174,46 @@ def test_shadow_and_los_spatial_culling_invariance():
     behind = np.array([[30.0, 0.0, 0.0, 0.5]], np.float32)
     assert not check_line_of_sight_occlusion(box, behind)
 
+
+def test_random_translation_scale_z_zero():
+    from core.datasets.utils_1.transform import Random_Translation
+    np.random.seed(42)
+    trans = Random_Translation(scale=0.15, scale_z=0.0, p=1.0)
+    pts = np.zeros((100, 4), dtype=np.float32)
+    pts[:, 2] = -1.6
+    boxes = np.array([[1.5, 1.8, 4.5, 20.0, 5.0, -1.6, 0.0]], dtype=np.float32)
+    out_pts, out_boxes = trans(pts, boxes)
+    # Z must not be altered when scale_z=0.0
+    assert np.allclose(out_pts[:, 2], -1.6)
+    assert np.isclose(out_boxes[0, 5], -1.6)
+    # X and Y must have been shifted
+    assert not np.isclose(out_boxes[0, 3], 20.0)
+    assert not np.isclose(out_boxes[0, 4], 5.0)
+
+
+def test_random_point_dropout():
+    from core.datasets.utils_1.transform import Random_Point_Dropout
+    np.random.seed(42)
+    dropout = Random_Point_Dropout(max_dropout_ratio=0.1, p=1.0)
+    pts = np.ones((1000, 4), dtype=np.float32)
+    boxes = np.array([[1.5, 1.8, 4.5, 20.0, 5.0, -1.6, 0.0]], dtype=np.float32)
+    out_pts, out_boxes = dropout(pts, boxes)
+    assert len(out_pts) < 1000
+    assert len(out_pts) >= 880  # at most ~10% dropped
+    assert np.allclose(out_boxes, boxes)
+
+
+def test_random_intensity_jitter():
+    from core.datasets.utils_1.transform import Random_Intensity_Jitter
+    np.random.seed(42)
+    jitter = Random_Intensity_Jitter(std=0.05, p=1.0)
+    pts = np.full((100, 4), 0.5, dtype=np.float32)
+    boxes = np.array([[1.5, 1.8, 4.5, 20.0, 5.0, -1.6, 0.0]], dtype=np.float32)
+    out_pts, out_boxes = jitter(pts, boxes)
+    assert np.all(out_pts[:, 3] >= 0.0)
+    assert np.all(out_pts[:, 3] <= 1.0)
+    assert not np.allclose(out_pts[:, 3], 0.5)
+    assert np.allclose(out_pts[:, :3], pts[:, :3])
+    assert np.allclose(out_boxes, boxes)
+
+

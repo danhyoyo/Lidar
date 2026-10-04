@@ -91,7 +91,7 @@ def test_real_configs_effective_settings(tmp_path, config_path):
     pcu_cfg = cfg["augmentation"]["pcu_aug"]
     assert pcu_cfg["enable_gt_sampling"] is True
     assert pcu_cfg.get("p", 1.0) == 0.5
-    expected_counts = {"Car": 1, "Pedestrian": 3, "Cyclist": 3}
+    expected_counts = {"Pedestrian": 3, "Cyclist": 3}
     assert pcu_cfg["sample_counts"] == expected_counts
     for flag in PHYSICS_FLAGS:
         assert flag in pcu_cfg
