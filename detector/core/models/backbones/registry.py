@@ -75,7 +75,7 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
         use_reparam=cfg.get("use_reparam", False),
         deploy=cfg.get("deploy", False),
         neck_type=cfg.get("neck_type", "scale_gated_fpn"),
-        geometry=cfg.get("kitti", {}).get("geometry") or cfg.get("geometry"),
+        geometry=cfg.get("geometry") or cfg.get("kitti", {}).get("geometry") or cfg.get("data", {}).get("kitti", {}).get("geometry"),
         num_range_bands=cfg.get("num_range_bands", 4),
     )
 

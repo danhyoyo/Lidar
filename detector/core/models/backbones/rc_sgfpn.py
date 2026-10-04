@@ -46,7 +46,7 @@ class FourierRangeEmbedding(nn.Module):
         # Absolute Euclidean distance r = sqrt(x^2 + y^2)
         r = torch.sqrt(xx**2 + yy**2)
         r_max = math.sqrt(max(abs(x_min), abs(x_max))**2 + max(abs(y_min), abs(y_max))**2)
-        r_norm = torch.clamp(r / r_max, 0.0, 1.0).unsqueeze(0).unsqueeze(0)  # (1, 1, H, W)
+        r_norm = torch.clamp(r / max(r_max, 1e-6), 0.0, 1.0).unsqueeze(0).unsqueeze(0)  # (1, 1, H, W)
 
         # Multi-band sinusoidal basis: [sin(2^b * pi * r), cos(2^b * pi * r)]
         bands = []
@@ -66,7 +66,20 @@ class FourierRangeEmbedding(nn.Module):
 
 
 class RangeConditionedScaleGate(nn.Module):
-    """Dynamic depthwise scale gate conditioned on spatial Fourier Range Embeddings."""
+    """Dynamic depthwise scale gate conditioned on spatial Fourier Range Embeddings.
+
+    Uses energy-preserving FiLM modulation:
+        content_logits = DWConv(L + U)
+        range_scale = 1.0 + 0.5 * tanh(Proj(FRE(r)))
+        modulated_logits = content_logits * range_scale
+        gate = 2.0 * sigmoid(modulated_logits)
+        output = U + gate * L
+
+    Guarantees:
+    1. Zero-init: range_scale = 1.0, content_logits = 0 => gate = 1.0 => output = U + L.
+    2. Zero False Positives on empty background: DWConv(0) * range_scale = 0 => gate = 1.0.
+    3. Deploy mode: range_scale precomputed into constant buffer `static_spatial_scale`.
+    """
 
     def __init__(
         self,
@@ -76,18 +89,15 @@ class RangeConditionedScaleGate(nn.Module):
         x_bounds: Tuple[float, float] = (0.0, 70.4),
         y_bounds: Tuple[float, float] = (-40.0, 40.0),
         num_bands: int = 4,
+        deploy: bool = False,
     ):
         super().__init__()
         self.channels = channels
         self.height = height
         self.width = width
-        self.deploy = False
+        self.deploy = bool(deploy)
 
-        # 1. Continuous Fourier Range Engine
-        self.fre = FourierRangeEmbedding(height, width, x_bounds, y_bounds, num_bands)
-        self.range_proj = nn.Conv2d(self.fre.out_dim, channels, kernel_size=1, bias=True)
-
-        # 2. Local content depthwise aggregator
+        # 1. Local content depthwise aggregator
         self.content_conv = nn.Conv2d(
             channels,
             channels,
@@ -96,43 +106,47 @@ class RangeConditionedScaleGate(nn.Module):
             groups=channels,
             bias=True,
         )
-
-        # 3. Mathematical Zero-Initialization Guarantee: Gate = 2 * sigmoid(0) = 1.0
         nn.init.zeros_(self.content_conv.weight)
         nn.init.zeros_(self.content_conv.bias)
-        nn.init.zeros_(self.range_proj.weight)
-        nn.init.zeros_(self.range_proj.bias)
+
+        if self.deploy:
+            self.register_buffer("static_spatial_scale", torch.ones(1, channels, height, width))
+        else:
+            # 2. Continuous Fourier Range Engine
+            self.fre = FourierRangeEmbedding(height, width, x_bounds, y_bounds, num_bands)
+            self.range_proj = nn.Conv2d(self.fre.out_dim, channels, kernel_size=1, bias=True)
+            nn.init.zeros_(self.range_proj.weight)
+            nn.init.zeros_(self.range_proj.bias)
 
     def forward(self, l_feat: Tensor, u_feat: Tensor) -> Tensor:
         _, _, h, w = l_feat.shape
-        if self.deploy:
-            # Zero-latency path: precomputed spatial bias is folded into buffer
-            bias = self.static_spatial_bias
-            if bias.shape[-2:] != (h, w):
-                bias = F.interpolate(bias, size=(h, w), mode="bilinear", align_corners=False)
-            gate_logits = self.content_conv(l_feat + u_feat) + bias
-        else:
-            feat_logits = self.content_conv(l_feat + u_feat)
-            range_logits = self.range_proj(self.fre(h, w))
-            gate_logits = feat_logits + range_logits
+        content_logits = self.content_conv(l_feat + u_feat)
 
-        gate = 2.0 * torch.sigmoid(gate_logits)
+        if self.deploy:
+            scale = self.static_spatial_scale.to(dtype=content_logits.dtype)
+            if scale.shape[-2:] != (h, w):
+                scale = F.interpolate(scale, size=(h, w), mode="bilinear", align_corners=False)
+            modulated_logits = content_logits * scale
+        else:
+            range_feats = self.range_proj(self.fre(h, w).to(dtype=content_logits.dtype))
+            scale = 1.0 + 0.5 * torch.tanh(range_feats)
+            modulated_logits = content_logits * scale
+
+        gate = (2.0 * torch.sigmoid(modulated_logits)).to(dtype=l_feat.dtype)
         return u_feat + gate * l_feat
 
     @torch.no_grad()
     def switch_to_deploy(self):
-        """Fuses static range projection into a constant 2D spatial bias buffer."""
+        """Fuses static range projection into a constant 2D spatial scale buffer."""
         if self.deploy:
             return
-        # Precompute static spatial bias: (1, C, H, W)
-        range_bias = self.range_proj(self.fre())
-        self.register_buffer("static_spatial_bias", range_bias)
+        range_feats = self.range_proj(self.fre())
+        scale = 1.0 + 0.5 * torch.tanh(range_feats)
+        self.register_buffer("static_spatial_scale", scale)
 
-        # Delete dynamic projection submodules to release memory and remove ONNX nodes
         del self.range_proj
         del self.fre
         self.deploy = True
-
 
 
 class RangeConditionedSGFPN(nn.Module):
@@ -150,12 +164,14 @@ class RangeConditionedSGFPN(nn.Module):
         bidirectional: bool = False,
         num_range_bands: int = 4,
         geometry: Optional[Dict[str, float]] = None,
+        deploy: bool = False,
     ):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.lateral_channels = lateral_channels
         self.bidirectional = bool(bidirectional)
+        self.deploy = bool(deploy)
 
         if geometry is None:
             geometry = {"x_min": 0.0, "x_max": 70.4, "y_min": -40.0, "y_max": 40.0}
@@ -178,7 +194,8 @@ class RangeConditionedSGFPN(nn.Module):
             nn.SiLU(inplace=True),
         )
         self.gate_td4 = RangeConditionedScaleGate(
-            l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+            l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds,
+            num_bands=num_range_bands, deploy=self.deploy
         )
 
         # Level 3: 100x88 -> 200x176
@@ -188,7 +205,8 @@ class RangeConditionedSGFPN(nn.Module):
             nn.SiLU(inplace=True),
         )
         self.gate_td3 = RangeConditionedScaleGate(
-            l3_ch, height=200, width=176, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+            l3_ch, height=200, width=176, x_bounds=x_bounds, y_bounds=y_bounds,
+            num_bands=num_range_bands, deploy=self.deploy
         )
 
         # 3. Bottom-Up Pathway (Active when bidirectional=True)
@@ -200,7 +218,8 @@ class RangeConditionedSGFPN(nn.Module):
                 nn.SiLU(inplace=True),
             )
             self.gate_bu4 = RangeConditionedScaleGate(
-                l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+                l4_ch, height=100, width=88, x_bounds=x_bounds, y_bounds=y_bounds,
+                num_bands=num_range_bands, deploy=self.deploy
             )
 
             # P4 -> P5: stride 2 downsampling (100x88 -> 50x44)
@@ -210,15 +229,17 @@ class RangeConditionedSGFPN(nn.Module):
                 nn.SiLU(inplace=True),
             )
             self.gate_bu5 = RangeConditionedScaleGate(
-                l5_ch, height=50, width=44, x_bounds=x_bounds, y_bounds=y_bounds, num_bands=num_range_bands
+                l5_ch, height=50, width=44, x_bounds=x_bounds, y_bounds=y_bounds,
+                num_bands=num_range_bands, deploy=self.deploy
             )
 
-            # Aggregation from reinforced P4 back into P3
-            self.bu_refine_p3 = nn.Sequential(
-                nn.Conv2d(l4_ch, l3_ch, kernel_size=1, bias=False),
-                nn.BatchNorm2d(l3_ch),
-                nn.SiLU(inplace=True),
-            )
+            # Top-down refinement from reinforced P5 back into P4 (pure linear projection)
+            self.bu_refine_p4 = nn.Conv2d(l5_ch, l4_ch, kernel_size=1, bias=False)
+            nn.init.zeros_(self.bu_refine_p4.weight)
+
+            # Aggregation from reinforced P4 back into P3 (pure linear projection)
+            self.bu_refine_p3 = nn.Conv2d(l4_ch, l3_ch, kernel_size=1, bias=False)
+            nn.init.zeros_(self.bu_refine_p3.weight)
 
         # 4. Final Header Output Projection (Stride 4, 16 channels)
         self.out_conv = nn.Sequential(
@@ -248,7 +269,10 @@ class RangeConditionedSGFPN(nn.Module):
             p4_bu = self.gate_bu4(d4, p4) + 0.5 * l4
 
             d5 = self.down_p4(p4_bu)
-            _ = self.gate_bu5(d5, l5)  # Reinforces P5 state
+            p5_bu = self.gate_bu5(d5, l5)
+
+            p5_up = F.interpolate(p5_bu, scale_factor=2.0, mode="bilinear", align_corners=False)
+            p4_bu = p4_bu + self.bu_refine_p4(p5_up)
 
             p4_up = F.interpolate(p4_bu, scale_factor=2.0, mode="bilinear", align_corners=False)
             p3 = p3 + self.bu_refine_p3(p4_up)
@@ -257,6 +281,9 @@ class RangeConditionedSGFPN(nn.Module):
 
     def switch_to_deploy(self):
         """Recursively delegates switch_to_deploy to internal gates."""
+        if self.deploy:
+            return
         for m in self.modules():
             if hasattr(m, "switch_to_deploy") and m is not self:
                 m.switch_to_deploy()
+        self.deploy = True

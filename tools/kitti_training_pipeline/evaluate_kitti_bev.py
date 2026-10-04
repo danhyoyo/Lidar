@@ -300,7 +300,10 @@ class PyTorchRunner:
         checkpoint = torch.load(path, map_location="cpu")
         state_dict = normalize_state_dict(checkpoint)
 
-        is_checkpoint_deployed = any("rbr_reparam" in k for k in state_dict.keys())
+        is_checkpoint_deployed = any(
+            "rbr_reparam" in k or "static_spatial_scale" in k or "static_spatial_bias" in k
+            for k in state_dict.keys()
+        )
         should_deploy = bool(
             deploy
             or (save_deploy is not None)

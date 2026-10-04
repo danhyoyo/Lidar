@@ -70,6 +70,7 @@ class MobilePixorNeXtBackbone(nn.Module):
                 bidirectional=(self.neck_type == "rc_bisgfpn"),
                 num_range_bands=num_range_bands,
                 geometry=geometry,
+                deploy=self.deploy,
             )
         else:
             self.rc_neck = None

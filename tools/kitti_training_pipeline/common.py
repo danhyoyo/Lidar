@@ -133,8 +133,12 @@ def build_model(config: Dict[str, Any]):
     validate_backbone(config)
     from core.models.model import CustomModel
 
+    model_cfg = dict(config["model"])
+    if "geometry" not in model_cfg and "kitti" in config.get("data", {}):
+        model_cfg["geometry"] = config["data"]["kitti"].get("geometry")
+
     return CustomModel(
-        config["model"],
+        model_cfg,
         config["data"]["num_classes"],
         input_channels=input_shape(config)[1],
     )
