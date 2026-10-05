@@ -115,6 +115,24 @@ class DataUtilityTests(unittest.TestCase):
             self.assertEqual(boxes.shape, (1, 8))
             self.assertEqual(dataset.filter_boxes(boxes, "kitti").shape, (0, 8))
 
+    def test_manifest_parser_supports_tagged_and_plain_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            manifest_tagged = Path(directory) / "tagged.txt"
+            manifest_tagged.write_text("000000;kitti\n000001;kitti\n", encoding="utf-8")
+            dataset = Dataset.__new__(Dataset)
+            dataset.data_file = str(manifest_tagged)
+            dataset.create_data_list()
+            self.assertEqual(dataset.data_list, ["000000", "000001"])
+            self.assertEqual(dataset.data_type_list, ["kitti", "kitti"])
+
+            manifest_plain = Path(directory) / "plain.txt"
+            manifest_plain.write_text("000000\n000001\n", encoding="utf-8")
+            dataset_plain = Dataset.__new__(Dataset)
+            dataset_plain.data_file = str(manifest_plain)
+            dataset_plain.create_data_list()
+            self.assertEqual(dataset_plain.data_list, ["000000", "000001"])
+            self.assertEqual(dataset_plain.data_type_list, ["kitti", "kitti"])
+
 
 class RuntimeAndLossTests(unittest.TestCase):
     def test_cpu_timer(self):

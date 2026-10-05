@@ -522,12 +522,16 @@ class Dataset(Dataset):
                 if not line:
                     continue
                 parts = line.split(";")
-                if len(parts) != 2 or not all(part.strip() for part in parts):
+                if len(parts) == 1 and parts[0].strip():
+                    data = parts[0].strip()
+                    data_type = "kitti"
+                elif len(parts) == 2 and all(part.strip() for part in parts):
+                    data, data_type = (part.strip() for part in parts)
+                else:
                     raise ValueError(
                         f"Malformed manifest {self.data_file}:{line_number}; "
-                        "expected FRAME_ID;DATASET"
+                        "expected FRAME_ID;DATASET or FRAME_ID"
                     )
-                data, data_type = (part.strip() for part in parts)
                 data_list.append(data)
                 data_type_list.append(data_type)
 
