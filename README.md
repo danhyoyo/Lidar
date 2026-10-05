@@ -45,19 +45,14 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
+  --config configs/config.json \
   --detector-root detector \
   --output-root artifacts/kitti \
-  --run-name uwag_coordatt_aug_bf16_seed42 \
-  --num-workers 2
+  --run-name mobilepixornext_rich8_baseline_s42 \
+  --num-workers 4
 ```
 
-The config uses MobilePIXOR with Coordinate Attention, UWAG task weighting,
-adaptive Gaussian targets and one geometric transform with probability 0.5:
-rotation +/-20 degrees, scaling 0.95-1.05, or Gaussian translation scale 0.4.
-Optimization uses AdamW, learning rate 7e-4, weight decay 1e-3, cosine
-annealing with 8-epoch linear warmup (min LR 1e-6), gradient clipping
-(max norm 10.0), 100 epochs, physical batch 32, BF16 and seed 42.
+The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, LiteMLA attention), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `gw_qal`, `uwag`), and data augmentation.
 
 Resume with `--resume /path/to/checkpoint.pt`.
 
@@ -65,10 +60,10 @@ Resume with `--resume /path/to/checkpoint.pt`.
 
 ```bash
 python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
-  --name uwag_coordatt_aug_bf16_seed42_best \
+  --name mobilepixornext_evaluation \
   --backend pytorch \
   --model /path/to/best.pt \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
+  --config configs/config.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \
@@ -80,65 +75,29 @@ PyTorch evaluation also supports `--device cpu` for functional checks, although
 CPU and CUDA latency numbers should not be compared directly.
 
 This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
-submission to KITTI's hidden official test server. The reproduced report is in
-`results/kitti/uwag_coordatt_aug_bf16_seed42/`.
+submission to KITTI's hidden official test server.
 
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
-`deploy_engine.py` for deployment experiments. TensorRT engines are tied to
-the local CUDA/TensorRT/GPU environment and should not be committed.
+`deploy_engine.py` for deployment experiments.
 
-## MobileBEV-Lite
+## Unified Configuration & Fast Notebook Setup
 
-The frozen design and experiment protocol are in
-`docs/mobile_bev_lightweight/SPEC.md` and `docs/mobile_bev_lightweight/PLAN.md`.
-The four controlled BEV variants are under `configs/kitti/mobilebev/`; A1 is
-the 35-channel baseline and A4 enables RichBEV-8 plus SG-FPN.
+The repository utilizes **a single master configuration file** (`configs/config.json`).
+Experiments, ablation studies, and benchmarks are customized directly through the standard Colab notebook (`3D_Lidar_Object_Detection_Notebook_standard.ipynb`) or CLI overrides:
 
-Run the dependency-free encoder checks with system Python and the full model
-checks with the environment that contains PyTorch and Shapely:
+- **Backbones**: `mobilepixornext`, `mobilepixor`, `mobilepixor_coordatt`
+- **BEV Encodings**: `rich8` (8ch), `rich10` (10ch), `rich11` (11ch), `rich12` (12ch), `binary_slices` (35ch)
+- **Necks**: `scale_gated_fpn` (SG-FPN), `neck_type` (`sgfpn`, `rc_sgfpn`, `rc_bisgfpn`)
+- **Attention**: `c4_attention: "litemla"` with scales `[5]` or `[3, 5]` and QK normalization (`none`, `rmsnorm`)
+- **Structural Reparameterization**: `use_reparam: true` (fused into 7x7 depthwise at deployment via `--deploy`)
+- **Decoupled Quality Head**: `header_use_iou: true` (IoU-aware quality header with Joint NMS)
+- **Loss Strategies**: `baseline`, `oga`, `q_oga`, `gw_qal`, `uwag`
 
-```bash
-python3 tests/test_mobile_bev.py --encoder
-python3 tests/test_mobile_bev.py
-```
-
-Smoke-train A4 after preparing KITTI:
-
+To run custom configurations via CLI, pass `--override-json`:
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/mobilebev/a4_rich8_sgfpn_bev.json \
+  --config configs/config.json \
+  --override-json '{"loss": {"name": "q_oga"}, "model": {"use_reparam": true}}' \
   --detector-root detector \
-  --output-root artifacts/kitti \
-  --run-name mobilebev_a4_smoke_seed42 \
-  --epochs 1 --max-train-batches 8 --max-val-batches 4 --num-workers 2
+  --output-root artifacts/kitti
 ```
-
-For a full run, omit the three smoke limits. Training keeps the checkpoint
-with the minimum validation loss in `<run>/selected/best.pt`.
-
-Use `--seed 42`, `--seed 43` and `--seed 44` with each A1-A4 config for the
-final twelve runs; the resolved seed is stored in each run config/checkpoint.
-
-The evaluator writes BEV AP R40, distance bands for Pedestrian/Cyclist,
-input/config/split hashes, and compressed per-frame predictions.
-
-## MobilePixorNeXt
-
-`mobilepixornext` is the registry name for the lightweight backbone with 7×7
-depthwise blocks, LiteMLA refinement, and a scale-gated FPN. It replaces the
-former backbone name in model configs and code. The architecture is described
-in [`docs/mobilepixornext_architecture.md`](docs/mobilepixornext_architecture.md).
-
-The RichBEV-8 configuration with OGA loss (Baseline M0) is
-[`configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json`](configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json).
-The MobilePixorNeXt configuration with baseline loss is
-[`configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json`](configs/kitti/baseline_loss/kitti_mobilepixornext_litemla_baseline.json).
-
-Pillar improvement configurations:
-- **Pillar 1 (M1 - Structural Reparameterization):** [`configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json`](configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json)
-- **Pillar 2 (M2 - Multi-Scale LiteMLA + QK-RMSNorm):** [`configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json`](configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json)
-- **Pillar 4 (M4 - IoU-Aware Quality Header & Joint NMS):** [`configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json`](configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json)
-- **Cumulative (M1 + M2 + M4):** [`configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json`](configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json)
-
-Use any config with the training command above by replacing its `--config`
-argument.

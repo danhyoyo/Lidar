@@ -160,7 +160,7 @@ class TestGradClippingAndParser(unittest.TestCase):
     def test_parser_grad_clip_norm(self):
         parser = build_parser()
         args = parser.parse_args([
-            "--config", "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json",
+            "--config", "configs/config.json",
             "--detector-root", "detector",
             "--output-root", "artifacts/kitti",
             "--grad-clip-norm", "5.0",

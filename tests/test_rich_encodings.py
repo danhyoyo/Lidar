@@ -3,13 +3,17 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
-
-from core.datasets.utils_1 import preprocess
-from core.models.model import CustomModel
 import sys
+
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools" / "kitti_training_pipeline"))
-from common import build_model, generate_run_name, input_shape
+sys.path[:0] = [
+    str(ROOT / "detector"),
+    str(ROOT / "detector" / "core" / "datasets"),
+    str(ROOT / "tools" / "kitti_training_pipeline"),
+]
+
+from utils_1 import preprocess
+from common import build_model, generate_run_name, input_shape, create_experiment_config
 
 
 @pytest.fixture
@@ -64,14 +68,36 @@ def test_encode_bev_rich10(sample_geometry):
     assert bev[1, 1, 9] == 0.0
 
     # Cell (0, 0) has 3 points with different z:
-    # z_norm values:
-    # z_min_norm = (-1.0 - (-2.0)) / 3.0 = 1.0 / 3.0
-    # z_max_norm = (0.5 - (-2.0)) / 3.0 = 2.5 / 3.0
     expected_delta_z = (2.5 - 1.0) / 3.0  # 1.5 / 3.0 = 0.5
     np.testing.assert_allclose(bev[0, 0, 8], expected_delta_z, atol=1e-5)
 
     # sigma_z must be strictly positive
     assert bev[0, 0, 9] > 0.0
+
+
+def test_encode_bev_rich11(sample_geometry):
+    points = np.array(
+        [
+            [0.5, -1.5, -1.0, 0.2],
+            [0.5, -1.5, 0.5, 0.8],
+            [1.5, -0.5, 0.0, 0.4],
+        ],
+        dtype=np.float32,
+    )
+
+    bev = preprocess.encode_bev(
+        points,
+        sample_geometry,
+        {"name": "rich11", "density_norm": 32.0, "intensity_scale": 1.0},
+    )
+
+    assert bev.shape == (4, 4, 11)
+    assert bev.dtype == np.float32
+    assert np.all(bev >= 0.0)
+    assert np.all(bev <= 1.0)
+
+    # Delta_i (ch 10) for cell (0, 0): i_max = 0.8, i_mean = 0.5 -> delta_i = 0.3
+    np.testing.assert_allclose(bev[0, 0, 10], 0.3, atol=1e-5)
 
 
 def test_encode_bev_rich12(sample_geometry):
@@ -104,39 +130,32 @@ def test_encode_bev_rich12(sample_geometry):
     assert bev[0, 1, 11] == 0.0
 
 
-def test_run_name_generation_rich10_and_rich12():
-    with open(ROOT / "configs/kitti/rich10/kitti_mobilepixornext_rich10_sgfpn.json") as f:
-        cfg10 = json.load(f)
-    name10 = generate_run_name(cfg10, seed=42)
-    assert "rich10" in name10
-    assert name10 == "mobilepixornext-standard_aug-baseline_loss-rich10-baseline_iou-sgfpn-s42"
+def test_run_name_generation_rich_encodings():
+    with open(ROOT / "configs/config.json") as f:
+        base = json.load(f)
 
-    with open(ROOT / "configs/kitti/rich12/kitti_mobilepixornext_rich12_sgfpn.json") as f:
-        cfg12 = json.load(f)
-    name12 = generate_run_name(cfg12, seed=42)
-    assert "rich12" in name12
-    assert name12 == "mobilepixornext-standard_aug-baseline_loss-rich12-baseline_iou-sgfpn-s42"
+    for name in ["rich8", "rich10", "rich11", "rich12"]:
+        cfg = create_experiment_config(base, {"data": {"bev_encoding": {"name": name}}})
+        run_name = generate_run_name(cfg, seed=42)
+        assert name in run_name
 
 
-def test_model_build_and_forward_rich10_and_rich12():
-    with open(ROOT / "configs/kitti/rich10/kitti_mobilepixornext_rich10_sgfpn.json") as f:
-        cfg10 = json.load(f)
-    shape10 = input_shape(cfg10)
-    assert shape10[1] == 10
+def test_model_build_and_forward_rich_encodings():
+    with open(ROOT / "configs/config.json") as f:
+        base = json.load(f)
 
-    model10 = build_model(cfg10)
-    assert model10.backbone.stem[0].in_channels == 10
-    dummy_x10 = torch.zeros((2, 10, shape10[2], shape10[3]))
-    out10 = model10(dummy_x10)
-    assert "cls" in out10
+    for name, expected_ch in [
+        ("rich8", 8),
+        ("rich10", 10),
+        ("rich11", 11),
+        ("rich12", 12),
+    ]:
+        cfg = create_experiment_config(base, {"data": {"bev_encoding": {"name": name}}})
+        shape = input_shape(cfg)
+        assert shape[1] == expected_ch
 
-    with open(ROOT / "configs/kitti/rich12/kitti_mobilepixornext_rich12_sgfpn.json") as f:
-        cfg12 = json.load(f)
-    shape12 = input_shape(cfg12)
-    assert shape12[1] == 12
-
-    model12 = build_model(cfg12)
-    assert model12.backbone.stem[0].in_channels == 12
-    dummy_x12 = torch.zeros((2, 12, shape12[2], shape12[3]))
-    out12 = model12(dummy_x12)
-    assert "cls" in out12
+        model = build_model(cfg)
+        assert model.backbone.stem[0].in_channels == expected_ch
+        dummy_x = torch.zeros((2, expected_ch, shape[2], shape[3]))
+        out = model(dummy_x)
+        assert "cls" in out

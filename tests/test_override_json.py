@@ -13,7 +13,7 @@ class TestOverrideJsonCLI(unittest.TestCase):
     def test_parser_accepts_override_json(self):
         parser = build_parser()
         args = parser.parse_args([
-            "--config", "configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json",
+            "--config", "configs/config.json",
             "--detector-root", "detector",
             "--output-root", "/tmp",
             "--override-json", '{"loss": {"name": "gw_qal", "beta_q": 1.0}}',

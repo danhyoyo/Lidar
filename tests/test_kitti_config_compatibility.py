@@ -1,4 +1,4 @@
-"""Exercise every KITTI config through dataset creation and a training step."""
+"""Exercise KITTI configuration variants through dataset creation and a training step."""
 
 import json
 import sys
@@ -16,21 +16,64 @@ sys.path[:0] = [
     str(ROOT / "detector" / "core" / "datasets"),
 ]
 
-from common import build_model, input_shape
+from common import build_model, input_shape, create_experiment_config
 from core.datasets.dataset import Dataset
 from core.losses.loss_fn import LossFunction
 from train import build_optimizer, build_scheduler, seed_everything
 
-CONFIG_PATHS = sorted((ROOT / "configs" / "kitti").rglob("*.json"))
+BASE_CONFIG = json.loads((ROOT / "configs" / "config.json").read_text(encoding="utf-8"))
+
+TEST_VARIANTS = {
+    "default_config": {},
+    "truc_a_sota": {
+        "model": {"scale_gated_fpn": True, "c4_attention": "litemla", "c4_attention_scales": [3, 5],
+                  "c4_attention_qk_norm": "rmsnorm", "use_reparam": True, "header_use_iou": True},
+        "loss": {"name": "oga", "use_iou": True},
+    },
+    "truc_b_sota": {
+        "model": {"scale_gated_fpn": True, "c4_attention": "litemla", "c4_attention_scales": [3, 5],
+                  "c4_attention_qk_norm": "rmsnorm", "use_reparam": True, "header_use_iou": False},
+        "loss": {"name": "q_oga", "use_iou": False},
+    },
+    "gw_qal": {
+        "loss": {"name": "gw_qal"},
+    },
+    "uwag": {
+        "loss": {"name": "uwag"},
+    },
+    "rich10": {
+        "data": {"bev_encoding": {"name": "rich10", "out_channels": 10, "density_norm": 32, "intensity_scale": 1}},
+    },
+    "rich11": {
+        "data": {"bev_encoding": {"name": "rich11", "out_channels": 11, "density_norm": 32, "intensity_scale": 1}},
+    },
+    "rich12": {
+        "data": {"bev_encoding": {"name": "rich12", "out_channels": 12, "density_norm": 32, "intensity_scale": 1}},
+    },
+    "rc_sgfpn": {
+        "model": {"neck_type": "rc_sgfpn"},
+        "loss": {"name": "q_oga"},
+    },
+    "rc_bisgfpn": {
+        "model": {"neck_type": "rc_bisgfpn"},
+        "loss": {"name": "q_oga"},
+    },
+    "mobilepixor_legacy35": {
+        "model": {"backbone": "mobilepixor", "scale_gated_fpn": False, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},
+        "loss": {"name": "baseline"},
+        "data": {"bev_encoding": {"name": "binary_slices"}},
+    },
+}
 
 
-@pytest.mark.parametrize("config_path", CONFIG_PATHS, ids=lambda p: str(p.relative_to(ROOT)))
+@pytest.mark.parametrize("variant_name", list(TEST_VARIANTS.keys()))
 @pytest.mark.parametrize("target_backend", ["python", "numba"])
-def test_config_supports_dataset_and_training_step(config_path, target_backend, tmp_path):
+def test_config_supports_dataset_and_training_step(variant_name, target_backend, tmp_path):
     if target_backend == "numba":
         pytest.importorskip("numba")
     seed_everything(42)
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    overrides = TEST_VARIANTS[variant_name]
+    config = create_experiment_config(BASE_CONFIG, overrides)
 
     # Use a small rectangular crop with the configured resolution and Z bins.
     # Only paths and XY extents change; model, loss and augmentation stay intact.

@@ -24,17 +24,17 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "main"', source)
+        self.assertIn('BRANCH = "feature/mobilepixornext-improvements"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
-        config_files = {
-            path.relative_to(ROOT).as_posix()
-            for path in (ROOT / "configs").rglob("*.json")
-        }
-        for variant in (f"A{i}" for i in range(5)):
-            match = re.search(rf'"{variant}": "([^"]+\.json)"', source)
-            self.assertIsNotNone(match, variant)
-            self.assertIn(match.group(1), config_files)
+        self.assertIn('CONFIG_BASE = "configs/config.json"', source)
+        self.assertIn('BACKBONE =', source)
+        self.assertIn('BEV_ENCODING =', source)
+        self.assertIn('SCALE_GATED_FPN =', source)
+        self.assertIn('LOSS_NAME =', source)
+        self.assertIn('AUGMENTATION =', source)
+        for preset in ("TRUC_A_SOTA", "TRUC_B_SOTA", "RICH10_SGFPN", "RC_SGFPN"):
+            self.assertIn(f'"{preset}"', source)
         self.assertIn("run.json", source)
         self.assertIn("--resume", source)
         self.assertIn("last.pt", source)
@@ -42,6 +42,14 @@ class StandardTrainingNotebookTests(unittest.TestCase):
         self.assertNotIn("import subprocess", source)
         self.assertNotIn("subprocess.", source)
         self.assertIn("!set -o pipefail", source)
+
+    def test_code_cells_have_valid_python_after_ipython_transformation(self):
+        from IPython.core.inputtransformer2 import TransformerManager
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        for i, cell in enumerate(notebook["cells"]):
+            if cell["cell_type"] == "code":
+                source = "".join(cell.get("source", []))
+                compile(TransformerManager().transform_cell(source), f"cell_{i}", "exec")
 
     def test_acceleration_options_are_explicit_and_resume_safe(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))

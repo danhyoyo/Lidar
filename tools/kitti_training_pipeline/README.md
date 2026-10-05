@@ -45,7 +45,7 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
+  --config configs/config.json \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name uwag_coordatt_aug_bf16_seed42 \
@@ -68,7 +68,7 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --name uwag_coordatt_aug_bf16_seed42_best \
   --backend pytorch \
   --model /path/to/best.pt \
-  --config configs/kitti/baselines/kitti_uwag_coordatt_aug.json \
+  --config configs/config.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
   --split splits/kitti/val.txt \

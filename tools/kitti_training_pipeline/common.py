@@ -50,7 +50,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich10", "rich12"}:
+    if bev_name in {"rich8", "rich10", "rich11", "rich12"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -73,6 +73,14 @@ def generate_run_name(
         extras.append("ms_litemla")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
+    experiment_name = config.get("experiment", {}).get("name")
+    if experiment_name:
+        if not isinstance(experiment_name, str) or any(
+            not (character.isalnum() or character == "_") for character in experiment_name
+        ):
+            raise ValueError("experiment.name must contain only letters, numbers and underscores")
+        if experiment_name != "default":
+            extras.append(experiment_name)
     if seed is not None:
         extras.append(f"s{seed}")
     if effective_batch_size is not None:
@@ -83,6 +91,25 @@ def generate_run_name(
     if extras:
         return f"{'-'.join(parts)}-{'-'.join(extras)}"
     return "-".join(parts)
+
+
+def create_experiment_config(base_config: Dict[str, Any], overrides: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    """Create a new experiment config dictionary by deep-merging overrides into base_config."""
+    import copy
+
+    result = copy.deepcopy(base_config)
+    if not overrides:
+        return result
+
+    def _deep_update(dst: dict, src: dict) -> dict:
+        for k, v in src.items():
+            if isinstance(v, dict) and isinstance(dst.get(k), dict):
+                _deep_update(dst[k], v)
+            else:
+                dst[k] = copy.deepcopy(v)
+        return dst
+
+    return _deep_update(result, overrides)
 
 
 def write_json(path: Path | str, value: Any) -> None:
@@ -157,12 +184,14 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
 
     encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
     name = encoding.get("name", "binary_slices")
-    if name not in {"binary_slices", "rich8", "rich10", "rich12"}:
+    if name not in {"binary_slices", "rich8", "rich10", "rich11", "rich12"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
     if name == "rich8":
         channels = int(encoding.get("out_channels", 8))
     elif name == "rich10":
         channels = int(encoding.get("out_channels", 10))
+    elif name == "rich11":
+        channels = int(encoding.get("out_channels", 11))
     elif name == "rich12":
         channels = int(encoding.get("out_channels", 12))
     else:

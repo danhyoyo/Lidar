@@ -9,15 +9,20 @@ sys.path.insert(0, str(REPO_ROOT / "detector" / "core" / "datasets"))
 sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
 import torch
-from common import build_model
+from common import build_model, create_experiment_config
 from core.losses.loss_fn import LossFunction
 
 
 class TestTrainingPipelineOGA(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with open(REPO_ROOT / "configs/config.json", "r", encoding="utf-8") as f:
+            cls.base_config = json.load(f)
+
     def test_pipeline_forward_backward_with_oga(self):
-        config_path = REPO_ROOT / "configs/kitti/oga_loss/kitti_mobilepixornext_litemla_oga.json"
-        with open(config_path) as f:
-            config = json.load(f)
+        config = create_experiment_config(self.base_config, {
+            "loss": {"name": "oga"}
+        })
 
         device = torch.device("cpu")
         model = build_model(config).to(device)
@@ -52,12 +57,16 @@ class TestTrainingPipelineOGA(unittest.TestCase):
         self.assertTrue(has_crit_grad)
 
     def test_pipeline_forward_backward_with_oga_iqa_bf16(self):
-        config_path = (
-            REPO_ROOT
-            / "configs/kitti/iou_aware_header/kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
-        )
-        with open(config_path) as f:
-            config = json.load(f)
+        config = create_experiment_config(self.base_config, {
+            "model": {
+                "use_reparam": True,
+                "header_use_iou": True,
+            },
+            "loss": {
+                "name": "oga",
+                "use_iou": True,
+            }
+        })
 
         device = torch.device("cpu")
         model = build_model(config).to(device)

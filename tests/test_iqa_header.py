@@ -288,9 +288,16 @@ import json
 
 def test_full_iqa_pipeline_integration():
     """Verify that CustomModel and OgaLossStrategy initialize, forward, and backward cleanly using IQA config."""
-    config_path = ROOT / "configs" / "kitti" / "iou_aware_header" / "kitti_mobilepixornext_litemla_oga_reparam_iqa.json"
+    from common import create_experiment_config
+
+    config_path = ROOT / "configs" / "config.json"
     with open(config_path, "r") as f:
-        cfg = json.load(f)
+        base_cfg = json.load(f)
+
+    cfg = create_experiment_config(base_cfg, {
+        "model": {"header_use_iou": True, "use_reparam": True},
+        "loss": {"name": "oga", "use_iou": True},
+    })
 
     model = CustomModel(cfg["model"], num_classes=cfg["data"]["num_classes"], input_channels=35)
     loss_strategy = OgaLossStrategy(cls_encoding=cfg["model"].get("cls_encoding", "gaussian"), config=cfg["loss"])

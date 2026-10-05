@@ -6,17 +6,21 @@ import unittest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "detector"))
 sys.path.insert(0, str(REPO_ROOT / "detector" / "core" / "datasets"))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
 import torch
+from common import create_experiment_config
 from core.losses.loss_fn import LossFunction
 
 
 class TestGwQalIntegration(unittest.TestCase):
     def test_json_config_loading_and_backward(self):
-        cfg_path = REPO_ROOT / "configs" / "kitti" / "oga_loss" / "kitti_mobilepixornext_gw_qal.json"
+        cfg_path = REPO_ROOT / "configs" / "config.json"
         self.assertTrue(cfg_path.exists(), f"Missing config: {cfg_path}")
         with open(cfg_path) as f:
-            cfg = json.load(f)
+            base_cfg = json.load(f)
+
+        cfg = create_experiment_config(base_cfg, {"loss": {"name": "gw_qal"}})
 
         self.assertEqual(cfg["loss"]["name"], "gw_qal")
         criterion = LossFunction("gaussian", cfg["loss"])

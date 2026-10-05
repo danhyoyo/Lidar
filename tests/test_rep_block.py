@@ -190,13 +190,14 @@ def test_config_reparam_loading_and_parameter_reduction():
     import json
     from core.models.model import CustomModel
 
-    config_path = ROOT / "configs/kitti/reparameterization/kitti_mobilepixornext_litemla_oga_reparam.json"
-    assert config_path.exists(), "Reparam config must exist"
+    config_path = ROOT / "configs/config.json"
+    assert config_path.exists(), "Master config must exist"
 
     with open(config_path, "r") as f:
         full_cfg = json.load(f)
 
-    cfg_reparam = full_cfg.get("model", full_cfg)
+    cfg_reparam = dict(full_cfg.get("model", full_cfg))
+    cfg_reparam["use_reparam"] = True
     assert cfg_reparam.get("use_reparam") is True
 
     # Baseline M0 model

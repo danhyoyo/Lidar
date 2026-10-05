@@ -203,11 +203,15 @@ def test_registry_builds_mobilepixornext_with_m2_options():
 
 
 def test_m2_config_wires_multiscale_rmsnorm():
-    config_path = (
-        ROOT
-        / "configs/kitti/multiscale_attention/kitti_mobilepixornext_ms_litemla_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    from common import create_experiment_config
+    base_config = json.loads((ROOT / "configs" / "config.json").read_text(encoding="utf-8"))
+    config = create_experiment_config(base_config, {
+        "model": {
+            "c4_attention": "litemla",
+            "c4_attention_scales": [3, 5],
+            "c4_attention_qk_norm": "rmsnorm",
+        }
+    })
     backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
 
     assert backbone.c4_attention.scales == (3, 5)
@@ -217,12 +221,15 @@ def test_m2_config_wires_multiscale_rmsnorm():
 
 
 def test_scale_only_ablation_config_disables_qk_norm():
-    config_path = (
-        ROOT
-        / "configs/kitti/multiscale_attention/"
-        "kitti_mobilepixornext_ms_litemla_no_norm_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    from common import create_experiment_config
+    base_config = json.loads((ROOT / "configs" / "config.json").read_text(encoding="utf-8"))
+    config = create_experiment_config(base_config, {
+        "model": {
+            "c4_attention": "litemla",
+            "c4_attention_scales": [3, 5],
+            "c4_attention_qk_norm": "none",
+        }
+    })
     backbone = build_backbone("mobilepixornext", config["model"], input_channels=8)
 
     assert backbone.c4_attention.scales == (3, 5)
@@ -233,12 +240,22 @@ def test_scale_only_ablation_config_disables_qk_norm():
 def test_cumulative_m1_m2_m4_config_instantiates_full_model():
     from core.models.model import CustomModel
     from core.losses.strategies.oga import OgaLossStrategy
+    from common import create_experiment_config
 
-    config_path = (
-        ROOT
-        / "configs/kitti/cumulative/kitti_mobilepixornext_m1_m2_m4_oga.json"
-    )
-    config = json.loads(config_path.read_text(encoding="utf-8"))
+    base_config = json.loads((ROOT / "configs" / "config.json").read_text(encoding="utf-8"))
+    config = create_experiment_config(base_config, {
+        "model": {
+            "use_reparam": True,
+            "c4_attention": "litemla",
+            "c4_attention_scales": [3, 5],
+            "c4_attention_qk_norm": "rmsnorm",
+            "header_use_iou": True,
+        },
+        "loss": {
+            "name": "oga",
+            "use_iou": True,
+        }
+    })
     model = CustomModel(config["model"], input_channels=8)
 
     # 1. Verify M1 (use_reparam)

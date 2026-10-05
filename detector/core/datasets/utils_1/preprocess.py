@@ -39,20 +39,19 @@ def encode_bev(points, geometry, bev_encoding=None):
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
-    if name not in {"rich8", "rich10", "rich12"}:
-        raise ValueError(f"unsupported BEV encoding: {name!r}")
+    valid_names = {"rich8", "rich10", "rich11", "rich12"}
+    if name not in valid_names:
+        raise ValueError(f"unsupported BEV encoding: {name!r}. Supported: {sorted(valid_names)}")
     if points.ndim != 2 or points.shape[1] < 4:
-        raise ValueError("points must be shaped (N, >=4)")
+        raise ValueError(f"{name} expects points shaped (N, >=4)")
 
-    if name == "rich8":
-        default_ch = 8
-    elif name == "rich10":
-        default_ch = 10
-    elif name == "rich12":
-        default_ch = 12
-    else:
-        default_ch = 8
-    out_channels = int(encoding.get("out_channels", default_ch))
+    default_channels = {
+        "rich8": 8,
+        "rich10": 10,
+        "rich11": 11,
+        "rich12": 12,
+    }
+    out_channels = int(encoding.get("out_channels", default_channels[name]))
     if out_channels < 8:
         raise ValueError(f"out_channels must be at least 8, got {out_channels}")
 
@@ -105,10 +104,11 @@ def encode_bev(points, geometry, bev_encoding=None):
         var_z = np.maximum(0.0, z_sq_mean - output[4]**2)
         output[9] = np.where(count > 1, np.sqrt(var_z), 0.0).astype(np.float32)
 
-    if out_channels >= 12:
+    if out_channels >= 11:
         # Channel 10: Intensity contrast Delta_i = i_max - i_mean
         output[10] = np.where(count > 0, np.maximum(0.0, output[5] - output[6]), 0.0).astype(np.float32)
 
+    if out_channels >= 12:
         # Channel 11: Range-compensated density (log-density with quadratic range boost)
         r_grid = _get_range_grid(geometry, y_size, x_size)
         r_scale = 1.0 + (r_grid / 20.0) ** 2
