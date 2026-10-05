@@ -51,9 +51,8 @@ def encode_bev(points, geometry, bev_encoding=None):
         "rich11": 11,
         "rich12": 12,
     }
-    out_channels = int(encoding.get("out_channels", default_channels[name]))
-    if out_channels < 8:
-        raise ValueError(f"out_channels must be at least 8, got {out_channels}")
+    configured = encoding.get("out_channels")
+    out_channels = default_channels[name] if configured is None else max(int(configured), default_channels[name])
 
     density_norm = float(encoding.get("density_norm", 32.0))
     intensity_scale = float(encoding.get("intensity_scale", 1.0))

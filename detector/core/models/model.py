@@ -15,12 +15,15 @@ class CustomModel(nn.Module):
         bev_cfg = cfg.get("bev_encoding", {})
         bev_name = bev_cfg.get("name", "binary_slices")
 
-        if bev_name == "rich8":
-            input_channels = int(bev_cfg.get("out_channels", 8))
-        elif bev_name == "rich10":
-            input_channels = int(bev_cfg.get("out_channels", 10))
-        elif bev_name == "rich12":
-            input_channels = int(bev_cfg.get("out_channels", 12))
+        default_channels = {
+            "rich8": 8,
+            "rich10": 10,
+            "rich11": 11,
+            "rich12": 12,
+        }
+        if bev_name in default_channels:
+            configured = bev_cfg.get("out_channels")
+            input_channels = default_channels[bev_name] if configured is None else max(int(configured), default_channels[bev_name])
 
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)

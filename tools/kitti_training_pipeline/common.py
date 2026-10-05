@@ -69,7 +69,8 @@ def generate_run_name(
         extras.append(neck_type)
     elif model_cfg.get("scale_gated_fpn", False):
         extras.append("sgfpn")
-    if model_cfg.get("c4_attention_scales") and "ms_litemla" not in extras:
+    scales = model_cfg.get("c4_attention_scales")
+    if (model_cfg.get("c4_attention") == "ms_litemla" or (scales and len(scales) > 1)) and "ms_litemla" not in extras:
         extras.append("ms_litemla")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
@@ -186,14 +187,15 @@ def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[in
     name = encoding.get("name", "binary_slices")
     if name not in {"binary_slices", "rich8", "rich10", "rich11", "rich12"}:
         raise ValueError(f"unsupported BEV encoding: {name!r}")
-    if name == "rich8":
-        channels = int(encoding.get("out_channels", 8))
-    elif name == "rich10":
-        channels = int(encoding.get("out_channels", 10))
-    elif name == "rich11":
-        channels = int(encoding.get("out_channels", 11))
-    elif name == "rich12":
-        channels = int(encoding.get("out_channels", 12))
+    default_channels = {
+        "rich8": 8,
+        "rich10": 10,
+        "rich11": 11,
+        "rich12": 12,
+    }
+    if name in default_channels:
+        configured = encoding.get("out_channels")
+        channels = default_channels[name] if configured is None else max(int(configured), default_channels[name])
     else:
         channels = bins("z")
     return (1, channels, bins("y"), bins("x"))
