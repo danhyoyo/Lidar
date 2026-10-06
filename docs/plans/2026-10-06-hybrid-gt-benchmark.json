@@ -1,0 +1,70 @@
+{
+  "environment": {
+    "python": "3.14.4",
+    "numpy": "2.3.5",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "processor": ""
+  },
+  "scene": {
+    "points": 120000,
+    "original_boxes": 8,
+    "quota": 10,
+    "database_objects": 32,
+    "points_per_object": 500,
+    "repeats": 20
+  },
+  "scope": "Synthetic CPU; warm JIT and caches; source placement; matched quota; no GPU/AP claims",
+  "pcu_reference": "9b99d92",
+  "results": {
+    "current": {
+      "median_ms": 22.26631250050559,
+      "p95_ms": 51.46984170041833,
+      "mean_inserted": 10.0,
+      "min_inserted": 10,
+      "max_inserted": 10
+    },
+    "hybrid_basic_cached": {
+      "median_ms": 5.939826000940229,
+      "p95_ms": 6.574704299964651,
+      "mean_inserted": 10.0,
+      "min_inserted": 10,
+      "max_inserted": 10
+    },
+    "hybrid_ground_static_density": {
+      "median_ms": 12.27356800063717,
+      "p95_ms": 12.64506379939121,
+      "mean_inserted": 10.0,
+      "min_inserted": 10,
+      "max_inserted": 10
+    },
+    "hybrid_all_physics": {
+      "median_ms": 81.43712050059548,
+      "p95_ms": 92.75892454998029,
+      "mean_inserted": 6.5,
+      "min_inserted": 4,
+      "max_inserted": 8
+    },
+    "pcu_basic": {
+      "median_ms": 48.82112199993571,
+      "p95_ms": 60.710891900453134,
+      "mean_inserted": 10.0,
+      "min_inserted": 10,
+      "max_inserted": 10
+    },
+    "pcu_all_physics": {
+      "median_ms": 394.3204514998797,
+      "p95_ms": 649.6689567493378,
+      "mean_inserted": 10.0,
+      "min_inserted": 10,
+      "max_inserted": 10
+    }
+  },
+  "cache": {
+    "hits": 208,
+    "misses": 32,
+    "disk_reads": 32,
+    "evictions": 0,
+    "bytes": 256000,
+    "entries": 32
+  }
+}

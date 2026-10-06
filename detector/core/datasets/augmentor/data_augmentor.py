@@ -84,6 +84,16 @@ class DataAugmentor:
                     self.root_path, config, self.class_names, geometry=geometry,
                     allowed_frame_ids=allowed_frame_ids,
                 )
+            elif name == "hybrid_gt_sampling":
+                # A disabled sampler must not open the database or warm JIT/cache.
+                if probability == 0:
+                    value = None
+                else:
+                    from .hybrid_sampler import HybridDataBaseSampler
+                    value = HybridDataBaseSampler(
+                        self.root_path, config, self.class_names, geometry=geometry,
+                        allowed_frame_ids=allowed_frame_ids,
+                    )
             else:
                 raise ValueError(f"Unsupported augmentation NAME: {name!r}")
             self.queue.append((name, probability, value))
@@ -127,7 +137,7 @@ class DataAugmentor:
                 translation = rng.normal(0, value, size=3).astype(np.float32)
                 points[:, :3] += translation
                 boxes[:, 4:7] += translation
-            elif name == "gt_sampling":
+            elif name in ("gt_sampling", "hybrid_gt_sampling"):
                 points, boxes = value(points, boxes, rng)
         boxes[:, 7] = (boxes[:, 7] + np.pi) % (2 * np.pi) - np.pi
         return np.ascontiguousarray(points), np.ascontiguousarray(boxes)

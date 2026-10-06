@@ -30,7 +30,7 @@ MODEL_DEFAULTS = {
 def resolve_notebook_config(
     repo_dir, *, base_path="configs/config.json", preset="custom",
     custom_overrides=None, augmentation="standard", file_override=None,
-    runtime_overrides=None,
+    runtime_overrides=None, hybrid_options=None,
 ):
     """Resolve a fresh configuration; never mutate defaults or cached selections."""
     root = Path(repo_dir)
@@ -57,9 +57,14 @@ def resolve_notebook_config(
             "scaling": {"use": True, "range": [0.95, 1.05], "p": 1},
             "translation": {"use": True, "scale": 0.4, "scale_z": 0.4, "p": 1},
         }
-    elif augmentation in ("openpcdet_global", "openpcdet_gt"):
+    elif augmentation in ("openpcdet_global", "openpcdet_gt", "hybrid_gt"):
         profile = read_json(root / "configs/augmentation" / f"{augmentation}.json")
         config["augmentation"] = copy.deepcopy(profile["augmentation"])
+        if augmentation == "hybrid_gt" and hybrid_options:
+            if "NAME" in hybrid_options:
+                raise ValueError("HYBRID_OPTIONS cannot override operator NAME")
+            config["augmentation"]["AUG_CONFIG_LIST"][0] = create_experiment_config(
+                config["augmentation"]["AUG_CONFIG_LIST"][0], hybrid_options)
     elif augmentation != "config":
         raise ValueError(f"Unknown AUGMENTATION: {augmentation!r}")
 

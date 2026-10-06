@@ -55,7 +55,7 @@ def execute(tmp_path, settings=None, state=None, base_changes=None):
     "RICH8_SGFPN", "RICH10_SGFPN", "RICH11_SGFPN", "RICH12_SGFPN",
     "RC_SGFPN", "RC_BISGFPN", "MOBILEPIXOR_BASELINE", "LEGACY35_BASELINE",
 ])
-@pytest.mark.parametrize("augmentation", ["standard", "none", "openpcdet_global", "openpcdet_gt"])
+@pytest.mark.parametrize("augmentation", ["standard", "none", "openpcdet_global", "openpcdet_gt", "hybrid_gt"])
 def test_augmentation_selection_applies_to_every_model_preset(tmp_path, preset, augmentation):
     state = execute(tmp_path, {"PRESET": preset, "AUGMENTATION": augmentation})
     aug = state["config_dict"]["augmentation"]
@@ -67,6 +67,7 @@ def test_augmentation_selection_applies_to_every_model_preset(tmp_path, preset, 
         assert aug["mode"] == "openpcdet"
         names = [entry["NAME"] for entry in aug["AUG_CONFIG_LIST"]]
         assert ("gt_sampling" in names) == (augmentation == "openpcdet_gt")
+        assert ("hybrid_gt_sampling" in names) == (augmentation == "hybrid_gt")
     assert json.loads(state["CONFIG"].read_text()) == state["config_dict"]
 
 
@@ -236,3 +237,21 @@ def test_head_32_matches_real_model_output_and_backward(tmp_path):
     assert pred["offset"].shape == (2, 2, 16, 16)
     sum(value.square().mean() for value in pred.values()).backward()
     assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in model.parameters())
+
+
+def test_hybrid_controls_are_notebook_only_and_file_override_has_priority(tmp_path):
+    state = execute(tmp_path, {"AUGMENTATION": "hybrid_gt", "HYBRID_OPTIONS": {
+        "ENABLE_SHADOW_MASKING": True, "CACHE_SIZE_MB": 8, "SAMPLE_GROUPS": ["Pedestrian:2"],
+    }})
+    op = state["config_dict"]["augmentation"]["AUG_CONFIG_LIST"][0]
+    assert op["ENABLE_SHADOW_MASKING"] and op["CACHE_SIZE_MB"] == 8
+    assert op["SAMPLE_GROUPS"] == ["Pedestrian:2"]
+    assert "hybrid_gt_aug" in state["RUN_NAME"]
+
+
+def test_notebook_hybrid_preview_and_database_preparation_are_wired():
+    source = "\n".join("".join(cell.get("source", [])) for cell in json.loads(NOTEBOOK.read_text())["cells"])
+    assert '"hybrid_gt_sampling"' in source
+    assert 'preview_sampling' in source
+    assert 'FORCE_SAMPLING' in source
+    assert '"feature/hybrid-gt-augmentation"' in source

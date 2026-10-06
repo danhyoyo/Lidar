@@ -37,6 +37,8 @@ def generate_run_name(
                   if entry.get("NAME") not in disabled and entry.get("PROBABILITY", 1) > 0]
         if not active:
             augmentation = "noaug"
+        elif any(entry.get("NAME") == "hybrid_gt_sampling" for entry in active):
+            augmentation = "hybrid_gt_aug"
         elif any(entry.get("NAME") == "gt_sampling" for entry in active):
             augmentation = "openpcdet_gt_aug"
         else:

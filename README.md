@@ -119,6 +119,7 @@ CONFIG_OVERRIDE = None
 | `none` | Legacy augmentation disabled, probability 0 |
 | `openpcdet_global` | Ordered world flip, rotation, scaling and translation |
 | `openpcdet_gt` | Train-only GT database sampling followed by world transforms |
+| `hybrid_gt` | Cached/JIT GT sampling with source-relative placement and optional scene physics |
 | `config` | Keep the augmentation recipe from `CONFIG_BASE` |
 
 Selecting a recipe replaces the previous augmentation dictionary. Named presets
@@ -145,6 +146,15 @@ and run name. Output stride remains 4 for the supported backbones; changing
 
 After updating the repository, reopen the updated notebook in Colab: checking
 out new source does not replace code already displayed in an old notebook cell.
+
+The `feature/hybrid-gt-augmentation` branch includes `AUGMENTATION = "hybrid_gt"`
+and a `HYBRID_OPTIONS` dictionary in the notebook configuration cell. It reuses
+the existing train-only GT database, adds bounded per-worker caching and batched
+NumPy/Numba geometry, and supports PCU-inspired placement and visibility checks.
+The optional preview cell shows the original scene, sampled scene and final world
+transforms, with inserted points colored accurately even after shadow removal.
+See [hybrid augmentation usage and limits](docs/hybrid_gt_augmentation.md) and
+[the synthetic CPU benchmark](docs/plans/2026-10-06-hybrid-gt-benchmark.md).
 
 To run custom configurations via CLI, pass `--override-json`:
 ```bash

@@ -24,7 +24,7 @@ class StandardTrainingNotebookTests(unittest.TestCase):
             "".join(cell.get("source", [])) for cell in notebook["cells"]
         )
 
-        self.assertIn('BRANCH = "feature/mobilepixornext-improvements"', source)
+        self.assertIn('BRANCH = "feature/hybrid-gt-augmentation"', source)
         self.assertIn("refs/remotes/origin/{BRANCH}", source)
         self.assertIn('CONFIG_OVERRIDE = None', source)
         self.assertIn('CONFIG_BASE = "configs/config.json"', source)
