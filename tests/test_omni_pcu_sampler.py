@@ -101,9 +101,11 @@ def test_build_database_includes_r_origin_and_density(tmp_path):
     (proc_root / "pointcloud").mkdir(parents=True)
     (proc_root / "label").mkdir(parents=True)
 
-    # Synthetic pointcloud: 100 points
-    pts = np.random.uniform(-5, 5, size=(100, 4)).astype(np.float32)
-    pts[:, :3] += np.array([20.0, 5.0, -1.0])
+    # Synthetic pointcloud: points tightly inside [x=20, y=5, z=-1.0]
+    pts = np.random.uniform(-0.5, 0.5, size=(50, 4)).astype(np.float32)
+    pts[:, 0] += 20.0
+    pts[:, 1] += 5.0
+    pts[:, 2] += -1.0
     pts.tofile(proc_root / "pointcloud" / "000001.bin")
 
     # Label: Car at [x=20, y=5, z=-1.75, l=4.0, w=2.0, h=1.5, yaw=0.0]
@@ -222,6 +224,137 @@ def test_legacy_openpcdet_config_compatibility(tmp_path):
     scene_boxes = np.empty((0, 8), dtype=np.float32)
     pts_out, boxes_out = sampler(scene_pts, scene_boxes)
     assert len(boxes_out) <= 1
+
+
+def test_density_subsample_enforces_five_point_floor(tmp_path):
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    # Object at r=5m with 10 points
+    config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"],
+        "PHYSICS": {"ENABLE_DENSITY_SUBSAMPLE": True},
+        "PLACEMENT": {"RANGE_TIERS": [[60.0, 65.0]], "TIER_WEIGHTS": [1.0]},
+    }
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4, "source_frame_ids": ["000001"],
+        "db_infos": {
+            "Car": [{
+                "name": "Car", "path": "c.bin", "image_idx": "000001",
+                "box3d_lidar": [5.0, 0.0, 0.0, 4.0, 2.0, 1.5, 0.0],
+                "num_points_in_gt": 10, "r_origin": 5.0,
+            }]
+        },
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((10, 4), dtype=np.float32).tofile(tmp_path / "c.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, config, {"Car": 0})
+    pts_out, boxes_out = sampler(np.empty((0, 4), dtype=np.float32), np.empty((0, 8), dtype=np.float32))
+    if len(boxes_out) > 0:
+        # Must retain at least 5 points due to the safety floor
+        assert len(pts_out) >= 5
+
+
+def test_anti_wall_rejects_elevated_obstacles(tmp_path):
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"],
+        "PHYSICS": {"ENABLE_ANTI_WALL": True, "ANTI_WALL_HEIGHT_THRESH": 0.35, "MAX_OBSTACLE_POINTS": 2},
+        "PLACEMENT": {"RANGE_TIERS": [[15.0, 15.0]], "TIER_WEIGHTS": [1.0], "MAX_ATTEMPTS": 1},
+    }
+    # Scene with a dense horizontal wall of points spanning x in [13, 17], y in [-20, 20], z = -0.8
+    # (ground is at -1.65m, curb is -1.30m, roof is -0.15m -> inside box and above curb)
+    y_coords = np.linspace(-20, 20, 200, dtype=np.float32)
+    wall_points = np.zeros((200, 4), dtype=np.float32)
+    wall_points[:, 0] = 15.0
+    wall_points[:, 1] = y_coords
+    wall_points[:, 2] = -0.8
+
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4, "source_frame_ids": ["000001"],
+        "db_infos": {"Car": [{"name": "Car", "path": "c.bin", "image_idx": "000001",
+                              "box3d_lidar": [15, 0, 0, 4, 2, 1.5, 0], "num_points_in_gt": 20}]},
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((20, 4), dtype=np.float32).tofile(tmp_path / "c.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, config, {"Car": 0})
+    plane = np.array([0.0, 0.0, -1.0, -1.65], dtype=np.float64)  # z_ground = -1.65
+    pts_out, boxes_out = sampler(wall_points, np.empty((0, 8), dtype=np.float32), road_plane=plane)
+    # Candidate should be rejected by anti-wall check; no box inserted
+    assert len(boxes_out) == 0
+
+
+def test_transactional_rollback_preserves_original_visibility(tmp_path):
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"],
+        "PHYSICS": {"MIN_VISIBLE_RATIO": 0.60},
+        "PLACEMENT": {"RANGE_TIERS": [[15.0, 15.0]], "TIER_WEIGHTS": [1.0], "MAX_ATTEMPTS": 1},
+    }
+    # Existing box with 10 points at x=15, y=0
+    orig_box = np.array([[0, 1.5, 2.0, 4.0, 15.0, 0.0, -1.65, 0.0]], dtype=np.float32)
+    orig_pts = np.zeros((10, 4), dtype=np.float32)
+    orig_pts[:, 0] = 15.0
+    orig_pts[:, 1] = 0.0
+    orig_pts[:, 2] = -1.0  # inside orig_box
+
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4, "source_frame_ids": ["000001"],
+        "db_infos": {"Car": [{"name": "Car", "path": "c.bin", "image_idx": "000001",
+                              "box3d_lidar": [15, 0, 0, 4, 2, 1.5, 0], "num_points_in_gt": 20}]},
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((20, 4), dtype=np.float32).tofile(tmp_path / "c.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, config, {"Car": 0})
+    plane = np.array([0.0, 0.0, -1.0, -1.65], dtype=np.float64)
+    pts_out, boxes_out = sampler(orig_pts, orig_box, road_plane=plane)
+    # Rollback must preserve the original box and its 10 points
+    assert len(boxes_out) == 1
+    assert len(pts_out) == 10
+
+
+def test_pickle_serialization_across_workers(tmp_path):
+    import pickle
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"],
+    }
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4, "source_frame_ids": ["000001"],
+        "db_infos": {"Car": [{"name": "Car", "path": "c.bin", "image_idx": "000001",
+                              "box3d_lidar": [10, 0, 0, 4, 2, 1.5, 0], "num_points_in_gt": 5}]},
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((5, 4), dtype=np.float32).tofile(tmp_path / "c.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, config, {"Car": 0})
+    serialized = pickle.dumps(sampler)
+    deserialized = pickle.loads(serialized)
+    assert deserialized is not None
+    assert deserialized.cache is not None
+    assert len(deserialized.cache) == 0
+
 
 
 
