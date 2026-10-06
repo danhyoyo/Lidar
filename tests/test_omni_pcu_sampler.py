@@ -56,3 +56,34 @@ def test_road_plane_analytical_projection():
     # Check equation: a*x + b*y + c*z + d == 0
     residuals = plane[0] * x + plane[1] * y + plane[2] * z_ground + plane[3]
     assert np.allclose(residuals, 0.0, atol=1e-6)
+
+
+def test_bounded_point_cache_eviction(tmp_path):
+    import os
+    from core.datasets.augmentor.omni_cache import BoundedPointCache
+    # Cache limit 1KB (tiny)
+    cache = BoundedPointCache(max_size_mb=0.001)
+    pts1 = np.ones((100, 4), dtype=np.float32)  # 1600 bytes -> exceeds 1KB
+
+    cache.put("sample_1", pts1)
+    assert cache.get("sample_1") is not None
+
+    pts2 = np.zeros((100, 4), dtype=np.float32)
+    cache.put("sample_2", pts2)
+    # sample_1 should be evicted or cache size bounded
+    assert cache.get("sample_2") is not None
+    assert cache.current_bytes <= 1600
+
+
+def test_cache_resets_on_pid_change():
+    import os
+    from core.datasets.augmentor.omni_cache import BoundedPointCache
+    cache = BoundedPointCache(max_size_mb=10)
+    cache.put("key1", np.ones((10, 4), dtype=np.float32))
+    assert cache.get("key1") is not None
+
+    # Simulate process fork by altering stored pid
+    cache.pid = os.getpid() + 999
+    assert cache.get("key1") is None
+    assert len(cache) == 0
+
