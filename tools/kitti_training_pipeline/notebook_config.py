@@ -57,7 +57,7 @@ def resolve_notebook_config(
             "scaling": {"use": True, "range": [0.95, 1.05], "p": 1},
             "translation": {"use": True, "scale": 0.4, "scale_z": 0.4, "p": 1},
         }
-    elif augmentation in ("openpcdet_global", "openpcdet_gt"):
+    elif augmentation in ("openpcdet_global", "openpcdet_gt", "omni_pcu_gt"):
         profile = read_json(root / "configs/augmentation" / f"{augmentation}.json")
         config["augmentation"] = copy.deepcopy(profile["augmentation"])
     elif augmentation != "config":
@@ -134,11 +134,11 @@ def validate_notebook_config(config):
     if not isinstance(train["num_workers"], int) or train["num_workers"] < 0:
         raise ValueError("NUM_WORKERS must be a nonnegative integer")
     aug = config["augmentation"]
-    if aug.get("mode", "one_of") not in ("one_of", "compose", "openpcdet"):
+    if aug.get("mode", "one_of") not in ("one_of", "compose", "openpcdet", "omni_pcu"):
         raise ValueError("Unsupported augmentation.mode")
-    if aug.get("mode") == "openpcdet":
+    if aug.get("mode") in ("openpcdet", "omni_pcu"):
         if not isinstance(aug.get("AUG_CONFIG_LIST"), list):
-            raise ValueError("OpenPCDet augmentation requires AUG_CONFIG_LIST")
+            raise ValueError(f"{aug.get('mode')} augmentation requires AUG_CONFIG_LIST")
     elif not 0 <= aug.get("p", 0) <= 1:
         raise ValueError("augmentation.p must be between 0 and 1")
 

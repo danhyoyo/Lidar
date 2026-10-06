@@ -96,6 +96,7 @@ Two JSON override profiles are provided:
 | --- | --- |
 | `configs/augmentation/openpcdet_global.json` | Flip along x (negate y), probability 0.5; rotation ±45°; scaling 0.95–1.05; XYZ translation std [0.2, 0.2, 0.1] m, probability 0.5 |
 | `configs/augmentation/openpcdet_gt.json` | GT sampling first, then the same global operations |
+| `configs/augmentation/omni_pcu_gt.json` | SOTA Omni-PCU: GT sampling with MMDetection3D road plane projection, PCU 3-tier range placement & anti-wall checks, and CVPR 2023 COM curriculum scheduling + LRU cache |
 
 The GT profile attempts to fill each scene up to Car:15, Pedestrian:10,
 Cyclist:10, requiring at least five points per database object. These are trial

@@ -1,6 +1,7 @@
 """Tests for Omni-PCU SOTA Sampler."""
 
 from __future__ import annotations
+import json
 import sys
 from pathlib import Path
 import numpy as np
@@ -483,6 +484,81 @@ def test_omni_pcu_gt_profile_supports_model_forward_backward(tmp_path):
     assert torch.isfinite(loss)
     loss.backward()
     assert any(p.grad is not None for p in model.parameters())
+
+
+def test_multi_box_sampling_and_cache_telemetry(tmp_path):
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+    db_dir = tmp_path / "gt_database"
+    db_dir.mkdir()
+    db_infos = []
+    for i in range(10):
+        pts = np.random.uniform(-1, 1, size=(50, 4)).astype(np.float32)
+        rel_path = f"c_{i}.bin"
+        pts.tofile(db_dir / rel_path)
+        db_infos.append({
+            "name": "Car", "path": f"gt_database/{rel_path}",
+            "box3d_lidar": [10.0 + i * 5.0, 0.0, -1.0, 4.0, 2.0, 1.5, 0.0],
+            "num_points_in_gt": 50, "image_idx": f"{i:06d}",
+            "r_origin": 10.0 + i * 5.0, "density": 50.0 / 12.0, "difficulty": 0.2,
+        })
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4,
+        "source_frame_ids": [f"{i:06d}" for i in range(10)],
+        "db_infos": {"Car": db_infos},
+    }
+    with (db_dir / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    cfg = {
+        "NAME": "omni_gt_sampling", "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:5"], "LIMIT_WHOLE_SCENE": True,
+        "PREPARE": {"filter_by_min_points": ["Car:5"]},
+        "PERFORMANCE": {"CACHE_ENABLED": True, "CACHE_SIZE_MB": 10.0},
+    }
+    sampler = OmniDataBaseSampler(tmp_path, cfg, {"Car": 0})
+    scene_pts = np.zeros((1000, 4), dtype=np.float32)
+    scene_pts[:, 2] = -1.65
+    boxes = np.empty((0, 8), dtype=np.float32)
+
+    # First call (populates cache)
+    out_pts, out_boxes = sampler(scene_pts, boxes)
+    assert len(out_boxes) > 0
+    assert sampler.cache.misses > 0
+
+    # Second call (hits cache)
+    out_pts2, out_boxes2 = sampler(scene_pts, boxes)
+    assert len(out_boxes2) > 0
+    assert sampler.cache.hits > 0
+
+
+def test_positional_rng_backward_compatibility(tmp_path):
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+    db_dir = tmp_path / "gt_database"
+    db_dir.mkdir()
+    np.ones((20, 4), dtype=np.float32).tofile(db_dir / "obj.bin")
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4,
+        "source_frame_ids": ["000001"],
+        "db_infos": {"Car": [{
+            "name": "Car", "path": "gt_database/obj.bin",
+            "box3d_lidar": [15.0, 0.0, -1.0, 4.0, 2.0, 1.5, 0.0],
+            "num_points_in_gt": 20, "image_idx": "000001",
+        }]},
+    }
+    with (db_dir / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    cfg = {
+        "NAME": "omni_gt_sampling", "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"], "LIMIT_WHOLE_SCENE": False,
+    }
+    sampler = OmniDataBaseSampler(tmp_path, cfg, {"Car": 0})
+    pts = np.zeros((100, 4), dtype=np.float32)
+    boxes = np.empty((0, 8), dtype=np.float32)
+    rng = np.random.default_rng(99)
+    # Calling with positional rng as 3rd arg (legacy style)
+    out_pts, out_boxes = sampler(pts, boxes, rng)
+    assert len(out_boxes) == 1
 
 
 

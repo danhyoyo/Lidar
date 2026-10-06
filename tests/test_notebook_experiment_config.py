@@ -236,3 +236,12 @@ def test_head_32_matches_real_model_output_and_backward(tmp_path):
     assert pred["offset"].shape == (2, 2, 16, 16)
     sum(value.square().mean() for value in pred.values()).backward()
     assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in model.parameters())
+
+
+def test_omni_pcu_gt_selection_in_notebook(tmp_path):
+    state = execute(tmp_path, {"AUGMENTATION": "omni_pcu_gt"})
+    aug = state["config_dict"]["augmentation"]
+    assert aug["mode"] == "omni_pcu"
+    names = [entry["NAME"] for entry in aug["AUG_CONFIG_LIST"]]
+    assert "omni_gt_sampling" in names
+    assert "omni_pcu_gt_aug" in state["RUN_NAME"]

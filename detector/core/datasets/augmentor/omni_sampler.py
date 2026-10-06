@@ -206,6 +206,10 @@ class OmniDataBaseSampler:
         road_plane: np.ndarray | None = None,
         rng: np.random.Generator | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
+        if isinstance(road_plane, (np.random.Generator, np.random.RandomState)) and rng is None:
+            rng = road_plane
+            road_plane = None
+
         if rng is None:
             rng = np.random.default_rng()
 
@@ -305,21 +309,27 @@ class OmniDataBaseSampler:
                         continue
 
                     # 6. Commit transaction
-                    cur_points = cur_points[~inside_cand]
-                    memberships = [m[~inside_cand] for m in memberships]
-                    memberships.append(np.ones(len(world_pts), dtype=bool))
+                    surv_mask = ~inside_cand
+                    cur_points = cur_points[surv_mask]
+                    memberships = [m[surv_mask] for m in memberships]
+
+                    new_zeros = np.zeros(len(world_pts), dtype=bool)
+                    memberships = [np.concatenate([m, new_zeros]) for m in memberships]
+
+                    new_mem = np.concatenate([
+                        np.zeros(len(cur_points), dtype=bool),
+                        np.ones(len(world_pts), dtype=bool),
+                    ])
+                    cur_points = np.vstack([cur_points, world_pts])
+                    memberships.append(new_mem)
                     baselines.append(len(world_pts))
 
                     new_boxes.append(candidate_box)
-                    inserted_points_list.append(world_pts)
                     committed = True
                     break
 
                 if not committed:
                     continue
-
-        if inserted_points_list:
-            cur_points = np.vstack([cur_points, *inserted_points_list])
 
         final_boxes = np.array(new_boxes, dtype=np.float32) if new_boxes else np.empty((0, 8), dtype=np.float32)
         return cur_points, final_boxes

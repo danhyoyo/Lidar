@@ -201,7 +201,8 @@ class TestRunNameAndLogging(unittest.TestCase):
                 f"Run name {run_name} must have at least 5 hyphen-separated tokens",
             )
             self.assertIn(parts[1], {"pcu", "standard_aug", "compose_aug", "noaug",
-                                     "openpcdet_aug", "openpcdet_gt_aug"})
+                                     "openpcdet_aug", "openpcdet_gt_aug",
+                                     "omni_pcu_gt_aug", "omni_pcu_aug"})
             self.assertTrue(parts[2].endswith("_loss"))
             self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})

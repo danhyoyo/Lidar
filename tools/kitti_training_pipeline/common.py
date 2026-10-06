@@ -31,14 +31,18 @@ def generate_run_name(
 
     # Augmentation
     aug_cfg = config.get("augmentation", {})
-    if aug_cfg.get("mode") == "openpcdet":
+    if aug_cfg.get("mode") in ("openpcdet", "omni_pcu"):
         disabled = set(aug_cfg.get("DISABLE_AUG_LIST", []))
         active = [entry for entry in aug_cfg.get("AUG_CONFIG_LIST", [])
                   if entry.get("NAME") not in disabled and entry.get("PROBABILITY", 1) > 0]
         if not active:
             augmentation = "noaug"
+        elif any(entry.get("NAME") == "omni_gt_sampling" for entry in active):
+            augmentation = "omni_pcu_gt_aug"
         elif any(entry.get("NAME") == "gt_sampling" for entry in active):
             augmentation = "openpcdet_gt_aug"
+        elif aug_cfg.get("mode") == "omni_pcu":
+            augmentation = "omni_pcu_aug"
         else:
             augmentation = "openpcdet_aug"
     elif aug_cfg.get("use_pcu_aug", False):

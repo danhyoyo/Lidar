@@ -17,6 +17,8 @@ class BoundedPointCache:
         self.max_bytes = int(max_size_mb * 1024 * 1024)
         self.current_bytes = 0
         self.pid = os.getpid()
+        self.hits = 0
+        self.misses = 0
         self._cache: collections.OrderedDict[str, np.ndarray] = collections.OrderedDict()
 
     def _check_fork(self) -> None:
@@ -25,11 +27,15 @@ class BoundedPointCache:
             self._cache.clear()
             self.current_bytes = 0
             self.pid = current_pid
+            self.hits = 0
+            self.misses = 0
 
     def get(self, key: str) -> np.ndarray | None:
         self._check_fork()
         if key not in self._cache:
+            self.misses += 1
             return None
+        self.hits += 1
         self._cache.move_to_end(key)
         return self._cache[key].copy()
 

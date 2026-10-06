@@ -119,6 +119,7 @@ CONFIG_OVERRIDE = None
 | `none` | Legacy augmentation disabled, probability 0 |
 | `openpcdet_global` | Ordered world flip, rotation, scaling and translation |
 | `openpcdet_gt` | Train-only GT database sampling followed by world transforms |
+| `omni_pcu_gt` | SOTA Omni-PCU: analytical road plane projection, stratified range tiers, density subsampling, anti-wall verification & COM curriculum |
 | `config` | Keep the augmentation recipe from `CONFIG_BASE` |
 
 Selecting a recipe replaces the previous augmentation dictionary. Named presets
