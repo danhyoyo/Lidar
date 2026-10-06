@@ -561,6 +561,36 @@ def test_positional_rng_backward_compatibility(tmp_path):
     assert len(out_boxes) == 1
 
 
+def test_sampler_supports_module_numpy_random_without_integers_attribute(tmp_path):
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+    db_dir = tmp_path / "gt_database"
+    db_dir.mkdir()
+    np.ones((20, 4), dtype=np.float32).tofile(db_dir / "obj.bin")
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4,
+        "source_frame_ids": ["000001"],
+        "db_infos": {"Car": [{
+            "name": "Car", "path": "gt_database/obj.bin",
+            "box3d_lidar": [15.0, 0.0, -1.0, 4.0, 2.0, 1.5, 0.0],
+            "num_points_in_gt": 20, "image_idx": "000001",
+        }]},
+    }
+    with (db_dir / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    cfg = {
+        "NAME": "omni_gt_sampling", "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"], "LIMIT_WHOLE_SCENE": False,
+        "CURRICULUM": {"ENABLED": True, "WARMUP_EPOCHS": 5, "HARD_RATIO_BASE": 0.5},
+    }
+    sampler = OmniDataBaseSampler(tmp_path, cfg, {"Car": 0})
+    pts = np.zeros((100, 4), dtype=np.float32)
+    boxes = np.empty((0, 8), dtype=np.float32)
+    # Pass np.random module explicitly (exactly what DataAugmentor does in DataLoader worker)
+    out_pts, out_boxes = sampler(pts, boxes, road_plane=None, rng=np.random)
+    assert len(out_boxes) == 1
+
+
 
 
 

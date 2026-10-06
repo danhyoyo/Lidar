@@ -162,7 +162,7 @@ class OmniDataBaseSampler:
         for _ in range(count):
             draw_hard = (rng.uniform(0.0, 1.0) < self.current_hard_ratio)
             pool = self.hard_pools[class_name] if draw_hard else self.easy_pools[class_name]
-            idx = rng.integers(0, len(pool))
+            idx = int(rng.integers(0, len(pool))) if hasattr(rng, "integers") else int(rng.randint(0, len(pool)))
             sampled.append(pool[idx])
         return sampled
 
@@ -206,12 +206,15 @@ class OmniDataBaseSampler:
         road_plane: np.ndarray | None = None,
         rng: np.random.Generator | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
-        if isinstance(road_plane, (np.random.Generator, np.random.RandomState)) and rng is None:
+        if (
+            isinstance(road_plane, (np.random.Generator, np.random.RandomState))
+            or road_plane is np.random
+        ) and rng is None:
             rng = road_plane
             road_plane = None
 
         if rng is None:
-            rng = np.random.default_rng()
+            rng = np.random
 
         cur_points = points.copy()
         new_boxes = list(boxes.copy())
