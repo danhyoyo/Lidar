@@ -6,9 +6,10 @@ import math
 
 
 from utils_1.preprocess import encode_bev, get_points_in_a_rotated_box
-from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Random_Translation
+from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Compose, Random_Translation
+from core.datasets.augmentor import DataAugmentor
 from utils_1.gaussian import gaussian_radius, draw_heatmap_gaussian
-from utils_1.target_backend import fill_regression_targets_numba
+from utils_1.target_backend import fill_regression_targets_numba, fill_regression_targets_python
 
 def trasform_label2metric(label, geometry, ratio=4):
     '''
@@ -137,8 +138,24 @@ class Dataset(Dataset):
         if cls_encoding == "binary":
             self.num_classes += 1
 
-        self.transforms = self.get_transforms(aug_config)
-        self.augment = OneOf(self.transforms, aug_config["p"])
+        self.augmentation_mode = aug_config.get("mode", "one_of")
+        if self.augmentation_mode == "openpcdet":
+            self.transforms = []
+            # Validation/test must not load a train-only object database.
+            self.augment = (
+                DataAugmentor(
+                    self.config[self.data_type_list[0]]["location"], aug_config,
+                    self.config[self.data_type_list[0]]["objects"],
+                    geometry=self.config[self.data_type_list[0]]["geometry"],
+                    allowed_frame_ids=self.data_list,
+                ) if task == "train" else None
+            )
+        elif self.augmentation_mode in ("one_of", "compose"):
+            self.transforms = self.get_transforms(aug_config)
+            composition = Compose if self.augmentation_mode == "compose" else OneOf
+            self.augment = composition(self.transforms, aug_config["p"])
+        else:
+            raise ValueError("augmentation.mode must be 'one_of', 'compose' or 'openpcdet'")
 
         # downsample ratio
         self.out_size_factor = config["out_size_factor"]
@@ -179,8 +196,11 @@ class Dataset(Dataset):
 
         boxes = self.get_boxes(idx)
 
-        if self.task == "train" and boxes.shape[0] != 0:
-            points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
+        if self.task == "train":
+            if self.augmentation_mode == "openpcdet":
+                points, boxes = self.augment(points, boxes)
+            elif boxes.shape[0] != 0:
+                points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
         boxes = self.filter_boxes(boxes, data_type)
 
@@ -256,11 +276,6 @@ class Dataset(Dataset):
                 a tensor of shape 200 * 175 * 6 representing the expected output
         '''
 
-        offset_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
-        size_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
-        yaw_map = torch.zeros((self.output_shape[0], self.output_shape[1], 2))
-        reg_mask = torch.zeros(self.output_shape)
-
         if self.cls_encoding == "binary":
             cls_map = torch.zeros((self.output_shape[0], self.output_shape[1]), dtype=torch.int64)
         else:
@@ -272,32 +287,17 @@ class Dataset(Dataset):
             radius = self.update_cls_map(cls_map, box, geometry)
             radii.append(radius)
 
-        if getattr(self, "target_backend", "python") == "numba" and boxes.shape[0]:
-            boxes_np = boxes.detach().cpu().contiguous().numpy().astype(
-                np.float32, copy=False
-            )
-            offset_np, size_np, yaw_np, reg_mask_np = fill_regression_targets_numba(
-                boxes_np,
-                radii,
-                self.output_shape,
-                geometry,
-                self.out_size_factor,
-            )
-            offset_map = torch.from_numpy(offset_np)
-            size_map = torch.from_numpy(size_np)
-            yaw_map = torch.from_numpy(yaw_np)
-            reg_mask = torch.from_numpy(reg_mask_np)
-        else:
-            for i in range(boxes.shape[0]):
-                self.update_reg_map(
-                    offset_map,
-                    size_map,
-                    yaw_map,
-                    reg_mask,
-                    radii[i],
-                    boxes[i],
-                    geometry,
-                )
+        generator = (
+            fill_regression_targets_numba
+            if getattr(self, "target_backend", "python") == "numba"
+            else fill_regression_targets_python
+        )
+        maps = generator(
+            boxes.detach().cpu().contiguous().numpy(), radii, self.output_shape,
+            geometry, self.out_size_factor,
+            assignment=self.config.get("regression_assignment", "nearest_center"),
+        )
+        offset_map, size_map, yaw_map, reg_mask = map(torch.from_numpy, maps)
 
         if self.cls_encoding == "binary":
                 cls_map = cls_map.permute(1, 0)
@@ -408,6 +408,7 @@ class Dataset(Dataset):
 
 
     def update_reg_map(self, offset_map, size_map, yaw_map, reg_mask, radius, box, geometry):
+        """Legacy single-box writer; get_label resolves ownership across all boxes."""
         cls, h, w, l, x, y, z, yaw = box
         yaw2 = math.fmod(2 * yaw, 2 * math.pi)
 

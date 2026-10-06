@@ -31,7 +31,17 @@ def generate_run_name(
 
     # Augmentation
     aug_cfg = config.get("augmentation", {})
-    if aug_cfg.get("use_pcu_aug", False):
+    if aug_cfg.get("mode") == "openpcdet":
+        disabled = set(aug_cfg.get("DISABLE_AUG_LIST", []))
+        active = [entry for entry in aug_cfg.get("AUG_CONFIG_LIST", [])
+                  if entry.get("NAME") not in disabled and entry.get("PROBABILITY", 1) > 0]
+        if not active:
+            augmentation = "noaug"
+        elif any(entry.get("NAME") == "gt_sampling" for entry in active):
+            augmentation = "openpcdet_gt_aug"
+        else:
+            augmentation = "openpcdet_aug"
+    elif aug_cfg.get("use_pcu_aug", False):
         augmentation = "pcu"
     elif aug_cfg.get("p", 0.0) > 0.0 and any(
         isinstance(v, dict) and v.get("use", False) for v in aug_cfg.values()
@@ -41,6 +51,8 @@ def generate_run_name(
         augmentation = "standard_aug"
     else:
         augmentation = "noaug"
+    if augmentation == "standard_aug" and aug_cfg.get("mode") == "compose":
+        augmentation = "compose_aug"
 
     # Loss
     loss_cfg = config.get("loss", {})

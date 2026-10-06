@@ -127,7 +127,13 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     log_w, log_l = size_pred
 
     cls_pred = torch.sigmoid(cls_pred)
-    cls_probs, cls_ids = torch.max(cls_pred, dim = 0)
+    peak_mode = config.get("peak_mode", "per_class")
+    if peak_mode not in {"per_class", "legacy"}:
+        raise ValueError("peak_mode must be 'per_class' or 'legacy'")
+    if peak_mode == "legacy":
+        cls_probs, cls_ids = torch.max(cls_pred, dim=0)
+    else:
+        cls_probs = cls_pred
 
     # Pillar 4: Joint IoU-Aware Quality Scoring
     # Note:
@@ -154,9 +160,9 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     x = torch.arange(output_shape[1])
 
     xx, yy = torch.meshgrid(x, y, indexing="xy")
-    if tuple(cls_probs.shape) != tuple(output_shape):
+    if tuple(spatial_shape) != tuple(output_shape):
         raise ValueError(
-            f"Prediction spatial shape {tuple(cls_probs.shape)} != expected {tuple(output_shape)}")
+            f"Prediction spatial shape {tuple(spatial_shape)} != expected {tuple(output_shape)}")
     xx = xx.to(offset_pred.device)
     yy = yy.to(offset_pred.device)
 
@@ -170,26 +176,25 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     if not torch.stack([torch.isfinite(value).all() for value in decoded]).all():
         raise FloatingPointError("non-finite decoded box")
 
-    if nms_thres is None:
-        pooled = F.max_pool2d(
-            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        selected_idxs = torch.logical_and(
-            ranking_scores == pooled,
-            torch.logical_and(ranking_scores > thres, cls_probs > thres),
-        )
-        if not selected_idxs.any():
-            return _empty_detections()
-        export_scores = ranking_scores
+    # Pool each class separately before flattening candidates. Taking max over
+    # classes first lets a nearby Car suppress a Pedestrian/Cyclist peak.
+    if peak_mode == "legacy":
+        pooled = F.max_pool2d(ranking_scores[None, None], 3, 1, 1)[0, 0]
     else:
-        pooled = F.max_pool2d(
-            ranking_scores.unsqueeze(0).unsqueeze(0), 3, 1, 1)[0, 0]
-        candidate_mask = torch.logical_and(
-            ranking_scores == pooled,
-            torch.logical_and(ranking_scores > thres, cls_probs > thres),
-        )
-        if not candidate_mask.any():
-            return _empty_detections()
-        export_scores = ranking_scores[candidate_mask]
+        pooled = F.max_pool2d(ranking_scores[None], 3, 1, 1)[0]
+    candidate_mask = (ranking_scores == pooled) & (ranking_scores > thres) & (cls_probs > thres)
+    if not candidate_mask.any():
+        return _empty_detections()
+    if peak_mode == "legacy":
+        ys, xs = torch.nonzero(candidate_mask, as_tuple=True)
+        candidate_cls_ids = cls_ids[ys, xs]
+    else:
+        candidate_cls_ids, ys, xs = torch.nonzero(candidate_mask, as_tuple=True)
+    candidate_scores = ranking_scores[candidate_mask]
+    center_x, center_y = center_x[ys, xs], center_y[ys, xs]
+    l, w, yaw = l[ys, xs], w[ys, xs], yaw[ys, xs]
+
+    if nms_thres is not None:
         cos_t = torch.cos(yaw)
         sin_t = torch.sin(yaw)
 
@@ -204,14 +209,10 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         front_left_x = center_x + l/2 * cos_t - w/2 * sin_t
         front_left_y = center_y + l/2 * sin_t + w/2 * cos_t
 
-        candidate_cls_ids = cls_ids[candidate_mask]
-        candidate_scores = export_scores
         kept_by_class = []
         if pred["cls"].is_cuda and _torchvision_nms_rotated is not None:
             candidate_boxes = torch.stack(
-                [center_x[candidate_mask], center_y[candidate_mask],
-                 w[candidate_mask], l[candidate_mask],
-                 torch.rad2deg(yaw[candidate_mask])], dim=1
+                [center_x, center_y, w, l, torch.rad2deg(yaw)], dim=1
             )
             for class_id in torch.unique(candidate_cls_ids):
                 class_mask = candidate_cls_ids == class_id
@@ -225,13 +226,10 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
                 torch.argsort(candidate_scores[selected_idxs], descending=True)
             ].cpu().numpy()
         else:
-            decoded_reg = torch.cat([
-                rear_left_x.unsqueeze(0), rear_left_y.unsqueeze(0),
-                rear_right_x.unsqueeze(0), rear_right_y.unsqueeze(0),
-                front_right_x.unsqueeze(0), front_right_y.unsqueeze(0),
-                front_left_x.unsqueeze(0), front_left_y.unsqueeze(0)], axis=0)
-            decoded_reg = decoded_reg.permute(1, 2, 0)[candidate_mask]
-            corners = np.reshape(decoded_reg.cpu().numpy(), (-1, 4, 2))
+            decoded_reg = torch.stack([
+                rear_left_x, rear_left_y, rear_right_x, rear_right_y,
+                front_right_x, front_right_y, front_left_x, front_left_y], dim=1)
+            corners = decoded_reg.cpu().numpy().reshape(-1, 4, 2)
             candidate_classes_np = candidate_cls_ids.cpu().numpy()
             candidate_scores_np = candidate_scores.cpu().numpy()
             for class_id in np.unique(candidate_classes_np):
@@ -245,16 +243,11 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
                 np.argsort(candidate_scores_np[selected_idxs])[::-1]
             ]
 
-        cls_ids = cls_ids[candidate_mask]
-        center_x = center_x[candidate_mask]
-        center_y = center_y[candidate_mask]
-        l = l[candidate_mask]
-        w = w[candidate_mask]
-        yaw = yaw[candidate_mask]
+    else:
+        selected_idxs = torch.argsort(candidate_scores, descending=True)
 
-
-    fields = [cls_ids[selected_idxs].cpu().numpy(),
-              export_scores[selected_idxs].cpu().numpy(),
+    fields = [candidate_cls_ids[selected_idxs].cpu().numpy(),
+              candidate_scores[selected_idxs].cpu().numpy(),
               center_x[selected_idxs].cpu().numpy(),
               center_y[selected_idxs].cpu().numpy(),
               l[selected_idxs].cpu().numpy(),

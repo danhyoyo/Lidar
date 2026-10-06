@@ -12,6 +12,7 @@
     "out_size_factor": 4,
     "gaussian_overlap": 0.1,
     "min_radius": 4,
+    "regression_assignment": "nearest_center",
     "bev_encoding": {
       "name": "rich8",
       "density_norm": 32,
@@ -19,6 +20,7 @@
     },
     "kitti": {
       "location": "data/kitti/processed",
+      "peak_mode": "per_class",
       "objects": {
         "Car": 0,
         "Pedestrian": 1,

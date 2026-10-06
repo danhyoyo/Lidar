@@ -460,7 +460,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    progress_every: int = 50,
                    deploy: bool = False,
                    save_deploy: Path | None = None,
-                   nms_alpha: float | None = None) -> Dict[str, Any]:
+                   nms_alpha: float | None = None,
+                   peak_mode: str | None = None) -> Dict[str, Any]:
     started = time.time()
     if backend not in {"pytorch", "tensorrt"}:
         raise ValueError(f"Unsupported backend: {backend!r}")
@@ -478,6 +479,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         raise ValueError("progress_every must be non-negative")
     if nms_alpha is not None and not 0.0 <= nms_alpha <= 1.0:
         raise ValueError("nms_alpha must be between 0 and 1")
+    if peak_mode is not None and peak_mode not in {"per_class", "legacy"}:
+        raise ValueError("peak_mode must be 'per_class' or 'legacy'")
     for path in (model_path, config_path, split_path):
         if not path.is_file():
             raise FileNotFoundError(path)
@@ -505,6 +508,23 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                ("preprocess", "host_to_device", "model", "decode_nms",
                 "input_to_detections")}
     detection_count = 0
+    pred_config = dict(config["data"]["kitti"])
+    pred_config["peak_mode"] = (
+        peak_mode if peak_mode is not None else config.get(
+            "peak_mode", pred_config.get("peak_mode", "per_class")
+        )
+    )
+    if pred_config["peak_mode"] not in {"per_class", "legacy"}:
+        raise ValueError("peak_mode must be 'per_class' or 'legacy'")
+    if nms_alpha is not None:
+        pred_config["nms_alpha"] = nms_alpha
+    elif "nms_alpha" in config:
+        pred_config["nms_alpha"] = config["nms_alpha"]
+    elif "nms_alpha" not in pred_config:
+        uses_iou = config.get("model", {}).get(
+            "header_use_iou", config.get("loss", {}).get("use_iou", False)
+        )
+        pred_config["nms_alpha"] = 0.5 if uses_iou else 0.0
 
     for index, frame_id in enumerate(frame_ids):
         total_start = time.perf_counter()
@@ -514,13 +534,6 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         input_tensor, transfer_ms = runner.transfer(sample["voxel"])
         output, model_ms = runner.infer(input_tensor)
         part_start = time.perf_counter()
-        pred_config = dict(config["data"]["kitti"])
-        if nms_alpha is not None:
-            pred_config["nms_alpha"] = nms_alpha
-        elif "nms_alpha" in config:
-            pred_config["nms_alpha"] = config["nms_alpha"]
-        elif "nms_alpha" in config["data"]["kitti"]:
-            pred_config["nms_alpha"] = config["data"]["kitti"]["nms_alpha"]
         boxes = filter_pred(output, pred_config,
                             config["data"]["out_size_factor"],
                             score_threshold, nms_threshold)
@@ -585,7 +598,9 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "neighbour_class_ignores": {k: sorted(v) for k, v in NEIGHBOURS.items()},
             "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
             "score_threshold": score_threshold, "nms_threshold": nms_threshold,
-            "nms_alpha": pred_config.get("nms_alpha", None),
+            "nms_alpha": (float(pred_config["nms_alpha"])
+                          if "iou" in output and output["iou"] is not None else 0.0),
+            "peak_mode": pred_config["peak_mode"],
             "max_detections_per_frame": max_detections,
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),
             "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
@@ -630,6 +645,10 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--device", default="cuda")
     value.add_argument("--score-threshold", type=float, default=0.05)
     value.add_argument("--nms-threshold", type=float, default=0.10)
+    value.add_argument(
+        "--peak-mode", choices=("per_class", "legacy"), default=None,
+        help="Extract peaks per class (default), or reproduce legacy class-maximum pooling.",
+    )
     value.add_argument("--max-detections", type=int, default=500)
     value.add_argument("--warmup-frames", type=int, default=10)
     value.add_argument("--max-frames", type=int)
@@ -675,6 +694,7 @@ def main(argv=None):
         output_path=args.output, device=args.device,
         score_threshold=args.score_threshold, nms_threshold=args.nms_threshold,
         nms_alpha=args.nms_alpha,
+        peak_mode=args.peak_mode,
         max_detections=args.max_detections, warmup_frames=args.warmup_frames,
         max_frames=args.max_frames, progress_every=args.progress_every,
         deploy=args.deploy, save_deploy=args.save_deploy)
