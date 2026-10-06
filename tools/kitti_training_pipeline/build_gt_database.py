@@ -69,10 +69,15 @@ def build_database(processed_root, train_manifest, output_dir, *,
             # Store paths relative to processed root so a database can move with
             # the processed dataset; allow an explicitly external output folder.
             relative_path = Path(os.path.relpath(point_path.resolve(), processed_root.resolve())).as_posix()
+            r_origin = float(np.hypot(x, y))
+            volume = float(max(1e-4, length * width * height))
+            density = float(len(local) / volume)
             db_infos[name].append({
                 "name": name, "path": relative_path, "image_idx": identifier,
                 "gt_idx": index, "box3d_lidar": [x, y, z_center, length, width, height, yaw],
                 "num_points_in_gt": len(local),
+                "r_origin": r_origin,
+                "density": density,
             })
     destination = output_dir / "dbinfos_train.json"
     write_json(destination, {

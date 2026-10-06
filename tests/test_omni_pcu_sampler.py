@@ -87,3 +87,40 @@ def test_cache_resets_on_pid_change():
     assert cache.get("key1") is None
     assert len(cache) == 0
 
+
+def test_build_database_includes_r_origin_and_density(tmp_path):
+    import json
+    import sys
+    from pathlib import Path
+    ROOT = Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
+    from build_gt_database import build_database
+    from common import read_json
+
+    proc_root = tmp_path / "processed"
+    (proc_root / "pointcloud").mkdir(parents=True)
+    (proc_root / "label").mkdir(parents=True)
+
+    # Synthetic pointcloud: 100 points
+    pts = np.random.uniform(-5, 5, size=(100, 4)).astype(np.float32)
+    pts[:, :3] += np.array([20.0, 5.0, -1.0])
+    pts.tofile(proc_root / "pointcloud" / "000001.bin")
+
+    # Label: Car at [x=20, y=5, z=-1.75, l=4.0, w=2.0, h=1.5, yaw=0.0]
+    (proc_root / "label" / "000001.txt").write_text(
+        "Car 1.5 2.0 4.0 20.0 5.0 -1.75 0.0\n", encoding="utf-8"
+    )
+    manifest = tmp_path / "train.txt"
+    manifest.write_text("000001\n", encoding="utf-8")
+
+    out_dir = tmp_path / "gt_database"
+    dest = build_database(proc_root, manifest, out_dir, min_points=1)
+    meta = read_json(dest)
+
+    entry = meta["db_infos"]["Car"][0]
+    assert "r_origin" in entry
+    assert np.isclose(entry["r_origin"], np.hypot(20.0, 5.0), atol=1e-3)
+    assert "density" in entry
+    assert entry["density"] > 0.0
+
+
