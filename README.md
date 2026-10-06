@@ -93,6 +93,59 @@ Experiments, ablation studies, and benchmarks are customized directly through th
 - **Decoupled Quality Head**: `header_use_iou: true` (IoU-aware quality header with Joint NMS)
 - **Loss Strategies**: `baseline`, `oga`, `q_oga`, `gw_qal`, `uwag`
 
+The notebook resolves a fresh configuration every time its configuration cell runs.
+You can switch experiments by editing notebook options without changing
+`configs/config.json`:
+
+```python
+# Model options in the configuration cell
+PRESET = "custom"                 # Or a named preset; "config" keeps the base model/loss/BEV
+BEV_ENCODING = "rich12"
+BACKBONE_OUT_DIM = 32              # Neck output / head input channels; MobilePixorNeXt only
+LOSS_NAME = "oga"
+HEADER_USE_IOU = True
+AUGMENTATION = "openpcdet_gt"
+CUSTOM_RUN_NAME = None             # Automatic name is recalculated on every execution
+EXPERIMENT_TAG = "head32_gt"       # Separate runs with other settings sharing the same name
+CONFIG_OVERRIDE = None
+```
+
+`AUGMENTATION` is independent of the model preset and supports:
+
+| Selection | Effective augmentation |
+| --- | --- |
+| `standard` | Legacy OneOf, probability 0.5 |
+| `compose` | Legacy rotation, scaling and translation in sequence, probability 0.5 |
+| `none` | Legacy augmentation disabled, probability 0 |
+| `openpcdet_global` | Ordered world flip, rotation, scaling and translation |
+| `openpcdet_gt` | Train-only GT database sampling followed by world transforms |
+| `config` | Keep the augmentation recipe from `CONFIG_BASE` |
+
+Selecting a recipe replaces the previous augmentation dictionary. Named presets
+set their model/loss/BEV options explicitly, including neck, quality head and BEV
+channels. Custom model options apply only when `PRESET = "custom"`.
+Set both `PRESET = "config"` and `AUGMENTATION = "config"` to keep those sections
+from the base file.
+
+Precedence is **base configuration → model preset/custom → augmentation selection
+→ `CONFIG_OVERRIDE` → notebook runtime settings**. The last stage sets seed,
+dataset location, epochs, warmup, learning rate, batch sizes, precision, workers
+and acceleration from the notebook. Edit `WARMUP_EPOCHS` and `VAL_BATCH_SIZE`
+alongside `EPOCHS` in the setup cell. For example, use 100 epochs and 8 warmup
+epochs; `VAL_BATCH_SIZE = None` defaults to twice the physical training batch.
+
+The summary prints effective settings and the active OpenPCDet queue. Dataset
+preparation automatically builds the GT database from the configured train
+split when needed. Each run writes its resolved `config.json` into its artifact
+directory. If that directory already contains training metadata or checkpoints,
+an incompatible config is rejected before the old config is overwritten; choose
+a different `EXPERIMENT_TAG` or `CUSTOM_RUN_NAME`. Resume uses the same options
+and run name. Output stride remains 4 for the supported backbones; changing
+`out_size_factor` alone cannot change neck resolution.
+
+After updating the repository, reopen the updated notebook in Colab: checking
+out new source does not replace code already displayed in an old notebook cell.
+
 To run custom configurations via CLI, pass `--override-json`:
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
