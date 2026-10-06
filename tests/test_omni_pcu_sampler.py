@@ -1,9 +1,18 @@
 """Tests for Omni-PCU SOTA Sampler."""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
 import numpy as np
 import pytest
 from shapely.geometry import Polygon
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [
+    str(ROOT / "detector"),
+    str(ROOT / "detector/core/datasets"),
+    str(ROOT / "tools/kitti_training_pipeline"),
+]
 
 from core.datasets.augmentor.omni_geometry import (
     boxes_to_bev_corners,
@@ -354,6 +363,128 @@ def test_pickle_serialization_across_workers(tmp_path):
     assert deserialized is not None
     assert deserialized.cache is not None
     assert len(deserialized.cache) == 0
+
+
+def test_data_augmentor_loads_omni_gt_sampling(tmp_path):
+    import json
+    from core.datasets.augmentor.data_augmentor import DataAugmentor
+
+    profile = {
+        "AUG_CONFIG_LIST": [
+            {
+                "NAME": "omni_gt_sampling",
+                "SAMPLE_GROUPS": ["Car:2"],
+                "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+                "CURRICULUM": {"ENABLED": True, "WARMUP_EPOCHS": 5},
+            }
+        ]
+    }
+    meta = {
+        "format": "lidar_gt_database_v1", "num_point_features": 4, "source_frame_ids": ["000001"],
+        "db_infos": {"Car": []},
+    }
+    (tmp_path / "gt_database").mkdir()
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    aug = DataAugmentor(tmp_path, profile, {"Car": 0}, allowed_frame_ids=["000001"])
+    assert aug is not None
+
+    # Test set_epoch forwarding
+    aug.set_epoch(3)
+    _, _, omni_sampler = aug.queue[0]
+    assert omni_sampler.epoch == 3
+
+    # Test call runs cleanly
+    pts = np.ones((50, 4), dtype=np.float32)
+    boxes = np.array([[0, 1.5, 2.0, 4.0, 10.0, 0.0, -1.65, 0.0]], dtype=np.float32)
+    out_pts, out_boxes = aug(pts, boxes)
+    assert len(out_pts) == 50
+    assert len(out_boxes) == 1
+
+
+def test_omni_pcu_gt_profile_supports_model_forward_backward(tmp_path):
+    import json
+    import torch
+    from pathlib import Path
+    ROOT = Path(__file__).resolve().parents[1]
+    import sys
+    sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
+    from common import build_model, create_experiment_config
+    from build_gt_database import build_database
+    from core.datasets.dataset import Dataset
+    from core.losses.loss_fn import LossFunction
+
+    profile_path = ROOT / "configs/augmentation/omni_pcu_gt.json"
+    assert profile_path.is_file(), "omni_pcu_gt.json configuration missing"
+
+    # Set up mock processed dataset
+    proc = tmp_path / "proc"
+    (proc / "pointcloud").mkdir(parents=True)
+    (proc / "label").mkdir(parents=True)
+    (proc / "planes").mkdir(parents=True)
+
+    # 100 points
+    pts = np.random.uniform(-5, 5, size=(100, 4)).astype(np.float32)
+    pts[:, 0] += 20.0
+    pts[:, 1] += 5.0
+    pts[:, 2] += -1.0
+    pts.tofile(proc / "pointcloud" / "000001.bin")
+    pts.tofile(proc / "pointcloud" / "000002.bin")
+
+    # Label: Car at [x=20, y=5, z=-1.75, l=4.0, w=2.0, h=1.5, yaw=0.0]
+    (proc / "label" / "000001.txt").write_text(
+        "Car 1.5 2.0 4.0 20.0 5.0 -1.75 0.0\n", encoding="utf-8"
+    )
+    (proc / "label" / "000002.txt").write_text(
+        "Car 1.5 2.0 4.0 20.0 5.0 -1.75 0.0\n", encoding="utf-8"
+    )
+    # Road plane
+    (proc / "planes" / "000001.txt").write_text(
+        "Plane 0.0 0.0 -1.0 -1.65\n", encoding="utf-8"
+    )
+    (proc / "planes" / "000002.txt").write_text(
+        "Plane 0.0 0.0 -1.0 -1.65\n", encoding="utf-8"
+    )
+    manifest = tmp_path / "train.txt"
+    manifest.write_text("000001;kitti\n000002;kitti\n", encoding="utf-8")
+
+    # Build GT database
+    db_dir = tmp_path / "gt_database"
+    build_database(proc, manifest, db_dir, min_points=1)
+
+    # Load config and override data paths
+    base_cfg = json.loads((ROOT / "configs/config.json").read_text())
+    aug_cfg = json.loads(profile_path.read_text())
+    cfg = create_experiment_config(base_cfg, aug_cfg)
+    cfg["data"]["kitti"]["location"] = str(proc)
+    cfg["data"]["train_manifest"] = str(manifest)
+    cfg["data"]["processed_data_path"] = str(proc)
+    cfg["data"]["val_manifest"] = str(manifest)
+    # Override db path to tmp_path
+    cfg["augmentation"]["AUG_CONFIG_LIST"][0]["DB_INFO_PATH"] = [
+        str(db_dir / "dbinfos_train.json")
+    ]
+
+    dataset = Dataset(str(manifest), cfg["data"], cfg["augmentation"], "gaussian", "train")
+    assert len(dataset) == 2
+
+    # Verify 2-worker DataLoader serialization
+    loader = torch.utils.data.DataLoader(dataset, batch_size=2, num_workers=2)
+    batches = list(loader)
+    assert len(batches) == 1
+    batch = batches[0]
+
+    # Model forward and backward
+    model = build_model(cfg)
+    criterion = LossFunction("gaussian", cfg["loss"])
+    pred = model(batch["voxel"])
+    loss = criterion(pred, batch)["loss"]
+    assert torch.isfinite(loss)
+    loss.backward()
+    assert any(p.grad is not None for p in model.parameters())
+
+
 
 
 

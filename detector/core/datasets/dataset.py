@@ -139,7 +139,7 @@ class Dataset(Dataset):
             self.num_classes += 1
 
         self.augmentation_mode = aug_config.get("mode", "one_of")
-        if self.augmentation_mode == "openpcdet":
+        if self.augmentation_mode in ("openpcdet", "omni_pcu"):
             self.transforms = []
             # Validation/test must not load a train-only object database.
             self.augment = (
@@ -155,7 +155,7 @@ class Dataset(Dataset):
             composition = Compose if self.augmentation_mode == "compose" else OneOf
             self.augment = composition(self.transforms, aug_config["p"])
         else:
-            raise ValueError("augmentation.mode must be 'one_of', 'compose' or 'openpcdet'")
+            raise ValueError("augmentation.mode must be 'one_of', 'compose', 'openpcdet' or 'omni_pcu'")
 
         # downsample ratio
         self.out_size_factor = config["out_size_factor"]
@@ -197,8 +197,9 @@ class Dataset(Dataset):
         boxes = self.get_boxes(idx)
 
         if self.task == "train":
-            if self.augmentation_mode == "openpcdet":
-                points, boxes = self.augment(points, boxes)
+            if self.augmentation_mode in ("openpcdet", "omni_pcu"):
+                plane = self.read_road_plane(idx, data_type)
+                points, boxes = self.augment(points, boxes, road_plane=plane)
             elif boxes.shape[0] != 0:
                 points, boxes[:, 1:] = self.augment(points, boxes[:, 1:8])
 
@@ -228,6 +229,28 @@ class Dataset(Dataset):
 
     def voxelize(self, points, geometry):
         return encode_bev(points, geometry, self.bev_encoding)
+
+    def set_epoch(self, epoch: int) -> None:
+        if self.augment is not None and hasattr(self.augment, "set_epoch"):
+            self.augment.set_epoch(epoch)
+
+    def read_road_plane(self, idx: int, data_type: str) -> np.ndarray | None:
+        plane_path = os.path.join(self.config[data_type]["location"], "planes", f"{self.data_list[idx]}.txt")
+        if os.path.isfile(plane_path):
+            try:
+                with open(plane_path, "r", encoding="utf-8") as stream:
+                    lines = stream.read().splitlines()
+                for line in lines:
+                    parts = line.strip().split()
+                    if not parts:
+                        continue
+                    if parts[0] == "Plane" and len(parts) >= 5:
+                        return np.array([float(x) for x in parts[1:5]], dtype=np.float64)
+                    elif len(parts) == 4:
+                        return np.array([float(x) for x in parts[:4]], dtype=np.float64)
+            except Exception:
+                return None
+        return None
 
 
     def get_boxes(self, idx):

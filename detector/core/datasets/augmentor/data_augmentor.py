@@ -84,11 +84,23 @@ class DataAugmentor:
                     self.root_path, config, self.class_names, geometry=geometry,
                     allowed_frame_ids=allowed_frame_ids,
                 )
+            elif name == "omni_gt_sampling":
+                from .omni_sampler import OmniDataBaseSampler
+                value = OmniDataBaseSampler(
+                    self.root_path, config, self.class_names, geometry=geometry,
+                    allowed_frame_ids=allowed_frame_ids,
+                )
             else:
                 raise ValueError(f"Unsupported augmentation NAME: {name!r}")
             self.queue.append((name, probability, value))
 
-    def __call__(self, points, boxes):
+    def set_epoch(self, epoch: int) -> None:
+        """Update epoch for augmentors that support scheduling (e.g. curriculum)."""
+        for _, _, value in self.queue:
+            if hasattr(value, "set_epoch"):
+                value.set_epoch(epoch)
+
+    def __call__(self, points, boxes, road_plane=None):
         points = np.asarray(points, dtype=np.float32).copy()
         boxes = np.asarray(boxes, dtype=np.float32).copy()
         if points.ndim != 2 or points.shape[1] < 3:
@@ -129,5 +141,7 @@ class DataAugmentor:
                 boxes[:, 4:7] += translation
             elif name == "gt_sampling":
                 points, boxes = value(points, boxes, rng)
+            elif name == "omni_gt_sampling":
+                points, boxes = value(points, boxes, road_plane=road_plane, rng=rng)
         boxes[:, 7] = (boxes[:, 7] + np.pi) % (2 * np.pi) - np.pi
         return np.ascontiguousarray(points), np.ascontiguousarray(boxes)

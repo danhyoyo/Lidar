@@ -1,0 +1,49 @@
+{
+  "augmentation": {
+    "mode": "omni_pcu",
+    "p": 1.0,
+    "DISABLE_AUG_LIST": [],
+    "AUG_CONFIG_LIST": [
+      {
+        "NAME": "omni_gt_sampling",
+        "USE_ROAD_PLANE": true,
+        "SAMPLE_GROUPS": ["Car:15", "Pedestrian:10", "Cyclist:10"],
+        "LIMIT_WHOLE_SCENE": true,
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "PREPARE": {
+          "filter_by_min_points": ["Car:5", "Pedestrian:5", "Cyclist:5"],
+          "filter_by_difficulty": [-1]
+        },
+        "CURRICULUM": {
+          "ENABLED": true,
+          "WARMUP_EPOCHS": 10,
+          "HARD_RATIO_BASE": 0.15,
+          "HARD_RATIO_TARGET": 0.70,
+          "DIFFICULTY_THRESHOLD": 0.45
+        },
+        "PLACEMENT": {
+          "MODE": "stratified_range",
+          "RANGE_TIERS": [[8.0, 25.0], [25.0, 45.0], [45.0, 65.5]],
+          "TIER_WEIGHTS": [0.30, 0.40, 0.30],
+          "MAX_ATTEMPTS": 15
+        },
+        "PHYSICS": {
+          "ENABLE_DENSITY_SUBSAMPLE": true,
+          "ENABLE_ANTI_WALL": true,
+          "ANTI_WALL_HEIGHT_THRESH": 0.35,
+          "MAX_OBSTACLE_POINTS": 3,
+          "MIN_VISIBLE_RATIO": 0.50,
+          "MIN_VISIBLE_POINTS": 5
+        },
+        "PERFORMANCE": {
+          "CACHE_ENABLED": true,
+          "CACHE_SIZE_MB": 128.0
+        }
+      },
+      {"NAME": "random_world_flip", "ALONG_AXIS_LIST": ["x"], "PROBABILITY": 0.5},
+      {"NAME": "random_world_rotation", "WORLD_ROT_ANGLE": [-0.78539816, 0.78539816]},
+      {"NAME": "random_world_scaling", "WORLD_SCALE_RANGE": [0.95, 1.05]},
+      {"NAME": "random_world_translation", "NOISE_TRANSLATE_STD": [0.2, 0.2, 0.1], "PROBABILITY": 0.5}
+    ]
+  }
+}
