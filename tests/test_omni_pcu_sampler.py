@@ -124,3 +124,104 @@ def test_build_database_includes_r_origin_and_density(tmp_path):
     assert entry["density"] > 0.0
 
 
+def test_curriculum_difficulty_partitioning_and_scheduling(tmp_path):
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:2"],
+        "CURRICULUM": {
+            "ENABLED": True,
+            "WARMUP_EPOCHS": 10,
+            "HARD_RATIO_BASE": 0.10,
+            "HARD_RATIO_TARGET": 0.90,
+            "DIFFICULTY_THRESHOLD": 0.40,
+        },
+    }
+    meta = {
+        "format": "lidar_gt_database_v1",
+        "num_point_features": 4,
+        "source_frame_ids": ["000001"],
+        "db_infos": {
+            "Car": [
+                {
+                    "name": "Car", "path": "car_easy.bin", "image_idx": "000001",
+                    "box3d_lidar": [10.0, 0.0, 0.0, 4.0, 2.0, 1.5, 0.0],
+                    "num_points_in_gt": 500, "r_origin": 10.0, "density": 40.0,
+                },
+                {
+                    "name": "Car", "path": "car_hard.bin", "image_idx": "000001",
+                    "box3d_lidar": [60.0, 0.0, 0.0, 4.0, 2.0, 1.5, 0.0],
+                    "num_points_in_gt": 15, "r_origin": 60.0, "density": 1.2,
+                },
+            ]
+        },
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((500, 4), dtype=np.float32).tofile(tmp_path / "car_easy.bin")
+    np.ones((15, 4), dtype=np.float32).tofile(tmp_path / "car_hard.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, config, {"Car": 0})
+    # Verify pools partitioned
+    assert len(sampler.easy_pools["Car"]) == 1
+    assert len(sampler.hard_pools["Car"]) == 1
+
+    # Verify probability schedule
+    sampler.set_epoch(0)
+    assert np.isclose(sampler.current_hard_ratio, 0.10)
+    sampler.set_epoch(5)
+    assert np.isclose(sampler.current_hard_ratio, 0.50)
+    sampler.set_epoch(10)
+    assert np.isclose(sampler.current_hard_ratio, 0.90)
+
+
+def test_legacy_openpcdet_config_compatibility(tmp_path):
+    import json
+    from core.datasets.augmentor.omni_sampler import OmniDataBaseSampler
+
+    # Legacy config: no CURRICULUM, no PLACEMENT, no PHYSICS, no r_origin in db
+    legacy_config = {
+        "DB_INFO_PATH": ["gt_database/dbinfos_train.json"],
+        "SAMPLE_GROUPS": ["Car:1"],
+        "PREPARE": {
+            "filter_by_min_points": ["Car:5"],
+            "filter_by_difficulty": [-1],
+        },
+    }
+    meta = {
+        "format": "lidar_gt_database_v1",
+        "num_point_features": 4,
+        "source_frame_ids": ["000001"],
+        "db_infos": {
+            "Car": [
+                {
+                    "name": "Car", "path": "car_legacy.bin", "image_idx": "000001",
+                    "box3d_lidar": [15.0, 2.0, -1.0, 4.2, 1.8, 1.6, 0.0],
+                    "num_points_in_gt": 40,
+                    # Notice: NO r_origin or density!
+                }
+            ]
+        },
+    }
+    (tmp_path / "gt_database").mkdir()
+    np.ones((40, 4), dtype=np.float32).tofile(tmp_path / "car_legacy.bin")
+    with (tmp_path / "gt_database" / "dbinfos_train.json").open("w") as f:
+        json.dump(meta, f)
+
+    sampler = OmniDataBaseSampler(tmp_path, legacy_config, {"Car": 0})
+    assert len(sampler.db_infos["Car"]) == 1
+    # Check that r_origin was automatically derived
+    assert "r_origin" in sampler.db_infos["Car"][0]
+    assert np.isclose(sampler.db_infos["Car"][0]["r_origin"], np.hypot(15.0, 2.0))
+
+    # Test sampling runs cleanly without errors
+    scene_pts = np.random.uniform(-10, 10, size=(100, 4)).astype(np.float32)
+    scene_boxes = np.empty((0, 8), dtype=np.float32)
+    pts_out, boxes_out = sampler(scene_pts, scene_boxes)
+    assert len(boxes_out) <= 1
+
+
+
