@@ -8,6 +8,13 @@ The notebook selects research/mobilepixornext-under1m. A Git fetch can obtain on
 
 Mount Drive if needed and set KITTI_TAR_ROOT, RAW_KITTI_ROOT, PROCESSED_DATASET_DIR and ARTIFACT_ROOT in the first cell. Default archives contain the standard training/ layout. BEV preparation needs velodyne.tar, label_2.tar and calib.tar; reference evaluation additionally needs image_2.tar. A complete extracted dataset is reused.
 
+The setup and parameter-audit cells both call `configure_detector_imports(REPO_DIR / "detector")`. This exposes the `core` package and its legacy `utils_1` imports in the notebook kernel; running pytest in a subprocess does not configure the kernel's import path. For an already-open older notebook, execute these lines before the parameter-audit cell:
+
+```python
+from common import configure_detector_imports
+configure_detector_imports(REPO_DIR / "detector")
+```
+
 ## Development defaults
 
 The configuration cell defaults to:
