@@ -46,6 +46,25 @@ def test_notebook_defaults_select_main_focal_with_hybrid_and_local_none(tmp_path
     assert json.loads(namespace["CONFIG"].read_text()) == config
 
 
+def test_notebook_selects_best_ap_and_exposes_independent_ap_interval(tmp_path):
+    namespace = execute_cell(tmp_path)
+    assert namespace['config_dict']['train'].get('checkpoint_selection', {}).get('primary') == 'ap'
+    changed = execute_cell(tmp_path/'sparse', {'AP_EVERY': 5})
+    assert changed['config_dict']['train']['checkpoint_selection']['ap_every'] == 5
+    assert changed['config_dict']['val']['val_every'] == 1
+    assert changed['config_dict']['evaluation']['kitti_root']
+
+
+def test_notebook_short_smoke_disables_full_split_ap_selection():
+    notebook = json.loads((ROOT/'3D_Lidar_Object_Detection_Notebook_standard.ipynb').read_text())
+    source = next(''.join(cell['source']) for cell in notebook['cells'] if 'smoke_config =' in ''.join(cell['source']))
+    tree = ast.parse(source)
+    assignment = next(node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == 'smoke_config' for t in node.targets))
+    override = ast.literal_eval(assignment.value.args[1])
+    assert override['train'].get('checkpoint_selection', {}).get('primary') == 'loss'
+
+
 @pytest.mark.parametrize("local,options", [("none", {}), ("eca", {"LOCAL_ATTENTION_ECA_KERNEL_SIZE": 5}),
     ("simam", {"LOCAL_ATTENTION_SIMAM_LAMBDA": .002})])
 def test_custom_controls_reach_encoding_groups_context_and_neck(tmp_path, local, options):

@@ -51,7 +51,8 @@ python3 tools/kitti_training_pipeline/train.py \
   --detector-root detector \
   --output-root artifacts/kitti \
   --run-name mobilepixornext_corrected_seed42 \
-  --num-workers 2
+  --num-workers 2 \
+  --override-json '{"evaluation":{"kitti_root":"/path/to/KITTI/object"}}'
 ```
 
 The master config currently uses MobilePixorNeXt, Rich8, LiteMLA, scale-gated
@@ -59,6 +60,33 @@ FPN, BN/SiLU heads and baseline loss. Its recipe is AdamW, LR 7e-4, weight
 decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
+
+The master config selects the highest validation AP and retains two independent
+winners: `selected/best_ap.pt` and `selected/best_loss.pt`. Validation loss runs
+every epoch. `train.checkpoint_selection.ap_every` controls AP inference on the
+entire validation split; the default is 1 and the final epoch is always evaluated.
+The fixed selection objective is R40 Moderate AP averaged equally across Car,
+Pedestrian and Cyclist. `metric_mode="auto"` selects the local ROI BEV evaluator
+for BEV models, or pinned reference AP3D for explicitly trained 3D models.
+
+Set `evaluation.kitti_root` to the raw KITTI root containing `training/`, or to
+`training/` itself. Local BEV requires original labels and calibration; reference
+modes also require images. Periodic AP uses the existing FP32 checkpoint evaluator,
+even when training uses BF16/FP16, matching final PyTorch evaluation. Its extra
+inference model is released after each evaluation and training RNG is restored.
+
+`selected/best.pt` and `selected/selection.json` remain compatibility aliases for
+the primary winner. Separate `selection_ap.json` / `selection_loss.json` records
+identify the independent winners. `checkpoints/last.pt` retains optimizer,
+criterion, scheduler, scaler, RNG and AP selection state for resume.
+`metrics.jsonl` and `train.log` include AP scores, inference time and winner flags.
+
+An interval of 5 reduces inference cost but only selects the best of evaluated
+epochs; an unsampled peak can be missed. Match the interval and decode settings
+across comparators. Use 1 for A0/A2 if runtime permits. A changed selection policy
+or AP decode protocol requires a new run name. Historical configs without an
+explicit policy keep loss selection. `primary="loss"` disables periodic AP;
+use this for batch-limited smoke/debug runs, which cannot establish best AP.
 
 ## Evaluate
 
@@ -235,9 +263,10 @@ seed to isolate the correctness fixes. After this comparison, try GT database
 sampling for Pedestrian/Cyclist, composed flip/rotation/scaling, then a 32- or
 48-channel head in separate experiments. Keep the validation split fixed.
 
-Training's `selected/best.pt` is still selected by validation loss, which is not
-the same as best AP. Use the existing offline AP selector on saved checkpoints
-and store its output separately from loss selection:
+New master/notebook runs select `selected/best_ap.pt` during training and retain
+`selected/best_loss.pt` separately. For older loss-selected BEV runs, the existing
+offline selector can evaluate saved numbered checkpoints without retraining.
+Store its output separately from the original selection:
 
 ```bash
 python3 tools/kitti_training_pipeline/select_checkpoint.py \

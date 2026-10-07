@@ -53,7 +53,7 @@ The effective config is saved as RUN_DIR/config.json; the trainer writes config.
 6. Record baseline evidence and candidate protocols. Development may continue with explicitly pending comparator/matrix gates.
 7. Run a short actual-data training/validation smoke in a temporary directory, with a generated one-epoch/warmup0 snapshot.
 8. Train or strictly resume the full configured schedule. checkpoints/last.pt restores model, adaptive loss, optimizer, scheduler, scaler and RNG. Optional WARM_START_PATH loads compatible backbone tensors into a new run with fresh heads/state.
-9. Evaluate the complete selected run using its own config.resolved.json and minimum-loss selected/best.pt. Missing/incomplete selection fails; there is no last.pt fallback.
+9. Evaluate the complete selected run using its own config.resolved.json and configured winner: selected/best_ap.pt by default. Historical runs retain their recorded loss policy. Missing/incomplete selection fails; there is no last.pt fallback.
 10. Save per-mode evaluations/predictions, full input/checkpoint provenance, candidate evidence and comparison.csv/comparison.json. Display all nine class/difficulty cells and actual Moderate/AP9 values. Missing results cannot become a fabricated zero.
 
 ## Controlled focal baseline and benchmark mode
@@ -66,7 +66,40 @@ First train the internal baseline with the same controls and C4_CONTEXT="none" i
 
 The default focal ablation checks normalized model/head/loss/encoding identity outside context, seed, schedule/optimizer/precision/batches, augmentation and encoder/target/runtime backends. Its purpose is to isolate focal; changing additional factors fails this check. For a deliberately broader comparison, select COMPARISON_KIND="protocol" and disclose the recorded model/training differences. Evaluation protocol matching is still mandatory; the generic option does not certify a controlled focal ablation.
 
-Baseline evaluation uses the baseline's own resolved config/selected checkpoint. Complete ordered training history, actual optimizer updates, minimum-loss selection, current inputs/config/checkpoint hashes, all class/difficulty AP values and macros must agree. Independently serialized torch.save archives can differ in file hashes: the entire selected/retained payload must agree, including model, criterion, optimizer, scheduler/scaler/RNG and saved metadata. Each archive's actual file SHA remains recorded and freshness-checked.
+Baseline evaluation uses the baseline's own resolved config/selected checkpoint. Complete ordered training history, actual optimizer updates, configured loss/AP selection, current inputs/config/checkpoint hashes, all class/difficulty AP values and macros must agree. Independently serialized torch.save archives can differ in file hashes: the entire selected/retained payload must agree, including model, criterion, optimizer, scheduler/scaler/RNG and saved metadata. Each archive's actual file SHA remains recorded and freshness-checked. Comparators must match the checkpoint selection policy, AP mode, R40 sampling, Moderate three-class macro and AP interval.
+
+## Independent AP and loss checkpoints
+
+The configuration cell exposes:
+
+```python
+CHECKPOINT_SELECTION = "ap"
+AP_EVERY = 1
+AP_METRIC_MODE = "auto"
+```
+
+Validation loss is computed every epoch. AP_EVERY controls a separate full-split
+FP32 inference/evaluation pass, with the final epoch always included. Auto mode
+selects local_bev for BOX_MODE="bev", or reference 3d for BOX_MODE="3d". Explicit
+reference bev selection requires BOX_MODE="3d". The raw input root is taken from
+RAW_KITTI_ROOT and saved in evaluation.kitti_root; it is not the processed root.
+
+Save selected/best_ap.pt by maximum R40 Moderate mean across all three classes,
+selected/best_loss.pt by minimum total validation loss, and checkpoints/last.pt
+for resume. Ties retain the earliest winner. selected/best.pt and selection.json
+alias the configured primary winner; dedicated selection_ap.json and
+selection_loss.json describe the independent winners. AP state and evaluation
+schedule survive resume. The AP pass restores training RNG and does not change
+the training model or adaptive criterion. Per-epoch AP values and timing are
+recorded in metrics.jsonl and streamed to the notebook.
+
+For A0/A2, start with AP_EVERY=1 so every completed epoch is eligible. AP_EVERY=5
+is a valid runtime compromise but can miss an unsampled peak; use the same value
+for both runs. The short actual-data smoke selects loss and skips full-split AP.
+CHECKPOINT_SELECTION="loss" also disables AP for debug runs. Do not change a
+running process or overwrite an old snapshot: use distinct new run names when
+changing policy. Existing completed A0/A2 loss-selected runs remain readable;
+the offline BEV checkpoint selector can evaluate their saved numbered epochs.
 
 Benchmark training requires successful actual data audits, all three precision gates, workers0/configured workers and matching reproduced baseline evidence. Reference modes additionally require pinned CUDA parity on this runtime. Every selected protocol must have no pending gates and long_training_allowed=true. Evidence is rechecked just before full benchmark training/resume. Synthetic evidence is rejected as real baseline readiness.
 

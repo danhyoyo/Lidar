@@ -96,11 +96,22 @@
     "num_workers": 6,
     "target_backend": "numba",
     "compile_model": false,
-    "save_every": 5
+    "save_every": 5,
+    "checkpoint_selection": {
+      "primary": "ap",
+      "ap_every": 1,
+      "metric_mode": "auto"
+    }
   },
   "val": {
     "data": "splits/kitti/val.txt",
     "physical_batch_size": 32,
     "val_every": 1
+  },
+  "evaluation": {
+    "kitti_root": "data/kitti/raw",
+    "score_threshold": 0.05,
+    "nms_threshold": 0.1,
+    "max_detections": 500
   }
 }

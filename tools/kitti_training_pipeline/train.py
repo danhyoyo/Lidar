@@ -11,6 +11,7 @@ import math
 import random
 import sys
 import time
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
@@ -34,6 +35,8 @@ from common import (
     warm_start_backbone,
     write_json,
 )
+from checkpoint_selection import (selection_settings, ap_due, ap_measurement,
+                                  advance_ap_state, save_selections)
 
 
 def seed_everything(seed: int) -> None:
@@ -205,9 +208,10 @@ def checkpoint_payload(
     config: Dict[str, Any],
     *,
     loader_generator=None,
+    ap_selection=None,
 ) -> Dict[str, Any]:
     checkpoint_model = getattr(model, "_orig_mod", model)
-    return {
+    payload = {
         "epoch": epoch,
         # torch.compile wraps the model.  Persist the original state-dict so a
         # checkpoint remains resumable with and without --compile-model.
@@ -229,6 +233,48 @@ def checkpoint_payload(
                    "deterministic_worker_replay": config.get("train", {}).get("num_workers", 0) == 0},
         "saved_at_utc": datetime.now(timezone.utc).isoformat(),
     }
+    if ap_selection is not None:
+        payload['ap_selection'] = ap_selection
+    return payload
+
+
+def evaluate_training_ap(payload, config_path, detector_root, device, loader_generator, run_dir):
+    """Use the existing full-split FP32 evaluator without advancing training RNG."""
+    rng = capture_rng_state(loader_generator)
+    started = time.perf_counter()
+    try:
+        from evaluate_kitti_bev import read_ids
+        config = payload['config']; settings = selection_settings(config)
+        evaluation = config.get('evaluation', {})
+        raw = Path(evaluation['kitti_root']).expanduser().resolve()
+        if raw.name == 'training':
+            raw = raw.parent
+        split = Path(config['val']['data']).expanduser()
+        if not split.is_absolute():
+            split = Path(__file__).resolve().parents[2] / split
+        ids = read_ids(split)
+        if not ids or len(ids) != len(set(ids)):
+            raise ValueError('AP validation requires a nonempty unique full validation split')
+        if settings['metric_mode'] == 'local_bev':
+            from evaluate_kitti_bev import run_evaluation
+            options = {}
+        else:
+            from evaluate_kitti_3d import run_evaluation
+            raw = raw / 'training'
+            options = {'metric_mode': settings['metric_mode']}
+        with tempfile.TemporaryDirectory(prefix='ap-validation-', dir=run_dir) as temporary:
+            candidate = Path(temporary) / 'candidate.pt'
+            atomic_torch_save(payload, candidate)
+            report = run_evaluation(name='validation_ap', backend='pytorch', model_path=candidate,
+                config_path=config_path, detector_root=detector_root, kitti_root=raw,
+                split_path=split, device=str(device), warmup_frames=0, progress_every=100,
+                score_threshold=evaluation.get('score_threshold', .05),
+                nms_threshold=evaluation.get('nms_threshold', .10),
+                max_detections=evaluation.get('max_detections', 500), **options)
+        measurement = ap_measurement(report, settings, full_frames=len(ids), split_sha256=sha256(split))
+        return measurement, time.perf_counter() - started
+    finally:
+        restore_rng_state(rng, loader_generator)
 
 
 def capture_rng_state(loader_generator):
@@ -337,6 +383,22 @@ def restore_checkpoint(checkpoint, config, model, criterion, optimizer, schedule
     best_val = float(checkpoint["best_validation_objective"])
     if math.isnan(best_val):
         raise ValueError("Invalid checkpoint best validation objective")
+    settings = selection_settings(config)
+    if settings['primary'] == 'ap':
+        state = checkpoint.get('ap_selection')
+        if not isinstance(state, dict):
+            raise ValueError('AP resume requires complete checkpoint AP selection state')
+        advance_ap_state(state, None, checkpoint['epoch'], settings)
+        best_epoch = state.get('best_epoch')
+        if best_epoch is not None:
+            if type(best_epoch) is not int or not 1 <= best_epoch <= checkpoint['epoch'] or not ap_due(best_epoch, config['train']['epochs'], settings):
+                raise ValueError('Invalid checkpoint best AP epoch')
+            checked, _ = advance_ap_state(None, state.get('best_measurement'), best_epoch, settings)
+            if checked != state:
+                raise ValueError('Invalid checkpoint best AP measurement/state')
+        elif state.get('best_score') is not None or state.get('best_measurement') is not None or any(
+                ap_due(e, config['train']['epochs'], settings) for e in range(1, checkpoint['epoch'] + 1)):
+            raise ValueError('Checkpoint is missing scheduled AP selection state')
     _validate_module_state(original_model, model_state, "model")
     _validate_module_state(criterion, checkpoint["criterion_state_dict"], "criterion")
     for key, value in checkpoint["criterion_state_dict"].items():
@@ -658,8 +720,21 @@ def main(argv=None) -> None:
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
-
     spec = detection_spec(config)
+    selection = selection_settings(config)
+    if selection['primary'] == 'ap':
+        if args.max_train_batches or args.max_val_batches:
+            raise ValueError('AP selection requires full training/validation; use loss selection for a partial smoke run')
+        raw = config.get('evaluation', {}).get('kitti_root')
+        if not raw:
+            raise ValueError('AP selection requires evaluation.kitti_root pointing to raw KITTI labels/calibration')
+        raw = Path(raw).expanduser().resolve()
+        if (raw / 'training').is_dir():
+            raw = raw / 'training'
+        for folder in ('label_2', 'calib') + (('image_2',) if selection['metric_mode'] != 'local_bev' else ()):
+            if not (raw / folder).is_dir():
+                raise FileNotFoundError(f'AP validation asset directory is missing: {raw / folder}')
+
     dataset_groups = spec.groups if spec.head_mode == "grouped" else None
     train_dataset = Dataset(
         config["train"]["data"],
@@ -723,6 +798,7 @@ def main(argv=None) -> None:
             stream.write(text + "\n")
 
     start_epoch, best_val = 0, math.inf
+    ap_state, _ = advance_ap_state(None, None, 0, selection)
     if args.warm_start:
         source_path = args.warm_start.expanduser().resolve()
         source = torch.load(source_path, map_location=device)
@@ -738,6 +814,7 @@ def main(argv=None) -> None:
                                       loader_generator=generator,
                                       backend_parity_verified=args.backend_parity_verified)
         start_epoch, best_val = restored["epoch"], restored["best_val"]
+        ap_state, _ = advance_ap_state(resume.get('ap_selection'), None, start_epoch, selection)
         log_line(f"Checkpoint mode={restored['mode']}; start epoch={start_epoch}: {args.resume}")
         if restored["backend_changes"]:
             log_line(f"Numerical backend parity asserted: {restored['backend_changes']}")
@@ -777,6 +854,10 @@ def main(argv=None) -> None:
         f"physical batch={physical_batch_size}; accumulation={accumulation_steps}; "
         f"effective batch={physical_batch_size * accumulation_steps}"
     )
+    log_line(f"Checkpoint selection={selection['primary']}; validation loss every epoch; "
+             f"AP every {selection['ap_every']} epoch(s) plus final, mode={selection['metric_mode']}, "
+             "R40 Moderate macro of Car/Pedestrian/Cyclist" if selection['primary'] == 'ap'
+             else 'Checkpoint selection=loss; AP validation disabled')
 
     for epoch in range(start_epoch + 1, epochs + 1):
         model.train()
@@ -868,23 +949,22 @@ def main(argv=None) -> None:
             best_val,
             config,
             loader_generator=generator,
+            ap_selection=ap_state,
         )
-        atomic_torch_save(payload, checkpoints_dir / "last.pt")
+        ap_validation, ap_seconds, retained_ap = None, 0., False
+        if ap_due(epoch, epochs, selection):
+            log_line(f"AP validation: epoch {epoch}/{epochs}; full validation split; {selection['metric_mode']} R40 Moderate")
+            ap_validation, ap_seconds = evaluate_training_ap(payload, run_dir / 'config.resolved.json',
+                args.detector_root, device, generator, run_dir)
+            ap_state, retained_ap = advance_ap_state(ap_state, ap_validation, epoch, selection)
+            log_line(f"Validation AP: {ap_validation['score']:.4f}% | Time: {ap_seconds:.1f}s" +
+                     (' [BEST AP]' if retained_ap else ''))
+        payload['ap_selection'] = ap_state
+        payload['ap_validation'] = ap_validation
+        atomic_torch_save(payload, checkpoints_dir / 'last.pt')
         if epoch % save_every == 0 or epoch == epochs:
             atomic_torch_save(payload, checkpoints_dir / f"{epoch}epoch.pt")
-        if retained:
-            retained_path = best_dir / f"{epoch}epoch.pt"
-            atomic_torch_save(payload, retained_path)
-            atomic_torch_save(payload, loss_selection_dir / "best.pt")
-            write_json(
-                loss_selection_dir / "selection.json",
-                {
-                    "epoch": epoch,
-                    "validation_objective": current_val,
-                    "checkpoint": str(retained_path),
-                    "criterion": "minimum mean validation loss",
-                },
-            )
+        save_selections(run_dir, payload, retained_loss=retained, retained_ap=retained_ap)
         row = {
             "epoch": epoch,
             "learning_rate": optimizer.param_groups[0]["lr"],
@@ -895,13 +975,16 @@ def main(argv=None) -> None:
             "precision": precision,
             "loss": loss_name,
             "retained": retained,
+            "retained_ap": retained_ap,
+            "ap_validation": ap_validation,
+            "ap_seconds": ap_seconds,
         }
         quality_summary = training_quality.summarize()
         if quality_summary:
             row["training_quality"] = quality_summary
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
-        retained_flag = " [BEST]" if retained else ""
+        retained_flag = " [BEST LOSS]" if retained else ""
         epoch_summary = (
             f"Epoch {epoch:03d}/{epochs:03d} | "
             f"Train Loss: {train_objective:.4f} | "
@@ -911,7 +994,8 @@ def main(argv=None) -> None:
         )
         log_line(epoch_summary)
 
-    log_line(f"Selected checkpoint: {loss_selection_dir / 'best.pt'}")
+    log_line(f"Selected checkpoint: {loss_selection_dir / ('best_ap.pt' if selection['primary'] == 'ap' else 'best_loss.pt')}")
+    log_line(f"Best loss checkpoint: {loss_selection_dir / 'best_loss.pt'}")
     log_line(f"Selection record: {loss_selection_dir / 'selection.json'}")
 
 

@@ -99,7 +99,7 @@ def verify_retained_checkpoint(selected_path, retained_path, *, selected_state=N
         else:
             same = type(left) is type(right) and left == right
         if not same:
-            raise ValueError('Selected checkpoint state differs from the retained minimum-loss checkpoint')
+            raise ValueError('Selected checkpoint state differs from the retained checkpoint')
     return True
 
 
@@ -164,6 +164,20 @@ def checkpoint_identity(config):
                 "groups": [group.to_dict() for group in detection.groups],
                 "group_weights": list(detection.group_weights), "objective": objective,
                 "training": training}
+    if 'checkpoint_selection' in train:
+        try:
+            from .checkpoint_selection import selection_protocol
+        except ImportError:
+            from checkpoint_selection import selection_protocol
+        identity['training']['checkpoint_selection'] = selection_protocol(config)
+        if train['checkpoint_selection'].get('primary') == 'ap':
+            evaluation, kitti = config.get('evaluation', {}), config['data']['kitti']
+            identity['training']['selection_decode'] = {
+                'score_threshold': evaluation.get('score_threshold', .05),
+                'nms_threshold': evaluation.get('nms_threshold', .10),
+                'max_detections': evaluation.get('max_detections', 500),
+                'nms_alpha': config.get('nms_alpha', kitti.get('nms_alpha', .5)) if detection.use_iou else 0.,
+                'peak_mode': config.get('peak_mode', kitti.get('peak_mode', 'per_class'))}
     # JSON canonicalization also ensures tuples/lists serialize identically.
     return json.loads(json.dumps(identity, sort_keys=True, allow_nan=False))
 

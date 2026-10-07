@@ -347,6 +347,11 @@ def resolve_notebook_config(
 def validate_notebook_config(config):
     """Reject options the advertised notebook backbones cannot actually honor."""
     model, loss, train = config["model"], config["loss"], config["train"]
+    try:
+        from .checkpoint_selection import selection_settings
+    except ImportError:
+        from checkpoint_selection import selection_settings
+    selection_settings(config)
     detection_spec(config)
     evaluation = config.get("evaluation", {})
     for key, default in (("score_threshold", .05), ("nms_threshold", .10)):

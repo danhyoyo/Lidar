@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import math
 import os
 import subprocess
 import sys
@@ -21,6 +20,7 @@ def source_preflight(repo_root):
     """Fail early when an old remote branch lacks the uploaded implementation."""
     root = Path(repo_root)
     required = ['configs/config.json', 'tools/kitti_training_pipeline/notebook_config.py',
+        'tools/kitti_training_pipeline/checkpoint_selection.py',
         'tools/kitti_training_pipeline/notebook_workflow.py', 'tools/benchmarks/audit_kitti_assets.py',
         'tools/benchmarks/benchmark_evidence.py', 'tools/benchmarks/benchmark_protocol.py',
         'tools/benchmarks/smoke_detector.py', 'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
@@ -43,36 +43,30 @@ def validate_modes(config, modes):
 
 
 def selected_run(run_dir):
-    """Use this run's resolved config and complete minimum-loss selection only."""
+    """Use this run's complete, policy-verified AP or loss winner."""
     import torch
+    try:
+        from .checkpoint_selection import selection_settings, verify_selection
+    except ImportError:
+        from checkpoint_selection import selection_settings, verify_selection
     root = Path(run_dir).expanduser().resolve()
-    config_path, checkpoint = root/'config.resolved.json', root/'selected/best.pt'
+    config_path = root/'config.resolved.json'
+    config = read_json(config_path)
+    primary = selection_settings(config)['primary']
+    # Old runs used best.pt exclusively; explicit new policies use canonical names.
+    filename = f'best_{primary}.pt' if 'checkpoint_selection' in config['train'] else 'best.pt'
+    checkpoint = root/'selected'/filename
     selection_path, history_path = root/'selected/selection.json', root/'metrics.jsonl'
     for path in (config_path, checkpoint, selection_path, history_path):
         if not path.is_file():
             raise FileNotFoundError(f'Required selected-run artifact is missing: {path}; no last.pt fallback')
-    config, selection = read_json(config_path), read_json(selection_path)
+    selection = read_json(selection_path)
     rows = [json.loads(line) for line in history_path.read_text().splitlines() if line.strip()]
-    if [row['epoch'] for row in rows] != list(range(1, config['train']['epochs']+1)):
-        raise ValueError('Selected-run evaluation requires complete ordered configured training history')
-    running_best = math.inf
-    for row in rows:
-        loss = row['validation']['loss']
-        if (type(loss) not in (int, float) or not math.isfinite(loss) or
-                type(row['optimizer_updates']) is not int or row['optimizer_updates'] < 1 or
-                row['retained'] is not (loss < running_best) or
-                row['precision'] != config['train']['precision'] or row['loss'] != config['loss']['name']):
-            raise ValueError('Training history must have finite loss, successful updates and consistent retention/runtime')
-        running_best = min(running_best, loss)
-    best = min(rows, key=lambda row: row['validation']['loss'])
     saved = torch.load(checkpoint, map_location='cpu', weights_only=True)
-    if (selection['criterion'] != 'minimum mean validation loss' or selection['epoch'] != best['epoch'] or
-            saved['epoch'] != best['epoch'] or saved.get('checkpoint_identity') != checkpoint_identity(config) or
+    verify_selection(config, selection, rows, saved)
+    if (saved.get('checkpoint_identity') != checkpoint_identity(config) or
             checkpoint_identity(saved['config']) != checkpoint_identity(config)):
-        raise ValueError('Selected checkpoint/config identity or minimum-loss epoch does not match this run')
-    for loss in (selection['validation_objective'], saved['validation']['loss'], saved['best_validation_objective']):
-        if type(loss) not in (int, float) or not math.isfinite(loss) or not math.isclose(loss, best['validation']['loss'], abs_tol=1e-8):
-            raise ValueError('Selected checkpoint loss differs from complete training history')
+        raise ValueError('Selected checkpoint/config identity does not match this run')
     retained = Path(selection['checkpoint']).expanduser().resolve()
     verify_retained_checkpoint(checkpoint, retained, selected_state=saved)
     return {'run_dir': root, 'config_path': config_path, 'config': config, 'checkpoint': checkpoint,

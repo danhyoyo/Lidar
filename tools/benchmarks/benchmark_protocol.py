@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools/kitti_training_pipeline")]
 from common import checkpoint_identity, git_metadata, input_shape, read_json, sha256, write_json
+from tools.kitti_training_pipeline.checkpoint_selection import selection_protocol
 
 
 def split_record(path):
@@ -34,6 +35,10 @@ def compare_protocols(expected, comparator):
              "aggregation.moderate_macro_mean_classes", "aggregation.ap9_macro_mean"]
     if expected.get("evaluation", {}).get("metric_mode") == "local_bev":
         paths.extend(["evaluation.roi_geometry", "splits.train.sha256"])
+    if (expected.get('checkpoint_selection', {}).get('policy') == 'maximum validation AP' or
+            comparator.get('checkpoint_selection', {}).get('policy') == 'maximum validation AP'):
+        paths.extend('checkpoint_selection.' + key for key in
+                     ('metric_mode', 'sampling', 'metric', 'difficulty', 'classes', 'ap_every'))
     def value(report, path):
         result = report
         for key in path.split("."):
@@ -88,8 +93,7 @@ def freeze_protocol(config_path, repo_root=ROOT, *, metric_mode="3d", comparator
         "aggregation": {"moderate_macro_mean_classes": ["Car", "Pedestrian", "Cyclist"],
             "ap9_macro_mean": "All 3 classes x Easy/Moderate/Hard, separately for each metric and recall sampling",
             "missing_classes": "Report per-class missing counts; do not silently average a reduced class set"},
-        "checkpoint_selection": {"policy": "minimum validation loss",
-            "alternate_ap_selection": "Only if explicitly selected, tested and matched across comparators"},
+        "checkpoint_selection": selection_protocol(config),
         "decode": {"score_threshold": .05, "nms_threshold": .10, "max_detections": 500,
             "nms_alpha": .5, "peak_mode": "per_class", "cap_scope": "global after classwise NMS",
             "quality_semantics": "BEV IQA; changing to 3D IoU is a separate feature"},

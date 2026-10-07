@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify full evaluator output and minimum-loss checkpoint selection provenance."""
+"""Verify full evaluator output and loss/AP checkpoint selection provenance."""
 from __future__ import annotations
 
 import argparse
@@ -125,22 +125,16 @@ def record_evidence(protocol_path, evaluation_path, selection_path, history_path
     saved = torch.load(checkpoint, map_location='cpu', weights_only=True)
     require(saved.get('checkpoint_identity') == checkpoint_identity(config) and
             checkpoint_identity(saved['config']) == checkpoint_identity(config), 'Selected checkpoint identity does not match baseline config')
-    require(protocol['checkpoint_selection']['policy'] == 'minimum validation loss', 'Unsupported checkpoint selection policy')
+    from tools.kitti_training_pipeline.checkpoint_selection import selection_protocol, verify_selection
+    expected_selection = selection_protocol(config)
+    require(all(protocol['checkpoint_selection'].get(key) == value for key, value in expected_selection.items()),
+            'Checkpoint selection protocol does not match the resolved config')
     rows = [json.loads(line) for line in paths[3].read_text().splitlines() if line.strip()]
     epochs = config['train']['epochs']
-    require([row['epoch'] for row in rows] == list(range(1, epochs + 1)), 'Complete ordered training history is required for all configured epochs')
-    running_best = math.inf
-    for row in rows:
-        value = finite_number(row['validation']['loss'])
-        require(type(row['optimizer_updates']) is int and row['optimizer_updates'] > 0, 'Training history requires actual optimizer updates')
-        require(row['precision'] == config['train']['precision'] and row['loss'] == config['loss']['name'], 'Training history precision/objective does not match config')
-        require(type(row['retained']) is bool and row['retained'] == (value < running_best), 'Training retention history does not match minimum-loss policy')
-        running_best = min(running_best, value)
-    best = min(rows, key=lambda row: row['validation']['loss'])
-    require(selection['criterion'] == 'minimum mean validation loss' and selection['epoch'] == best['epoch'] and
-            saved['epoch'] == best['epoch'], 'Selected checkpoint epoch does not match minimum validation loss')
-    for value in (selection['validation_objective'], saved['validation']['loss'], saved['best_validation_objective']):
-        require(math.isclose(finite_number(value), best['validation']['loss'], abs_tol=1e-8), 'Selected checkpoint loss does not match training history')
+    verify_selection(config, selection, rows, saved)
+    if expected_selection['policy'] == 'maximum validation AP' and expected_selection['metric_mode'] == mode:
+        require(math.isclose(metrics['R40']['map_moderate_percent'], selection['score'], abs_tol=1e-8),
+                'Re-evaluated checkpoint AP differs from its training selection score')
     retained = Path(selection['checkpoint']).resolve()
     verify_retained_checkpoint(checkpoint, retained, selected_state=saved)
     sources = list(dict.fromkeys(paths + [config_path, checkpoint, retained, repo_path(config['train']['data'], ROOT),
@@ -153,7 +147,7 @@ def record_evidence(protocol_path, evaluation_path, selection_path, history_path
         'protocol_path': str(paths[0]), 'evaluation_path': str(paths[1]), 'selection_path': str(paths[2]), 'history_path': str(paths[3]),
         'protocol_sha256': sha256(paths[0]), 'resolved_config_sha256': canonical_hash(config),
         'checkpoint_sha256': sha256(checkpoint), 'checkpoint_selection_verified': True,
-        'selection_policy': 'minimum validation loss', 'training_epochs': epochs, 'full_split_verified': True,
+        'selection_policy': expected_selection['policy'], 'training_epochs': epochs, 'full_split_verified': True,
         'validation_split_sha256': data['split_sha256'], 'processed_root': str(repo_path(config['data']['kitti']['location'], ROOT)),
         'kitti_root': str(raw), 'metrics': metrics, 'reference': reference,
         'source_files': [{'path': str(path), 'sha256': sha256(path)} for path in sources],

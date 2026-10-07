@@ -80,6 +80,9 @@ def test_all_tensor_transfers_keep_nonblocking_behavior():
 def configured_model(classification="gaussian", strategy="oga", iqa=True, grouped=True):
     from test_grouped_header import pipeline_config
     config = pipeline_config()
+    # These fixtures cover historical loss-only, batch-limited training without
+    # original KITTI evaluation assets. Actual AP selection has its own suite.
+    config['train'].pop('checkpoint_selection', None)
     config["model"].update(cls_encoding=classification, header_use_iou=iqa)
     config["loss"] = {"name": strategy, "use_iou": iqa}
     config["train"].update(learning_rate=.001, optimizer="adamw", scheduler="cosine", warmup_epochs=0)

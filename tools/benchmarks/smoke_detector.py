@@ -57,6 +57,10 @@ def synthetic_config(config, directory, precision, workers):
                               "scaling": {"use": False}, "translation": {"use": False}}
     config["train"].update(data=str(root / "train.txt"), num_workers=workers, precision=precision,
                            physical_batch_size=2, accumulation_steps=1, warmup_epochs=0, epochs=4)
+    if 'checkpoint_selection' in config['train']:
+        # This gate checks training-state restoration on synthetic scenes. It
+        # has no original KITTI annotations and must not invent an AP score.
+        config['train']['checkpoint_selection']['primary'] = 'loss'
     config["val"].update(data=str(root / "val.txt"), physical_batch_size=2)
     return config
 
@@ -338,7 +342,7 @@ def run_smoke(config, *, device="cuda", precisions=("fp32", "fp16", "bf16"), ste
         "source_config_identity": checkpoint_identity(config),
         "source_config_sha256": hashlib.sha256(json.dumps(config, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
         "source": git_metadata(ROOT), "precisions": {},
-        "synthetic_overrides": "tiny geometry, disjoint temporary IDs, batch2, no augmentation, warmup0; optimizer/objective/model preserved",
+        "synthetic_overrides": "tiny geometry, disjoint temporary IDs, batch2, no augmentation, warmup0, loss-only selection without AP; optimizer/objective/model preserved",
         "limits": "No AP/latency benchmark. Hybrid paste is covered separately by CPU assembled gates. No Inductor or deterministic persistent-worker replay claim."}
     for precision in precisions:
         if precision != "fp32" and (requested.type != "cuda" or
