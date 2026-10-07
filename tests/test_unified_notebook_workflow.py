@@ -339,7 +339,8 @@ def test_actual_notebook_cells_complete_a_small_run_and_own_config_evidence(tmp_
     comparison=json.loads((run/'comparison.json').read_text())
     assert comparison['rows'][0]['sampling']==('R40' if box_mode=='bev' else 'R11')
     assert comparison['rows'][0]['metric']==modes[0]
-    assert len(comparison['rows'])==(1 if box_mode=='bev' else 4)
+    assert len(comparison['rows'])==(2 if box_mode=='bev' else 8)
+    assert {row['checkpoint_selection'] for row in comparison['rows']} == {'ap', 'loss'}
     assert not json.loads((benchmark/f'candidate_protocol_{modes[0]}.json').read_text())['long_training_allowed']
 
 

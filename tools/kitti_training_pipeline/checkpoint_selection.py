@@ -39,10 +39,13 @@ def selection_settings(config):
             'difficulty': 'Moderate', 'classes': list(CLASSES)}
 
 
-def selection_protocol(config):
+def selection_protocol(config, *, kind=None):
     settings = selection_settings(config)
-    if settings['primary'] == 'loss':
+    kind = settings['primary'] if kind is None else kind
+    _require(kind in {'ap', 'loss'}, 'Checkpoint selection kind must be ap or loss')
+    if kind == 'loss':
         return {'policy': 'minimum validation loss'}
+    _require(settings['primary'] == 'ap', 'This training policy has no validated best AP checkpoint')
     return {'policy': 'maximum validation AP', **settings}
 
 
@@ -139,9 +142,11 @@ def save_selections(run_dir, payload, *, retained_loss, retained_ap):
             write_json(selected / 'selection.json', record)
 
 
-def verify_selection(config, selection, rows, saved):
+def verify_selection(config, selection, rows, saved, *, kind=None):
     """Verify the first policy winner against a complete successful history."""
     epochs = config['train']['epochs']; settings = selection_settings(config)
+    kind = settings['primary'] if kind is None else kind
+    selection_protocol(config, kind=kind)
     _require([row['epoch'] for row in rows] == list(range(1, epochs + 1)),
              'Selected-run evaluation requires complete ordered configured training history')
     running_loss, running_ap = math.inf, None
@@ -186,14 +191,16 @@ def verify_selection(config, selection, rows, saved):
                     running_ap, best_ap = score, row
             _require(type(row.get('retained_ap')) is bool and row['retained_ap'] == keep,
                      'AP retention history does not match maximum-AP policy')
-    primary_ap = settings['primary'] == 'ap'
-    best = best_ap if primary_ap else best_loss
+    # Always audit the original training history, then select the requested
+    # winner. Evaluating best loss does not disable this run's AP history checks.
+    select_ap = kind == 'ap'
+    best = best_ap if select_ap else best_loss
     _require(best is not None and selection['epoch'] == best['epoch'] and saved['epoch'] == best['epoch'] and
-             selection['criterion'] == (AP_CRITERION if primary_ap else LOSS_CRITERION),
+             selection['criterion'] == (AP_CRITERION if select_ap else LOSS_CRITERION),
              'Selected checkpoint epoch does not match the configured loss/AP winner')
     _require(math.isclose(_number(saved['validation']['loss']), best['validation']['loss'], abs_tol=1e-8),
              'Selected checkpoint loss differs from complete training history')
-    if primary_ap:
+    if select_ap:
         state = saved.get('ap_selection', {})
         _require(selection.get('settings') == settings and state.get('settings') == settings and
                  state.get('best_epoch') == best['epoch'] and state.get('best_measurement') == best['ap_validation'],

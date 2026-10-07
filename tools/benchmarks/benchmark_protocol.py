@@ -54,7 +54,8 @@ def compare_protocols(expected, comparator):
 
 
 def freeze_protocol(config_path, repo_root=ROOT, *, metric_mode="3d", comparators=(),
-                    smoke_reports=(), reference_verification=None, asset_audit=None, comparator_evidence=()):
+                    smoke_reports=(), reference_verification=None, asset_audit=None, comparator_evidence=(),
+                    selection_kind=None):
     """Freeze candidate settings and requested metrics, retaining unresolved gates."""
     if metric_mode not in {"local_bev", "3d", "bev"}:
         raise ValueError("metric_mode must be local_bev, 3d or bev")
@@ -93,7 +94,7 @@ def freeze_protocol(config_path, repo_root=ROOT, *, metric_mode="3d", comparator
         "aggregation": {"moderate_macro_mean_classes": ["Car", "Pedestrian", "Cyclist"],
             "ap9_macro_mean": "All 3 classes x Easy/Moderate/Hard, separately for each metric and recall sampling",
             "missing_classes": "Report per-class missing counts; do not silently average a reduced class set"},
-        "checkpoint_selection": selection_protocol(config),
+        "checkpoint_selection": selection_protocol(config, kind=selection_kind),
         "decode": {"score_threshold": .05, "nms_threshold": .10, "max_detections": 500,
             "nms_alpha": .5, "peak_mode": "per_class", "cap_scope": "global after classwise NMS",
             "quality_semantics": "BEV IQA; changing to 3D IoU is a separate feature"},

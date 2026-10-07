@@ -88,6 +88,15 @@ or AP decode protocol requires a new run name. Historical configs without an
 explicit policy keep loss selection. `primary="loss"` disables periodic AP;
 use this for batch-limited smoke/debug runs, which cannot establish best AP.
 
+The notebook's evaluation cell evaluates both saved winners with the run's
+original config. It writes `evaluation_ap_<mode>.json` and
+`evaluation_loss_<mode>.json`, independent protocol/evidence records and a
+comparison table labelled with selection, epoch, checkpoint path and stored
+validation loss. Primary evidence aliases remain available to benchmark tools.
+Historical loss-only runs evaluate only their actual loss winner. Programmatic
+callers can use `selected_run(run_dir, kind="ap")`,
+`selected_run(run_dir, kind="loss")`, or `selected_runs(run_dir)`.
+
 ## Evaluate
 
 ```bash

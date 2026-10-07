@@ -125,13 +125,15 @@ def record_evidence(protocol_path, evaluation_path, selection_path, history_path
     saved = torch.load(checkpoint, map_location='cpu', weights_only=True)
     require(saved.get('checkpoint_identity') == checkpoint_identity(config) and
             checkpoint_identity(saved['config']) == checkpoint_identity(config), 'Selected checkpoint identity does not match baseline config')
-    from tools.kitti_training_pipeline.checkpoint_selection import selection_protocol, verify_selection
-    expected_selection = selection_protocol(config)
+    from tools.kitti_training_pipeline.checkpoint_selection import selection_protocol, verify_selection, AP_CRITERION, LOSS_CRITERION
+    require(selection.get('criterion') in {AP_CRITERION, LOSS_CRITERION}, 'Unknown checkpoint selection criterion')
+    kind = 'ap' if selection['criterion'] == AP_CRITERION else 'loss'
+    expected_selection = selection_protocol(config, kind=kind)
     require(all(protocol['checkpoint_selection'].get(key) == value for key, value in expected_selection.items()),
             'Checkpoint selection protocol does not match the resolved config')
     rows = [json.loads(line) for line in paths[3].read_text().splitlines() if line.strip()]
     epochs = config['train']['epochs']
-    verify_selection(config, selection, rows, saved)
+    verify_selection(config, selection, rows, saved, kind=kind)
     if expected_selection['policy'] == 'maximum validation AP' and expected_selection['metric_mode'] == mode:
         require(math.isclose(metrics['R40']['map_moderate_percent'], selection['score'], abs_tol=1e-8),
                 'Re-evaluated checkpoint AP differs from its training selection score')

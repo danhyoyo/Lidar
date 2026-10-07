@@ -42,35 +42,52 @@ def validate_modes(config, modes):
     return tuple(modes)
 
 
-def selected_run(run_dir):
+def selected_run(run_dir, *, kind=None):
     """Use this run's complete, policy-verified AP or loss winner."""
     import torch
     try:
-        from .checkpoint_selection import selection_settings, verify_selection
+        from .checkpoint_selection import selection_settings, selection_protocol, verify_selection
     except ImportError:
-        from checkpoint_selection import selection_settings, verify_selection
+        from checkpoint_selection import selection_settings, selection_protocol, verify_selection
     root = Path(run_dir).expanduser().resolve()
     config_path = root/'config.resolved.json'
     config = read_json(config_path)
     primary = selection_settings(config)['primary']
+    selected_kind = primary if kind is None else kind
+    selection_protocol(config, kind=selected_kind)
     # Old runs used best.pt exclusively; explicit new policies use canonical names.
-    filename = f'best_{primary}.pt' if 'checkpoint_selection' in config['train'] else 'best.pt'
+    filename = f'best_{selected_kind}.pt' if 'checkpoint_selection' in config['train'] else 'best.pt'
     checkpoint = root/'selected'/filename
     selection_path, history_path = root/'selected/selection.json', root/'metrics.jsonl'
+    if kind is not None and 'checkpoint_selection' in config['train']:
+        selection_path = root/'selected'/f'selection_{selected_kind}.json'
     for path in (config_path, checkpoint, selection_path, history_path):
         if not path.is_file():
             raise FileNotFoundError(f'Required selected-run artifact is missing: {path}; no last.pt fallback')
     selection = read_json(selection_path)
     rows = [json.loads(line) for line in history_path.read_text().splitlines() if line.strip()]
     saved = torch.load(checkpoint, map_location='cpu', weights_only=True)
-    verify_selection(config, selection, rows, saved)
+    verify_selection(config, selection, rows, saved, kind=selected_kind)
     if (saved.get('checkpoint_identity') != checkpoint_identity(config) or
             checkpoint_identity(saved['config']) != checkpoint_identity(config)):
         raise ValueError('Selected checkpoint/config identity does not match this run')
     retained = Path(selection['checkpoint']).expanduser().resolve()
     verify_retained_checkpoint(checkpoint, retained, selected_state=saved)
     return {'run_dir': root, 'config_path': config_path, 'config': config, 'checkpoint': checkpoint,
-            'selection_path': selection_path, 'history_path': history_path, 'completed_epochs': len(rows)}
+            'selection_path': selection_path, 'history_path': history_path, 'completed_epochs': len(rows),
+            'selection_kind': selected_kind, 'epoch': saved['epoch'],
+            'validation_loss': saved['validation']['loss'], 'is_primary': selected_kind == primary}
+
+
+def selected_runs(run_dir):
+    """Resolve both independent winners; historical loss-only runs stay loss-only."""
+    try:
+        from .checkpoint_selection import selection_settings
+    except ImportError:
+        from checkpoint_selection import selection_settings
+    config = read_json(Path(run_dir).expanduser().resolve()/'config.resolved.json')
+    kinds = ('ap', 'loss') if selection_settings(config)['primary'] == 'ap' else ('loss',)
+    return {kind: selected_run(run_dir, kind=kind) for kind in kinds}
 
 
 def evaluation_command(run, mode, raw_root, output, *, repo_root=ROOT, device='cuda'):
@@ -110,7 +127,7 @@ def training_command(config_path, output_root, run_name, *, repo_root=ROOT, resu
     return command
 
 
-def evaluation_rows(report):
+def evaluation_rows(report, *, selection_kind=None):
     """Render exact reported metrics; missing/failed results never become zero."""
     if report.get('status') != 'ok': raise ValueError('Evaluation failed; no accuracy row is available')
     mode = report['protocol'].get('metric_mode', 'local_bev')
@@ -119,6 +136,10 @@ def evaluation_rows(report):
         accuracy = report['accuracy'] if mode == 'local_bev' else report['accuracy'][sampling]
         row = {'name': report.get('name'), 'metric': mode, 'sampling': sampling,
                'map_moderate_percent': accuracy['map_moderate_percent'], 'mean_ap_9_percent': accuracy['mean_ap_9_percent']}
+        if selection_kind is not None:
+            row.update(checkpoint_selection=selection_kind,
+                       checkpoint_epoch=report['model']['checkpoint_epoch'],
+                       checkpoint_path=report['model']['path'])
         for name in ('Car', 'Pedestrian', 'Cyclist'):
             values = accuracy['per_class'][name]
             for difficulty in ('Easy', 'Moderate', 'Hard'):

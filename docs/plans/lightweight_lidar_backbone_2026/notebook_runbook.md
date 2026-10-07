@@ -53,7 +53,7 @@ The effective config is saved as RUN_DIR/config.json; the trainer writes config.
 6. Record baseline evidence and candidate protocols. Development may continue with explicitly pending comparator/matrix gates.
 7. Run a short actual-data training/validation smoke in a temporary directory, with a generated one-epoch/warmup0 snapshot.
 8. Train or strictly resume the full configured schedule. checkpoints/last.pt restores model, adaptive loss, optimizer, scheduler, scaler and RNG. Optional WARM_START_PATH loads compatible backbone tensors into a new run with fresh heads/state.
-9. Evaluate the complete selected run using its own config.resolved.json and configured winner: selected/best_ap.pt by default. Historical runs retain their recorded loss policy. Missing/incomplete selection fails; there is no last.pt fallback.
+9. Evaluate both selected/best_ap.pt and selected/best_loss.pt using the completed run's own config.resolved.json. Historical loss-only runs evaluate their genuine loss winner. Missing/incomplete selection fails; there is no last.pt fallback.
 10. Save per-mode evaluations/predictions, full input/checkpoint provenance, candidate evidence and comparison.csv/comparison.json. Display all nine class/difficulty cells and actual Moderate/AP9 values. Missing results cannot become a fabricated zero.
 
 ## Controlled focal baseline and benchmark mode
@@ -92,6 +92,26 @@ selection_loss.json describe the independent winners. AP state and evaluation
 schedule survive resume. The AP pass restores training RNG and does not change
 the training model or adaptive criterion. Per-epoch AP values and timing are
 recorded in metrics.jsonl and streamed to the notebook.
+
+The evaluation cell runs both winners through every configured evaluation mode.
+The comparison table includes checkpoint_selection, checkpoint_epoch,
+checkpoint_path and the checkpoint's stored validation_loss. Each winner gets
+its own evaluation and predictions, for example evaluation_ap_local_bev.json
+and evaluation_loss_local_bev.json, with separate evaluated_protocol and
+candidate_evidence files labelled by selection kind. comparison.json stores
+both sets under checkpoint_evidence. Existing candidate_evidence and generic
+evaluation filenames still refer to the primary winner for benchmark consumers.
+The baseline row remains labelled with its own primary selection policy.
+The cell reloads evaluation/selection helpers after a checkout update in an
+existing Colab kernel, and refreshes baseline selection metadata. If both
+checkpoints already exist, rerunning this cell does not require retraining.
+
+Both winner records are verified against the original complete training history;
+evaluating best loss from an AP-selected run does not disable its AP schedule
+checks or change its saved config. A genuine loss-only run displays a notice
+and a loss row only. A missing best AP in a new AP-selected run is an error.
+Evaluating both winners costs two inference passes per metric, including when
+the two checkpoints happen to have the same winning epoch.
 
 For A0/A2, start with AP_EVERY=1 so every completed epoch is eligible. AP_EVERY=5
 is a valid runtime compromise but can miss an unsampled peak; use the same value
