@@ -19,7 +19,7 @@ sys.path[:0] = [
 from common import build_model, input_shape, create_experiment_config
 from core.datasets.dataset import Dataset
 from core.losses.loss_fn import LossFunction
-from train import build_optimizer, build_scheduler, seed_everything
+from train import build_optimizer, build_scheduler, seed_everything, set_loss_epoch
 
 BASE_CONFIG = json.loads((ROOT / "configs" / "config.json").read_text(encoding="utf-8"))
 
@@ -38,25 +38,8 @@ TEST_VARIANTS = {
     "gw_qal": {
         "loss": {"name": "gw_qal"},
     },
-    "uwag": {
-        "loss": {"name": "uwag"},
-    },
-    "rich10": {
-        "data": {"bev_encoding": {"name": "rich10", "out_channels": 10, "density_norm": 32, "intensity_scale": 1}},
-    },
-    "rich11": {
-        "data": {"bev_encoding": {"name": "rich11", "out_channels": 11, "density_norm": 32, "intensity_scale": 1}},
-    },
     "rich12": {
         "data": {"bev_encoding": {"name": "rich12", "out_channels": 12, "density_norm": 32, "intensity_scale": 1}},
-    },
-    "rc_sgfpn": {
-        "model": {"neck_type": "rc_sgfpn"},
-        "loss": {"name": "q_oga"},
-    },
-    "rc_bisgfpn": {
-        "model": {"neck_type": "rc_bisgfpn"},
-        "loss": {"name": "q_oga"},
     },
     "mobilepixor_legacy35": {
         "model": {"backbone": "mobilepixor", "scale_gated_fpn": False, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},
@@ -115,6 +98,7 @@ def test_config_supports_dataset_and_training_step(variant_name, target_backend,
 
     model = build_model(config)
     criterion = LossFunction(config["model"]["cls_encoding"], config.get("loss"))
+    set_loss_epoch(criterion, 0)
     optimizer = build_optimizer(model, criterion, config)
     scheduler = build_scheduler(optimizer, config, config["train"]["epochs"])
     outputs = model(batch["voxel"])

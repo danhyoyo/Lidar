@@ -34,11 +34,19 @@ def _get_range_grid(geometry, y_size: int, x_size: int) -> np.ndarray:
 
 
 def encode_bev(points, geometry, bev_encoding=None):
-    """Encode KITTI ``(x, y, z, intensity)`` points as legacy or RichBEV."""
+    """Encode KITTI points as binary slices, legacy RichBEV or hist14 v1."""
     encoding = bev_encoding or {"name": "binary_slices"}
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
+    if name == "hist14":
+        try:
+            from core.bev_encoding import resolve_bev_encoding
+        except ImportError:
+            from detector.core.bev_encoding import resolve_bev_encoding
+        from .bev_backend import encode_hist14
+
+        return encode_hist14(points, resolve_bev_encoding(encoding, geometry))
     valid_names = {"rich8", "rich10", "rich11", "rich12"}
     if name not in valid_names:
         raise ValueError(f"unsupported BEV encoding: {name!r}. Supported: {sorted(valid_names)}")

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import logging
 import math
@@ -22,10 +23,15 @@ from common import (
     atomic_torch_save,
     build_model,
     configure_detector_imports,
+    checkpoint_backends,
+    checkpoint_identity,
+    detection_spec,
     generate_run_name,
     input_shape,
     normalize_state_dict,
     read_json,
+    sha256,
+    warm_start_backbone,
     write_json,
 )
 
@@ -48,10 +54,28 @@ def seed_worker(worker_id: int) -> None:
 
 
 def move_tensor_batch(batch: Dict[str, Any], device: torch.device) -> Dict[str, Any]:
-    return {
-        key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
-        for key, value in batch.items()
-    }
+    """Transfer tensor leaves without converting or flattening sample metadata."""
+    import copy
+    from collections.abc import Mapping, MutableMapping
+
+    def move(value):
+        if torch.is_tensor(value):
+            return value.to(device, non_blocking=True)
+        if isinstance(value, Mapping):
+            items = {key: move(leaf) for key, leaf in value.items()}
+            if isinstance(value, MutableMapping):
+                result = copy.copy(value)
+                result.update(items)
+                return result
+            return type(value)(items)
+        if isinstance(value, list):
+            return [move(leaf) for leaf in value]
+        if isinstance(value, tuple):
+            items = tuple(move(leaf) for leaf in value)
+            return type(value)(*items) if hasattr(value, "_fields") else items
+        return value
+
+    return move(batch)
 
 
 def loader_kwargs(num_workers: int, pin_memory: bool) -> Dict[str, Any]:
@@ -78,6 +102,97 @@ def synchronize_device(device: torch.device) -> None:
         torch.cuda.synchronize(device)
 
 
+def set_loss_epoch(criterion: torch.nn.Module, epoch: int) -> None:
+    """Set zero-based curriculum epoch when supported by the loss strategy."""
+    setter = getattr(criterion, "set_epoch", None)
+    if setter is not None:
+        setter(epoch)
+
+
+def build_training_criterion(config, device):
+    """Resolve the objective's group metadata and place it before the optimizer."""
+    from core.losses.loss_fn import build_loss_function
+
+    spec = detection_spec(config)
+    return build_loss_function(spec.cls_encoding, config.get("loss"),
+                               task_groups=spec.groups if spec.head_mode == "grouped" else None,
+                               head_mode=spec.head_mode, box_mode=spec.box_mode).to(device)
+
+
+def warmup_model(model, voxel, optimizer, device, precision):
+    """Compile every prediction branch without changing BN or criterion state."""
+    from collections.abc import Mapping
+
+    def tensor_sums(value):
+        if torch.is_tensor(value):
+            yield value.float().sum()
+        elif isinstance(value, Mapping):
+            for leaf in value.values():
+                yield from tensor_sums(leaf)
+
+    was_training = model.training
+    model.eval()
+    try:
+        with autocast_context(device, precision):
+            terms = list(tensor_sums(model(voxel)))
+            if not terms:
+                raise ValueError("Compile warmup requires tensor predictions")
+            sum(terms).backward()
+    finally:
+        optimizer.zero_grad(set_to_none=True)
+        model.train(was_training)
+
+
+class QualityMetrics:
+    """Aggregate global/group quality by peak or regression-cell counts."""
+
+    MEANS = ("quality_iou_mean", "quality_iou_zero_fraction", "quality_target_mean")
+
+    def __init__(self):
+        self.streams = {}
+
+    @staticmethod
+    def is_quality_metric(name):
+        leaf = name.rsplit("/", 1)[-1]
+        return leaf.startswith("quality_") or leaf in ("mean_iou_target", "iou_target_count")
+
+    def update(self, losses, targets=None):
+        # The legacy OGA facade exposes a mean but no sufficient count.
+        # Derive it from its flat assigned mask without changing loss outputs.
+        if ("mean_iou_target" in losses and "iou_target_count" not in losses
+                and targets is not None and "reg_mask" in targets):
+            losses = {**losses, "iou_target_count": targets["reg_mask"].bool().sum().float()}
+        for key, value in losses.items():
+            leaf = key.rsplit("/", 1)[-1]
+            if leaf not in ("quality_peak_count", "iou_target_count"):
+                continue
+            prefix = key[:-len(leaf)]
+            means = self.MEANS if leaf == "quality_peak_count" else ("mean_iou_target",)
+            count = value.detach().float()
+            stream = self.streams.setdefault(key, {"count": torch.zeros_like(count), "sums": {}, "mix": None})
+            if leaf == "quality_peak_count":
+                mix = losses[prefix + "quality_iou_mix"].detach()
+                if stream["mix"] is not None and not torch.equal(stream["mix"], mix):
+                    raise ValueError("Q-OGA curriculum mix must agree within an epoch")
+                stream["mix"] = mix
+            stream["count"] = stream["count"] + count
+            for name in means:
+                weighted = losses[prefix + name].detach().float() * count
+                stream["sums"][name] = stream["sums"].get(name, torch.zeros_like(weighted)) + weighted
+
+    def summarize(self):
+        result = {}
+        for key, stream in self.streams.items():
+            leaf = key.rsplit("/", 1)[-1]
+            prefix = key[:-len(leaf)]
+            result[key] = float(stream["count"].cpu())
+            result.update({prefix + name: float((value / stream["count"].clamp_min(1.)).cpu())
+                           for name, value in stream["sums"].items()})
+            if stream["mix"] is not None:
+                result[prefix + "quality_iou_mix"] = float(stream["mix"].cpu())
+        return result
+
+
 def checkpoint_payload(
     model,
     criterion,
@@ -88,6 +203,8 @@ def checkpoint_payload(
     validation: Dict[str, float],
     best_val: float,
     config: Dict[str, Any],
+    *,
+    loader_generator=None,
 ) -> Dict[str, Any]:
     checkpoint_model = getattr(model, "_orig_mod", model)
     return {
@@ -97,13 +214,181 @@ def checkpoint_payload(
         "model_state_dict": checkpoint_model.state_dict(),
         "criterion_state_dict": criterion.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
+        "optimizer_initialized_parameters": sorted(optimizer.state_dict()["state"]),
         "scheduler_state_dict": scheduler.state_dict(),
         "scaler_state_dict": scaler.state_dict(),
         "validation": validation,
         "best_validation_objective": best_val,
         "config": config,
+        "checkpoint_identity": checkpoint_identity(config),
+        "backends": checkpoint_backends(config),
+        "training_state_types": {"optimizer": type(optimizer).__name__,
+                                 "scheduler": type(scheduler).__name__},
+        "rng_state": capture_rng_state(loader_generator),
+        "replay": {"boundary": "epoch_end", "num_workers": config.get("train", {}).get("num_workers", 0),
+                   "deterministic_worker_replay": config.get("train", {}).get("num_workers", 0) == 0},
         "saved_at_utc": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def capture_rng_state(loader_generator):
+    """Use tensors/primitives so checkpoints support weights-only torch.load."""
+    numpy_state = np.random.get_state()
+    return {"python": random.getstate(),
+            "numpy": {"algorithm": numpy_state[0],
+                      "keys": torch.tensor(numpy_state[1].astype(np.int64)),
+                      "position": numpy_state[2], "has_gauss": numpy_state[3],
+                      "cached_gaussian": numpy_state[4]},
+            "torch_cpu": torch.get_rng_state(),
+            "torch_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else [],
+            "loader_generator": loader_generator.get_state() if loader_generator is not None else None}
+
+
+def validate_rng_state(state, loader_generator):
+    """Preflight with private RNGs, without advancing any global stream."""
+    try:
+        random.Random().setstate(state["python"])
+        numpy = state["numpy"]
+        numpy_state = (numpy["algorithm"], numpy["keys"].cpu().numpy().astype(np.uint32),
+                       numpy["position"], numpy["has_gauss"], numpy["cached_gaussian"])
+        np.random.RandomState().set_state(numpy_state)
+        torch.Generator().set_state(state["torch_cpu"].cpu())
+        if loader_generator is None:
+            raise ValueError("Full resume requires the train DataLoader generator")
+        torch.Generator().set_state(state["loader_generator"].cpu())
+        cuda_states = state["torch_cuda"]
+        if not isinstance(cuda_states, list):
+            raise ValueError("Invalid CUDA RNG list")
+        if cuda_states:
+            if not torch.cuda.is_available() or len(cuda_states) != torch.cuda.device_count():
+                raise ValueError("CUDA RNG restoration requires matching visible CUDA devices")
+            for index, value in enumerate(cuda_states):
+                torch.Generator(device=f"cuda:{index}").set_state(value.cpu())
+        elif torch.cuda.is_available():
+            raise ValueError("CUDA resume requires saved CUDA RNG state")
+    except (KeyError, TypeError, AttributeError, ValueError, RuntimeError) as exc:
+        raise ValueError(f"Invalid or incompatible checkpoint RNG state: {exc}") from exc
+    return numpy_state
+
+
+def restore_rng_state(state, loader_generator):
+    numpy_state = validate_rng_state(state, loader_generator)
+    random.setstate(state["python"])
+    np.random.set_state(numpy_state)
+    torch.set_rng_state(state["torch_cpu"].cpu())
+    if state["torch_cuda"]:
+        torch.cuda.set_rng_state_all([value.cpu() for value in state["torch_cuda"]])
+    loader_generator.set_state(state["loader_generator"].cpu())
+
+
+def _validate_module_state(module, state, label):
+    """Require complete buffers even when legacy module loaders allow omissions."""
+    expected = module.state_dict()
+    if not isinstance(state, dict) or set(state) != set(expected):
+        raise ValueError(f"Incomplete or incompatible {label} state keys")
+    for key, value in expected.items():
+        saved = state[key]
+        if (not torch.is_tensor(saved) or saved.shape != value.shape or saved.dtype != value.dtype):
+            raise ValueError(f"Incompatible {label} tensor: {key}")
+
+
+def restore_checkpoint(checkpoint, config, model, criterion, optimizer, scheduler, scaler,
+                       *, loader_generator=None, backend_parity_verified=False):
+    """Validate semantics and all training state before changing live modules.
+
+    Pure legacy weights are supported with a matching legacy topology and start
+    at epoch zero. Incomplete training checkpoints cannot claim full resume.
+    """
+    original_model = getattr(model, "_orig_mod", model)
+    model_state = normalize_state_dict(checkpoint)
+    training_keys = {"optimizer_state_dict", "criterion_state_dict", "scheduler_state_dict",
+                     "scaler_state_dict", "rng_state", "checkpoint_identity"}
+    full_resume = isinstance(checkpoint, dict) and bool(training_keys & set(checkpoint))
+    if not full_resume:
+        if detection_spec(config).head_mode != "legacy_single":
+            raise ValueError("Grouped resume requires checkpoint identity; legacy weights need legacy config")
+        if isinstance(checkpoint.get("config"), dict):
+            if checkpoint_identity(checkpoint["config"]) != checkpoint_identity(config):
+                raise ValueError("Legacy checkpoint identity does not match config")
+        _validate_module_state(original_model, model_state, "legacy model")
+        original_model.load_state_dict(model_state, strict=True)
+        return {"mode": "legacy_weights", "epoch": 0, "best_val": math.inf, "backend_changes": {}}
+
+    required = training_keys | {"epoch", "best_validation_objective", "config", "backends",
+                                "training_state_types", "optimizer_initialized_parameters"}
+    if not required <= set(checkpoint):
+        raise ValueError(f"Incomplete full-resume checkpoint: missing {sorted(required - set(checkpoint))}")
+    current_identity = checkpoint_identity(config)
+    if (checkpoint["checkpoint_identity"] != current_identity or
+            checkpoint_identity(checkpoint["config"]) != checkpoint["checkpoint_identity"]):
+        raise ValueError("Checkpoint architecture/objective/training identity does not match config")
+    current_backends = checkpoint_backends(config)
+    if checkpoint["backends"] != checkpoint_backends(checkpoint["config"]):
+        raise ValueError("Incomplete or inconsistent checkpoint backend metadata")
+    backend_changes = {name: {"saved": checkpoint["backends"][name], "current": backend}
+                       for name, backend in current_backends.items() if checkpoint["backends"][name] != backend}
+    if backend_changes and not backend_parity_verified:
+        raise ValueError("Backend change requires explicitly verified numerical parity")
+    if checkpoint["training_state_types"] != {"optimizer": type(optimizer).__name__,
+                                               "scheduler": type(scheduler).__name__}:
+        raise ValueError("Incompatible optimizer/scheduler resume mode")
+    if type(checkpoint["epoch"]) is not int or checkpoint["epoch"] < 0:
+        raise ValueError("Invalid checkpoint epoch")
+    best_val = float(checkpoint["best_validation_objective"])
+    if math.isnan(best_val):
+        raise ValueError("Invalid checkpoint best validation objective")
+    _validate_module_state(original_model, model_state, "model")
+    _validate_module_state(criterion, checkpoint["criterion_state_dict"], "criterion")
+    for key, value in checkpoint["criterion_state_dict"].items():
+        if key.endswith("quality_epoch") and value.item() != checkpoint["epoch"] - 1:
+            raise ValueError("Checkpoint curriculum epoch does not match saved training epoch")
+    validate_rng_state(checkpoint["rng_state"], loader_generator)
+    # Some PyTorch loaders accept incomplete dictionaries. Validate topology
+    # and exercise loaders on copies before touching the actual optimizer.
+    saved_optimizer = checkpoint["optimizer_state_dict"]
+    current_optimizer = optimizer.state_dict()
+    if set(saved_optimizer) != set(current_optimizer):
+        raise ValueError("Incomplete optimizer state")
+    if sorted(saved_optimizer["state"]) != checkpoint["optimizer_initialized_parameters"]:
+        raise ValueError("Incomplete optimizer initialized parameter state")
+    parameter_ids = {key for group in current_optimizer["param_groups"] for key in group["params"]}
+    if not set(saved_optimizer["state"]) <= parameter_ids:
+        raise ValueError("Unexpected optimizer parameter state")
+    if len(saved_optimizer["param_groups"]) != len(optimizer.param_groups):
+        raise ValueError("Incompatible optimizer group count")
+    for saved_group, group, current_group in zip(saved_optimizer["param_groups"], optimizer.param_groups,
+                                                current_optimizer["param_groups"]):
+        if set(saved_group) != set(current_group) or saved_group["params"] != current_group["params"]:
+            raise ValueError("Incompatible optimizer parameter groups")
+        for key, parameter in zip(saved_group["params"], group["params"]):
+            moments = saved_optimizer["state"].get(key, {})
+            expected_moments = {"step", "exp_avg", "exp_avg_sq"}
+            if saved_group.get("amsgrad", False):
+                expected_moments.add("max_exp_avg_sq")
+            if moments and set(moments) != expected_moments:
+                raise ValueError("Incomplete optimizer moments")
+            for name, value in moments.items():
+                if torch.is_tensor(value) and name != "step" and value.shape != parameter.shape:
+                    raise ValueError(f"Incompatible optimizer tensor: {name}")
+    if set(checkpoint["scheduler_state_dict"]) != set(scheduler.state_dict()):
+        raise ValueError("Incomplete scheduler state")
+    if set(checkpoint["scaler_state_dict"]) != set(scaler.state_dict()):
+        raise ValueError("Incompatible scaler state/precision")
+    try:
+        copy.deepcopy(criterion).load_state_dict(copy.deepcopy(checkpoint["criterion_state_dict"]), strict=True)
+        copy.deepcopy(optimizer).load_state_dict(copy.deepcopy(saved_optimizer))
+        copy.deepcopy(scheduler).load_state_dict(copy.deepcopy(checkpoint["scheduler_state_dict"]))
+        copy.deepcopy(scaler).load_state_dict(copy.deepcopy(checkpoint["scaler_state_dict"]))
+    except (KeyError, TypeError, ValueError, RuntimeError) as exc:
+        raise ValueError(f"Invalid checkpoint training state: {exc}") from exc
+    original_model.load_state_dict(model_state, strict=True)
+    criterion.load_state_dict(checkpoint["criterion_state_dict"], strict=True)
+    optimizer.load_state_dict(saved_optimizer)
+    scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+    scaler.load_state_dict(checkpoint["scaler_state_dict"])
+    restore_rng_state(checkpoint["rng_state"], loader_generator)
+    return {"mode": "resume", "epoch": checkpoint["epoch"], "best_val": best_val,
+            "backend_changes": backend_changes}
 
 
 @torch.no_grad()
@@ -118,6 +403,7 @@ def validate(
     model.eval()
     criterion.eval()
     sums: Dict[str, torch.Tensor] = {}
+    quality_metrics = QualityMetrics()
     samples = 0
     synchronize_device(device)
     started = time.perf_counter()
@@ -127,7 +413,10 @@ def validate(
         with autocast_context(device, precision):
             outputs = model(batch["voxel"])
             losses = criterion(outputs, batch)
+        quality_metrics.update(losses, batch)
         for name, value in losses.items():
+            if quality_metrics.is_quality_metric(name):
+                continue
             scalar = value.detach() if torch.is_tensor(value) else torch.as_tensor(
                 value, device=device
             )
@@ -139,6 +428,7 @@ def validate(
         raise RuntimeError("Validation loader produced no samples")
     synchronize_device(device)
     metrics = {name: float((value / samples).cpu()) for name, value in sums.items()}
+    metrics.update(quality_metrics.summarize())
     metrics.update(seconds=time.perf_counter() - started, samples=samples)
     return metrics
 
@@ -150,7 +440,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--run-name")
     parser.add_argument("--seed", type=int)
-    parser.add_argument("--resume", type=Path)
+    initialization = parser.add_mutually_exclusive_group()
+    initialization.add_argument("--resume", type=Path)
+    initialization.add_argument("--warm-start", type=Path,
+                                help="load compatible backbone tensors only, with fresh heads and training state")
+    parser.add_argument("--backend-parity-verified", action="store_true",
+                        help="allow resume backend changes after numerical parity has been verified")
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--physical-batch-size", type=int)
     parser.add_argument("--accumulation-steps", type=int)
@@ -288,7 +583,6 @@ def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
     configure_detector_imports(args.detector_root)
     from core.datasets.dataset import Dataset
-    from core.losses.loss_fn import LossFunction
 
     config = read_json(args.config)
     if args.override_json:
@@ -359,10 +653,14 @@ def main(argv=None) -> None:
     epochs = int(args.epochs if args.epochs is not None else config["train"]["epochs"])
     if epochs < 1:
         raise ValueError("epochs must be positive")
+    config["train"].update(epochs=epochs, physical_batch_size=physical_batch_size,
+                          accumulation_steps=accumulation_steps)
     save_every = int(config["train"].get("save_every", 5))
     if save_every < 1:
         raise ValueError("save_every must be positive")
 
+    spec = detection_spec(config)
+    dataset_groups = spec.groups if spec.head_mode == "grouped" else None
     train_dataset = Dataset(
         config["train"]["data"],
         config["data"],
@@ -370,6 +668,7 @@ def main(argv=None) -> None:
         config["model"]["cls_encoding"],
         "train",
         args.target_backend,
+        task_groups=dataset_groups,
     )
     # A non-special task name disables augmentation and list-valued visualisation data.
     val_dataset = Dataset(
@@ -379,6 +678,7 @@ def main(argv=None) -> None:
         config["model"]["cls_encoding"],
         "validation",
         args.target_backend,
+        task_groups=dataset_groups,
     )
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
@@ -402,9 +702,7 @@ def main(argv=None) -> None:
     )
 
     model = build_model(config).to(device)
-    criterion = LossFunction(config["model"]["cls_encoding"], config.get("loss")).to(
-        device
-    )
+    criterion = build_training_criterion(config, device)
     optimizer = build_optimizer(model, criterion, config)
     scheduler = build_scheduler(optimizer, config, epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
@@ -417,7 +715,6 @@ def main(argv=None) -> None:
     loss_selection_dir = run_dir / "selected"
     for path in (checkpoints_dir, best_dir, loss_selection_dir):
         path.mkdir(parents=True, exist_ok=True)
-    write_json(run_dir / "config.resolved.json", config)
     train_log_path = run_dir / "train.log"
 
     def log_line(text: str) -> None:
@@ -426,30 +723,28 @@ def main(argv=None) -> None:
             stream.write(text + "\n")
 
     start_epoch, best_val = 0, math.inf
+    if args.warm_start:
+        source_path = args.warm_start.expanduser().resolve()
+        source = torch.load(source_path, map_location=device)
+        report = warm_start_backbone(model, source)
+        config["initialization"] = {"mode": "backbone_warm_start", "checkpoint": str(source_path),
+                                    "sha256": sha256(source_path)}
+        write_json(run_dir / "warm_start.json", {**config["initialization"], **report})
+        log_line(f"Backbone warm-start: loaded={len(report['loaded'])}, skipped={len(report['skipped'])}, "
+                 f"missing={len(report['missing'])}; fresh training state at epoch 0; source={source_path}")
     if args.resume:
         resume = torch.load(args.resume, map_location=device)
-        model.load_state_dict(normalize_state_dict(resume), strict=True)
-        if isinstance(resume, dict) and resume.get("criterion_state_dict") is not None:
-            criterion.load_state_dict(resume["criterion_state_dict"], strict=True)
-        elif any(parameter.requires_grad for parameter in criterion.parameters()):
-            print(
-                "WARNING: resume checkpoint has no UWAG criterion state; "
-                "log-scales start from configured initial values"
-            )
-        if isinstance(resume, dict) and "optimizer_state_dict" in resume:
-            optimizer.load_state_dict(resume["optimizer_state_dict"])
-            if "scheduler_state_dict" in resume:
-                scheduler.load_state_dict(resume["scheduler_state_dict"])
-            else:
-                print(
-                    "WARNING: resume checkpoint has no scheduler state; "
-                    "the learning-rate schedule restarts"
-                )
-            if resume.get("scaler_state_dict"):
-                scaler.load_state_dict(resume["scaler_state_dict"])
-            start_epoch = int(resume.get("epoch", 0))
-            best_val = float(resume.get("best_validation_objective", math.inf))
-        log_line(f"Resumed from epoch {start_epoch}: {args.resume}")
+        restored = restore_checkpoint(resume, config, model, criterion, optimizer, scheduler, scaler,
+                                      loader_generator=generator,
+                                      backend_parity_verified=args.backend_parity_verified)
+        start_epoch, best_val = restored["epoch"], restored["best_val"]
+        log_line(f"Checkpoint mode={restored['mode']}; start epoch={start_epoch}: {args.resume}")
+        if restored["backend_changes"]:
+            log_line(f"Numerical backend parity asserted: {restored['backend_changes']}")
+        if args.num_workers or resume.get("replay", {}).get("num_workers", 0):
+            log_line("Persistent-worker augmentation RNG is not restored; bitwise worker replay is unsupported")
+
+    write_json(run_dir / "config.resolved.json", config)
 
     if args.compile_model:
         if not hasattr(torch, "compile"):
@@ -460,16 +755,16 @@ def main(argv=None) -> None:
             print("Warming up torch.compile kernels...")
             _, in_ch, h, w = input_shape(config)
             dummy_voxel = torch.zeros((physical_batch_size, in_ch, h, w), device=device)
-            with autocast_context(device, precision):
-                dummy_out = model(dummy_voxel)
-                if isinstance(dummy_out, dict) and "cls" in dummy_out:
-                    dummy_loss = dummy_out["cls"].sum()
-                    dummy_loss.backward()
-            optimizer.zero_grad(set_to_none=True)
+            warmup_model(model, dummy_voxel, optimizer, device, precision)
             synchronize_device(device)
             print("Warmup torch.compile completed.")
         except Exception as exc:
             print(f"torch.compile warmup skipped: {exc}")
+
+    if args.resume and restored["mode"] == "resume":
+        # Compiler discovery/warmup may consume RNG. Start the next epoch from
+        # the saved boundary after setup is finished.
+        restore_rng_state(resume["rng_state"], generator)
 
     log_path = run_dir / "metrics.jsonl"
     log_line(f"Run directory: {run_dir}")
@@ -486,8 +781,10 @@ def main(argv=None) -> None:
     for epoch in range(start_epoch + 1, epochs + 1):
         model.train()
         criterion.train()
+        set_loss_epoch(criterion, epoch - 1)
         optimizer.zero_grad(set_to_none=True)
         training_sum = torch.zeros((), device=device)
+        training_quality = QualityMetrics()
         training_samples = update_count = 0
         synchronize_device(device)
         started = time.perf_counter()
@@ -511,6 +808,7 @@ def main(argv=None) -> None:
                 ) * accumulation_steps
                 group_size = min(accumulation_steps, batches_this_epoch - group_start)
                 backward_objective = objective / group_size
+            training_quality.update(losses, batch)
             scaler.scale(backward_objective).backward()
             should_update = (
                 batch_index % accumulation_steps == 0
@@ -569,6 +867,7 @@ def main(argv=None) -> None:
             validation,
             best_val,
             config,
+            loader_generator=generator,
         )
         atomic_torch_save(payload, checkpoints_dir / "last.pt")
         if epoch % save_every == 0 or epoch == epochs:
@@ -597,6 +896,9 @@ def main(argv=None) -> None:
             "loss": loss_name,
             "retained": retained,
         }
+        quality_summary = training_quality.summarize()
+        if quality_summary:
+            row["training_quality"] = quality_summary
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
         retained_flag = " [BEST]" if retained else ""

@@ -7,6 +7,8 @@ This is not a submission to KITTI's hidden official test server.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import math
 import platform
 import time
@@ -19,7 +21,9 @@ import torch
 from shapely.geometry import Polygon
 
 from common import build_model, configure_detector_imports, git_metadata, input_shape, normalize_state_dict
-from common import read_json, sha256, write_json
+from common import read_json, sha256, write_json, evaluation_asset_hashes
+from common import (bev_encoding_spec, checkpoint_identity, detection_spec, model_parameter_report,
+                    validate_deployment_config, validate_evaluation_checkpoint)
 from prepare_kitti import normalize_yaw, parse_calibration
 
 CLASSES = ("Car", "Pedestrian", "Cyclist")
@@ -159,7 +163,7 @@ def ap_r40(recalls: np.ndarray, precisions: np.ndarray) -> float:
 
 def evaluate_one(predictions: Mapping[str, np.ndarray],
                  labels: Mapping[str, Sequence[GroundTruth]],
-                 class_name: str, difficulty: str, distance_band=None) -> Dict[str, Any]:
+                 class_name: str, difficulty: str, distance_band=None, *, class_ids=None) -> Dict[str, Any]:
     valid, ignored, total_gt = {}, {}, 0
     for frame_id, objects in labels.items():
         valid[frame_id], ignored[frame_id] = [], []
@@ -174,7 +178,7 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
         total_gt += len(valid[frame_id])
 
     ranked = []
-    class_id = CLASS_IDS[class_name]
+    class_id = (CLASS_IDS if class_ids is None else class_ids).get(class_name)
     for frame_id, boxes in predictions.items():
         for row in boxes:
             if int(row[0]) == class_id:
@@ -222,12 +226,12 @@ def evaluate_one(predictions: Mapping[str, np.ndarray],
     }
 
 
-def evaluate_accuracy(predictions, labels, include_distance_bands=False) -> Dict[str, Any]:
+def evaluate_accuracy(predictions, labels, include_distance_bands=False, *, class_ids=None) -> Dict[str, Any]:
     per_class, all_values, moderate_values = {}, [], []
     for class_name in CLASSES:
         difficulty_results = {}
         for difficulty in DIFFICULTIES:
-            value = evaluate_one(predictions, labels, class_name, difficulty)
+            value = evaluate_one(predictions, labels, class_name, difficulty, class_ids=class_ids)
             difficulty_results[difficulty] = value
             if value["ap_r40_percent"] is not None:
                 all_values.append(value["ap_r40_percent"])
@@ -241,7 +245,7 @@ def evaluate_accuracy(predictions, labels, include_distance_bands=False) -> Dict
         }
         if include_distance_bands and class_name in {"Pedestrian", "Cyclist"}:
             per_class[class_name]["moderate_distance_bands"] = {
-                name: evaluate_one(predictions, labels, class_name, "Moderate", bounds)
+                name: evaluate_one(predictions, labels, class_name, "Moderate", bounds, class_ids=class_ids)
                 for name, bounds in {
                     "0_30m": (0.0, 30.0),
                     "30_50m": (30.0, 50.0),
@@ -292,12 +296,18 @@ class PyTorchRunner:
         device: str,
         deploy: bool = False,
         save_deploy: Path | None = None,
+        reference_3d: bool = False,
     ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
 
+        if detection_spec(config).box_mode == "3d" and not reference_3d:
+            raise ValueError("3D evaluation requires the reference evaluator; the local BEV evaluator does not support it")
         checkpoint = torch.load(path, map_location="cpu")
+        validate_evaluation_checkpoint(checkpoint, config)
+        self.checkpoint_epoch = checkpoint.get("epoch")
+        self.detection = detection_spec(config)
         state_dict = normalize_state_dict(checkpoint)
 
         is_checkpoint_deployed = any(
@@ -344,6 +354,13 @@ class PyTorchRunner:
             )
 
         self.model = self.model.to(self.device).eval()
+        from core.losses.loss_fn import build_loss_function
+        with torch.device("meta"):
+            criterion = build_loss_function(self.detection.cls_encoding, config.get("loss"),
+                head_mode=self.detection.head_mode,
+                task_groups=self.detection.groups if self.detection.head_mode == "grouped" else None,
+                box_mode=self.detection.box_mode)
+        self.parameter_report = model_parameter_report(self.model, criterion)
 
     def transfer(self, voxel):
         return device_timed(
@@ -360,6 +377,8 @@ class PyTorchRunner:
             "device": str(self.device),
             "precision": "fp32",
             "parameters": sum(parameter.numel() for parameter in self.model.parameters()),
+            "checkpoint_epoch": self.checkpoint_epoch,
+            **self.parameter_report,
         }
         if getattr(self, "is_deployed", False):
             meta["deploy"] = True
@@ -368,7 +387,7 @@ class PyTorchRunner:
 
 class TensorRTRunner:
     def __init__(self, path: Path, config, device: str):
-        del config
+        validate_deployment_config(config, "TensorRT evaluation")
         self.device = torch.device(device)
         if self.device.type != "cuda":
             raise ValueError("TensorRT requires CUDA")
@@ -489,12 +508,17 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     from postprocess import filter_pred
 
     config = read_json(config_path)
+    detection = detection_spec(config)
+    if detection.box_mode == "3d":
+        raise ValueError("3D evaluation requires the reference evaluator; use the explicit metric mode after task57")
+    grouped = detection.head_mode == "grouped"
     geom = config["data"]["kitti"]["geometry"]
     box_fields = 7
     all_ids = read_ids(split_path)
     frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
         raise ValueError("Evaluation split is empty")
+    input_asset_sha256 = evaluation_asset_hashes(config, frame_ids, kitti_root)
     dataset = Dataset(str(split_path), config["data"], config["augmentation"],
                       config["model"]["cls_encoding"], task="test")
     runner = (PyTorchRunner(model_path, config, device, deploy=deploy, save_deploy=save_deploy) if backend == "pytorch"
@@ -536,13 +560,17 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         part_start = time.perf_counter()
         boxes = filter_pred(output, pred_config,
                             config["data"]["out_size_factor"],
-                            score_threshold, nms_threshold)
+                            score_threshold, nms_threshold,
+                            task_groups=detection.groups if grouped else None,
+                            cls_encoding=detection.cls_encoding, use_iou=detection.use_iou,
+                            max_detections=max_detections if grouped else None)
         if uses_cuda:
             torch.cuda.synchronize(runner.device)
         decode_ms = (time.perf_counter() - part_start) * 1000
         if boxes.size:
             boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, box_fields)
-            boxes = boxes[np.argsort(boxes[:, 1])[::-1][:max_detections]]
+            if not grouped:
+                boxes = boxes[np.argsort(boxes[:, 1])[::-1][:max_detections]]
         else:
             boxes = np.empty((0, box_fields), dtype=np.float32)
         total_ms = (time.perf_counter() - total_start) * 1000
@@ -572,14 +600,22 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         "elapsed_seconds": time.time() - started,
     }
 
-    accuracy = evaluate_accuracy(predictions, labels, include_distance_bands=True)
+    class_ids = config["data"]["kitti"]["objects"]
+    accuracy = evaluate_accuracy(predictions, labels, include_distance_bands=True, class_ids=class_ids)
+    resolved_config = json.dumps(config, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    actual_iqa = (all(head.get("iou") is not None for head in output["groups"].values())
+                  if grouped else output.get("iou") is not None)
     result = {
         "status": "ok", "name": name,
         "model": {"backend": backend, "path": str(model_path.resolve()),
                   "bytes": model_path.stat().st_size, "sha256": sha256(model_path),
                   **runner.metadata()},
         "data": {"config": str(config_path.resolve()),
+                 "input_asset_sha256": input_asset_sha256,
                  "config_sha256": sha256(config_path),
+                 "resolved_config_sha256": hashlib.sha256(resolved_config.encode()).hexdigest(),
+                 "encoding_semantic_hash": bev_encoding_spec(config).semantic_hash,
+                 "checkpoint_identity": checkpoint_identity(config),
                  "detector_root": str(detector_root.resolve()),
                  "kitti_root": str(kitti_root.resolve()),
                  "split": str(split_path.resolve()), "split_sha256": sha256(split_path),
@@ -594,12 +630,21 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
             "name": "local loader-aligned KITTI-style rotated BEV AP R40",
             "official_hidden_test_submission": False,
             "classes": list(CLASSES), "difficulty_rules": DIFFICULTIES,
+            "class_ids": class_ids, "head_mode": detection.head_mode,
+            "box_mode": detection.box_mode,
+            "cls_encoding": detection.cls_encoding,
+            "task_groups": [group.to_dict() for group in detection.groups],
+            "group_weights": [list(pair) for pair in detection.group_weights],
+            "peak_scope": "within each group" if grouped else "single flat head",
+            "quality_warmup_epochs": config.get("loss", {}).get("quality_warmup_epochs", 0),
+            "quality_target": (config.get("loss", {}).get("iou_target_type", "mgiou") if actual_iqa
+                               else detection.quality_target),
+            "max_detections_scope": "global after classwise NMS",
             "iou_thresholds": IOU_THRESHOLDS,
             "neighbour_class_ignores": {k: sorted(v) for k, v in NEIGHBOURS.items()},
             "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
             "score_threshold": score_threshold, "nms_threshold": nms_threshold,
-            "nms_alpha": (float(pred_config["nms_alpha"])
-                          if "iou" in output and output["iou"] is not None else 0.0),
+            "nms_alpha": float(pred_config["nms_alpha"]) if actual_iqa else 0.0,
             "peak_mode": pred_config["peak_mode"],
             "max_detections_per_frame": max_detections,
             "warmup_frames_excluded_from_latency_only": min(warmup_frames, len(frame_ids)),

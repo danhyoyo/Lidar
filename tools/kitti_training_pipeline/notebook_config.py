@@ -11,12 +11,11 @@ import math
 from pathlib import Path
 
 try:
-    from .common import create_experiment_config, input_shape, read_json, write_json
+    from .common import backbone_feature_spec, create_experiment_config, detection_spec, input_shape, minimum_bev_channels, read_json, write_json
 except ImportError:
-    from common import create_experiment_config, input_shape, read_json, write_json
+    from common import backbone_feature_spec, create_experiment_config, detection_spec, input_shape, minimum_bev_channels, read_json, write_json
 
 
-BEV_CHANNELS = {"rich8": 8, "rich10": 10, "rich11": 11, "rich12": 12}
 MODEL_DEFAULTS = {
     "backbone": "mobilepixornext", "backbone_out_dim": 16,
     "neck_type": None, "scale_gated_fpn": True,
@@ -25,6 +24,262 @@ MODEL_DEFAULTS = {
     "c4_attention": "litemla", "c4_attention_scales": [5],
     "c4_attention_qk_norm": "none", "deploy": False,
 }
+
+
+UNDER1M_PRESETS = {
+    "UNDER1M_SINGLE_OGA_IQA": "reference_single_oga_iqa",
+    "UNDER1M_GROUPED_OGA_IQA": "reference_oga_iqa",
+    "UNDER1M_GROUPED_BASELINE_IQA": "reference_baseline_iqa",
+    "UNDER1M_FOCAL_OGA_IQA": "main_focal_oga_iqa",
+    "UNDER1M_FOCAL_BASELINE_IQA": "main_focal_baseline_iqa",
+    "UNDER1M_FOCAL_ECA_OGA_IQA": "optional_focal_eca",
+    "UNDER1M_FOCAL_SIMAM_OGA_IQA": "optional_focal_simam",
+    "UNDER1M_FOCAL_FUSION32_OGA_IQA": "optional_focal_fusion32",
+    "UNDER1M_FOCAL_DETAIL_OGA_IQA": "optional_focal_detail",
+}
+UNDER1M_MANIFEST = "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json"
+
+# Built-in notebook recipes; configs/config.json is the only source JSON required.
+UNDER1M_COMMON = {'data': {'bev_encoding': {'name': 'hist14',
+                           'version': 1,
+                           'density_norm': 32.0,
+                           'intensity_scale': 1.0,
+                           'backend': 'numpy'},
+          'out_size_factor': 4,
+          'box_mode': 'bev',
+          'head_groups': [{'name': 'car', 'classes': ['Car']},
+                          {'name': 'ped_cyc', 'classes': ['Pedestrian', 'Cyclist']}]},
+ 'model': {'backbone': 'mobilepixornext',
+           'head_mode': 'grouped',
+           'stage_depths': [3, 4, 2],
+           'backbone_out_dim': 32,
+           'expansion': 2.5,
+           'scale_gated_fpn': True,
+           'neck_type': 'scale_gated_fpn',
+           'c4_attention': 'none',
+           'c4_attention_scales': [],
+           'c4_attention_qk_norm': 'none',
+           'c4_context': 'none',
+           'local_attention': 'none',
+           'neck_fusion_channels': 24,
+           'detail_path': False,
+           'header_use_bn': True,
+           'header_act': 'silu',
+           'header_use_iou': True,
+           'use_reparam': False},
+ 'loss': {'name': 'oga',
+          'use_iou': True,
+          'iou_target_type': 'mgiou',
+          'group_weights': {'car': 1.0, 'ped_cyc': 1.0}}}
+
+UNDER1M_OVERRIDES = {'reference_single_oga_iqa': {'model': {'head_mode': 'legacy_single'}, 'data': {'box_mode': 'bev'}},
+ 'reference_oga_iqa': {'model': {}, 'data': {'box_mode': 'bev'}},
+ 'reference_baseline_iqa': {'model': {}, 'data': {'box_mode': 'bev'}, 'loss': {'name': 'baseline'}},
+ 'main_focal_oga_iqa': {'model': {'c4_context': 'focal',
+                                  'c4_context_version': 1,
+                                  'c4_context_bottleneck': 64,
+                                  'c4_context_dilations': [1, 2, 3],
+                                  'c4_context_layer_scale_init': 0.001},
+                        'data': {'box_mode': 'bev'}},
+ 'main_focal_baseline_iqa': {'model': {'c4_context': 'focal',
+                                       'c4_context_version': 1,
+                                       'c4_context_bottleneck': 64,
+                                       'c4_context_dilations': [1, 2, 3],
+                                       'c4_context_layer_scale_init': 0.001},
+                             'data': {'box_mode': 'bev'},
+                             'loss': {'name': 'baseline'}},
+ 'optional_focal_eca': {'model': {'c4_context': 'focal',
+                                  'c4_context_version': 1,
+                                  'c4_context_bottleneck': 64,
+                                  'c4_context_dilations': [1, 2, 3],
+                                  'c4_context_layer_scale_init': 0.001,
+                                  'local_attention': 'eca',
+                                  'local_attention_eca_kernel_size': 3,
+                                  'local_attention_layer_scale_init': 0.001},
+                        'data': {'box_mode': 'bev'}},
+ 'optional_focal_simam': {'model': {'c4_context': 'focal',
+                                    'c4_context_version': 1,
+                                    'c4_context_bottleneck': 64,
+                                    'c4_context_dilations': [1, 2, 3],
+                                    'c4_context_layer_scale_init': 0.001,
+                                    'local_attention': 'simam',
+                                    'local_attention_simam_lambda': 0.0001,
+                                    'local_attention_layer_scale_init': 0.001},
+                          'data': {'box_mode': 'bev'}},
+ 'optional_focal_fusion32': {'model': {'c4_context': 'focal',
+                                       'c4_context_version': 1,
+                                       'c4_context_bottleneck': 64,
+                                       'c4_context_dilations': [1, 2, 3],
+                                       'c4_context_layer_scale_init': 0.001,
+                                       'neck_fusion_channels': 32},
+                             'data': {'box_mode': 'bev'}},
+ 'optional_focal_detail': {'model': {'c4_context': 'focal',
+                                     'c4_context_version': 1,
+                                     'c4_context_bottleneck': 64,
+                                     'c4_context_dilations': [1, 2, 3],
+                                     'c4_context_layer_scale_init': 0.001,
+                                     'detail_path': True},
+                           'data': {'box_mode': 'bev'}},
+ 'main_focal_3d': {'model': {'c4_context': 'focal',
+                             'c4_context_version': 1,
+                             'c4_context_bottleneck': 64,
+                             'c4_context_dilations': [1, 2, 3],
+                             'c4_context_layer_scale_init': 0.001},
+                   'data': {'box_mode': '3d'},
+                   'loss': {'vertical_loss_weight': 1.0}},
+ 'optional_focal_eca_3d': {'model': {'c4_context': 'focal',
+                                     'c4_context_version': 1,
+                                     'c4_context_bottleneck': 64,
+                                     'c4_context_dilations': [1, 2, 3],
+                                     'c4_context_layer_scale_init': 0.001,
+                                     'local_attention': 'eca',
+                                     'local_attention_eca_kernel_size': 3,
+                                     'local_attention_layer_scale_init': 0.001},
+                           'data': {'box_mode': '3d'},
+                           'loss': {'vertical_loss_weight': 1.0}}}
+
+AUGMENTATION_PROFILES = {'hybrid_gt': {'mode': 'openpcdet',
+               'DISABLE_AUG_LIST': [],
+               'AUG_CONFIG_LIST': [{'NAME': 'hybrid_gt_sampling',
+                                    'PROBABILITY': 0.5,
+                                    'DB_INFO_PATH': ['gt_database/dbinfos_train.json'],
+                                    'NUM_POINT_FEATURES': 4,
+                                    'USE_ROAD_PLANE': False,
+                                    'PREPARE': {'filter_by_min_points': ['Car:5',
+                                                                         'Pedestrian:5',
+                                                                         'Cyclist:5']},
+                                    'SAMPLE_GROUPS': ['Car:8', 'Pedestrian:6', 'Cyclist:6'],
+                                    'LIMIT_WHOLE_SCENE': True,
+                                    'SAMPLE_RATE': 1.0,
+                                    'REMOVE_EXTRA_WIDTH': [0.0, 0.0, 0.0],
+                                    'GEOMETRY_BACKEND': 'auto',
+                                    'CACHE_SIZE_MB': 64,
+                                    'PLACEMENT_MODE': 'source_relative',
+                                    'RANGE_SCALE': [0.9, 1.1],
+                                    'AZIMUTH_JITTER_DEG': 5,
+                                    'MAX_PLACEMENT_ATTEMPTS': 6,
+                                    'CANDIDATE_MULTIPLIER': 3,
+                                    'COLLISION_MARGIN': 0.1,
+                                    'MIN_SAMPLE_POINTS': 5,
+                                    'MIN_VISIBLE_POINTS': 5,
+                                    'MIN_VISIBLE_RATIO': 0.5,
+                                    'ENABLE_GROUND_VALIDATION': True,
+                                    'ENABLE_STATIC_COLLISION': True,
+                                    'ENABLE_LINE_OF_SIGHT': False,
+                                    'ENABLE_SHADOW_MASKING': False,
+                                    'ENABLE_DENSITY_SUBSAMPLE': True,
+                                    'ENABLE_RADIOMETRIC_CALIBRATION': False,
+                                    'ENABLE_VISIBILITY_PROTECTION': True},
+                                   {'NAME': 'random_world_flip',
+                                    'ALONG_AXIS_LIST': ['x'],
+                                    'PROBABILITY': 0.5},
+                                   {'NAME': 'random_world_rotation',
+                                    'WORLD_ROT_ANGLE': [-0.78539816, 0.78539816]},
+                                   {'NAME': 'random_world_scaling',
+                                    'WORLD_SCALE_RANGE': [0.95, 1.05]},
+                                   {'NAME': 'random_world_translation',
+                                    'NOISE_TRANSLATE_STD': [0.2, 0.2, 0.1],
+                                    'PROBABILITY': 0.5}]},
+ 'openpcdet_gt': {'mode': 'openpcdet',
+                  'p': 1.0,
+                  'DISABLE_AUG_LIST': [],
+                  'AUG_CONFIG_LIST': [{'NAME': 'gt_sampling',
+                                       'DB_INFO_PATH': ['gt_database/dbinfos_train.json'],
+                                       'NUM_POINT_FEATURES': 4,
+                                       'USE_ROAD_PLANE': False,
+                                       'PREPARE': {'filter_by_min_points': ['Car:5',
+                                                                            'Pedestrian:5',
+                                                                            'Cyclist:5']},
+                                       'SAMPLE_GROUPS': ['Car:15', 'Pedestrian:10', 'Cyclist:10'],
+                                       'LIMIT_WHOLE_SCENE': True,
+                                       'REMOVE_EXTRA_WIDTH': [0.0, 0.0, 0.0]},
+                                      {'NAME': 'random_world_flip',
+                                       'ALONG_AXIS_LIST': ['x'],
+                                       'PROBABILITY': 0.5},
+                                      {'NAME': 'random_world_rotation',
+                                       'WORLD_ROT_ANGLE': [-0.78539816, 0.78539816]},
+                                      {'NAME': 'random_world_scaling',
+                                       'WORLD_SCALE_RANGE': [0.95, 1.05]},
+                                      {'NAME': 'random_world_translation',
+                                       'NOISE_TRANSLATE_STD': [0.2, 0.2, 0.1],
+                                       'PROBABILITY': 0.5}]},
+ 'openpcdet_global': {'mode': 'openpcdet',
+                      'p': 1.0,
+                      'DISABLE_AUG_LIST': [],
+                      'AUG_CONFIG_LIST': [{'NAME': 'random_world_flip',
+                                           'ALONG_AXIS_LIST': ['x'],
+                                           'PROBABILITY': 0.5},
+                                          {'NAME': 'random_world_rotation',
+                                           'WORLD_ROT_ANGLE': [-0.78539816, 0.78539816]},
+                                          {'NAME': 'random_world_scaling',
+                                           'WORLD_SCALE_RANGE': [0.95, 1.05]},
+                                          {'NAME': 'random_world_translation',
+                                           'NOISE_TRANSLATE_STD': [0.2, 0.2, 0.1],
+                                           'PROBABILITY': 0.5}]}}
+
+
+def resolve_under1m_recipe(repo_dir, recipe_id, *, base_config=None):
+    """Expand an implemented BEV recipe; never enable pending 3D variants."""
+    if recipe_id not in UNDER1M_PRESETS.values():
+        raise ValueError(f"Unknown or deferred under1m recipe: {recipe_id!r}")
+    root = Path(repo_dir)
+    base = read_json(root / "configs/config.json") if base_config is None else base_config
+    base = copy.deepcopy(base)
+    if base["data"].get("bev_encoding", {}).get("name") != "hist14":
+        base["data"].setdefault("bev_encoding", {}).pop("out_channels", None)
+    config = create_experiment_config(base, UNDER1M_COMMON)
+    config = create_experiment_config(config, UNDER1M_OVERRIDES[recipe_id])
+    config["augmentation"] = copy.deepcopy(AUGMENTATION_PROFILES["hybrid_gt"])
+    if config["model"]["head_mode"] == "legacy_single":
+        # The single-head reference intentionally removes the common group contract.
+        config["data"].pop("head_groups", None)
+        config["loss"].pop("group_weights", None)
+    config["experiment"] = {"name": recipe_id}
+    config["model"]["deploy"] = False
+    validate_notebook_config(config)
+    return config
+
+
+def write_under1m_presets(repo_dir):
+    """Materialize only verified BEV options into complete, deterministic JSON."""
+    root = Path(repo_dir)
+    manifest = read_json(root / UNDER1M_MANIFEST)
+    paths = []
+    for variant in manifest["variants"]:
+        if variant["id"] not in UNDER1M_PRESETS.values():
+            continue
+        path = root / variant["planned_config"]
+        write_json(path, resolve_under1m_recipe(root, variant["id"]))
+        paths.append(path)
+    return paths
+
+
+def resolve_under1m_3d_recipe(repo_dir, recipe_id, *, base_config=None):
+    """Resolve explicit 3D recipes without changing BEV notebook defaults."""
+    companions = {"main_focal_3d": "main_focal_oga_iqa",
+                  "optional_focal_eca_3d": "optional_focal_eca"}
+    if recipe_id not in companions:
+        raise ValueError(f"Unknown 3D under1m recipe: {recipe_id!r}")
+    root = Path(repo_dir)
+    config = resolve_under1m_recipe(root, companions[recipe_id], base_config=base_config)
+    config = create_experiment_config(config, UNDER1M_OVERRIDES[recipe_id])
+    config["experiment"] = {"name": recipe_id}
+    validate_notebook_config(config)
+    return config
+
+
+def write_under1m_3d_presets(repo_dir):
+    """Materialize the two explicit 3D options; never rewrite BEV recipes."""
+    root = Path(repo_dir)
+    manifest = read_json(root / UNDER1M_MANIFEST)
+    paths = []
+    for variant in manifest["variants"]:
+        if variant["id"] not in {"main_focal_3d", "optional_focal_eca_3d"}:
+            continue
+        path = root / variant["planned_config"]
+        write_json(path, resolve_under1m_3d_recipe(root, variant["id"]))
+        paths.append(path)
+    return paths
 
 
 def resolve_notebook_config(
@@ -37,16 +292,20 @@ def resolve_notebook_config(
     config = read_json(root / base_path)
     if preset == "custom":
         config = create_experiment_config(config, custom_overrides)
+    elif preset in UNDER1M_PRESETS:
+        config = resolve_under1m_recipe(root, UNDER1M_PRESETS[preset], base_config=config)
     elif preset != "config":
         if preset not in PRESET_CONFIGS:
-            raise ValueError(f"Unknown PRESET: {preset!r}; choose custom, config or {list(PRESET_CONFIGS)}")
+            raise ValueError(f"Unknown PRESET: {preset!r}; choose custom, config or "
+                             f"{list(PRESET_CONFIGS) + list(UNDER1M_PRESETS)}")
         defaults = {"model": MODEL_DEFAULTS, "loss": {"name": "baseline", "use_iou": False}}
         recipe = create_experiment_config(defaults, PRESET_CONFIGS[preset])
         config = create_experiment_config(config, recipe)
         encoding = config["data"]["bev_encoding"]
         encoding.pop("out_channels", None)
-        if encoding["name"] in BEV_CHANNELS:
-            encoding["out_channels"] = BEV_CHANNELS[encoding["name"]]
+        channels = minimum_bev_channels(encoding["name"])
+        if channels is not None:
+            encoding["out_channels"] = channels
 
     if augmentation in ("standard", "compose", "none"):
         # Replace the whole recipe so an OpenPCDet queue cannot survive a mode switch.
@@ -58,8 +317,7 @@ def resolve_notebook_config(
             "translation": {"use": True, "scale": 0.4, "scale_z": 0.4, "p": 1},
         }
     elif augmentation in ("openpcdet_global", "openpcdet_gt", "hybrid_gt"):
-        profile = read_json(root / "configs/augmentation" / f"{augmentation}.json")
-        config["augmentation"] = copy.deepcopy(profile["augmentation"])
+        config["augmentation"] = copy.deepcopy(AUGMENTATION_PROFILES[augmentation])
         if augmentation == "hybrid_gt" and hybrid_options:
             if "NAME" in hybrid_options:
                 raise ValueError("HYBRID_OPTIONS cannot override operator NAME")
@@ -89,6 +347,25 @@ def resolve_notebook_config(
 def validate_notebook_config(config):
     """Reject options the advertised notebook backbones cannot actually honor."""
     model, loss, train = config["model"], config["loss"], config["train"]
+    detection_spec(config)
+    evaluation = config.get("evaluation", {})
+    for key, default in (("score_threshold", .05), ("nms_threshold", .10)):
+        value = evaluation.get(key, default)
+        if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+            raise ValueError(f"evaluation.{key} must be finite and between 0 and 1")
+    cap = evaluation.get("max_detections", 500)
+    if type(cap) is not int or cap < 1:
+        raise ValueError("evaluation.max_detections must be a positive integer")
+    kitti = config['data']['kitti']
+    alpha = config.get('nms_alpha', kitti.get('nms_alpha', .5))
+    if type(alpha) not in (int, float) or not math.isfinite(alpha) or not 0 <= alpha <= 1:
+        raise ValueError('nms_alpha must be finite and between 0 and 1')
+    if config.get('peak_mode', kitti.get('peak_mode', 'per_class')) not in {'per_class', 'legacy'}:
+        raise ValueError('peak_mode must be per_class or legacy')
+    # Validate before legacy preset sanitation can erase conflicting fields.
+    features = backbone_feature_spec(model, geometry=config["data"]["kitti"]["geometry"])
+    if model.get("backbone") == "mobilepixornext":
+        model.update(features.to_dict())
     backbone = model.get("backbone")
     if backbone not in ("mobilepixornext", "mobilepixor", "mobilepixor_coordatt"):
         raise ValueError(f"Unsupported notebook BACKBONE: {backbone!r}")
@@ -114,15 +391,6 @@ def validate_notebook_config(config):
             raise ValueError("C4_ATTENTION_SCALES must contain positive odd integers")
         if model.get("c4_attention_qk_norm", "none") not in ("none", "rmsnorm", "layernorm"):
             raise ValueError("Unsupported C4_ATTENTION_QK_NORM")
-    if loss.get("name") not in ("baseline", "oga", "q_oga", "gw_qal", "uwag"):
-        raise ValueError("Unsupported LOSS_NAME")
-    use_iou = model.get("header_use_iou", False)
-    if bool(loss.get("use_iou", False)) != bool(use_iou):
-        raise ValueError("header_use_iou and loss.use_iou must agree")
-    if use_iou and loss["name"] not in ("baseline", "oga"):
-        raise ValueError("IQA supervision requires baseline or oga loss")
-    if config["data"].get("out_size_factor", 4) != 4:
-        raise ValueError("These backbones output stride 4; out_size_factor must be 4")
     input_shape(config)
     epochs, warmup = train["epochs"], train.get("warmup_epochs", 0)
     if not isinstance(epochs, int) or not isinstance(warmup, int) or epochs <= 0 or not 0 <= warmup < epochs:

@@ -2,6 +2,7 @@
 
 from typing import Any, Callable, Dict, List
 import torch.nn as nn
+from core.backbone_config import resolve_backbone_features
 
 BackboneBuilder = Callable[[Dict[str, Any], int], nn.Module]
 
@@ -26,6 +27,11 @@ def build_backbone(name: str, cfg: Dict[str, Any], input_channels: int = 35) -> 
         available = ", ".join(sorted(_BACKBONE_REGISTRY.keys()))
         raise ValueError(f"Unsupported backbone: {name!r}. Available backbones: {available}")
     builder = _BACKBONE_REGISTRY[key]
+    if key in {"mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}:
+        normalized = dict(cfg, backbone=key)
+        if normalized.get("neck_type") in (None, "sgfpn"):
+            normalized["neck_type"] = "scale_gated_fpn"
+        resolve_backbone_features(normalized, geometry=cfg.get("geometry"))
     return builder(cfg, input_channels)
 
 
@@ -64,11 +70,14 @@ def _build_mobilepixor_coordatt(cfg: Dict[str, Any], input_channels: int = 35) -
 
 @register_backbone("mobilepixornext")
 def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
+    features = resolve_backbone_features({k: v for k, v in cfg.items() if k != "neck_type"})
+    new_options = {k: v for k, v in features.to_dict().items()
+                   if k not in {"c4_attention", "c4_attention_scales", "c4_attention_qk_norm"}}
     return MobilePixorNeXtBackbone(
         input_channels=input_channels,
         backbone_out_dim=cfg.get("backbone_out_dim", 16),
         c4_attention=cfg.get("c4_attention", "litemla"),
-        c4_attention_scales=cfg.get("c4_attention_scales", (5,)),
+        c4_attention_scales=features.c4_attention_scales,
         c4_attention_qk_norm=cfg.get("c4_attention_qk_norm", "none"),
         scale_gated_fpn=cfg.get("scale_gated_fpn", True),
         expansion=cfg.get("expansion", 2.5),
@@ -77,6 +86,8 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
         neck_type=cfg.get("neck_type", "scale_gated_fpn"),
         geometry=cfg.get("geometry") or cfg.get("kitti", {}).get("geometry") or cfg.get("data", {}).get("kitti", {}).get("geometry"),
         num_range_bands=cfg.get("num_range_bands", 4),
+        stage_depths=cfg.get("stage_depths", (2, 4, 2)),
+        **new_options,
     )
 
 

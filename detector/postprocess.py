@@ -1,4 +1,5 @@
 import torch
+import math
 import numpy as np
 from shapely.geometry import Polygon
 import torch.nn.functional as F
@@ -72,7 +73,24 @@ def _empty_detections():
     return np.empty((0, 7), dtype=np.float32)
 
 
-def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
+def decode_candidates(pred, config, out_size_factor, thres, *, cls_encoding="gaussian", grouped=False,
+                      box_mode="bev"):
+    """Decode foreground candidates without sorting or NMS.
+
+    Explicit binary mode uses local softmax with background-winner masking.
+    The flat wrapper retains its historical sigmoid behavior by default.
+    """
+    if box_mode not in {"bev", "3d"}:
+        raise ValueError("box_mode must be bev or 3d")
+    if "vertical" in pred and box_mode == "bev":
+        raise ValueError("3D decoding requires box_mode=3d; BEV decoding cannot drop vertical output")
+    if box_mode == "3d":
+        if "vertical" not in pred:
+            raise KeyError("3D prediction requires vertical")
+        if not torch.is_tensor(pred["vertical"]) or pred["vertical"].shape != pred["offset"].shape:
+            raise ValueError("vertical must match two-channel offset shape")
+        # New 3D decode always uses FP32; historical BEV arithmetic is preserved.
+        pred = {key: value.float() if torch.is_tensor(value) else value for key, value in pred.items()}
     geom = config["geometry"]
 
     required = {"cls", "offset", "size", "yaw"}
@@ -104,8 +122,6 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
 
     if not 0.0 <= thres <= 1.0:
         raise ValueError("score threshold must be between 0 and 1")
-    if nms_thres is not None and not 0.0 <= nms_thres <= 1.0:
-        raise ValueError("NMS threshold must be between 0 and 1")
 
     # Remove only the known batch dimension. A plain squeeze() also removes the
     # class dimension for single-class models and makes torch.max use the wrong axis.
@@ -126,7 +142,17 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     dx, dy = offset_pred
     log_w, log_l = size_pred
 
-    cls_pred = torch.sigmoid(cls_pred)
+    foreground_cells = None
+    if cls_encoding == "binary":
+        if cls_pred.shape[0] < 2:
+            raise ValueError("Binary classification requires background plus foreground channels")
+        probabilities = torch.softmax(cls_pred, dim=0)
+        foreground_cells = probabilities.argmax(dim=0) != 0
+        cls_pred = probabilities[1:]
+    elif cls_encoding == "gaussian":
+        cls_pred = torch.sigmoid(cls_pred)
+    else:
+        raise ValueError("cls_encoding must be gaussian or binary")
     peak_mode = config.get("peak_mode", "per_class")
     if peak_mode not in {"per_class", "legacy"}:
         raise ValueError("peak_mode must be 'per_class' or 'legacy'")
@@ -152,9 +178,21 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         ranking_scores = (cls_probs ** (1.0 - alpha)) * (iou_score ** alpha)
     else:
         ranking_scores = cls_probs
+    if foreground_cells is not None:
+        # Background-winning cells must not emit candidates or suppress nearby
+        # foreground peaks, including the alpha=1 quality-only ranking case.
+        ranking_scores = torch.where(foreground_cells, ranking_scores, 0.)
 
-    output_shape = [int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / out_size_factor),
-                    int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / out_size_factor)]
+    raw_grid = [(geom[f"{axis}_max"] - geom[f"{axis}_min"]) / geom[f"{axis}_res"] / out_size_factor
+                for axis in ("y", "x")]
+    if grouped:
+        output_shape = [round(cells) for cells in raw_grid]
+        if any(size < 1 or not math.isclose(cells, size, rel_tol=1e-5, abs_tol=1e-6)
+               for cells, size in zip(raw_grid, output_shape)):
+            raise ValueError("Grouped prediction grid must have positive integral output dimensions")
+    else:
+        # Historical flat decode keeps its original integer truncation.
+        output_shape = [int(cells) for cells in raw_grid]
 
     y = torch.arange(output_shape[0])
     x = torch.arange(output_shape[1])
@@ -173,6 +211,12 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     yaw2 = torch.atan2(sin_t, cos_t)
     yaw = yaw2 / 2
     decoded = [center_x, center_y, l, w, yaw]
+    if box_mode == "3d":
+        z_bottom, log_height = pred["vertical"][0].detach().unbind(dim=0)
+        height = torch.exp(log_height)
+        if (height <= 0).any() or (l <= 0).any() or (w <= 0).any():
+            raise FloatingPointError("3D decoded dimensions/height must be positive")
+        decoded.extend([z_bottom, height])
     if not torch.stack([torch.isfinite(value).all() for value in decoded]).all():
         raise FloatingPointError("non-finite decoded box")
 
@@ -184,7 +228,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         pooled = F.max_pool2d(ranking_scores[None], 3, 1, 1)[0]
     candidate_mask = (ranking_scores == pooled) & (ranking_scores > thres) & (cls_probs > thres)
     if not candidate_mask.any():
-        return _empty_detections()
+        return offset_pred.new_empty((0, 9 if box_mode == "3d" else 7))
     if peak_mode == "legacy":
         ys, xs = torch.nonzero(candidate_mask, as_tuple=True)
         candidate_cls_ids = cls_ids[ys, xs]
@@ -193,6 +237,31 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     candidate_scores = ranking_scores[candidate_mask]
     center_x, center_y = center_x[ys, xs], center_y[ys, xs]
     l, w, yaw = l[ys, xs], w[ys, xs], yaw[ys, xs]
+
+    if box_mode == "3d":
+        return torch.stack([candidate_cls_ids, candidate_scores, center_x, center_y,
+                            z_bottom[ys, xs], l, w, height[ys, xs], yaw], dim=1)
+    return torch.stack([candidate_cls_ids, candidate_scores, center_x, center_y, l, w, yaw], dim=1)
+
+
+def finalize_detections(candidates, nms_thres=None, *, max_detections=None, box_mode="bev"):
+    """Apply the historical classwise rotated NMS and descending score order."""
+    if nms_thres is not None and not 0.0 <= nms_thres <= 1.0:
+        raise ValueError("NMS threshold must be between 0 and 1")
+    if max_detections is not None and (type(max_detections) is not int or max_detections < 1):
+        raise ValueError("max_detections must be a positive integer or None")
+    if box_mode not in {"bev", "3d"}:
+        raise ValueError("box_mode must be bev or 3d")
+    columns = 9 if box_mode == "3d" else 7
+    if candidates.ndim != 2 or candidates.shape[1] != columns:
+        raise ValueError(f"Candidates must have shape [N, {columns}]")
+    if not len(candidates):
+        return np.empty((0, 9), dtype=np.float32) if box_mode == "3d" else _empty_detections()
+    candidates = candidates.detach()
+    candidate_cls_ids = candidates[:, 0].long()
+    candidate_scores = candidates[:, 1]
+    footprint = candidates[:, [2, 3, 5, 6, 8]] if box_mode == "3d" else candidates[:, 2:]
+    center_x, center_y, l, w, yaw = footprint.unbind(dim=1)
 
     if nms_thres is not None:
         cos_t = torch.cos(yaw)
@@ -210,7 +279,7 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
         front_left_y = center_y + l/2 * sin_t + w/2 * cos_t
 
         kept_by_class = []
-        if pred["cls"].is_cuda and _torchvision_nms_rotated is not None:
+        if candidates.is_cuda and _torchvision_nms_rotated is not None:
             candidate_boxes = torch.stack(
                 [center_x, center_y, w, l, torch.rad2deg(yaw)], dim=1
             )
@@ -246,13 +315,76 @@ def filter_pred(pred, config, out_size_factor, thres, nms_thres = None):
     else:
         selected_idxs = torch.argsort(candidate_scores, descending=True)
 
-    fields = [candidate_cls_ids[selected_idxs].cpu().numpy(),
-              candidate_scores[selected_idxs].cpu().numpy(),
-              center_x[selected_idxs].cpu().numpy(),
-              center_y[selected_idxs].cpu().numpy(),
-              l[selected_idxs].cpu().numpy(),
-              w[selected_idxs].cpu().numpy()]
-    fields.append(yaw[selected_idxs].cpu().numpy())
-    boxes = np.stack(fields, axis=1)
+    return candidates[selected_idxs[:max_detections]].cpu().numpy().astype(np.float32, copy=False)
 
-    return boxes.astype(np.float32, copy=False)
+
+def filter_pred(pred, config, out_size_factor, thres, nms_thres=None, *,
+                task_groups=None, cls_encoding="gaussian", use_iou=None, max_detections=None,
+                box_mode="bev"):
+    """Decode one frame; grouped branches require resolved metadata.
+
+    The original positional flat interface and its sigmoid/peak/NMS policies
+    remain available. Grouped binary branches use explicit local softmax.
+    """
+    if "groups" not in pred:
+        if task_groups is not None:
+            raise ValueError("Resolved task_groups require grouped predictions")
+        return finalize_detections(decode_candidates(pred, config, out_size_factor, thres,
+                                   cls_encoding=cls_encoding if box_mode == "3d" else "gaussian",
+                                   box_mode=box_mode), nms_thres,
+                                   max_detections=max_detections, box_mode=box_mode)
+    from collections.abc import Mapping
+    try:
+        from core.task_groups import validate_resolved_groups, resolve_task_groups
+    except ImportError:
+        from detector.core.task_groups import validate_resolved_groups, resolve_task_groups
+    if task_groups is None:
+        raise ValueError("Grouped decode requires resolved task_groups")
+    groups = validate_resolved_groups(task_groups)
+    if cls_encoding not in {"gaussian", "binary"}:
+        raise ValueError("cls_encoding must be gaussian or binary")
+    if set(pred) != {"groups"} or not isinstance(pred["groups"], Mapping):
+        raise ValueError("Grouped predictions must contain only a groups mapping")
+    if set(pred["groups"]) != {group.name for group in groups}:
+        raise ValueError("Prediction groups must match task_groups exactly")
+    if "objects" in config:
+        checked = resolve_task_groups([{"name": group.name, "classes": list(group.classes)}
+                                      for group in groups], config["objects"])
+        if checked != groups:
+            raise ValueError("Global class mapping does not match task_groups")
+    quality_presence = []
+    for group in groups:
+        heads = pred["groups"][group.name]
+        allowed = {"cls", "offset", "size", "yaw", "iou"} | ({"vertical"} if box_mode == "3d" else set())
+        if not isinstance(heads, Mapping) or set(heads) - allowed:
+            raise ValueError(f"Malformed prediction heads for group {group.name}")
+        if any(not torch.is_tensor(value) for key, value in heads.items()
+               if key != "iou" or value is not None):
+            raise ValueError(f"Prediction heads must be tensors for group {group.name}")
+        if "cls" not in heads:
+            raise KeyError(f"Missing cls head for group {group.name}")
+        expected_width = group.num_classes + int(cls_encoding == "binary")
+        if not torch.is_tensor(heads["cls"]) or heads["cls"].ndim != 4 or heads["cls"].shape[1] != expected_width:
+            raise ValueError(f"{cls_encoding} cls width must match group {group.name}")
+        quality_presence.append("iou" in heads and heads["iou"] is not None)
+    if len(set(quality_presence)) != 1 or (use_iou is not None and quality_presence[0] != use_iou):
+        raise ValueError("IQA presence must agree across groups and the resolved head setting")
+    candidates = []
+    for group in groups:
+        decoded = decode_candidates(pred["groups"][group.name], config, out_size_factor, thres,
+                                    cls_encoding=cls_encoding, grouped=True, box_mode=box_mode)
+        if len(decoded):
+            ids = torch.tensor(group.global_ids, device=decoded.device)
+            decoded[:, 0] = ids[decoded[:, 0].long()]
+        candidates.append(decoded)
+    return finalize_detections(torch.cat(candidates, dim=0), nms_thres,
+                               max_detections=max_detections, box_mode=box_mode)
+
+
+def filter_pred_3d(pred, config, out_size_factor, thres, nms_thres=None, **kwargs):
+    """Return float32 [class,score,x,y,z_bottom,length,width,height,yaw] rows.
+
+    NMS remains classwise BEV footprint NMS, retaining the complete selected row.
+    IQA still ranks BEV quality; it is not a new 3D IoU score.
+    """
+    return filter_pred(pred, config, out_size_factor, thres, nms_thres, box_mode="3d", **kwargs)

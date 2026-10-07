@@ -1,4 +1,5 @@
 import torch.nn as nn
+from ...detection_config import resolve_box_mode
 
 def conv3x3(in_planes, out_planes, stride=1, bias=False):
     """3x3 convolution with padding"""
@@ -34,8 +35,10 @@ class Head(nn.Module):
         return head
 
 class Header(nn.Module):
-    def __init__(self, num_classes, in_channels, use_bn=False, act="none", use_iou=False):
+    def __init__(self, num_classes, in_channels, use_bn=False, act="none", use_iou=False,
+                 box_mode="bev"):
         super(Header, self).__init__()
+        self.box_mode = resolve_box_mode(box_mode)
         self.use_iou = use_iou
         self.cls = Head(in_channels, num_classes, use_bn=use_bn, act=act)
         self.offset = Head(in_channels, 2, use_bn=use_bn, act=act)
@@ -43,6 +46,9 @@ class Header(nn.Module):
         self.yaw = Head(in_channels, 2, use_bn=use_bn, act=act)
         if self.use_iou:
             self.iou = Head(in_channels, 1, use_bn=use_bn, act=act)
+        if self.box_mode == "3d":
+            # Bottom-center z and log(height); BEV branch widths stay unchanged.
+            self.vertical = Head(in_channels, 2, use_bn=use_bn, act=act)
 
     def forward(self, x):
         cls = self.cls(x)
@@ -53,5 +59,7 @@ class Header(nn.Module):
         pred = {"cls": cls, "offset": offset, "size": size, "yaw": yaw}
         if self.use_iou:
             pred["iou"] = self.iou(x)
+        if self.box_mode == "3d":
+            pred["vertical"] = self.vertical(x)
 
         return pred

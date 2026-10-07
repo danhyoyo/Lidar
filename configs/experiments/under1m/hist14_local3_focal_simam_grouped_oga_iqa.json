@@ -1,0 +1,212 @@
+{
+  "augmentation": {
+    "AUG_CONFIG_LIST": [
+      {
+        "AZIMUTH_JITTER_DEG": 5,
+        "CACHE_SIZE_MB": 64,
+        "CANDIDATE_MULTIPLIER": 3,
+        "COLLISION_MARGIN": 0.1,
+        "DB_INFO_PATH": [
+          "gt_database/dbinfos_train.json"
+        ],
+        "ENABLE_DENSITY_SUBSAMPLE": true,
+        "ENABLE_GROUND_VALIDATION": true,
+        "ENABLE_LINE_OF_SIGHT": false,
+        "ENABLE_RADIOMETRIC_CALIBRATION": false,
+        "ENABLE_SHADOW_MASKING": false,
+        "ENABLE_STATIC_COLLISION": true,
+        "ENABLE_VISIBILITY_PROTECTION": true,
+        "GEOMETRY_BACKEND": "auto",
+        "LIMIT_WHOLE_SCENE": true,
+        "MAX_PLACEMENT_ATTEMPTS": 6,
+        "MIN_SAMPLE_POINTS": 5,
+        "MIN_VISIBLE_POINTS": 5,
+        "MIN_VISIBLE_RATIO": 0.5,
+        "NAME": "hybrid_gt_sampling",
+        "NUM_POINT_FEATURES": 4,
+        "PLACEMENT_MODE": "source_relative",
+        "PREPARE": {
+          "filter_by_min_points": [
+            "Car:5",
+            "Pedestrian:5",
+            "Cyclist:5"
+          ]
+        },
+        "PROBABILITY": 0.5,
+        "RANGE_SCALE": [
+          0.9,
+          1.1
+        ],
+        "REMOVE_EXTRA_WIDTH": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "SAMPLE_GROUPS": [
+          "Car:8",
+          "Pedestrian:6",
+          "Cyclist:6"
+        ],
+        "SAMPLE_RATE": 1.0,
+        "USE_ROAD_PLANE": false
+      },
+      {
+        "ALONG_AXIS_LIST": [
+          "x"
+        ],
+        "NAME": "random_world_flip",
+        "PROBABILITY": 0.5
+      },
+      {
+        "NAME": "random_world_rotation",
+        "WORLD_ROT_ANGLE": [
+          -0.78539816,
+          0.78539816
+        ]
+      },
+      {
+        "NAME": "random_world_scaling",
+        "WORLD_SCALE_RANGE": [
+          0.95,
+          1.05
+        ]
+      },
+      {
+        "NAME": "random_world_translation",
+        "NOISE_TRANSLATE_STD": [
+          0.2,
+          0.2,
+          0.1
+        ],
+        "PROBABILITY": 0.5
+      }
+    ],
+    "DISABLE_AUG_LIST": [],
+    "mode": "openpcdet"
+  },
+  "data": {
+    "bev_encoding": {
+      "backend": "numpy",
+      "density_norm": 32.0,
+      "intensity_scale": 1.0,
+      "name": "hist14",
+      "version": 1
+    },
+    "box_mode": "bev",
+    "gaussian_overlap": 0.1,
+    "head_groups": [
+      {
+        "classes": [
+          "Car"
+        ],
+        "name": "car"
+      },
+      {
+        "classes": [
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "name": "ped_cyc"
+      }
+    ],
+    "kitti": {
+      "geometry": {
+        "x_max": 70.4,
+        "x_min": 0,
+        "x_res": 0.1,
+        "y_max": 40,
+        "y_min": -40,
+        "y_res": 0.1,
+        "z_max": 1,
+        "z_min": -2.5,
+        "z_res": 0.1
+      },
+      "location": "data/kitti/processed",
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      },
+      "peak_mode": "per_class"
+    },
+    "min_radius": 4,
+    "num_classes": 3,
+    "out_size_factor": 4,
+    "regression_assignment": "nearest_center"
+  },
+  "date": "reproducible",
+  "device": "cuda",
+  "experiment": {
+    "name": "optional_focal_simam"
+  },
+  "loss": {
+    "group_weights": {
+      "car": 1.0,
+      "ped_cyc": 1.0
+    },
+    "iou_target_type": "mgiou",
+    "name": "oga",
+    "use_iou": true
+  },
+  "model": {
+    "backbone": "mobilepixornext",
+    "backbone_out_dim": 32,
+    "c4_attention": "none",
+    "c4_attention_qk_norm": "none",
+    "c4_attention_scales": [],
+    "c4_context": "focal",
+    "c4_context_bottleneck": 64,
+    "c4_context_dilations": [
+      1,
+      2,
+      3
+    ],
+    "c4_context_layer_scale_init": 0.001,
+    "c4_context_version": 1,
+    "cls_encoding": "gaussian",
+    "deploy": false,
+    "detail_path": false,
+    "expansion": 2.5,
+    "head_mode": "grouped",
+    "header_act": "silu",
+    "header_use_bn": true,
+    "header_use_iou": true,
+    "local_attention": "simam",
+    "local_attention_layer_scale_init": 0.001,
+    "local_attention_simam_lambda": 0.0001,
+    "neck_fusion_channels": 24,
+    "neck_type": "scale_gated_fpn",
+    "scale_gated_fpn": true,
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "use_reparam": false
+  },
+  "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+  "seed": 42,
+  "train": {
+    "accumulation_steps": 1,
+    "compile_model": false,
+    "data": "splits/kitti/train.txt",
+    "epochs": 50,
+    "grad_clip_norm": 10.0,
+    "learning_rate": 0.0007,
+    "min_lr": 1e-06,
+    "num_workers": 6,
+    "optimizer": "adamw",
+    "physical_batch_size": 16,
+    "precision": "bf16",
+    "save_every": 5,
+    "target_backend": "numba",
+    "warmup_epochs": 4,
+    "weight_decay": 0.001
+  },
+  "val": {
+    "data": "splits/kitti/val.txt",
+    "physical_batch_size": 32,
+    "val_every": 1
+  },
+  "ver": 1
+}

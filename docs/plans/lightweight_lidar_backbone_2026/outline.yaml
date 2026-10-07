@@ -1,0 +1,29 @@
+topic: MobilePixorNeXt backbone dưới 1M cho KITTI và TensorRT/Jetson
+as_of: '2026-10-06'
+time_range: 2024-2026, cùng các baseline nền tảng trước đó
+constraints:
+  backbone_parameters_strictly_less_than: 1000000
+  parameter_boundary: backbone chính; đồng thời báo cáo backbone gồm neck
+  dataset: KITTI
+  deployment: GPU, TensorRT, Jetson
+  modality: LiDAR-only
+items:
+  - MobilePixorNeXt current source and saved experiment reviews
+  - Dense Backbone / DensePointPillars / DensePillarNet
+  - PillarHist
+  - SFMNet
+  - FALO
+  - Lightweight 3D Object Detection via Mamba-Based Knowledge Distillation
+  - M3DNet
+  - PillarNeXt and conventional sparse/voxel detector references
+research_questions:
+  - Bảo toàn local geometry tốt hơn tăng width/depth trong ngân sách dưới 1M không?
+  - Focal modulation dense có Pareto tốt hơn LiteMLA trên Jetson không?
+  - Support-aware context có tốt hơn generic gate và range-only gate không?
+  - Foreground distillation tăng AP3D mà giữ nguyên deployment backbone không?
+execution:
+  batch_size: 1
+  items_per_agent: all literature items
+  output_dir: docs/plans/lightweight_lidar_backbone_2026
+  status: preliminary research and proposal completed; experiments pending
+  note: Một lượt web research agent theo workflow research; chưa lên lịch training.

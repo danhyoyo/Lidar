@@ -210,3 +210,43 @@ def test_litemla_numerical_stability():
     assert x_large.grad is not None and not torch.isnan(x_large.grad).any(), "Gradients of large input must not be NaN"
 
 
+def test_explicit_legacy_depths_preserve_weights_keys_counts_and_predictions():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(17)
+        default = MobilePixorNeXtBackbone().eval()
+        torch.manual_seed(17)
+        explicit = MobilePixorNeXtBackbone(stage_depths=[2, 4, 2]).eval()
+    assert sum(p.numel() for p in explicit.parameters()) == 674256
+    assert list(default.state_dict()) == list(explicit.state_dict())
+    for key, value in default.state_dict().items():
+        torch.testing.assert_close(value, explicit.state_dict()[key], rtol=0, atol=0)
+    x = torch.linspace(-.5, .5, 8 * 32 * 48).reshape(1, 8, 32, 48)
+    with torch.no_grad():
+        torch.testing.assert_close(default(x), explicit(x), rtol=0, atol=0)
+
+
+def test_local3_depth_adds_one_named_block_and_has_finite_backward():
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+    legacy = MobilePixorNeXtBackbone(c4_attention="none")
+    candidate = MobilePixorNeXtBackbone(c4_attention="none", stage_depths=[3, 4, 2])
+    assert [len(candidate.stage2), len(candidate.stage3), len(candidate.stage4)] == [3, 4, 2]
+    old, new = set(legacy.state_dict()), set(candidate.state_dict())
+    assert old <= new
+    assert all(key.startswith("stage2.2.") for key in new - old)
+    assert sum(p.numel() for p in candidate.parameters()) - sum(p.numel() for p in legacy.parameters()) == 14112
+    inputs = torch.randn(2, 8, 32, 48, requires_grad=True)
+    outputs = candidate(inputs)
+    assert outputs.shape == (2, 16, 8, 12)
+    outputs.square().mean().backward()
+    assert torch.isfinite(inputs.grad).all() and inputs.grad.abs().sum() > 0
+    assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in candidate.stage2[2].parameters())
+
+
+@pytest.mark.parametrize("depths", [None, [], [2, 4], [2, 4, 2, 1], [0, 4, 2],
+                                    [-1, 4, 2], [True, 4, 2], [2., 4, 2], "242"])
+def test_invalid_stage_depths_rejected(depths):
+    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
+    with pytest.raises(ValueError, match="stage_depths"):
+        MobilePixorNeXtBackbone(stage_depths=depths)
+

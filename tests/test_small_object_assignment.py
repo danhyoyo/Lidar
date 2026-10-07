@@ -248,6 +248,7 @@ def test_evaluation_records_actual_peak_and_quality_modes(tmp_path, peak_mode, u
         "model": {"backbone": "mobilepixornext", "backbone_out_dim": 16,
                   "c4_attention": "none", "cls_encoding": "gaussian",
                   "header_use_iou": use_iou},
+        "loss": {"name": "baseline", "use_iou": use_iou},
         "augmentation": {"p": 0.0, "rotation": {"use": False},
                          "scaling": {"use": False}, "translation": {"use": False}},
     }

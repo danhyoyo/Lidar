@@ -3,13 +3,18 @@ from torch.utils.data import Dataset
 import torch
 import os
 import math
+from collections.abc import Mapping
 
 
 from utils_1.preprocess import encode_bev, get_points_in_a_rotated_box
 from utils_1.transform import Random_Rotation, Random_Scaling, OneOf, Compose, Random_Translation
 from core.datasets.augmentor import DataAugmentor
 from utils_1.gaussian import gaussian_radius, draw_heatmap_gaussian
-from utils_1.target_backend import fill_regression_targets_numba, fill_regression_targets_python
+from utils_1.target_backend import (fill_regression_targets_numba, fill_regression_targets_python,
+                                   fill_regression_targets_3d)
+from core.bev_encoding import resolve_bev_encoding
+from core.detection_config import resolve_box_mode
+from core.task_groups import resolve_task_groups, validate_resolved_groups
 
 def trasform_label2metric(label, geometry, ratio=4):
     '''
@@ -119,12 +124,14 @@ def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
 
 class Dataset(Dataset):
     def __init__(
-        self, data_file, config, aug_config, cls_encoding, task="train", target_backend="python"
+        self, data_file, config, aug_config, cls_encoding, task="train", target_backend="python",
+        task_groups=None,
     ) -> None:
         self.data_file = data_file
         # stores fine names and data types in self.data_list and self.data_type_list
         self.create_data_list()
         self.config = config
+        resolve_box_mode(config.get("box_mode", "bev"))
         self.bev_encoding = config.get("bev_encoding", {"name": "binary_slices"})
         # depending on this task, we decide whether we want to load certain info (i.e. labels not available for testing sometimes)
         self.task = task
@@ -134,8 +141,26 @@ class Dataset(Dataset):
         # what kind of encoding we want to use for classification. Available options are : gaussian, inverse_distance, binary
         self.cls_encoding = cls_encoding
         self.num_classes = self.config["num_classes"]
+        self.task_groups = ()
+        if "head_groups" in config or task_groups is not None:
+            if not isinstance(cls_encoding, str) or cls_encoding.lower() not in ("gaussian", "binary"):
+                raise ValueError("Grouped targets support gaussian or binary classification")
+            self.cls_encoding = cls_encoding.lower()
+            supplied = validate_resolved_groups(task_groups) if task_groups is not None else None
+            definitions = config["head_groups"] if "head_groups" in config else [
+                {"name": g.name, "classes": list(g.classes)} for g in supplied
+            ]
+            self.task_groups = resolve_task_groups(definitions, config["kitti"]["objects"])
+            if type(self.num_classes) is not int or self.num_classes != sum(g.num_classes for g in self.task_groups):
+                raise ValueError("Grouped num_classes must agree with the global class mapping")
+            if supplied is not None and supplied != self.task_groups:
+                raise ValueError("Supplied task_groups disagree with the authoritative class/group mapping")
+            for data_type in dict.fromkeys(self.data_type_list):
+                resolved = resolve_task_groups(definitions, config[data_type]["objects"])
+                if resolved != self.task_groups:
+                    raise ValueError("All grouped dataset sources must share the same global class mapping")
         # add background to classes (0 will be background class)
-        if cls_encoding == "binary":
+        if self.cls_encoding == "binary":
             self.num_classes += 1
 
         self.augmentation_mode = aug_config.get("mode", "one_of")
@@ -162,7 +187,11 @@ class Dataset(Dataset):
 
         # calculate output shape
         geom = self.config[self.data_type_list[0]]["geometry"]
-        self.output_shape = [int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / self.out_size_factor), int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / self.out_size_factor)]
+        if self.bev_encoding.get("name") == "hist14":
+            schema = resolve_bev_encoding(self.bev_encoding, geom)
+            self.output_shape = [size // self.out_size_factor for size in schema.grid_shape[:2]]
+        else:
+            self.output_shape = [int((geom["x_max"] - geom["x_min"]) / geom["x_res"] / self.out_size_factor), int((geom["y_max"] - geom["y_min"]) / geom["y_res"] / self.out_size_factor)]
 
         # Labels are immutable source data.  Returning a copy below is required
         # because the train augmentation mutates each sample's boxes in place.
@@ -270,21 +299,61 @@ class Dataset(Dataset):
         return np.asarray(boxes, dtype=np.float32).reshape(-1, 8)
 
     def get_label(self, boxes, geometry):
-        '''
-        :param boxes: numpy array of shape N:8
-        :return: label map: <--- This is the learning target
-                a tensor of shape 200 * 175 * 6 representing the expected output
-        '''
+        """Build flat legacy maps or independent maps from group-specific boxes."""
+        groups = getattr(self, "task_groups", ())
+        if groups:
+            if not torch.is_tensor(boxes) or boxes.ndim != 2 or boxes.shape[1] != 8:
+                raise ValueError("Grouped boxes must be a tensor of shape [N,8]")
+            ids = boxes[:, 0]
+            count = sum(g.num_classes for g in groups)
+            if not torch.all(torch.isfinite(ids) & (ids == ids.round()) & (ids >= 0) & (ids < count)):
+                raise ValueError("Grouped boxes contain an invalid global class ID")
+            return {"groups": {
+                group.name: self.get_single_group_label(
+                    boxes, geometry, num_classes=group.num_classes,
+                    class_mapping={global_id: local_id for local_id, global_id in enumerate(group.global_ids)},
+                ) for group in groups
+            }}
+        return self.get_single_group_label(boxes, geometry, num_classes=self.num_classes)
 
-        if self.cls_encoding == "binary":
+    def get_single_group_label(self, boxes, geometry, *, num_classes,
+                               class_mapping=None, cls_encoding=None):
+        """Build fresh maps from only the classes in the explicit local mapping.
+
+        num_classes specifies Gaussian heatmap width; binary maps have no channel
+        axis. Local foreground IDs start at zero for both encodings (the binary
+        writer adds one). Keep original global IDs for the regression backend's
+        canonical tie-breaking so local channel reordering cannot change its box
+        owner. No dataset state or source box is temporarily rewritten.
+        """
+        encoding = self.cls_encoding if cls_encoding is None else cls_encoding
+        box_mode = resolve_box_mode(self.config.get("box_mode", "bev"))
+        if class_mapping is None:
+            classification_boxes = boxes
+        else:
+            if (type(num_classes) is not int or num_classes <= 0 or
+                    not isinstance(class_mapping, Mapping) or len(class_mapping) != num_classes or
+                    any(type(i) is not int or i < 0 for i in class_mapping) or
+                    any(type(i) is not int for i in class_mapping.values()) or
+                    sorted(class_mapping.values()) != list(range(num_classes))):
+                raise ValueError("class_mapping must map global class IDs to exactly 0..num_classes-1")
+            mask = torch.zeros(boxes.shape[0], dtype=torch.bool, device=boxes.device)
+            for global_id in class_mapping:
+                mask |= boxes[:, 0] == global_id
+            boxes = boxes[mask]
+            classification_boxes = boxes.clone()
+            for global_id, local_id in class_mapping.items():
+                classification_boxes[boxes[:, 0] == global_id, 0] = local_id
+
+        if encoding == "binary":
             cls_map = torch.zeros((self.output_shape[0], self.output_shape[1]), dtype=torch.int64)
         else:
-            cls_map = torch.zeros((self.num_classes, self.output_shape[0], self.output_shape[1]))
+            cls_map = torch.zeros((num_classes, self.output_shape[0], self.output_shape[1]))
 
         radii = []
-        for i in range(boxes.shape[0]):
-            box = boxes[i]
-            radius = self.update_cls_map(cls_map, box, geometry)
+        for i in range(classification_boxes.shape[0]):
+            box = classification_boxes[i]
+            radius = self.update_cls_map(cls_map, box, geometry, cls_encoding=encoding)
             radii.append(radius)
 
         generator = (
@@ -292,25 +361,29 @@ class Dataset(Dataset):
             if getattr(self, "target_backend", "python") == "numba"
             else fill_regression_targets_python
         )
-        maps = generator(
-            boxes.detach().cpu().contiguous().numpy(), radii, self.output_shape,
-            geometry, self.out_size_factor,
-            assignment=self.config.get("regression_assignment", "nearest_center"),
-        )
-        offset_map, size_map, yaw_map, reg_mask = map(torch.from_numpy, maps)
+        arguments = (boxes.detach().cpu().contiguous().numpy(), radii, self.output_shape,
+                     geometry, self.out_size_factor)
+        assignment = self.config.get("regression_assignment", "nearest_center")
+        maps = (fill_regression_targets_3d(*arguments, backend=getattr(self, "target_backend", "python"),
+                                         assignment=assignment) if box_mode == "3d"
+                else generator(*arguments, assignment=assignment))
+        offset_map, size_map, yaw_map, reg_mask = map(torch.from_numpy, maps[:4])
 
-        if self.cls_encoding == "binary":
-                cls_map = cls_map.permute(1, 0)
+        if encoding == "binary":
+            cls_map = cls_map.permute(1, 0)
         else:
             cls_map = cls_map.permute(0, 2, 1)
 
-        return {
+        targets = {
             "cls" : cls_map,
             "offset": offset_map.permute(2, 1, 0),
             "yaw": yaw_map.permute(2, 1, 0),
             "size": size_map.permute(2, 1, 0),
             "reg_mask": reg_mask.permute(1, 0)
         }
+        if box_mode == "3d":
+            targets["vertical"] = torch.from_numpy(maps[4]).permute(2, 1, 0)
+        return targets
 
 
     def get_corners(self, bbox):
@@ -339,7 +412,8 @@ class Dataset(Dataset):
 
         return bev_corners, reg_target
 
-    def update_cls_map(self, cls_map, box, geometry):
+    def update_cls_map(self, cls_map, box, geometry, cls_encoding=None):
+        encoding = self.cls_encoding if cls_encoding is None else cls_encoding
         # box has a form [cls, h, w, l, x, y, z, yaw]
         width = box[2]
         length = box[3]
@@ -357,11 +431,11 @@ class Dataset(Dataset):
             center = torch.tensor([coor_y, coor_x], dtype=torch.float32)
             center_int = center.to(torch.int32)
 
-            if self.cls_encoding == "gaussian":
+            if encoding == "gaussian":
                 draw_heatmap_gaussian(cls_map[int(box[0])], center_int, radius)
                 radius = radius / 2
 
-            elif self.cls_encoding == "inverse_distance":
+            elif encoding == "inverse_distance":
                 x_min = max(0, int(coor_x - radius))
                 x_max = min(self.output_shape[0], int(coor_x + radius))
 
@@ -464,6 +538,9 @@ class Dataset(Dataset):
 
 
     def get3D_corners(self, bbox):
+        if torch.is_tensor(bbox):
+            # Keep the source dtype while using NumPy geometry on label data.
+            bbox = bbox.detach().cpu().numpy()
         h, w, l, x, y, z, yaw = bbox[1:]
 
         corners = []

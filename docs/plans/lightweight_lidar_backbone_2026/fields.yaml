@@ -1,0 +1,45 @@
+categories:
+  evidence:
+    detail_level: detailed
+    fields:
+      - primary_source_url
+      - preprint_date
+      - publication_venue_and_date
+      - table_or_section
+      - measured_in_repository_vs_paper_reported_vs_proposed
+  benchmark:
+    detail_level: detailed
+    fields:
+      - dataset_and_split_hash
+      - task_3d_vs_bev
+      - classes_and_difficulty
+      - metric_and_iou_threshold
+      - train_fraction_and_schedule
+      - modality_sweeps_tta_ensemble
+      - checkpoint_selection_and_seeds
+  cost:
+    detail_level: detailed
+    fields:
+      - encoder_backbone_neck_head_total_parameters
+      - training_vs_deploy_parameters
+      - mac_flop_convention_and_exclusions
+      - activation_memory_and_memory_traffic
+      - hardware_precision_batch_power_mode
+      - latency_boundary_mean_p50_p95
+  design:
+    detail_level: detailed
+    fields:
+      - height_and_occupancy_information
+      - local_geometry_preservation
+      - context_operator_and_gating_inputs
+      - onnx_tensorrt_support
+      - train_only_distillation_components
+      - prior_art_and_novelty_controls
+      - equal_parameter_and_equal_latency_comparisons
+uncertain:
+  - Absolute 2026 SOTA under backbone <1M has not been established.
+  - Candidate accuracy and Jetson latency require implementation and measurements.
+  - Exact Jetson model and power mode are unspecified.
+  - M3DNet parameter breakdown was not verified.
+  - SoftRangeBEV online-first date and full text were not verified.
+  - Dense adaptation of focal modulation is a proposed experiment, not a published result.

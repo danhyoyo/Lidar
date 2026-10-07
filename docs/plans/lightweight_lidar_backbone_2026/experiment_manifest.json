@@ -1,0 +1,360 @@
+{
+  "status": "Nine BEV runtime recipes materialized with CPU structural evidence. Main focal/local-none, ECA and SimAM have short CUDA FP32/FP16/BF16 OGA+IQA and workers0/6 smoke evidence in batch17. Other optional presets have CPU evidence only. Accuracy, Inductor and 3D/reference readiness remain pending. Do not pass this manifest directly to training.",
+  "design_revision": 2,
+  "base_config": "configs/config.json",
+  "augmentation_config": "configs/augmentation/hybrid_gt.json",
+  "merge_policy": "Apply common_overrides, then each variant overrides; replace augmentation with the supplied existing augmentation recipe. Persist full resolved config and semantic identity. Do not pass this manifest directly to training. The single-head reference removes common head_groups/group_weights. Notebook runtime settings may override the resolved recipe explicitly.",
+  "default_bev_recipe": "main_focal_oga_iqa",
+  "default_3d_recipe": "main_focal_3d",
+  "common_overrides": {
+    "data": {
+      "bev_encoding": {
+        "name": "hist14",
+        "version": 1,
+        "density_norm": 32.0,
+        "intensity_scale": 1.0,
+        "backend": "numpy"
+      },
+      "out_size_factor": 4,
+      "box_mode": "bev",
+      "head_groups": [
+        {
+          "name": "car",
+          "classes": [
+            "Car"
+          ]
+        },
+        {
+          "name": "ped_cyc",
+          "classes": [
+            "Pedestrian",
+            "Cyclist"
+          ]
+        }
+      ]
+    },
+    "model": {
+      "backbone": "mobilepixornext",
+      "head_mode": "grouped",
+      "stage_depths": [
+        3,
+        4,
+        2
+      ],
+      "backbone_out_dim": 32,
+      "expansion": 2.5,
+      "scale_gated_fpn": true,
+      "neck_type": "scale_gated_fpn",
+      "c4_attention": "none",
+      "c4_attention_scales": [],
+      "c4_attention_qk_norm": "none",
+      "c4_context": "none",
+      "local_attention": "none",
+      "neck_fusion_channels": 24,
+      "detail_path": false,
+      "header_use_bn": true,
+      "header_act": "silu",
+      "header_use_iou": true,
+      "use_reparam": false
+    },
+    "loss": {
+      "name": "oga",
+      "use_iou": true,
+      "iou_target_type": "mgiou",
+      "group_weights": {
+        "car": 1.0,
+        "ped_cyc": 1.0
+      }
+    }
+  },
+  "variants": [
+    {
+      "id": "reference_single_oga_iqa",
+      "planned_config": "configs/experiments/under1m/hist14_local3_single_oga_iqa.json",
+      "role": "no-context single-head reference",
+      "requires": [],
+      "overrides": {
+        "model": {
+          "head_mode": "legacy_single"
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 635408,
+      "detector_iqa_on_projected": 728538,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "reference_oga_iqa",
+      "planned_config": "configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json",
+      "role": "no-context reference",
+      "requires": [],
+      "overrides": {
+        "model": {},
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 635408,
+      "detector_iqa_on_projected": 821569,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "reference_baseline_iqa",
+      "planned_config": "configs/experiments/under1m/hist14_local3_grouped_baseline_iqa.json",
+      "role": "no-context loss companion",
+      "requires": [],
+      "overrides": {
+        "model": {},
+        "data": {
+          "box_mode": "bev"
+        },
+        "loss": {
+          "name": "baseline"
+        }
+      },
+      "backbone_including_neck_projected": 635408,
+      "detector_iqa_on_projected": 821569,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "main_focal_oga_iqa",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json",
+      "role": "main BEV recipe",
+      "requires": [],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 660528,
+      "detector_iqa_on_projected": 846689,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "main_focal_baseline_iqa",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_grouped_baseline_iqa.json",
+      "role": "main loss companion",
+      "requires": [],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "bev"
+        },
+        "loss": {
+          "name": "baseline"
+        }
+      },
+      "backbone_including_neck_projected": 660528,
+      "detector_iqa_on_projected": 846689,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "optional_focal_eca",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_eca_grouped_oga_iqa.json",
+      "role": "first optional attention comparison",
+      "requires": [],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "local_attention": "eca",
+          "local_attention_eca_kernel_size": 3,
+          "local_attention_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 660532,
+      "detector_iqa_on_projected": 846693,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "optional_focal_simam",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_simam_grouped_oga_iqa.json",
+      "role": "optional SimAM comparison",
+      "requires": [],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "local_attention": "simam",
+          "local_attention_simam_lambda": 0.0001,
+          "local_attention_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 660529,
+      "detector_iqa_on_projected": 846690,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "optional_focal_fusion32",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_fusion32_grouped_oga_iqa.json",
+      "role": "optional wider-fusion follow-up",
+      "requires": [
+        "fusion32 implementation and R16 evidence"
+      ],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "neck_fusion_channels": 32
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 666768,
+      "detector_iqa_on_projected": 852929,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "optional_focal_detail",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_detail_grouped_oga_iqa.json",
+      "role": "optional detail-path follow-up",
+      "requires": [
+        "detail-path implementation and R16 evidence"
+      ],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "detail_path": true
+        },
+        "data": {
+          "box_mode": "bev"
+        }
+      },
+      "backbone_including_neck_projected": 661720,
+      "detector_iqa_on_projected": 847881,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "main_focal_3d",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json",
+      "role": "main 3D long-run recipe",
+      "requires": [
+        "vertical branch/targets/loss/decode",
+        "reference KITTI evaluator parity R13"
+      ],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "3d"
+        },
+        "loss": {
+          "vertical_loss_weight": 1.0
+        }
+      },
+      "backbone_including_neck_projected": 660528,
+      "detector_iqa_on_projected": 883941,
+      "training_required_to_implement_option": false
+    },
+    {
+      "id": "optional_focal_eca_3d",
+      "planned_config": "configs/experiments/under1m/hist14_local3_focal_eca_grouped_oga_iqa_3d.json",
+      "role": "optional 3D ECA comparison",
+      "requires": [
+        "3D milestone R13"
+      ],
+      "overrides": {
+        "model": {
+          "c4_context": "focal",
+          "c4_context_version": 1,
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "local_attention": "eca",
+          "local_attention_eca_kernel_size": 3,
+          "local_attention_layer_scale_init": 0.001
+        },
+        "data": {
+          "box_mode": "3d"
+        },
+        "loss": {
+          "vertical_loss_weight": 1.0
+        }
+      },
+      "backbone_including_neck_projected": 660532,
+      "detector_iqa_on_projected": 883945,
+      "training_required_to_implement_option": false
+    }
+  ],
+  "notes": [
+    "NumPy is the initial encoder reference; enable Numba explicitly only after parity evidence.",
+    "Main local attention is none; ECA/SimAM options are not enabled together.",
+    "No requirement to train every variant; the selected final run still requires smoke/evaluator verification.",
+    "Training schedule/seed/precision/split are inherited and frozen in the resolved run record.",
+    "Vertical loss coefficient 1.0 is an explicit starting recipe, not an optimized value.",
+    "BEV and 3D parameter counts are checked against actual instantiated/meta-device modules. Both 3D configs are materialized in task58; no measured KITTI accuracy/latency is implied."
+  ],
+  "updated": "2026-10-07"
+}

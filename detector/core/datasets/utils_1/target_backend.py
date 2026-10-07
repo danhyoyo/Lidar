@@ -15,6 +15,7 @@ except ImportError:  # Keep the normal training path free of a Numba dependency.
 def _fill_regression_targets(
     boxes, radii, output_x, output_y, x_min_metric, y_min_metric, x_res, y_res,
     out_size_factor, offset_map, size_map, yaw_map, reg_mask, nearest_center,
+    vertical_map=None,
 ):
     # Match the float32 grid arithmetic used by heatmap peak quantization.
     x_min_f32, y_min_f32 = np.float32(x_min_metric), np.float32(y_min_metric)
@@ -74,12 +75,17 @@ def _fill_regression_targets(
                 yaw_map[p_x, p_y, 0] = math.cos(yaw2)
                 yaw_map[p_x, p_y, 1] = math.sin(yaw2)
                 reg_mask[p_x, p_y] = 1.0
+                if vertical_map is not None:
+                    # Written inside the BEV ownership decision, never reassigned.
+                    vertical_map[p_x, p_y, 0] = box[6]
+                    vertical_map[p_x, p_y, 1] = math.log(np.float64(box[1]))
 
 
 _compiled_fill = njit(cache=True)(_fill_regression_targets) if njit is not None else None
 
 
-def _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, backend, assignment):
+def _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, backend, assignment,
+                      box_mode="bev"):
     if assignment not in {"nearest_center", "legacy"}:
         raise ValueError("regression_assignment must be 'nearest_center' or 'legacy'")
     if backend == "numba" and _compiled_fill is None:
@@ -90,6 +96,11 @@ def _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, bac
 
     boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, 8)
     radii = np.asarray(radii, dtype=np.float32)
+    if box_mode == "3d":
+        if not np.isfinite(boxes).all() or (boxes[:, 1:4] <= 0).any():
+            raise ValueError("3D boxes must be finite with positive height, width and length")
+        if radii.shape != (len(boxes),) or not np.isfinite(radii).all() or (radii < 0).any():
+            raise ValueError("radii must contain one finite nonnegative value per box")
     if assignment == "nearest_center" and boxes.shape[0]:
         order = np.lexsort(tuple(boxes[:, i] for i in reversed(range(8))))
         boxes, radii = np.ascontiguousarray(boxes[order]), radii[order]
@@ -98,6 +109,7 @@ def _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, bac
     size_map = np.zeros((output_x, output_y, 2), dtype=np.float32)
     yaw_map = np.zeros((output_x, output_y, 2), dtype=np.float32)
     reg_mask = np.zeros((output_x, output_y), dtype=np.float32)
+    vertical_map = np.zeros((output_x, output_y, 2), dtype=np.float32) if box_mode == "3d" else None
     kernel = _compiled_fill if backend == "numba" else _fill_regression_targets
     kernel(
         boxes,
@@ -114,7 +126,10 @@ def _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, bac
         yaw_map,
         reg_mask,
         assignment == "nearest_center",
+        vertical_map,
     )
+    if box_mode == "3d":
+        return offset_map, size_map, yaw_map, reg_mask, vertical_map
     return offset_map, size_map, yaw_map, reg_mask
 
 
@@ -130,3 +145,18 @@ def fill_regression_targets_numba(
 ):
     """Compile the same target kernel as Python; ``legacy`` keeps last-box-wins."""
     return _generate_targets(boxes, radii, output_shape, geometry, out_size_factor, "numba", assignment)
+
+
+def fill_regression_targets_3d(
+    boxes, radii, output_shape, geometry, out_size_factor, *, backend="python",
+    assignment="nearest_center",
+):
+    """Return the four legacy BEV maps followed by bottom-z/log-height.
+
+    Python and Numba execute the same ownership kernel; the legacy public APIs
+    continue returning exactly four arrays.
+    """
+    if backend not in {"python", "numba"}:
+        raise ValueError("backend must be python or numba")
+    return _generate_targets(boxes, radii, output_shape, geometry, out_size_factor,
+                             backend, assignment, box_mode="3d")

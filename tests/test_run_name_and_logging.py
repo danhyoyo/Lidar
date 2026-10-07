@@ -70,6 +70,17 @@ class TestRunNameAndLogging(unittest.TestCase):
             run_name, "mobilepixor-noaug-baseline_loss-legacy35-baseline_iou-s42"
         )
 
+    def test_hist14_has_distinct_encoder_token(self):
+        cfg = create_experiment_config(self.base_cfg, {
+            "model": {"scale_gated_fpn": False, "c4_attention": "none",
+                      "c4_attention_scales": [], "use_reparam": False, "header_use_iou": False},
+            "loss": {"name": "baseline", "use_iou": False},
+            "data": {"bev_encoding": {"name": "hist14"}},
+            "augmentation": {"p": 0.0},
+        })
+        self.assertEqual(generate_run_name(cfg),
+                         "mobilepixornext-noaug-baseline_loss-hist14-baseline_iou")
+
     def test_run_name_format_baseline_a4(self):
         cfg = create_experiment_config(self.base_cfg, {
             "model": {
@@ -203,7 +214,7 @@ class TestRunNameAndLogging(unittest.TestCase):
             self.assertIn(parts[1], {"pcu", "standard_aug", "compose_aug", "noaug",
                                      "openpcdet_aug", "openpcdet_gt_aug", "hybrid_gt_aug"})
             self.assertTrue(parts[2].endswith("_loss"))
-            self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "legacy35"})
+            self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "hist14", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})
 
     def test_trainer_has_no_tqdm_overhead(self):
@@ -222,6 +233,20 @@ class TestRunNameAndLogging(unittest.TestCase):
         self.assertIn("Train Loss: {train_objective:.4f}", trainer_code)
         self.assertIn("Time: train={training_seconds:.1f}s, val=", trainer_code)
         self.assertNotIn("objective.detach().item()", trainer_code)
+
+    def test_parser_accepts_override_json(self):
+        from train import build_parser
+        parser = build_parser()
+        args = parser.parse_args([
+            "--config", "configs/config.json",
+            "--detector-root", "detector",
+            "--output-root", "/tmp",
+            "--override-json", '{"loss": {"name": "gw_qal", "beta_q": 1.0}}',
+        ])
+        self.assertEqual(args.override_json, '{"loss": {"name": "gw_qal", "beta_q": 1.0}}')
+        parsed = json.loads(args.override_json)
+        self.assertEqual(parsed["loss"]["name"], "gw_qal")
+        self.assertEqual(parsed["loss"]["beta_q"], 1.0)
 
 
 if __name__ == "__main__":

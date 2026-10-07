@@ -1,0 +1,53 @@
+{
+  "method": "temporary meta-device structural prototypes; no encoder, numerical execution, training or latency measurement",
+  "variants": [
+    {
+      "prototype": "no_attention",
+      "backbone_including_neck": 616080,
+      "total_bev_detector": 634921,
+      "conv_gmac": 7.1194112,
+      "output_shape": [
+        1,
+        3,
+        200,
+        176
+      ]
+    },
+    {
+      "prototype": "hist14_no_attention",
+      "backbone_including_neck": 617808,
+      "total_bev_detector": 636649,
+      "conv_gmac": 7.3627136,
+      "output_shape": [
+        1,
+        3,
+        200,
+        176
+      ]
+    },
+    {
+      "prototype": "hist14_local3",
+      "backbone_including_neck": 631920,
+      "total_bev_detector": 650761,
+      "conv_gmac": 7.851008,
+      "output_shape": [
+        1,
+        3,
+        200,
+        176
+      ]
+    },
+    {
+      "prototype": "hist14_local3_lite_stem",
+      "backbone_including_neck": 624080,
+      "total_bev_detector": 642921,
+      "conv_gmac": 6.7381248,
+      "output_shape": [
+        1,
+        3,
+        200,
+        176
+      ]
+    }
+  ]
+}

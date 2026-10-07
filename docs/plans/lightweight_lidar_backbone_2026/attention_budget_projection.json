@@ -1,0 +1,74 @@
+{
+  "status": "Structural projection only; no new production modules or numerical forward/training implemented.",
+  "method": "Instantiated current backbone plus one stage2 block; temporary meta-device module topologies matching the attention specification; optional neck replacement in memory only.",
+  "torch_version": "2.14.1+cpu",
+  "source_commit": "3654a0b534b84b583eee79303e1bcd30eba55432",
+  "source_sha256": {
+    "detector/core/models/backbones/mobilepixornext.py": "91e4de54c75f13d574de51542b16aaeb7481289a4a42d1acc4a4e7ed2560815d",
+    "detector/core/models/backbones/mobilepixornext_blocks.py": "8f902b65149de80c08c0dfb10685f1bb64af21d4df56c459a7749b5acb68d0a7",
+    "detector/core/models/heads/cnn.py": "32832db0753fd66c6edad16baa3d34b6a279e83d52f71dd139f12cd03fec9f83"
+  },
+  "parts": {
+    "reference_backbone_including_neck": 635408,
+    "focal_context": 25120,
+    "eca_k3_with_scalar_wrapper": 4,
+    "simam_with_scalar_wrapper": 1,
+    "wider_fusion_delta": 6240,
+    "detail_f24": 1192,
+    "detail_f32": 1472,
+    "grouped_bev_heads_iqa_off": 148975,
+    "grouped_bev_heads_iqa_on": 186161,
+    "two_vertical_branches": 37252
+  },
+  "variants": [
+    {
+      "name": "reference",
+      "backbone_including_neck_projected": 635408,
+      "bev_detector_iqa_on_projected": 821569,
+      "3d_detector_iqa_on_projected": 858821
+    },
+    {
+      "name": "focal",
+      "backbone_including_neck_projected": 660528,
+      "bev_detector_iqa_on_projected": 846689,
+      "3d_detector_iqa_on_projected": 883941
+    },
+    {
+      "name": "focal_eca",
+      "backbone_including_neck_projected": 660532,
+      "bev_detector_iqa_on_projected": 846693,
+      "3d_detector_iqa_on_projected": 883945
+    },
+    {
+      "name": "focal_simam",
+      "backbone_including_neck_projected": 660529,
+      "bev_detector_iqa_on_projected": 846690,
+      "3d_detector_iqa_on_projected": 883942
+    },
+    {
+      "name": "focal_fusion32",
+      "backbone_including_neck_projected": 666768,
+      "bev_detector_iqa_on_projected": 852929,
+      "3d_detector_iqa_on_projected": 890181
+    },
+    {
+      "name": "focal_detail24",
+      "backbone_including_neck_projected": 661720,
+      "bev_detector_iqa_on_projected": 847881,
+      "3d_detector_iqa_on_projected": 885133
+    },
+    {
+      "name": "focal_eca_fusion32_detail32",
+      "backbone_including_neck_projected": 668244,
+      "bev_detector_iqa_on_projected": 854405,
+      "3d_detector_iqa_on_projected": 891657
+    }
+  ],
+  "limitations": [
+    "No accuracy, latency, full FLOPs, peak memory or numerical correctness evidence.",
+    "No parameter-bearing support-conditioning adapters.",
+    "Optimizer/criterion parameters and normalization running buffers are excluded from detector counts.",
+    "Final implementation must be recounted; these temporary modules do not establish integration compatibility."
+  ],
+  "updated": "2026-10-07"
+}

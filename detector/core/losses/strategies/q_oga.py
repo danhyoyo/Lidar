@@ -1,6 +1,7 @@
 """Q-OGA (Quality-Aligned & Range-Adaptive Oriented Geometric Alignment) loss strategy."""
 
 from typing import Any, Dict
+from numbers import Integral
 import torch
 import torch.nn.functional as F
 
@@ -13,11 +14,11 @@ from core.losses.quality_focal_loss import quality_focal_loss
 from core.losses.uncertainty_weighting import TemperatureSoftmaxUncertainty
 from core.losses.strategies.base import BaseLossStrategy
 from core.losses.strategies.registry import register_loss_strategy
-from core.losses.iou_targets import compute_mgiou_targets
+from core.losses.iou_targets import compute_mgiou_targets, compute_rotated_iou_targets
 
 
 class QOgaLossStrategy(BaseLossStrategy):
-    """Quality-Aligned, Range-Adaptive, and C^inf Smooth Soft-Min OGA Loss."""
+    """Quality-coupled OGA with opt-in exact BEV IoU and quality curriculum."""
 
     TASKS = ("cls", "offset", "size", "yaw", "geo")
 
@@ -40,6 +41,26 @@ class QOgaLossStrategy(BaseLossStrategy):
         self.y_max = float(config.get("y_max", 40.0))
         self.r_max = float(config.get("r_max", 70.4))
         self.qcfa_beta = float(config.get("qcfa_beta", 1.0))
+        self.quality_target = str(config.get("quality_target", "mgiou")).lower()
+        self.quality_warmup_epochs = config.get("quality_warmup_epochs", 0)
+
+        if self.quality_target not in {"mgiou", "rotated_iou"}:
+            raise ValueError("quality_target must be 'mgiou' or 'rotated_iou'")
+        if (not isinstance(self.quality_warmup_epochs, Integral)
+                or isinstance(self.quality_warmup_epochs, bool)
+                or self.quality_warmup_epochs < 0):
+            raise ValueError("quality_warmup_epochs must be a non-negative integer")
+        if self.quality_warmup_epochs and self.quality_target != "rotated_iou":
+            raise ValueError("quality curriculum requires quality_target='rotated_iou'")
+        if self.quality_target == "rotated_iou":
+            if self.cls_encoding != "gaussian":
+                raise ValueError("exact-quality Q-OGA requires Gaussian classification peaks")
+            if config.get("use_iou", False):
+                raise ValueError("exact-quality Q-OGA does not supervise an IQA head; disable use_iou")
+        if self.quality_warmup_epochs:
+            # Only curriculum runs add checkpoint state; legacy and target-only
+            # runs keep their original criterion state-dict keys.
+            self.register_buffer("quality_epoch", torch.tensor(-1, dtype=torch.int64))
 
         if self.eps <= 0:
             raise ValueError("epsilon must be positive")
@@ -57,6 +78,53 @@ class QOgaLossStrategy(BaseLossStrategy):
             ema_momentum=self.ema_momentum,
         )
 
+    def set_epoch(self, epoch: int) -> None:
+        """Set zero-based epoch for train and validation, also after resume."""
+        if not isinstance(epoch, Integral) or isinstance(epoch, bool) or epoch < 0:
+            raise ValueError("set_epoch requires a non-negative integer epoch")
+        if self.quality_warmup_epochs:
+            self.quality_epoch.fill_(epoch)
+
+    @torch.no_grad()
+    def _classification_quality(self, pred, target):
+        if self.quality_target == "rotated_iou":
+            peaks = target["cls"].ge(1.).any(dim=1)
+            if "iou" in pred:
+                raise ValueError("exact-quality Q-OGA does not supervise IQA; disable header_use_iou")
+            if pred["offset"].shape[1] != 2:
+                raise ValueError("Q-OGA exact-quality experiments require 2D BEV offset/size heads")
+            generator = compute_rotated_iou_targets
+            mask = target["reg_mask"].bool() & peaks
+            if (peaks & ~target["reg_mask"].bool()).any():
+                raise ValueError("classification peaks must have an assigned regression target")
+        else:
+            generator = compute_mgiou_targets
+            mask = target["reg_mask"]
+        raw_quality = generator(
+            pred["offset"][:, :2], pred["size"][:, :2], pred["yaw"][:, :2],
+            target["offset"][:, :2], target["size"][:, :2], target["yaw"][:, :2],
+            mask, epsilon=self.eps, max_abs_log_size=self.max_abs_log_size,
+        )
+        if self.quality_target == "mgiou":
+            return raw_quality, {}
+
+        mix = raw_quality.new_ones(())
+        if self.quality_warmup_epochs:
+            if self.quality_epoch < 0:
+                raise ValueError("call set_epoch before using Q-OGA quality curriculum")
+            mix = (self.quality_epoch.float() / self.quality_warmup_epochs).clamp(0., 1.)
+        quality = torch.where(peaks, (1. - mix) + mix * raw_quality, raw_quality)
+        count = peaks.sum().float()
+        denominator = count.clamp_min(1.)
+        metrics = {
+            "quality_iou_mean": (raw_quality * peaks).sum() / denominator,
+            "quality_iou_zero_fraction": ((raw_quality == 0) & peaks).sum().float() / denominator,
+            "quality_target_mean": (quality * peaks).sum() / denominator,
+            "quality_peak_count": count,
+            "quality_iou_mix": mix,
+        }
+        return quality, metrics
+
     def forward(
         self, pred: Dict[str, torch.Tensor], target: Dict[str, torch.Tensor]
     ) -> Dict[str, Any]:
@@ -66,23 +134,11 @@ class QOgaLossStrategy(BaseLossStrategy):
         device = pred["offset"].device
         B, _, H, W = pred["offset"].shape
 
-        # Compute dynamic MGIoU quality scores (detached)
-        with torch.no_grad():
-            mgiou_quality = compute_mgiou_targets(
-                pred["offset"][:, :2],
-                pred["size"][:, :2],
-                pred["yaw"][:, :2],
-                target["offset"][:, :2],
-                target["size"][:, :2],
-                target["yaw"][:, :2],
-                target["reg_mask"],
-                epsilon=self.eps,
-                max_abs_log_size=self.max_abs_log_size,
-            )
+        quality, quality_metrics = self._classification_quality(pred, target)
 
         # 1. Quality-coupled classification loss
         cls_loss = quality_focal_loss(
-            pred["cls"], target["cls"], mgiou_quality, beta=self.qcfa_beta
+            pred["cls"], target["cls"], quality, beta=self.qcfa_beta
         )
 
         if not positive.any():
@@ -105,6 +161,7 @@ class QOgaLossStrategy(BaseLossStrategy):
                 "corner_dist": torch.zeros((), device=device),
                 "proj_giou": torch.zeros((), device=device),
                 "rda_mean_weight": torch.ones((), device=device),
+                **quality_metrics,
                 **{f"weight_{k}": w for k, w in weights.items()},
             }
 
@@ -138,7 +195,7 @@ class QOgaLossStrategy(BaseLossStrategy):
         diff_yaw = F.smooth_l1_loss(_pos(pred["yaw"]), _pos(target["yaw"]), reduction="none").sum(dim=-1)
         yaw_loss = (diff_yaw * rda_weights).mean()
 
-        # 3. Geometry loss with C^inf Soft-Min Corner Distance
+        # 3. Geometry loss with soft-min corner matching.
         with torch.autocast(device_type=device.type, enabled=False):
             pred_c, pred_ax, _, _ = box_corners(
                 _pos(pred["offset"]), _pos(pred["size"]), _pos(pred["yaw"]), self.eps, self.max_abs_log_size
@@ -171,6 +228,7 @@ class QOgaLossStrategy(BaseLossStrategy):
             "corner_dist": corner_loss.detach(),
             "proj_giou": proj_loss.detach(),
             "rda_mean_weight": rda_weights.mean().detach(),
+            **quality_metrics,
         }
         for task, w in weights.items():
             loss_dict[f"weight_{task}"] = w

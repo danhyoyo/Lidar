@@ -45,6 +45,7 @@ def nested(value: Dict[str, Any], *keys, default=None):
 def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
     accuracy = result.get("accuracy", {})
     row = {
+        "metric_mode": nested(result,"protocol","metric_mode",default="local_bev"),
         "name": result.get("name"),
         "status": result.get("status"),
         "backend": nested(result, "model", "backend"),
@@ -59,7 +60,15 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
         "elapsed_seconds": nested(result, "runtime", "elapsed_seconds"),
         "error_type": result.get("error_type"),
         "error": result.get("error"),
+        "head_mode": nested(result, "protocol", "head_mode"),
+        "cls_encoding": nested(result, "protocol", "cls_encoding"),
+        "quality_target": nested(result, "protocol", "quality_target"),
+        "nms_alpha": nested(result, "protocol", "nms_alpha"),
+        "resolved_config_sha256": nested(result, "data", "resolved_config_sha256"),
+        "split_sha256": nested(result, "data", "split_sha256"),
     }
+    for component in ("backbone_body", "neck", "backbone_including_neck", "heads", "total_detector", "criterion_train_only"):
+        row[component + "_parameters"] = nested(result, "model", "parameter_counts", component)
     for class_name in CLASSES:
         for difficulty in DIFFICULTIES:
             row[f"{class_name.lower()}_{difficulty.lower()}_ap_r40_percent"] = nested(
@@ -69,6 +78,14 @@ def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
                   "input_to_detections"):
         for metric in ("mean_ms", "p50_ms", "p95_ms", "p99_ms", "fps"):
             row[f"{stage}_{metric}"] = nested(result, "latency", stage, metric)
+    mode = row["metric_mode"]
+    if mode in {"3d","bev"}:
+        for sampling in ("R11","R40"):
+            for metric in ("map_moderate_percent","mean_ap_9_percent"):
+                row[f"{mode}_{sampling}_{metric}"] = nested(result,"accuracy",sampling,metric)
+            for name in CLASSES:
+                for difficulty in DIFFICULTIES:
+                    row[f"{mode}_{sampling}_{name}_{difficulty}"] = nested(result,"accuracy",sampling,"per_class",name,difficulty)
     return row
 
 
@@ -81,6 +98,17 @@ def markdown_cell(value: Any) -> str:
 
 
 def markdown_table(results) -> str:
+    modes = {nested(result,"protocol","metric_mode") for result in results if result.get("status")=="ok"}
+    if modes and modes <= {"3d","bev"}:
+        lines = ["# KITTI reference comparison", "", "Both recall samplings are reported separately; verify split/reference/decode/checkpoint selection parity before comparing.", "",
+                 "| Model | Metric | R11 Moderate macro (%) | R40 Moderate macro (%) |", "| --- | --- | ---: | ---: |"]
+        for result in results:
+            mode = nested(result,"protocol","metric_mode")
+            label = 'AP3D' if mode == '3d' else 'APBEV'
+            if result.get("status") != "ok":
+                label += f": error: {markdown_cell(result.get('error'))}"
+            lines.append(f"| {markdown_cell(result.get('name'))} | {label} | {fmt(nested(result,'accuracy','R11','map_moderate_percent'))} | {fmt(nested(result,'accuracy','R40','map_moderate_percent'))} |")
+        return "\n".join(lines)+"\n"
     lines = [
         "# KITTI MobileBEV model comparison",
         "",
@@ -124,6 +152,8 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--split", required=True, type=Path)
     value.add_argument("--output-dir", required=True, type=Path)
     value.add_argument("--device", default="cuda")
+    value.add_argument("--metric-mode",choices=("local_bev","3d","bev"),default="local_bev",
+                       help="Historical local ROI BEV, or pinned reference AP3D/APBEV with R11 and R40")
     value.add_argument("--score-threshold", type=float, default=0.05)
     value.add_argument("--nms-threshold", type=float, default=0.10)
     value.add_argument("--max-detections", type=int, default=500)
@@ -149,7 +179,13 @@ def main(argv=None):
         output = args.output_dir / f"{safe_name(name)}.json"
         print(f"\n=== Evaluating {name} ({backend}) ===", flush=True)
         try:
-            result = run_evaluation(
+            evaluator = run_evaluation
+            metric_options = {}
+            if args.metric_mode != "local_bev":
+                from evaluate_kitti_3d import run_evaluation as reference_evaluation
+                evaluator = reference_evaluation
+                metric_options = {"metric_mode":args.metric_mode}
+            result = evaluator(
                 name=name, backend=backend, model_path=path,
                 config_path=args.config, detector_root=args.detector_root,
                 kitti_root=args.kitti_root, split_path=args.split,
@@ -159,13 +195,14 @@ def main(argv=None):
                 max_detections=args.max_detections,
                 warmup_frames=args.warmup_frames,
                 max_frames=args.max_frames,
-                progress_every=args.progress_every)
+                progress_every=args.progress_every,**metric_options)
         except (KeyboardInterrupt, SystemExit):
             raise
         except Exception as error:
             result = {
                 "status": "error", "name": name,
                 "model": {"backend": backend, "path": str(path.resolve())},
+                "protocol": {"metric_mode":args.metric_mode},
                 "error_type": type(error).__name__, "error": str(error),
             }
             write_json(output, result)
@@ -189,7 +226,7 @@ def main(argv=None):
     write_json(json_path, comparison)
     rows = [flatten(result) for result in results]
     with csv_path.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(dict.fromkeys(key for row in rows for key in row)))
         writer.writeheader()
         writer.writerows(rows)
     md_path.write_text(markdown_table(results), encoding="utf-8")

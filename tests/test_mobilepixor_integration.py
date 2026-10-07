@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -6,8 +7,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "detector"))
 sys.path.insert(0, str(REPO_ROOT / "detector" / "core" / "datasets"))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
 
 import torch
+from common import build_model, generate_run_name, input_shape, create_experiment_config
 from core.models.model import CustomModel
 from core.losses.loss_fn import LossFunction
 from postprocess import filter_pred
@@ -82,12 +85,14 @@ class TestMobilePixorIntegration(unittest.TestCase):
 
     def test_mobilepixor_iqa_postprocess_nms(self):
         pred_single = {
-            "cls": torch.randn(1, 3, 200, 176),
-            "offset": torch.randn(1, 2, 200, 176),
-            "size": torch.randn(1, 2, 200, 176),
-            "yaw": torch.randn(1, 2, 200, 176),
-            "iou": torch.randn(1, 1, 200, 176),
+            "cls": torch.full((1, 3, 200, 176), -10.0),
+            "offset": torch.zeros(1, 2, 200, 176),
+            "size": torch.zeros(1, 2, 200, 176),
+            "yaw": torch.zeros(1, 2, 200, 176),
+            "iou": torch.zeros(1, 1, 200, 176),
         }
+        pred_single["cls"][0, 0, 10, 10] = 5.0
+        pred_single["cls"][0, 1, 20, 20] = 5.0
         config = {
             "geometry": {
                 "x_min": 0, "x_max": 70.4, "x_res": 0.1,
@@ -100,6 +105,46 @@ class TestMobilePixorIntegration(unittest.TestCase):
         self.assertEqual(boxes.ndim, 2)
         if len(boxes) > 0:
             self.assertEqual(boxes.shape[1], 7)
+
+    def test_ablation_configs_instantiate_model_and_criterion(self):
+        cfg_path = REPO_ROOT / "configs" / "config.json"
+        self.assertTrue(cfg_path.is_file(), f"Missing config: {cfg_path}")
+        with open(cfg_path, "r", encoding="utf-8") as f:
+            base_cfg = json.load(f)
+
+        ablation_overrides = {
+            "00_mobilepixor_baseline": {
+                "model": {"backbone": "mobilepixor", "scale_gated_fpn": False, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},
+                "loss": {"name": "baseline"},
+                "data": {"bev_encoding": {"name": "rich8"}},
+            },
+            "01_mobilepixor_oga": {
+                "model": {"backbone": "mobilepixor", "scale_gated_fpn": False, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},
+                "loss": {"name": "oga"},
+                "data": {"bev_encoding": {"name": "rich8"}},
+            },
+            "02_mobilepixor_oga_sgfpn": {
+                "model": {"backbone": "mobilepixor", "scale_gated_fpn": True, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},
+                "loss": {"name": "oga"},
+                "data": {"bev_encoding": {"name": "rich8"}},
+            },
+            "04_mobilepixor_oga_sgfpn_iqa_rich8": {
+                "model": {"backbone": "mobilepixor", "scale_gated_fpn": True, "c4_attention": "none", "header_use_bn": True, "header_act": "silu", "header_use_iou": True},
+                "loss": {"name": "oga", "use_iou": True},
+                "data": {"bev_encoding": {"name": "rich8"}},
+            },
+        }
+
+        for name, overrides in ablation_overrides.items():
+            with self.subTest(config_name=name):
+                cfg = create_experiment_config(base_cfg, overrides)
+                model = build_model(cfg)
+                criterion = LossFunction(cfg["model"]["cls_encoding"], cfg.get("loss"))
+                shape = input_shape(cfg)
+                out = model(torch.randn(shape))
+                self.assertIn("cls", out)
+                run_name = generate_run_name(cfg, seed=42)
+                self.assertTrue(run_name.startswith("mobilepixor-"))
 
 
 if __name__ == "__main__":

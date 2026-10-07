@@ -10,7 +10,7 @@ import torch
 from torch import nn
 
 from common import (build_model, configure_detector_imports, input_shape,
-                    normalize_state_dict, read_json, sha256, write_json)
+                    normalize_state_dict, read_json, sha256, validate_deployment_config, write_json)
 
 
 class RawHeadWrapper(nn.Module):
@@ -18,10 +18,18 @@ class RawHeadWrapper(nn.Module):
 
     def __init__(self, model):
         super().__init__()
+        if getattr(model, "box_mode", "bev") == "3d":
+            raise ValueError("ONNX 3D export is deferred; vertical output must not be dropped")
+        if getattr(model, "head_mode", "legacy_single") == "grouped":
+            raise ValueError("ONNX grouped deployment is deferred; use PyTorch evaluation")
+        if getattr(getattr(model, "header", None), "use_iou", False):
+            raise ValueError("ONNX IQA deployment is deferred; quality output must not be dropped")
         self.model = model
 
     def forward(self, voxel):
         outputs = self.model(voxel)
+        if set(outputs) != set(self.OUTPUT_NAMES):
+            raise ValueError("ONNX grouped/IQA or additional output deployment is deferred")
         return tuple(outputs[name] for name in self.OUTPUT_NAMES)
 
 
@@ -43,11 +51,12 @@ def main(argv=None) -> None:
             raise FileNotFoundError(path)
     if args.opset < 1:
         raise ValueError("opset must be positive")
+    configure_detector_imports(args.detector_root)
+    config = read_json(args.config)
+    validate_deployment_config(config, "ONNX export")
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
-    configure_detector_imports(args.detector_root)
-    config = read_json(args.config)
     model = build_model(config)
     checkpoint = torch.load(args.checkpoint, map_location="cpu")
     model.load_state_dict(normalize_state_dict(checkpoint), strict=True)

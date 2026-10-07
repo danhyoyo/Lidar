@@ -3,13 +3,233 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
+import importlib
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, Tuple
+
+
+def _bev_schema():
+    """Load the pure contract lazily, including standalone notebook imports."""
+    try:
+        from core import bev_encoding
+    except ImportError:
+        # Notebook cells can expose only this tools directory from another cwd.
+        # Append the repository path so a configured detector retains priority.
+        root = str(Path(__file__).resolve().parents[2])
+        if root not in sys.path:
+            sys.path.append(root)
+        from detector.core import bev_encoding
+    return bev_encoding
+
+
+def minimum_bev_channels(name: str) -> int | None:
+    return _bev_schema().minimum_channels(name)
+
+
+def backbone_feature_spec(model, *, geometry=None):
+    """Load shared feature validation lazily, including standalone notebooks."""
+    module = importlib.import_module(_bev_schema().__package__ + ".backbone_config")
+    normalized = copy.deepcopy(model)
+    if normalized.get("neck_type") in (None, "sgfpn"):
+        normalized["neck_type"] = "scale_gated_fpn"
+    return module.resolve_backbone_features(normalized, geometry=geometry)
+
+
+def bev_encoding_spec(config: Dict[str, Any], dataset_name: str = "kitti"):
+    """Resolve the data-side schema without loading PyTorch or a dataset."""
+    data = config["data"]
+    return _bev_schema().resolve_bev_encoding(
+        data.get("bev_encoding"), data[dataset_name]["geometry"]
+    )
+
+
+def detection_spec(config):
+    """Shared pure detection validation for CLI, evaluator and notebook callers."""
+    module = importlib.import_module(_bev_schema().__package__ + ".detection_config")
+    return module.resolve_detection_config(config)
+
+
+def evaluation_asset_hashes(config, frame_ids, kitti_root, *, reference=False):
+    """Record actual per-frame inputs used by local or reference evaluation."""
+    processed = Path(config["data"]["kitti"]["location"]).resolve()
+    raw = Path(kitti_root).resolve()
+    if (raw / "training").is_dir():
+        raw = raw / "training"
+    paths = []
+    for identifier in frame_ids:
+        paths.extend([processed / "pointcloud" / f"{identifier}.bin",
+                      raw / "label_2" / f"{identifier}.txt",
+                      raw / "calib" / f"{identifier}.txt"])
+        if reference:
+            # Reference inference constructs validation targets as well; the
+            # historical local test Dataset consumes only the point cloud.
+            paths.append(processed / "label" / f"{identifier}.txt")
+            paths.append(raw / "image_2" / f"{identifier}.png")
+    return {str(path.resolve()): sha256(path) for path in paths}
+
+
+def verify_retained_checkpoint(selected_path, retained_path, *, selected_state=None):
+    """Accept separate torch.save archives only when their full payloads agree."""
+    import torch
+    if sha256(selected_path) == sha256(retained_path):
+        return True
+    selected = (torch.load(selected_path, map_location='cpu', weights_only=True)
+                if selected_state is None else selected_state)
+    retained = torch.load(retained_path, map_location='cpu', weights_only=True)
+    pairs = [(selected, retained)]
+    while pairs:
+        left, right = pairs.pop()
+        if isinstance(left, torch.Tensor):
+            same = (isinstance(right, torch.Tensor) and left.dtype == right.dtype and
+                    left.shape == right.shape and torch.equal(left, right))
+        elif isinstance(left, dict):
+            same = isinstance(right, dict) and left.keys() == right.keys()
+            if same:
+                pairs.extend((left[key], right[key]) for key in left)
+        elif isinstance(left, (tuple, list)):
+            same = type(left) is type(right) and len(left) == len(right)
+            if same:
+                pairs.extend(zip(left, right))
+        else:
+            same = type(left) is type(right) and left == right
+        if not same:
+            raise ValueError('Selected checkpoint state differs from the retained minimum-loss checkpoint')
+    return True
+
+
+def checkpoint_identity(config):
+    """Versioned semantic identity; rasterizer backends are recorded separately.
+
+    Normalize shared schema/feature defaults and fixed group weights. Preserve
+    additional model/loss settings conservatively rather than silently ignoring
+    options that could alter computation without changing tensor shapes.
+    """
+    detection = detection_spec(config)
+    encoding = bev_encoding_spec(config)
+    model = copy.deepcopy(config["model"])
+    backbone = str(model.get("backbone", "mobilepixor")).lower()
+    next_backbone = backbone == "mobilepixornext"
+    model.update(backbone=backbone, head_mode=detection.head_mode,
+                 cls_encoding=detection.cls_encoding,
+                 backbone_out_dim=model.get("backbone_out_dim", 16),
+                 stage_depths=list(model.get("stage_depths", (2, 4, 2))),
+                 header_use_bn=model.get("header_use_bn", next_backbone),
+                 header_act=model.get("header_act", "silu" if next_backbone else "none"),
+                 header_use_iou=detection.use_iou)
+    model.pop("bev_encoding", None)
+    model.pop("geometry", None)
+    if detection.backbone_features is not None:
+        features = detection.backbone_features.semantic_metadata()
+        for key in detection.backbone_features.__dataclass_fields__:
+            model.pop(key, None)
+        model["features"] = features
+    if next_backbone:
+        for key, default in {"scale_gated_fpn": True, "expansion": 2.5,
+                             "use_reparam": False, "deploy": False,
+                             "neck_type": "scale_gated_fpn", "num_range_bands": 4}.items():
+            model.setdefault(key, default)
+        if model["neck_type"] in (None, "sgfpn"):
+            model["neck_type"] = "scale_gated_fpn"
+    objective = copy.deepcopy(config.get("loss", {}))
+    objective.update(name=str(objective.get("name", "baseline")).lower(),
+                     use_iou=detection.use_iou)
+    objective.pop("group_weights", None)
+    if detection.use_iou:
+        objective.setdefault("iou_target_type", "mgiou")
+        objective.setdefault("iou_loss_weight", 1.0)
+    if objective["name"] == "q_oga":
+        objective.update(quality_target=detection.quality_target,
+                         quality_warmup_epochs=objective.get("quality_warmup_epochs", 0))
+    train = config.get("train", {})
+    training = {key: train[key] for key in (
+        "learning_rate", "epochs", "lr_decay_at", "lr_decay_gamma",
+    ) if key in train}
+    for key, default in {"optimizer": "adamw", "scheduler": "cosine", "weight_decay": .0001,
+                         "warmup_epochs": 5, "min_lr": 1e-6, "precision": "fp32",
+                         "physical_batch_size": train.get("batch_size", 2),
+                         "accumulation_steps": 1, "grad_clip_norm": 10.0}.items():
+        training[key] = train.get(key, default)
+    objects = config["data"]["kitti"]["objects"]
+    identity = {"version": 1, "encoding": {"metadata": encoding.semantic_metadata(),
+                                               "sha256": encoding.semantic_hash},
+                "model": model, "box_mode": detection.box_mode,
+                "output_stride": config["data"].get("out_size_factor", 4),
+                "class_order": [name for name, _ in sorted(objects.items(), key=lambda item: item[1])],
+                "groups": [group.to_dict() for group in detection.groups],
+                "group_weights": list(detection.group_weights), "objective": objective,
+                "training": training}
+    # JSON canonicalization also ensures tuples/lists serialize identically.
+    return json.loads(json.dumps(identity, sort_keys=True, allow_nan=False))
+
+
+def checkpoint_backends(config):
+    return {"bev": bev_encoding_spec(config).backend,
+            "targets": config.get("train", {}).get("target_backend", "python")}
+
+
+def validate_evaluation_checkpoint(checkpoint, config):
+    """Check architecture/objective semantics without requiring resume state."""
+    identity = checkpoint.get("checkpoint_identity") if isinstance(checkpoint, dict) else None
+    if identity is None:
+        if detection_spec(config).head_mode == "grouped":
+            raise ValueError("Grouped evaluation requires checkpoint identity metadata")
+        return
+    if not isinstance(identity, dict):
+        raise ValueError("Invalid checkpoint identity metadata")
+    current = checkpoint_identity(config)
+    saved = copy.deepcopy(identity)
+    # Epochs/optimizer/precision used to train are provenance, not model-only
+    # inference settings. All architecture and objective fields still match.
+    current.pop("training", None)
+    saved.pop("training", None)
+    if current != saved:
+        raise ValueError("Evaluation architecture/objective identity does not match checkpoint")
+    if "config" in checkpoint and checkpoint_identity(checkpoint["config"]) != identity:
+        raise ValueError("Checkpoint identity is inconsistent with saved config")
+
+
+def validate_deployment_config(config, consumer):
+    """Reject contracts the current four-output deployment consumers cannot honor."""
+    detection = detection_spec(config)
+    if detection.box_mode == "3d":
+        raise ValueError(f"{consumer}: 3D export/deployment is deferred; vertical output must not be dropped")
+    if detection.head_mode == "grouped":
+        raise ValueError(f"{consumer}: grouped deployment is deferred; use PyTorch evaluation")
+    if detection.use_iou:
+        raise ValueError(f"{consumer}: IQA deployment is deferred; quality output must not be dropped")
+
+
+def model_parameter_report(model, criterion=None):
+    """Count actual modules, separating train-only parameters from inference.
+
+    Body/neck separation follows MobilePixorNeXt's registered neck components;
+    other backbones retain the combined count without guessing their split.
+    """
+    backbone = sum(parameter.numel() for parameter in model.backbone.parameters())
+    grouped = getattr(model, "head_mode", "legacy_single") == "grouped"
+    header = model.grouped_header if grouped else model.header
+    heads = ({name: sum(p.numel() for p in head.parameters()) for name, head in header.heads.items()}
+             if grouped else {"legacy_single": sum(p.numel() for p in header.parameters())})
+    counts = {"backbone_including_neck": backbone, "heads": sum(heads.values()),
+              "total_detector": sum(p.numel() for p in model.parameters()),
+              "criterion_train_only": (sum(p.numel() for p in criterion.parameters())
+                                       if criterion is not None else None)}
+    if hasattr(model.backbone, "c4_context"):
+        neck_names = {"rc_neck", "lat_c5", "lat_c4", "lat_c3", "refine_u4", "proj_u3",
+                      "gate_c4", "gate_c3", "out_conv", "detail_branch"}
+        neck = sum(p.numel() for name, module in model.backbone.named_children()
+                   if name in neck_names for p in module.parameters())
+        detail_scale = model.backbone.detail_gamma
+        if detail_scale is not None:
+            neck += detail_scale.numel()
+        counts.update(backbone_body=backbone - neck, neck=neck)
+    return {"parameter_counts": counts, "head_parameter_counts": heads}
 
 
 def read_json(path: Path | str) -> Dict[str, Any]:
@@ -64,7 +284,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich10", "rich11", "rich12"}:
+    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -88,6 +308,34 @@ def generate_run_name(
         extras.append("ms_litemla")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
+    if backbone == "mobilepixornext" and (
+            model_cfg.get("c4_context", "none") != "none" or
+            model_cfg.get("local_attention", "none") != "none" or
+            model_cfg.get("detail_path", False) or model_cfg.get("neck_fusion_channels", 24) != 24 or
+            tuple(model_cfg.get("stage_depths", (2, 4, 2))) != (2, 4, 2)):
+        features = backbone_feature_spec(model_cfg)
+        identity = {"features": features.semantic_metadata(),
+                    "stage_depths": model_cfg.get("stage_depths", [2, 4, 2]),
+                    "backbone_out_dim": model_cfg.get("backbone_out_dim", 16)}
+        kitti = config.get("data", {}).get("kitti", {})
+        if "geometry" in kitti and "objects" in kitti:
+            # New candidate names cover encoding and objective semantics as well
+            # as topology. Historical default names and partial configs stay usable.
+            identity = checkpoint_identity(config)
+            identity.pop("training")
+        digest = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:12]
+        extras.append(f"ctx_{features.c4_context}_local_{features.local_attention}_"
+                      f"f{features.neck_fusion_channels}_detail{int(features.detail_path)}_{digest}")
+    if str(model_cfg.get("head_mode", "legacy_single")).lower() == "grouped":
+        detection = detection_spec(config)
+        identity = {"groups": [g.to_dict() for g in detection.groups],
+                    "group_weights": detection.group_weights,
+                    "cls_encoding": detection.cls_encoding, "box_mode": detection.box_mode,
+                    "backbone_out_dim": model_cfg.get("backbone_out_dim", 16),
+                    "quality_target": detection.quality_target,
+                    "quality_warmup_epochs": loss_cfg.get("quality_warmup_epochs", 0)}
+        digest = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:12]
+        extras.append(f"grouped_{digest}")
     experiment_name = config.get("experiment", {}).get("name")
     if experiment_name:
         if not isinstance(experiment_name, str) or any(
@@ -172,47 +420,28 @@ def validate_backbone(config: Dict[str, Any]) -> None:
 
 
 def build_model(config: Dict[str, Any]):
+    detection = detection_spec(config)
     validate_backbone(config)
     from core.models.model import CustomModel
 
-    model_cfg = dict(config["model"])
-    if "geometry" not in model_cfg and "kitti" in config.get("data", {}):
-        model_cfg["geometry"] = config["data"]["kitti"].get("geometry")
+    schema = bev_encoding_spec(config)
+    model_cfg = copy.deepcopy(config["model"])
+    model_cfg["geometry"] = copy.deepcopy(config["data"]["kitti"]["geometry"])
+    model_cfg["bev_encoding"] = copy.deepcopy(
+        config["data"].get("bev_encoding") or {"name": "binary_slices"}
+    )
 
     return CustomModel(
         model_cfg,
         config["data"]["num_classes"],
-        input_channels=input_shape(config)[1],
+        input_channels=schema.channels,
+        task_groups=detection.groups if detection.head_mode == "grouped" else None,
+        box_mode=detection.box_mode,
     )
 
 
 def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[int, ...]:
-    geometry = config["data"][dataset_name]["geometry"]
-
-    def bins(axis: str) -> int:
-        return int(
-            round(
-                (geometry[f"{axis}_max"] - geometry[f"{axis}_min"])
-                / geometry[f"{axis}_res"]
-            )
-        )
-
-    encoding = config["data"].get("bev_encoding", {"name": "binary_slices"})
-    name = encoding.get("name", "binary_slices")
-    if name not in {"binary_slices", "rich8", "rich10", "rich11", "rich12"}:
-        raise ValueError(f"unsupported BEV encoding: {name!r}")
-    default_channels = {
-        "rich8": 8,
-        "rich10": 10,
-        "rich11": 11,
-        "rich12": 12,
-    }
-    if name in default_channels:
-        configured = encoding.get("out_channels")
-        channels = default_channels[name] if configured is None else max(int(configured), default_channels[name])
-    else:
-        channels = bins("z")
-    return (1, channels, bins("y"), bins("x"))
+    return bev_encoding_spec(config, dataset_name).input_shape
 
 
 def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:
@@ -228,6 +457,42 @@ def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:
         (key[7:] if key.startswith("module.") else key): value
         for key, value in checkpoint.items()
     }
+
+
+def warm_start_backbone(model, checkpoint):
+    """Copy exact compatible backbone keys only; leave new branches initialized.
+
+    This helper has no access to criterion/optimizer/epoch state. Normalize
+    legacy checkpoint wrappers and DDP names, without guessing key mappings or
+    expanding the first input convolution.
+    """
+    import torch
+
+    target = getattr(model, "_orig_mod", model)
+    source = normalize_state_dict(checkpoint)
+    destination = target.state_dict()
+    loaded, skipped = {}, {}
+    for name, value in source.items():
+        if not name.startswith("backbone."):
+            skipped[name] = "not a backbone key"
+        elif not torch.is_tensor(value):
+            raise ValueError(f"Invalid warm-start backbone tensor: {name}")
+        elif name not in destination:
+            skipped[name] = "absent in destination"
+        elif value.shape != destination[name].shape:
+            skipped[name] = "shape mismatch"
+        elif value.dtype != destination[name].dtype:
+            skipped[name] = "dtype mismatch"
+        else:
+            loaded[name] = value
+    if not loaded:
+        raise ValueError("Unsupported warm-start: no compatible backbone tensors")
+    # Validate the entire selection before modifying any actual tensor.
+    updated = dict(destination)
+    updated.update(loaded)
+    target.load_state_dict(updated, strict=True)
+    return {"loaded": sorted(loaded), "skipped": dict(sorted(skipped.items())),
+            "missing": sorted(set(destination) - set(loaded))}
 
 
 def atomic_torch_save(value: Any, path: Path | str) -> None:

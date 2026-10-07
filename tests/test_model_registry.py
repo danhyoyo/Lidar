@@ -1,3 +1,4 @@
+import copy
 import sys
 import unittest
 from pathlib import Path
@@ -105,6 +106,43 @@ class TestBackboneRegistry(unittest.TestCase):
         model = CustomModel(cfg_minimal)
         self.assertIsNotNone(model)
         self.assertEqual(model.num_classes, 4)
+
+
+def test_hist14_direct_model_uses_schema_width_and_legacy_head():
+    cfg = {"backbone": "mobilepixornext", "backbone_out_dim": 16,
+           "bev_encoding": {"name": "hist14"}, "c4_attention": "none"}
+    model = CustomModel(cfg, num_classes=3, input_channels=35).eval()
+    assert model.backbone.stem[0].in_channels == 14
+    with torch.no_grad():
+        result = model(torch.zeros(1, 14, 32, 48))
+    assert result["cls"].shape == (1, 3, 8, 12)
+    assert set(result) == {"cls", "offset", "size", "yaw"}
+
+
+def test_pipeline_injects_authoritative_encoding_without_mutating_config():
+    from tools.kitti_training_pipeline.common import build_model, input_shape
+    geometry = {"x_min": 0, "x_max": 16, "x_res": 0.5,
+                "y_min": -6, "y_max": 6, "y_res": 0.25,
+                "z_min": -2.5, "z_max": 1, "z_res": 0.1}
+    cfg = {"model": {"backbone": "mobilepixornext", "c4_attention": "none",
+                     "bev_encoding": {"name": "rich8"}},
+           "data": {"num_classes": 3, "bev_encoding": {"name": "hist14"},
+                    "kitti": {"geometry": geometry}}}
+    original = copy.deepcopy(cfg)
+    model = build_model(cfg)
+    assert model.backbone.stem[0].in_channels == input_shape(cfg)[1] == 14
+    assert cfg == original
+
+
+def test_binary_direct_constructor_preserves_explicit_geometry_free_width():
+    model = CustomModel({"backbone": "mobilepixornext"}, num_classes=3, input_channels=8)
+    assert model.backbone.stem[0].in_channels == 8
+
+
+def test_registry_threads_nondefault_stage_depths_into_real_backbone():
+    model = CustomModel({"backbone": "mobilepixornext", "stage_depths": [3, 4, 2],
+                         "c4_attention": "none"}, num_classes=3, input_channels=14)
+    assert [len(model.backbone.stage2), len(model.backbone.stage3), len(model.backbone.stage4)] == [3, 4, 2]
 
 
 if __name__ == "__main__":

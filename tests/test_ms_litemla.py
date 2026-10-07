@@ -39,24 +39,22 @@ def test_multiscale_litemla_shape_and_gradient():
     )
 
 
-@pytest.mark.parametrize(
-    ("mode", "expected_type"),
-    [
+def test_qk_norm_modes():
+    modes = [
         ("none", torch.nn.Identity),
         ("rmsnorm", torch.nn.RMSNorm),
         ("layernorm", torch.nn.LayerNorm),
-    ],
-)
-def test_qk_norm_modes(mode, expected_type):
-    module = LiteMLARefinement(
-        channels=32,
-        head_dim=8,
-        scales=(3, 5),
-        qk_norm=mode,
-    )
-    assert isinstance(module.query_norm, expected_type)
-    assert isinstance(module.key_norm, expected_type)
-    assert module.qk_norm_name == mode
+    ]
+    for mode, expected_type in modes:
+        module = LiteMLARefinement(
+            channels=32,
+            head_dim=8,
+            scales=(3, 5),
+            qk_norm=mode,
+        )
+        assert isinstance(module.query_norm, expected_type)
+        assert isinstance(module.key_norm, expected_type)
+        assert module.qk_norm_name == mode
 
 
 def test_rmsnorm_uses_head_dimension_not_token_dimension():
@@ -80,13 +78,10 @@ def test_rmsnorm_uses_head_dimension_not_token_dimension():
     assert torch.allclose(key_rms, torch.ones_like(key_rms), atol=2e-4, rtol=2e-4)
 
 
-@pytest.mark.parametrize(
-    "scales",
-    [(), (2,), (3, 3), (3, 4), (3, True), "3,5"],
-)
-def test_invalid_scales_are_rejected(scales):
-    with pytest.raises(ValueError, match="distinct odd integers"):
-        LiteMLARefinement(channels=32, head_dim=8, scales=scales)
+def test_invalid_scales_are_rejected():
+    for scales in [(), (2,), (3, 3), (3, 4), (3, True), "3,5"]:
+        with pytest.raises(ValueError, match="distinct odd integers"):
+            LiteMLARefinement(channels=32, head_dim=8, scales=scales)
 
 
 def test_invalid_qk_norm_is_rejected():

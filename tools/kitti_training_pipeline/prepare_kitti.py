@@ -14,7 +14,10 @@ from typing import Dict, Iterable, List, Sequence, Tuple
 
 import numpy as np
 
-from common import write_json
+try:
+    from .common import write_json
+except ImportError:
+    from common import write_json
 
 
 ACTIVE_CLASSES = ("Car", "Pedestrian", "Cyclist")

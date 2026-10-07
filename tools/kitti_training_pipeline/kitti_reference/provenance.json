@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/open-mmlab/OpenPCDet",
+  "revision": "233f849829b6ac19afb8af8837a0246890908755",
+  "upstream_path": "pcdet/datasets/kitti/kitti_object_eval_python",
+  "sha256": {
+    "eval.py": "d9260a41f68083d685fc43fecac1c417b14a1bc53df4915a46b2924f3a6a3c64",
+    "rotate_iou.py": "d9b2820b5be5d15ee7233147643134c5d73eff129c773aef4b59ce73a8ecd7f4",
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "LICENSE.RRPN": "feae9d571bda2ce209db793d0410de4d8a2df12040d293e4260429983412539e"
+  },
+  "modifications": "none to evaluator or overlap sources",
+  "license": "Apache-2.0 repository license; rotate_iou.py retains MIT RRPN attribution",
+  "rrpn_license_source": "https://github.com/hongzhenwang/RRPN-revise/blob/master/LICENSE",
+  "runtime": "real compatible Numba CUDA required; no CPU or local BEV substitution"
+}

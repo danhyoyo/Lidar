@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -5,6 +6,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "detector"))
 sys.path.insert(0, str(REPO_ROOT / "detector" / "core" / "datasets"))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "kitti_training_pipeline"))
+
+from common import create_experiment_config
 
 import torch
 import torch.nn as nn
@@ -177,6 +181,75 @@ class TestLossStrategies(unittest.TestCase):
 
         strat = build_loss_strategy("temp_loss_override_test", "gaussian")
         self.assertEqual(strat(self.pred, self.target)["loss"].item(), 3.0)
+
+    def test_q_oga_and_gw_qal_config_integration(self):
+        cfg_path = REPO_ROOT / "configs" / "config.json"
+        self.assertTrue(cfg_path.exists(), f"Missing config: {cfg_path}")
+        with open(cfg_path) as f:
+            base_cfg = json.load(f)
+
+        for loss_name in ("q_oga", "gw_qal"):
+            with self.subTest(loss_name=loss_name):
+                cfg = create_experiment_config(base_cfg, {"loss": {"name": loss_name}})
+                self.assertEqual(cfg["loss"]["name"], loss_name)
+                criterion = LossFunction("gaussian", cfg["loss"])
+                pred = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+                loss_dict = criterion(pred, self.target)
+                loss = loss_dict["loss"]
+                loss.backward()
+                self.assertTrue(pred["offset"].grad is not None)
+                self.assertTrue(torch.isfinite(loss).item())
+
+    def test_q_oga_and_gw_qal_strategies_and_empty_mask(self):
+        crit_qoga = LossFunction("gaussian", {
+            "name": "q_oga",
+            "temperature": 2.0,
+            "clamp_bound": 3.0,
+            "corner_beta": 1.0,
+            "soft_min_tau": 0.05,
+            "rda_gamma": 1.5,
+        })
+        pred_qoga = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+        loss_dict_qoga = crit_qoga(pred_qoga, self.target)
+        for key in ("loss", "cls", "offset", "size", "yaw", "geo", "corner_dist", "proj_giou", "rda_mean_weight"):
+            self.assertIn(key, loss_dict_qoga)
+            self.assertTrue(torch.isfinite(loss_dict_qoga[key]))
+        loss_dict_qoga["loss"].backward()
+        self.assertTrue(pred_qoga["offset"].grad is not None)
+
+        crit_gw = LossFunction("gaussian", {
+            "name": "gw_qal",
+            "temperature": 2.0,
+            "clamp_bound": 3.0,
+            "tau_gwa": 2.0,
+            "tau_sim": 2.0,
+            "beta_q": 1.0,
+            "rda_gamma": 1.5,
+        })
+        pred_gw = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+        loss_dict_gw = crit_gw(pred_gw, self.target)
+        for key in ("loss", "cls", "offset", "size", "yaw", "geo", "w2_mean_dist", "rda_mean_weight"):
+            self.assertIn(key, loss_dict_gw)
+            self.assertTrue(torch.isfinite(loss_dict_gw[key]))
+        loss_dict_gw["loss"].backward()
+        self.assertTrue(pred_gw["offset"].grad is not None)
+
+        empty_target = dict(self.target)
+        empty_target["reg_mask"] = torch.zeros(self.B, self.H, self.W)
+        for name in ("q_oga", "gw_qal"):
+            with self.subTest(loss_name=name):
+                c = LossFunction("gaussian", {"name": name})
+                p = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
+                out = c(p, empty_target)
+                self.assertTrue(torch.isfinite(out["loss"]))
+                out["loss"].backward()
+                self.assertTrue(p["offset"].grad is not None)
+
+    def test_oga_temperature_and_clamp_validation(self):
+        with self.assertRaises(ValueError):
+            OgaLossStrategy("gaussian", {"temperature": -1.0})
+        with self.assertRaises(ValueError):
+            OgaLossStrategy("gaussian", {"clamp_bound": 0.0})
 
 
 if __name__ == "__main__":

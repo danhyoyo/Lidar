@@ -1,12 +1,56 @@
-"""Dynamic IoU supervision target generator for IQA-Header."""
+"""Detached quality targets: exact rotated IoU and legacy geometry proxies."""
 
 from typing import Dict
 import torch
 import torch.nn.functional as F
 
 from core.losses.oriented_geometry_loss import box_corners
+from core.losses.rotated_iou import aligned_rotated_iou
 
 
+@torch.no_grad()
+def compute_rotated_iou_targets(
+    pred_offset: torch.Tensor,
+    pred_size: torch.Tensor,
+    pred_yaw: torch.Tensor,
+    target_offset: torch.Tensor,
+    target_size: torch.Tensor,
+    target_yaw: torch.Tensor,
+    reg_mask: torch.Tensor,
+    epsilon: float = 1e-6,
+    max_abs_log_size: float = 10.0,
+) -> torch.Tensor:
+    """Exact aligned footprint IoU in [B,H,W], zero outside selected cells.
+
+    Offsets are metric residuals at the same grid cell, so its shared grid
+    origin cancels. Width/length and doubled-yaw decoding match ``box_corners``
+    and the BEV evaluator. Both prediction and target geometry are detached.
+    """
+    B, _, H, W = pred_offset.shape
+    device = pred_offset.device
+    result = torch.zeros((B, H, W), dtype=torch.float32, device=device)
+    mask = reg_mask.bool()
+    if not mask.any():
+        return result
+
+    with torch.autocast(device_type=device.type, enabled=False):
+        def select(x):
+            return x.detach().permute(0, 2, 3, 1)[mask].float()
+
+        p_off, t_off = select(pred_offset), select(target_offset)
+        # Recenter before constructing corners to avoid common world-coordinate
+        # cancellation; no gradient is required for a supervision target.
+        pred_c, _, _, _ = box_corners(
+            p_off - t_off, select(pred_size), select(pred_yaw), epsilon, max_abs_log_size
+        )
+        target_c, _, _, _ = box_corners(
+            torch.zeros_like(t_off), select(target_size), select(target_yaw), epsilon, max_abs_log_size
+        )
+        result[mask] = aligned_rotated_iou(pred_c, target_c)
+    return result
+
+
+@torch.no_grad()
 def compute_mgiou_targets(
     pred_offset: torch.Tensor,
     pred_size: torch.Tensor,
@@ -18,7 +62,7 @@ def compute_mgiou_targets(
     epsilon: float = 1e-6,
     max_abs_log_size: float = 10.0,
 ) -> torch.Tensor:
-    """Compute per-cell rotated BEV IoU targets using Multi-Axis Projection GIoU.
+    """Compute per-cell legacy clamped MGIoU similarity (not polygon IoU).
 
     Predictions are detached to prevent circular regression gradients.
     Returns: [B, H, W] tensor in range [0.0, 1.0].
@@ -64,12 +108,13 @@ def compute_mgiou_targets(
         giou = intersection / union.clamp_min(epsilon) - (hull - union) / hull.clamp_min(epsilon)
         mean_giou = giou.mean(dim=-1)  # [N]
 
-        # Map GIoU [-1, 1] to target similarity [0, 1]
+        # Clamp the legacy similarity; this is not area IoU.
         cell_iou = mean_giou.clamp(0.0, 1.0)
         target_iou[pos_mask] = cell_iou.to(dtype=target_iou.dtype)
     return target_iou
 
 
+@torch.no_grad()
 def compute_yaw_footprint_targets(
     pred_offset: torch.Tensor,
     pred_size: torch.Tensor,
@@ -155,6 +200,12 @@ def compute_iou_targets(
                 epsilon=epsilon,
                 max_abs_log_size=max_abs_log_size,
             )
+        elif method == "rotated_iou":
+            return compute_rotated_iou_targets(
+                pred["offset"][:, :2], pred["size"][:, :2], pred["yaw"][:, :2],
+                target["offset"][:, :2], target["size"][:, :2], target["yaw"][:, :2],
+                reg_mask, epsilon=epsilon, max_abs_log_size=max_abs_log_size,
+            )
         elif method == "yaw_footprint":
             return compute_yaw_footprint_targets(
                 pred["offset"][:, :2],
@@ -168,4 +219,7 @@ def compute_iou_targets(
                 max_abs_log_size=max_abs_log_size,
             )
         else:
-            raise ValueError(f"Unknown IoU target method: {method!r}. Expected 'mgiou' or 'yaw_footprint'.")
+            raise ValueError(
+                f"Unknown IoU target method: {method!r}. "
+                "Expected 'mgiou', 'rotated_iou' or 'yaw_footprint'."
+            )

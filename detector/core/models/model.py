@@ -2,35 +2,38 @@ import torch
 import torch.nn as nn
 
 try:
+    from core.bev_encoding import resolve_input_channels
+    from core.detection_config import resolve_model_detection
     from core.models.backbones.registry import build_backbone
     from core.models.heads.cnn import Header
 except ImportError:
+    from detector.core.bev_encoding import resolve_input_channels
+    from detector.core.detection_config import resolve_model_detection
     from detector.core.models.backbones.registry import build_backbone
     from detector.core.models.heads.cnn import Header
 
 
 class CustomModel(nn.Module):
-    def __init__(self, cfg, num_classes=4, input_channels=35):
+    def __init__(self, cfg, num_classes=4, input_channels=35, task_groups=None, *, box_mode="bev"):
         super(CustomModel, self).__init__()
-        bev_cfg = cfg.get("bev_encoding", {})
-        bev_name = bev_cfg.get("name", "binary_slices")
-
-        default_channels = {
-            "rich8": 8,
-            "rich10": 10,
-            "rich11": 11,
-            "rich12": 12,
-        }
-        if bev_name in default_channels:
-            configured = bev_cfg.get("out_channels")
-            input_channels = default_channels[bev_name] if configured is None else max(int(configured), default_channels[bev_name])
+        contract = resolve_model_detection(cfg, num_classes, task_groups, box_mode=box_mode)
+        self.head_mode = contract.head_mode
+        self.box_mode = contract.box_mode
+        self.task_groups = contract.groups
+        # A geometry-free legacy constructor keeps its explicit input width.
+        # Pipeline construction supplies the authoritative data encoding/geometry.
+        input_channels = resolve_input_channels(
+            cfg.get("bev_encoding"),
+            cfg.get("geometry") if "bev_encoding" in cfg else None,
+            default_channels=input_channels,
+        )
 
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)
 
         self.num_classes = num_classes
-        cls_encoding = str(cfg.get("cls_encoding", "gaussian")).lower()
-        if cls_encoding == "binary":
+        cls_encoding = contract.cls_encoding
+        if cls_encoding == "binary" and self.head_mode == "legacy_single":
             self.num_classes += 1
 
         is_mobilepixornext = backbone_name.lower() == "mobilepixornext"
@@ -39,20 +42,26 @@ class CustomModel(nn.Module):
 
         backbone_out_dim = cfg.get("backbone_out_dim", 16)
 
-        use_iou = bool(cfg.get("header_use_iou", False))
-        self.header = Header(
-            self.num_classes,
-            backbone_out_dim,
-            use_bn=use_bn,
-            act=act,
-            use_iou=use_iou,
-        )
+        use_iou = contract.use_iou
+        if self.head_mode == "legacy_single":
+            self.header = Header(
+                self.num_classes, backbone_out_dim,
+                use_bn=use_bn, act=act, use_iou=use_iou, box_mode=self.box_mode,
+            )
+        else:
+            # Optional grouped topology stays out of legacy construction/imports.
+            from .heads.grouped import GroupedHeader
+            self.grouped_header = GroupedHeader(
+                self.task_groups, backbone_out_dim, cls_encoding=cls_encoding,
+                use_bn=use_bn, act=act, use_iou=use_iou, box_mode=self.box_mode,
+            )
 
     def forward(self, x):
         if isinstance(x, dict) and "voxel" in x:
             x = x["voxel"]
         features = self.backbone(x)
-        pred = self.header(features)
+        pred = (self.grouped_header(features) if self.head_mode == "grouped"
+                else self.header(features))
         return pred
 
     def switch_to_deploy(self):
