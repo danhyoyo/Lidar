@@ -15,6 +15,10 @@ from common import configure_detector_imports
 configure_detector_imports(REPO_DIR / "detector")
 ```
 
+The setup cell's `run_command` reads a merged stdout/stderr pipe and prints each line through the notebook kernel with flushing. It sets `PYTHONUNBUFFERED=1` only in the child environment and displays the command and PID before waiting for output. Failures retain the last 100 output lines in `CalledProcessError.output`, and signal exits are identified explicitly. On notebook interruption, the direct subprocess is terminated and waited for. Existing trainer `train.log` and `metrics.jsonl` files remain unchanged.
+
+For a notebook already open, replace its `run_command` definition with the current setup-cell definition in a separate cell before launching another command. Updating the repository alone does not replace a Python function already defined in the kernel. Trainer summaries remain per epoch; streaming does not introduce batch progress or resolve a resource-related SIGKILL.
+
 ## Development defaults
 
 The configuration cell defaults to:
