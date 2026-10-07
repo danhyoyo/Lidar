@@ -1,0 +1,24 @@
+{
+  "kind": "synthetic_CPU_trainer_resume_check_not_KITTI_AP",
+  "epochs": [
+    1,
+    2,
+    3
+  ],
+  "training_quality_mix": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "validation_quality_mix": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "optimizer_updates": [
+    1,
+    1,
+    1
+  ],
+  "seed": 42
+}

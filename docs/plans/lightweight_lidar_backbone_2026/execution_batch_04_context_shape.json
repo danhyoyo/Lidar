@@ -1,0 +1,34 @@
+{
+  "scope": "Partial standalone focal preparation, tasks 11-12; no residual forward or backbone integration",
+  "device": "cpu",
+  "dtype": "float32",
+  "input_shape": [
+    1,
+    96,
+    100,
+    88
+  ],
+  "query_shape": [
+    1,
+    64,
+    100,
+    88
+  ],
+  "fused_context_shape": [
+    1,
+    64,
+    100,
+    88
+  ],
+  "gate_shape": [
+    1,
+    4,
+    100,
+    88
+  ],
+  "parameters_partial_module": 14592,
+  "gate_sum_max_abs_error": 2.384185791015625e-07,
+  "all_outputs_finite": true,
+  "complete_focal_parameter_count": null,
+  "accuracy_results": null
+}

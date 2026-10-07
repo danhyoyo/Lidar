@@ -1,6 +1,6 @@
 # Task51 on Colab: BEV audit, baseline evidence and protocol freeze
 
-The [standard notebook workflow](notebook_runbook.md) now integrates these steps and uses only `configs/config.json` plus notebook controls. Its default is **BEV**, `PRESET="custom"`, main focal/grouped OGA-IQA and hybrid GT. This guide remains available for separate CLI evidence recording. Real Colab assets and a complete trained baseline must supply the final freeze; local synthetic tests do not supply real KITTI AP or SOTA evidence.
+The [standard notebook workflow](notebook_runbook.md) uses only `configs/config.json` plus notebook controls. Its default is **BEV**, `PRESET="custom"`, main focal/grouped OGA-IQA and hybrid GT. The simplified notebook handles training/evaluation; this guide supplies the separate CLI audit/evidence/protocol steps for formal comparisons. Real Colab assets and a complete trained baseline must supply the final freeze; local synthetic tests do not supply real KITTI AP or SOTA evidence.
 
 ## Choose the comparison
 

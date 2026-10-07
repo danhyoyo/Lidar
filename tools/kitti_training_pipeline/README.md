@@ -60,6 +60,9 @@ FPN, BN/SiLU heads and baseline loss. Its recipe is AdamW, LR 7e-4, weight
 decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
+Omitted `--num-workers`, `--target-backend` and `--compile-model` flags use the
+saved training config (historical fallbacks: 2 workers, Python backend, no compile).
+Explicit flags override the config; `--no-compile-model` disables compilation.
 
 The master config selects the highest validation AP and retains two independent
 winners: `selected/best_ap.pt` and `selected/best_loss.pt`. Validation loss runs
@@ -80,6 +83,9 @@ the primary winner. Separate `selection_ap.json` / `selection_loss.json` records
 identify the independent winners. `checkpoints/last.pt` retains optimizer,
 criterion, scheduler, scaler, RNG and AP selection state for resume.
 `metrics.jsonl` and `train.log` include AP scores, inference time and winner flags.
+The console and `train.log` show train/validation loss, LR and train/val time
+before the additional AP pass. AP inference progress and a separate result line
+show the three class Moderate R40 percentages, their mean and AP time.
 
 An interval of 5 reduces inference cost but only selects the best of evaluated
 epochs; an unsampled peak can be missed. Match the interval and decode settings
@@ -90,9 +96,10 @@ use this for batch-limited smoke/debug runs, which cannot establish best AP.
 
 The notebook's evaluation cell evaluates both saved winners with the run's
 original config. It writes `evaluation_ap_<mode>.json` and
-`evaluation_loss_<mode>.json`, independent protocol/evidence records and a
-comparison table labelled with selection, epoch, checkpoint path and stored
-validation loss. Primary evidence aliases remain available to benchmark tools.
+`evaluation_loss_<mode>.json` and a comparison table labelled with selection,
+epoch, checkpoint path and stored validation loss. The notebook uses direct
+IPython `!` commands for setup, data preparation, smoke, train/resume and evaluation.
+Benchmark protocol/evidence tools remain available separately under `tools/benchmarks/`.
 Historical loss-only runs evaluate only their actual loss winner. Programmatic
 callers can use `selected_run(run_dir, kind="ap")`,
 `selected_run(run_dir, kind="loss")`, or `selected_runs(run_dir)`.

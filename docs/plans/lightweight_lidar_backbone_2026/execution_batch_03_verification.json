@@ -1,0 +1,126 @@
+{
+  "accuracy_results": null,
+  "artifacts": {
+    "encoding_benchmark": "execution_batch_03_encoding_benchmark.json",
+    "reference_profile": "execution_batch_03_reference_profile.json"
+  },
+  "batch": 3,
+  "branch": "research/mobilepixornext-under1m",
+  "budget_scope": "backbone including neck, strictly <1000000",
+  "completed_through_task": 9,
+  "diff_check": "passed",
+  "final_gate": {
+    "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_hist14_encoding.py tests/test_hist14_backend.py tests/test_bev_encoding_spec.py tests/test_rich_encodings.py tests/test_legacy_detector_contract.py tests/test_loss_strategies.py tests/test_iqa_header.py tests/test_small_object_assignment.py tests/test_kitti_config_compatibility.py tests/test_run_name_and_logging.py tests/test_model_registry.py tests/test_notebook_experiment_config.py tests/test_standard_training_notebook.py tests/test_regressions.py tests/test_hist14_hybrid_integration.py tests/test_hybrid_augmentation.py tests/test_mobilepixornext_backbone.py tests/test_lightweight_detector_budget.py -k 'not two_worker_loader_handles_hybrid_after_parent_preview'",
+    "deselected": 1,
+    "deselected_reason": "The unchanged two-worker IPC test already passed in the full task-7 gate outside sandbox; it is not rerun in the restricted runner.",
+    "duration_seconds": 22.07,
+    "passed": 419,
+    "skipped": 0,
+    "subtests_passed": 2,
+    "warnings": 1
+  },
+  "legacy_fixture": "unchanged",
+  "mac_scope": "Conv2d shape-based estimate only, excludes normalization/interpolation/activations/attention matmuls and other operations",
+  "new_source_whitespace_checks": "passed",
+  "parameter_counts": {
+    "backbone_body": 604864,
+    "backbone_including_neck": 635408,
+    "criterion_train_only": 6,
+    "heads": 93130,
+    "neck": 30544,
+    "total_detector": 728538
+  },
+  "preexisting_modified_files_configs_splits": "unchanged",
+  "reference_scope": "No-context hist14/local3/output32 SGFPN backbone; actual legacy single head with IQA, grouped/focal not implemented yet",
+  "source_sha256": {
+    "detector/core/models/backbones/mobilepixornext.py": "6f26585ae3883d229796fdda40ebd2981d0831d0d68fc9b790ce1f2ef557cfb7",
+    "detector/core/models/backbones/registry.py": "c9747e1fa7426a70a10834bb0936c8f3ecfe889366b641c6669803098ca24ada",
+    "tests/test_hist14_hybrid_integration.py": "d989f2f501e65fd8440a6d8d45627bec8bf1d0849382b94ab09ce99d3dfaeb6d",
+    "tests/test_lightweight_detector_budget.py": "1bac583f8aef71c4cb80c3b835541f8579169a9088258db0d5e2b9fc4028f82f",
+    "tests/test_mobilepixornext_backbone.py": "6f809b4192f2cb279654fa52f63aee707e00bfbe68988b19c727b0e98313d686",
+    "tests/test_model_registry.py": "6b024ec4912aa5edaef0f9dfa2a13de98b0b53ccd99cf096e9a81323c40f63a3",
+    "tools/benchmarks/benchmark_bev_encodings.py": "a6a8201029ad8c5b63bb8ead94f8b589b83af620b11697d95b4afb772954609e",
+    "tools/benchmarks/profile_detector.py": "8484ef9176605d63ae76be2796e5c8a8e48b6dfb6f73ceb87c781fb1c5118c6d"
+  },
+  "task_gates": {
+    "task7": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_hist14_hybrid_integration.py tests/test_hybrid_augmentation.py",
+      "duration_seconds": 5.4,
+      "initial_sandbox_failure": "41 passed; two-worker tensor IPC socket denied with Operation not permitted",
+      "passed": 42,
+      "sandbox": "escalated IPC-capable runner"
+    },
+    "task8": {
+      "duration_seconds": 7.66,
+      "passed": 39,
+      "warnings": 1
+    },
+    "task9": {
+      "duration_seconds": 10.27,
+      "passed": 28,
+      "warnings": 1
+    }
+  },
+  "tasks_completed": [
+    7,
+    8,
+    9
+  ],
+  "tasks_pending": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58
+  ],
+  "tdd": {
+    "task7_red": "Missing benchmark CLI assertion failed",
+    "task8_red": "12 intended failures: stage-depth constructor option missing and registry ignored the option",
+    "task9_red": "Missing profiler assertion failed"
+  },
+  "warning": "Existing torch.jit.script compatibility warning on Python 3.14+. TorchScript numerical parity test still passes."
+}

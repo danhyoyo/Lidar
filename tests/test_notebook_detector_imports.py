@@ -5,28 +5,19 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
-
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK = ROOT / "3D_Lidar_Object_Detection_Notebook_standard.ipynb"
 
 
-def notebook_bootstrap(cell):
+def notebook_bootstrap():
     sources = ["".join(item["source"]) for item in json.loads(NOTEBOOK.read_text())["cells"]
                if item["cell_type"] == "code"]
-    if cell == "setup":
-        source = next(source for source in sources if 'os.chdir(REPO_DIR)' in source)
-        # Execute the real path setup, stopping before dependency installation.
-        return source.split('os.chdir(REPO_DIR)', 1)[1].split(
-            'run_command([sys.executable', 1)[0]
-    source = next(source for source in sources if 'structural_model = build_model' in source)
-    # Stop before the numerical training imports; package discovery needs no Torch.
-    return source.split('from tools.kitti_training_pipeline.train', 1)[0]
+    source = next(source for source in sources if 'os.chdir(REPO_DIR)' in source)
+    # Only kernel path setup remains; models are built by direct CLI commands.
+    return source.split('os.chdir(REPO_DIR)', 1)[1]
 
 
-@pytest.mark.parametrize("cell", ["setup", "parameter_audit"])
-def test_notebook_exposes_detector_and_legacy_utils_in_a_fresh_process(tmp_path, cell):
+def test_notebook_exposes_detector_and_legacy_utils_in_a_fresh_process(tmp_path):
     script = """
 import importlib.util
 import sys
@@ -47,13 +38,12 @@ assert not {"torch", "numpy", "numba"} & set(sys.modules)
 for path in (root / "detector", root / "detector/core/datasets"):
     assert sys.path.count(str(path)) == 1
 """
-    result = subprocess.run([sys.executable, "-I", "-c", script, str(ROOT), notebook_bootstrap(cell)],
+    result = subprocess.run([sys.executable, "-I", "-c", script, str(ROOT), notebook_bootstrap()],
                             cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-@pytest.mark.parametrize("cell", ["setup", "parameter_audit"])
-def test_notebook_reports_incomplete_detector_source_before_model_import(tmp_path, cell):
+def test_notebook_reports_incomplete_detector_source_before_model_import(tmp_path):
     script = """
 import sys
 from pathlib import Path
@@ -64,7 +54,7 @@ namespace = {"REPO_DIR": Path(sys.argv[2]), "sys": sys}
 exec(sys.argv[3], namespace)
 """
     result = subprocess.run([sys.executable, "-I", "-c", script, str(ROOT), str(tmp_path),
-                             notebook_bootstrap(cell)], cwd=tmp_path, capture_output=True, text=True)
+                             notebook_bootstrap()], cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode != 0
     assert "Detector source is incomplete" in result.stderr
     assert "No module named 'core'" not in result.stderr

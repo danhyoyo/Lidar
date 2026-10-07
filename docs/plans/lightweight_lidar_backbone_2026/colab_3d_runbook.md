@@ -1,6 +1,6 @@
 # Colab: explicit final 3D results
 
-The [standard notebook workflow](notebook_runbook.md) now integrates 3D preparation, actual asset audit, GPU/reference gates, full training/resume, own-config selected-checkpoint evaluation and comparison records. Its only editable source JSON is configs/config.json. There is no notebook experiment-file override.
+The [standard notebook workflow](notebook_runbook.md) includes 3D preparation, smoke, full training/resume, own-config selected-checkpoint evaluation and comparison records. Asset audits and GPU/reference benchmark gates run separately. Its only editable source JSON is configs/config.json. There is no notebook experiment-file override.
 
 Current development defaults remain BEV. Final 3D requires trained owned z_bottom/log-height branches: changing the evaluator metric alone cannot give a BEV checkpoint those predictions.
 
@@ -19,21 +19,21 @@ After resolving configuration, inspect data.box_mode, loss.vertical_loss_weight,
 
 ## Data and runtime gates
 
-Reference inference requires original label_2, calib and image_2 inputs. The notebook conditionally extracts/requires image_2.tar and audits original P2/image bounds, finite processed points/crops, unique/disjoint splits and training-only GT database source-label geometry. Existing stale databases fail rather than silently rewriting metadata.
+Reference inference requires original label_2, calib and image_2 inputs. The notebook conditionally extracts image_2.tar and builds missing training-only GT databases. Run the asset audit separately for formal comparisons; explicitly rebuild the database after changing splits or database settings.
 
-Development smoke defaults to the selected supported precision, workers0/configured workers and full configured inference shape. Benchmark mode requires FP32/FP16/BF16. Unsupported BF16 is partial rather than a pass. Synthetic smoke does not measure full-resolution backward throughput or KITTI AP.
+The notebook smoke trains a few actual-data batches with the selected precision and worker count. Run the separate synthetic GPU smoke for FP32/FP16/BF16, workers0/configured workers and full-resolution inference when collecting benchmark evidence. Synthetic smoke does not measure full-resolution backward throughput or KITTI AP.
 
-The notebook runs sixteen actual wrapper/direct pinned-CUDA parity scenarios before reference work. They cover BEV/3D overlap, vertical mismatch, duplicate predictions, ignored neighbors/DontCare, difficulty boundaries and separate R11/R40. Its receipt explicitly describes that selected suite, not the full repository suite.
+For a formal benchmark, run the sixteen wrapper/direct pinned-CUDA parity scenarios separately. They cover BEV/3D overlap, vertical mismatch, duplicate predictions, ignored neighbors/DontCare, difficulty boundaries and separate R11/R40. The simplified notebook does not run this suite automatically.
 
 Colab must supply its own compatible compiler/libdevice/runtime. REFERENCE_CUDA_HOME and REFERENCE_PIP_PACKAGES allow explicit setup before model/Numba imports. See [reference evaluation](reference_evaluation.md) for tested local versions and failure boundaries. The laptop temporary environment is not a Colab dependency. No local-BEV/CPU fallback can replace reference metrics.
 
 ## Train, select and evaluate
 
-Run the normal actual-data smoke and full-training cells. The trainer selects minimum mean validation loss, preserving selected/best.pt, selected/selection.json, retained checkpoint, metrics.jsonl and config.resolved.json. Independent torch.save archives may differ in file bytes; complete selected/retained payload equality is checked.
+Run the normal actual-data smoke and full-training cells. The default trainer selects maximum three-class Moderate R40 AP and retains minimum-validation-loss independently as selected/best_ap.pt and selected/best_loss.pt. It also preserves selected/best.pt, selected/selection.json, retained checkpoints, metrics.jsonl and config.resolved.json. Independent torch.save archives may differ in file bytes; complete selected/retained payload equality is checked.
 
 The evaluation cell automatically routes both modes to the pinned reference evaluator, using this run's own resolved config/checkpoint/split. It displays all nine class/difficulty values plus Moderate/AP9 and saves comparison JSON/CSV with R11/R40 kept separate. It never silently chooses last.pt or evaluates a 3D checkpoint using the local BEV cell.
 
-For a controlled comparison, train a matching no-context 3D baseline first, then set BASELINE_RUN and RUN_PURPOSE="benchmark". The default focal-ablation guard requires matching normalized controls outside focal context. All selected protocols require actual asset/GPU/reference/baseline evidence and are freshly rechecked before benchmark training/resume. A generic protocol comparison must be selected explicitly and differences disclosed.
+For a controlled comparison, train a matching no-context 3D baseline first, then record separate benchmark evidence using the task51 CLI guide. Match controls outside focal context, including AP selection policy and interval, and disclose any additional differences. Protocol readiness is recorded by the benchmark tools, rather than a notebook training gate.
 
 ## Optional standalone CLI reproduction
 

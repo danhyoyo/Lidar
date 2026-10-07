@@ -1,0 +1,123 @@
+{
+  "accuracy_results": null,
+  "arithmetic_projection_focal_backbone": 660528,
+  "artifacts": {
+    "module_audit": "execution_batch_05_module_audit.json"
+  },
+  "batch": 5,
+  "batch3_implementation_sources": "unchanged",
+  "branch": "research/mobilepixornext-under1m",
+  "completed_through_task": 15,
+  "diff_check": "passed",
+  "eca_adapter_parameter_count": null,
+  "eca_core_parameters": {
+    "k3": 3,
+    "k5": 5
+  },
+  "final_gate": {
+    "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_backbone_feature_config.py tests/test_focal_context.py tests/test_light_attention.py tests/test_mobilepixornext_backbone.py tests/test_model_registry.py tests/test_legacy_detector_contract.py tests/test_lightweight_detector_budget.py tests/test_kitti_config_compatibility.py tests/test_notebook_experiment_config.py tests/test_run_name_and_logging.py tests/test_standard_training_notebook.py tests/test_loss_strategies.py tests/test_iqa_header.py tests/test_small_object_assignment.py tests/test_bev_encoding_spec.py tests/test_hist14_encoding.py tests/test_hist14_backend.py tests/test_rich_encodings.py tests/test_regressions.py",
+    "deselected": 0,
+    "duration_seconds": 21.74,
+    "passed": 533,
+    "skipped": 0,
+    "subtests_passed": 2,
+    "warnings": 1
+  },
+  "focal_parameter_count": 25120,
+  "implementation_boundary": "Focal and ECA core remain standalone; SimAM, scalar adapters, backbone integration and runtime recipe changes are not included.",
+  "integrated_focal_backbone_parameter_count": null,
+  "legacy_fixture": "unchanged",
+  "new_source_whitespace_checks": "passed",
+  "precision_boundaries": [
+    "Focal modulation computed in FP32 before output projection weight-dtype/autocast boundary; low-precision residual accumulated in FP32 and returned in input dtype.",
+    "ECA pool/channel correlation/sigmoid use FP32 with runtime autocast disabled; cast kernel retains gradients and device. Meta shape audit uses no autocast backend."
+  ],
+  "precision_scope": "CPU explicit FP32/FP16/BF16; CPU autocast FP16/BF16 fixtures. No CUDA precision/memory evidence.",
+  "preexisting_modified_files_configs_splits": "unchanged",
+  "pure_resolver_and_tests": "unchanged",
+  "reference_backbone_including_neck_unchanged": 635408,
+  "source_sha256": {
+    "detector/core/models/backbones/focal_context.py": "bff9be303f88c035d0beaa286c81081cbb5ddb394e6aa26411e927e4f34e07af",
+    "detector/core/models/backbones/light_attention.py": "249eba80ba37ff580581b0063d7d2f65f91b9f32e65cd78fb13452ee9685faf6",
+    "tests/test_focal_context.py": "362a22cb24f724f7648783cb9109f098c96c91ac98169192c7a39314fc84b16d",
+    "tests/test_light_attention.py": "35a0194ec56380b3d84ab11530ba6bc31b0e13a2b7a14c88ce4c2ec875f8f4b9"
+  },
+  "state_scope": "Standalone compatible-constructor state_dict reload includes BN running statistics and learned per-channel gamma; full detector strict resume is task38.",
+  "task_gates": {
+    "task13": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_focal_context.py -k 'identity or gradient or parameters'",
+      "deselected": 55,
+      "duration_seconds": 1.41,
+      "passed": 9
+    },
+    "task14": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_focal_context.py",
+      "duration_seconds": 1.39,
+      "passed": 64
+    },
+    "task15": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_light_attention.py -k eca",
+      "duration_seconds": 1.59,
+      "passed": 25
+    }
+  },
+  "tasks_completed": [
+    13,
+    14,
+    15
+  ],
+  "tasks_pending": [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58
+  ],
+  "tdd": {
+    "task13_green": "6 passed before task14 extensions; final exact task gate 9 passed",
+    "task13_red": "5 intended failures (missing forward/projections/gamma and partial 14592 count); 1 existing component gradient fixture passed",
+    "task14": "Verification task: added numerical/state/precision fixtures all passed; no production fix required",
+    "task15_green": "25 passed",
+    "task15_red": "25 intended missing-light_attention/ECACore failures before implementation"
+  },
+  "training_runs": 0,
+  "warning": "Existing torch.jit.script compatibility warning on Python 3.14+. Numerical parity test still passes."
+}

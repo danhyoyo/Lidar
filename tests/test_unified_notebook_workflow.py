@@ -276,72 +276,22 @@ def test_all_notebook_code_cells_transform_and_compile():
     for index,cell in enumerate(notebook['cells']):
         if cell['cell_type']=='code':compile(shell.input_transformer_manager.transform_cell(''.join(cell['source'])),f'cell{index}','exec')
     source='\n'.join(''.join(c['source']) for c in notebook['cells'])
-    for term in ['research/mobilepixornext-under1m','audit_kitti_assets','benchmark_evidence',
-                 'freeze_protocol','run_smoke','verify_reference_runtime','evaluation_rows','require_training_ready']:
+    for term in ['research/mobilepixornext-under1m', 'evaluation_rows', 'selected_runs',
+                 'SMOKE_ROOT', 'RESUME_ARGUMENT', '!{q(sys.executable)} -u']:
         assert term in source,f'Missing notebook workflow: {term}'
     assert 'CONFIG_OVERRIDE =' not in source
 
 
-@pytest.mark.parametrize('box_mode',['bev','3d'])
-@pytest.mark.skipif(not torch.cuda.is_available(),reason='Actual GPU trainer/evaluator required')
-def test_actual_notebook_cells_complete_a_small_run_and_own_config_evidence(tmp_path,box_mode):
-    """Actual notebook cells on synthetic KITTI-format assets; no real AP claim."""
-    import hashlib
-    import math
-    import subprocess
-    import tempfile
-    from benchmark_fixtures import asset_fixture
-    from test_under1m_notebook_controls import execute_cell
-    from tools.benchmarks.audit_kitti_assets import audit_assets
-    from tools.kitti_training_pipeline.common import read_json, write_json
-    assets=tmp_path/'assets';_,asset_config,processed,raw=asset_fixture(assets)
-    namespace={'REPO_DIR':ROOT,'ARTIFACT_ROOT':tmp_path/'runs','PROCESSED_DATASET_DIR':processed,
-        'SEED':42,'EPOCHS':2,'WARMUP_EPOCHS':0,'LEARNING_RATE':.0007,'NUM_WORKERS':0,
-        'PHYSICAL_BATCH_SIZE':1,'ACCUMULATION_STEPS':1,'PRECISION':'fp32','TARGET_BACKEND':'python',
-        'COMPILE_MODEL':False,'VAL_BATCH_SIZE':1,'torch':torch,'Path':Path,'json':json,'sys':sys,
-        'hashlib':hashlib,'math':math,'tempfile':tempfile,'RUN_PURPOSE':'development',
-        'RUN_PROPOSAL_TESTS':False,'RUN_GPU_GATES':False,'GPU_PRECISIONS':None,'RUN_SMOKE_TEST':True,
-        'SMOKE_TRAIN_BATCHES':2,'SMOKE_VAL_BATCHES':1,'RUN_EVALUATION':True,'BASELINE_RUN':None,
-        'COMPARISON_KIND':'focal_ablation',
-        'REFERENCE_PIP_PACKAGES':[],'BRANCH':'research/mobilepixornext-under1m','COMMIT':'synthetic-test',
-        'WARM_START_PATH':None,'ALLOW_LEGACY_RESUME':False,'RAW_TRAINING':raw}
-    def command(values,**options):
-        result=subprocess.run(list(map(str,values)),cwd=ROOT,capture_output=True,text=True)
-        assert result.returncode==0,result.stdout+result.stderr
-    namespace.update(run_command=command,read_json=read_json,write_json=write_json)
-    fixture_config=json.loads(asset_config.read_text())
-    modes=['local_bev'] if box_mode=='bev' else ['3d','bev']
-    namespace=execute_cell(tmp_path/'runs',{'BOX_MODE':box_mode,'EVALUATION_MODES':modes,'TRAIN_SPLIT':str(assets/'train.txt'),
-        'VAL_SPLIT':str(assets/'val.txt'),'GEOMETRY_OVERRIDES':fixture_config['data']['kitti']['geometry'],
-        'CUSTOM_RUN_NAME':'notebook_synthetic'},namespace)
-    benchmark=namespace['RUN_DIR']/'benchmark';benchmark.mkdir(parents=True)
-    audits={}
-    for mode in modes:
-        audit=benchmark/f'assets_{mode}.json'
-        write_json(audit,audit_assets(namespace['CONFIG'],kitti_root=raw,metric_mode=mode));audits[mode]=audit
-    namespace.update(BENCHMARK_DIR=benchmark,ASSET_AUDITS=audits)
-    notebook=json.loads((ROOT/'3D_Lidar_Object_Detection_Notebook_standard.ipynb').read_text())
-    for marker in ['from common import build_model, model_parameter_report',
-        'from tools.benchmarks.smoke_detector import run_smoke',
-        'from tools.benchmarks.benchmark_evidence import record_evidence',
-        'from tools.kitti_training_pipeline.notebook_workflow import training_command',
-        'RUN_METADATA_PATH = RUN_DIR /',
-        'from tools.kitti_training_pipeline.notebook_workflow import evaluation_rows']:
-        source=next(''.join(c['source']) for c in notebook['cells'] if c['cell_type']=='code'
-                    and marker in ''.join(c['source']))
-        exec(compile(source,marker,'exec'),namespace)
-    run=namespace['RUN_DIR']
-    assert json.loads((benchmark/'parameters.json').read_text())['parameter_counts']['backbone_including_neck']==660528
-    assert workflow().selected_run(run)['completed_epochs']==2
-    assert (run/'selected/best.pt').is_file() and (run/'comparison.csv').is_file()
-    evidence=json.loads((benchmark/f'candidate_evidence_{modes[0]}.json').read_text())
-    assert evidence['full_split_verified'] and evidence['checkpoint_selection_verified']
-    comparison=json.loads((run/'comparison.json').read_text())
-    assert comparison['rows'][0]['sampling']==('R40' if box_mode=='bev' else 'R11')
-    assert comparison['rows'][0]['metric']==modes[0]
-    assert len(comparison['rows'])==(2 if box_mode=='bev' else 8)
+@pytest.mark.parametrize('box_mode', ['bev', '3d'])
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='Actual GPU trainer/evaluator required')
+def test_actual_notebook_cells_complete_a_small_run_with_direct_commands(tmp_path, box_mode):
+    from test_simple_notebook_workflow import run_notebook_training
+    run = run_notebook_training(tmp_path, box_mode=box_mode, device='cuda')
+    assert workflow().selected_run(run)['completed_epochs'] == 2
+    assert (run/'selected/best_ap.pt').is_file() and (run/'comparison.csv').is_file()
+    comparison = json.loads((run/'comparison.json').read_text())
+    assert len(comparison['rows']) == (2 if box_mode == 'bev' else 8)
     assert {row['checkpoint_selection'] for row in comparison['rows']} == {'ap', 'loss'}
-    assert not json.loads((benchmark/f'candidate_protocol_{modes[0]}.json').read_text())['long_training_allowed']
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(),reason='Actual compatible reference CUDA required')

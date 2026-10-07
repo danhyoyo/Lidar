@@ -1,0 +1,829 @@
+{
+  "config_sha256": "d9cc478c40c33f3a2568fcc424414ed5b45f23997426095b899db41b14dc5c56",
+  "environment": {
+    "cpu_count": 12,
+    "numba": "0.68.0",
+    "numpy": "2.3.5",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "processor": "x86_64",
+    "python": "3.14.4",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": null,
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  "input": {
+    "dtype": "float32",
+    "geometry": {
+      "x_max": 70.4,
+      "x_min": 0,
+      "x_res": 0.1,
+      "y_max": 40,
+      "y_min": -40,
+      "y_res": 0.1,
+      "z_max": 1,
+      "z_min": -2.5,
+      "z_res": 0.1
+    },
+    "point_count": 10000,
+    "seed": 42,
+    "source": "synthetic"
+  },
+  "results": {
+    "binary_slices": {
+      "backend": "numpy",
+      "first_call_ms": 5.963046998658683,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": "legacy",
+      "mean_ms": 5.727757450222271,
+      "name": "binary_slices",
+      "output_dtype": "float32",
+      "p50_ms": 5.816495995532023,
+      "p95_ms": 6.344801003433531,
+      "payload_bytes": 78848000,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -2.4,
+          -2.3,
+          -2.2,
+          -2.1,
+          -2.0,
+          -1.9,
+          -1.7999999999999998,
+          -1.7,
+          -1.6,
+          -1.5,
+          -1.4,
+          -1.2999999999999998,
+          -1.2,
+          -1.0999999999999999,
+          -1.0,
+          -0.8999999999999999,
+          -0.7999999999999998,
+          -0.7,
+          -0.5999999999999999,
+          -0.5,
+          -0.3999999999999999,
+          -0.2999999999999998,
+          -0.19999999999999973,
+          -0.09999999999999964,
+          0.0,
+          0.10000000000000009,
+          0.20000000000000018,
+          0.30000000000000027,
+          0.40000000000000036,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000002,
+          0.8000000000000003,
+          0.9000000000000004,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_slice_0",
+          "height_slice_1",
+          "height_slice_2",
+          "height_slice_3",
+          "height_slice_4",
+          "height_slice_5",
+          "height_slice_6",
+          "height_slice_7",
+          "height_slice_8",
+          "height_slice_9",
+          "height_slice_10",
+          "height_slice_11",
+          "height_slice_12",
+          "height_slice_13",
+          "height_slice_14",
+          "height_slice_15",
+          "height_slice_16",
+          "height_slice_17",
+          "height_slice_18",
+          "height_slice_19",
+          "height_slice_20",
+          "height_slice_21",
+          "height_slice_22",
+          "height_slice_23",
+          "height_slice_24",
+          "height_slice_25",
+          "height_slice_26",
+          "height_slice_27",
+          "height_slice_28",
+          "height_slice_29",
+          "height_slice_30",
+          "height_slice_31",
+          "height_slice_32",
+          "height_slice_33",
+          "height_slice_34"
+        ],
+        "channels": 35,
+        "density_norm": null,
+        "finite_filter": "xyz_roi",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": null,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "binary_slices",
+        "precision": {
+          "accumulation": "binary_assignment",
+          "coordinates": "input_dtype",
+          "index": "int32",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "8592ee50b6bd0dd07e20d65b55ea93e43e32471c6e737cf0307ec5f5fbaa1cef",
+      "shape_yxc": [
+        800,
+        704,
+        35
+      ],
+      "steady_state_ms": [
+        5.999215005431324,
+        5.0331239981460385,
+        5.540149999433197,
+        6.333955003356095,
+        5.293114001688082,
+        5.808555994008202,
+        6.097901001339778,
+        5.95669500035001,
+        5.782116000773385,
+        6.008923002809752,
+        5.436334002297372,
+        6.115944997873157,
+        5.145114999322686,
+        6.55087500490481,
+        5.846306994499173,
+        5.110801001137588,
+        5.386190001445357,
+        5.8244359970558435,
+        5.310487002134323,
+        5.974909996439237
+      ],
+      "version": 1,
+      "warmup_ms": [
+        6.330588999844622,
+        5.927108999458142,
+        5.684841999027412
+      ]
+    },
+    "hist14_numba": {
+      "backend": "numba",
+      "first_call_ms": 332.14829500502674,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": 1,
+      "mean_ms": 32.266698450257536,
+      "name": "hist14",
+      "output_dtype": "float32",
+      "p50_ms": 31.973134999134345,
+      "p95_ms": 33.64127529639518,
+      "payload_bytes": 31539200,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.625,
+          -0.75,
+          0.125,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_count_b0",
+          "height_count_b1",
+          "height_count_b2",
+          "height_count_b3",
+          "z_max",
+          "z_mean",
+          "z_span",
+          "z_std",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "occupancy",
+          "point_offset_x",
+          "point_offset_y"
+        ],
+        "channels": 14,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "hist14",
+        "precision": {
+          "accumulation": "float64",
+          "coordinates": "float64",
+          "index": "int64",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0",
+      "shape_yxc": [
+        800,
+        704,
+        14
+      ],
+      "steady_state_ms": [
+        32.03032800229266,
+        32.99401399999624,
+        31.62151700234972,
+        31.248574996425305,
+        31.379952000861522,
+        32.791141005873214,
+        31.626386000425555,
+        31.915941995976027,
+        31.831031999900006,
+        34.26968699932331,
+        32.194938001339324,
+        31.581410999933723,
+        32.1643999996013,
+        33.60820099624107,
+        31.775627998285927,
+        31.90755600371631,
+        31.390381998789962,
+        32.885589003853966,
+        32.566227004281245,
+        33.55106299568433
+      ],
+      "version": 1,
+      "warmup_ms": [
+        34.11128900188487,
+        31.42739099712344,
+        31.7563019998488
+      ]
+    },
+    "hist14_numpy": {
+      "backend": "numpy",
+      "first_call_ms": 51.67541599803371,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": 1,
+      "mean_ms": 48.26237585002673,
+      "name": "hist14",
+      "output_dtype": "float32",
+      "p50_ms": 48.412397500214865,
+      "p95_ms": 50.00758880087233,
+      "payload_bytes": 31539200,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.625,
+          -0.75,
+          0.125,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_count_b0",
+          "height_count_b1",
+          "height_count_b2",
+          "height_count_b3",
+          "z_max",
+          "z_mean",
+          "z_span",
+          "z_std",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "occupancy",
+          "point_offset_x",
+          "point_offset_y"
+        ],
+        "channels": 14,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "hist14",
+        "precision": {
+          "accumulation": "float64",
+          "coordinates": "float64",
+          "index": "int64",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0",
+      "shape_yxc": [
+        800,
+        704,
+        14
+      ],
+      "steady_state_ms": [
+        49.565130000701174,
+        47.00699900422478,
+        47.810534000745974,
+        48.708715999964625,
+        49.965514001087286,
+        49.02473100082716,
+        46.54045100323856,
+        49.29929900390562,
+        48.116079000465106,
+        48.7722149991896,
+        49.462345996289514,
+        47.727857003337704,
+        47.10866000095848,
+        49.679635994834825,
+        47.546886999043636,
+        47.11303899966879,
+        48.86111299856566,
+        45.78273199877003,
+        50.80700999678811,
+        46.34856899792794
+      ],
+      "version": 1,
+      "warmup_ms": [
+        45.95649999828311,
+        48.56792099599261,
+        48.321515998395626
+      ]
+    },
+    "rich10": {
+      "backend": "numpy",
+      "first_call_ms": 14.644115006376524,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": "legacy",
+      "mean_ms": 19.31630355102243,
+      "name": "rich10",
+      "output_dtype": "float32",
+      "p50_ms": 19.196253499103477,
+      "p95_ms": 21.15006450403598,
+      "payload_bytes": 22528000,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.3333333333333333,
+          -0.16666666666666652,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_occupancy_b0",
+          "height_occupancy_b1",
+          "height_occupancy_b2",
+          "z_max",
+          "z_mean",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "z_span",
+          "z_std"
+        ],
+        "channels": 10,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "rich10",
+        "precision": {
+          "accumulation": "legacy_mixed",
+          "coordinates": "input_dtype",
+          "index": "int32",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "f4b917c7bc570adb9ad53c66d2509febabd6b6ee743201d9272375b10f4c1524",
+      "shape_yxc": [
+        800,
+        704,
+        10
+      ],
+      "steady_state_ms": [
+        19.240847002947703,
+        19.14364399999613,
+        18.553952999354806,
+        19.673353002872318,
+        19.097096999757923,
+        21.246365999104455,
+        21.144996004295535,
+        19.15258100052597,
+        20.761012005095836,
+        19.626083005277906,
+        18.21567500155652,
+        18.135745005565695,
+        19.583002002036665,
+        19.7486149991164,
+        18.00980699772481,
+        18.539705997682177,
+        19.017405997146852,
+        17.968799998925533,
+        20.227457003784366,
+        19.239925997680984
+      ],
+      "version": 1,
+      "warmup_ms": [
+        19.24490500095999,
+        18.367532000411302,
+        23.529949998192023
+      ]
+    },
+    "rich11": {
+      "backend": "numpy",
+      "first_call_ms": 19.306150999909732,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": "legacy",
+      "mean_ms": 19.336874500004342,
+      "name": "rich11",
+      "output_dtype": "float32",
+      "p50_ms": 19.22846900197328,
+      "p95_ms": 21.328697898206883,
+      "payload_bytes": 24780800,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.3333333333333333,
+          -0.16666666666666652,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_occupancy_b0",
+          "height_occupancy_b1",
+          "height_occupancy_b2",
+          "z_max",
+          "z_mean",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "z_span",
+          "z_std",
+          "intensity_contrast"
+        ],
+        "channels": 11,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "rich11",
+        "precision": {
+          "accumulation": "legacy_mixed",
+          "coordinates": "input_dtype",
+          "index": "int32",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "710d2130c5bbe689e252c7ad4766095bce7a303f91341473daf6665ef7783050",
+      "shape_yxc": [
+        800,
+        704,
+        11
+      ],
+      "steady_state_ms": [
+        22.76963699841872,
+        18.79108900175197,
+        20.307416998548433,
+        20.27065800211858,
+        19.439301002421416,
+        19.05491599609377,
+        21.252858998195734,
+        20.4200989974197,
+        20.046926001668908,
+        20.27515599911567,
+        19.2103900044458,
+        19.4677440013038,
+        18.11900299799163,
+        19.246547999500763,
+        18.162615000619553,
+        18.12051599699771,
+        17.834035999840125,
+        17.58749200234888,
+        18.454404998919927,
+        17.906683002365753
+      ],
+      "version": 1,
+      "warmup_ms": [
+        19.976152005256154,
+        19.55773500230862,
+        20.84675299556693
+      ]
+    },
+    "rich12": {
+      "backend": "numpy",
+      "first_call_ms": 24.828886998875532,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": "legacy",
+      "mean_ms": 14.79819684936956,
+      "name": "rich12",
+      "output_dtype": "float32",
+      "p50_ms": 14.801446497585857,
+      "p95_ms": 15.821737350779586,
+      "payload_bytes": 27033600,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.3333333333333333,
+          -0.16666666666666652,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_occupancy_b0",
+          "height_occupancy_b1",
+          "height_occupancy_b2",
+          "z_max",
+          "z_mean",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "z_span",
+          "z_std",
+          "intensity_contrast",
+          "range_compensated_density"
+        ],
+        "channels": 12,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "rich12",
+        "precision": {
+          "accumulation": "legacy_mixed",
+          "coordinates": "input_dtype",
+          "index": "int32",
+          "output": "float32"
+        },
+        "range_density": {
+          "density_multiplier": 16.0,
+          "range_scale_m": 20.0
+        },
+        "version": 1
+      },
+      "semantic_hash": "007fbd7535da73d6ef5e373ac92e77a685883d4b52b3c583a1c399761902d7a9",
+      "shape_yxc": [
+        800,
+        704,
+        12
+      ],
+      "steady_state_ms": [
+        14.866814999550115,
+        15.145088997087441,
+        15.47967999795219,
+        14.465799002209678,
+        15.766370001074392,
+        14.994835000834428,
+        15.215281993732788,
+        13.759788002062123,
+        14.17916900390992,
+        15.272318996721879,
+        14.411215997824911,
+        15.372588000900578,
+        14.484553998045158,
+        16.873716995178256,
+        14.7360779956216,
+        14.88274399889633,
+        13.425549004750792,
+        14.065023002331145,
+        14.535210000758525,
+        14.03211199794896
+      ],
+      "version": 1,
+      "warmup_ms": [
+        20.529945999442134,
+        14.611464001063723,
+        14.16358999995282
+      ]
+    },
+    "rich8": {
+      "backend": "numpy",
+      "first_call_ms": 12.811481996322982,
+      "first_call_scope": "First rasterization plus dependency import/JIT compilation or disk-cache loading for Numba; not isolated compiler time",
+      "implementation_version": "legacy",
+      "mean_ms": 5.970818800051347,
+      "name": "rich8",
+      "output_dtype": "float32",
+      "p50_ms": 5.928847000177484,
+      "p95_ms": 6.599754595299601,
+      "payload_bytes": 18022400,
+      "schema": {
+        "bin_edges": [
+          -2.5,
+          -1.3333333333333333,
+          -0.16666666666666652,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_occupancy_b0",
+          "height_occupancy_b1",
+          "height_occupancy_b2",
+          "z_max",
+          "z_mean",
+          "intensity_max",
+          "intensity_mean",
+          "log_density"
+        ],
+        "channels": 8,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "rich8",
+        "precision": {
+          "accumulation": "legacy_mixed",
+          "coordinates": "input_dtype",
+          "index": "int32",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "semantic_hash": "a7eff48c9ff65307d77f7222f1b6f95807dad7360ddf2f9d06bea45e273982f5",
+      "shape_yxc": [
+        800,
+        704,
+        8
+      ],
+      "steady_state_ms": [
+        5.619889998342842,
+        5.82101900363341,
+        6.112118004239164,
+        6.094946002122015,
+        6.0136719985166565,
+        6.1643160006497055,
+        6.005335999361705,
+        6.23801499750698,
+        6.75733300158754,
+        6.474471003457438,
+        5.852358000993263,
+        5.3884139997535385,
+        5.720770001062192,
+        6.5914609949686565,
+        5.812612995214295,
+        5.825477004691493,
+        5.287563995807432,
+        5.557291995501146,
+        6.386434004525654,
+        5.692876999091823
+      ],
+      "version": 1,
+      "warmup_ms": [
+        9.645936996093951,
+        6.025254006090108,
+        5.669702994055115
+      ]
+    }
+  },
+  "scope": "CPU rasterization only; excludes file I/O, augmentation, detector inference and AP"
+}

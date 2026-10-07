@@ -58,7 +58,8 @@ def test_notebook_selects_best_ap_and_exposes_independent_ap_interval(tmp_path):
 def test_notebook_short_smoke_disables_full_split_ap_selection():
     notebook = json.loads((ROOT/'3D_Lidar_Object_Detection_Notebook_standard.ipynb').read_text())
     source = next(''.join(cell['source']) for cell in notebook['cells'] if 'smoke_config =' in ''.join(cell['source']))
-    tree = ast.parse(source)
+    from IPython.core.interactiveshell import InteractiveShell
+    tree = ast.parse(InteractiveShell.instance().input_transformer_manager.transform_cell(source))
     assignment = next(node for node in ast.walk(tree) if isinstance(node, ast.Assign)
         and any(isinstance(t, ast.Name) and t.id == 'smoke_config' for t in node.targets))
     override = ast.literal_eval(assignment.value.args[1])

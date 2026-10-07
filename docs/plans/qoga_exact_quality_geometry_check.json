@@ -1,0 +1,11 @@
+{
+  "kind": "synthetic_cpu_geometry_verification_not_AP",
+  "seed": 42,
+  "pairs": 10000,
+  "reference": "float64 Shapely polygon intersection, evaluator width/length/yaw convention",
+  "max_absolute_error": 4.1802925027090154e-07,
+  "mean_absolute_error": 3.799216773464517e-09,
+  "nonzero_reference_pairs": 2414,
+  "torch": "2.11.0",
+  "cuda_available": false
+}

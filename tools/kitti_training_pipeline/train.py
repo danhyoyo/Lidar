@@ -267,7 +267,7 @@ def evaluate_training_ap(payload, config_path, detector_root, device, loader_gen
             atomic_torch_save(payload, candidate)
             report = run_evaluation(name='validation_ap', backend='pytorch', model_path=candidate,
                 config_path=config_path, detector_root=detector_root, kitti_root=raw,
-                split_path=split, device=str(device), warmup_frames=0, progress_every=100,
+                split_path=split, device=str(device), warmup_frames=0, progress_every=50,
                 score_threshold=evaluation.get('score_threshold', .05),
                 nms_threshold=evaluation.get('nms_threshold', .10),
                 max_detections=evaluation.get('max_detections', 500), **options)
@@ -511,19 +511,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--physical-batch-size", type=int)
     parser.add_argument("--accumulation-steps", type=int)
-    parser.add_argument("--num-workers", type=int, default=2)
+    parser.add_argument("--num-workers", type=int, help="override train.num_workers (default: config or 2)")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--precision", choices=("fp32", "fp16", "bf16"))
     parser.add_argument(
         "--target-backend",
         choices=("python", "numba"),
-        default="python",
-        help="target-map backend; Python is the compatibility default",
+        default=None,
+        help="override train.target_backend (default: config or python)",
     )
     parser.add_argument(
         "--compile-model",
-        action="store_true",
-        help="opt in to torch.compile after checkpoint loading",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="override train.compile_model; compile after checkpoint loading",
     )
     parser.add_argument("--amp", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-train-batches", type=int, default=0)
@@ -661,6 +662,16 @@ def main(argv=None) -> None:
                     base[k] = v
 
         _deep_update(config, overrides)
+    # Direct notebook/CLI calls inherit the run snapshot unless explicitly overridden.
+    training_config = config["train"]
+    if args.num_workers is None:
+        args.num_workers = training_config.get("num_workers", 2)
+    if args.target_backend is None:
+        args.target_backend = training_config.get("target_backend", "python")
+    if args.compile_model is None:
+        args.compile_model = training_config.get("compile_model", False)
+    if args.target_backend not in {"python", "numba"}:
+        raise ValueError("target_backend must be python or numba")
     if args.num_workers < 0:
         raise ValueError("num_workers must be non-negative")
     if args.max_train_batches < 0 or args.max_val_batches < 0:
@@ -845,6 +856,16 @@ def main(argv=None) -> None:
 
     log_path = run_dir / "metrics.jsonl"
     log_line(f"Run directory: {run_dir}")
+    tensorboard_dir = run_dir / "tensorboard"
+    writer = None
+    try:
+        from torch.utils.tensorboard import SummaryWriter
+
+        purge_step = (start_epoch + 1) if start_epoch > 0 else None
+        writer = SummaryWriter(log_dir=str(tensorboard_dir), purge_step=purge_step)
+        log_line(f"TensorBoard directory: {tensorboard_dir}")
+    except (ImportError, Exception):
+        writer = None
     log_line(
         f"Backbone={config['model']['backbone']}; loss={loss_name}; "
         f"precision={precision}; grad_clip_norm={grad_clip_norm}"
@@ -877,6 +898,7 @@ def main(argv=None) -> None:
         )
         if batches_this_epoch == 0:
             raise RuntimeError("Training loader produced no batches")
+        log_line(f"Epoch {epoch:03d}/{epochs:03d}: training {batches_this_epoch} batches")
         for batch_index, batch in enumerate(train_loader, start=1):
             batch = move_tensor_batch(batch, device)
             batch_size = int(batch["voxel"].shape[0])
@@ -918,6 +940,7 @@ def main(argv=None) -> None:
 
         synchronize_device(device)
         training_seconds = time.perf_counter() - started
+        log_line(f"Epoch {epoch:03d}/{epochs:03d}: validating loss")
         validation = validate(
             model,
             criterion,
@@ -938,6 +961,16 @@ def main(argv=None) -> None:
         retained = current_val < best_val
         if retained:
             best_val = current_val
+        # Show completed train/val results before the additional full-split AP pass.
+        retained_flag = " [BEST LOSS]" if retained else ""
+        epoch_summary = (
+            f"Epoch {epoch:03d}/{epochs:03d} | "
+            f"Train Loss: {train_objective:.4f} | "
+            f"Val Loss: {current_val:.4f} | "
+            f"LR: {optimizer.param_groups[0]['lr']:.2e} | "
+            f"Time: train={training_seconds:.1f}s, val={validation['seconds']:.1f}s{retained_flag}"
+        )
+        log_line(epoch_summary)
         payload = checkpoint_payload(
             model,
             criterion,
@@ -957,7 +990,12 @@ def main(argv=None) -> None:
             ap_validation, ap_seconds = evaluate_training_ap(payload, run_dir / 'config.resolved.json',
                 args.detector_root, device, generator, run_dir)
             ap_state, retained_ap = advance_ap_state(ap_state, ap_validation, epoch, selection)
-            log_line(f"Validation AP: {ap_validation['score']:.4f}% | Time: {ap_seconds:.1f}s" +
+            class_scores = " | ".join(
+                f"{name}: {score:.2f}%"
+                for name, score in ap_validation['per_class_moderate_percent'].items()
+            )
+            log_line(f"Validation AP: {ap_validation['score']:.4f}% (R40 Moderate) | "
+                     f"{class_scores} | Time: {ap_seconds:.1f}s" +
                      (' [BEST AP]' if retained_ap else ''))
         payload['ap_selection'] = ap_state
         payload['ap_validation'] = ap_validation
@@ -984,16 +1022,37 @@ def main(argv=None) -> None:
             row["training_quality"] = quality_summary
         with log_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
-        retained_flag = " [BEST LOSS]" if retained else ""
-        epoch_summary = (
-            f"Epoch {epoch:03d}/{epochs:03d} | "
-            f"Train Loss: {train_objective:.4f} | "
-            f"Val Loss: {current_val:.4f} | "
-            f"LR: {optimizer.param_groups[0]['lr']:.2e} | "
-            f"Time: train={training_seconds:.1f}s, val={validation['seconds']:.1f}s{retained_flag}"
-        )
-        log_line(epoch_summary)
+        if writer is not None:
+            writer.add_scalar("train/loss", train_objective, epoch)
+            writer.add_scalar("train/learning_rate", optimizer.param_groups[0]["lr"], epoch)
+            writer.add_scalar("train/training_seconds", training_seconds, epoch)
+            writer.add_scalar("train/optimizer_updates", update_count, epoch)
+            if quality_summary:
+                for q_name, q_val in quality_summary.items():
+                    if isinstance(q_val, (int, float)) and math.isfinite(q_val):
+                        writer.add_scalar(f"train_quality/{q_name}", float(q_val), epoch)
+            writer.add_scalar("val/loss", current_val, epoch)
+            for v_name, v_val in validation.items():
+                if v_name == "loss":
+                    continue
+                if isinstance(v_val, (int, float)) and math.isfinite(v_val):
+                    writer.add_scalar(f"val/{v_name}", float(v_val), epoch)
+            if ap_validation is not None:
+                writer.add_scalar("val_ap/score_r40_moderate", float(ap_validation["score"]), epoch)
+                if "per_class_moderate_percent" in ap_validation:
+                    for cls_name, cls_score in ap_validation["per_class_moderate_percent"].items():
+                        writer.add_scalar(f"val_ap/{cls_name}_moderate_percent", float(cls_score), epoch)
+                if ap_seconds:
+                    writer.add_scalar("val_ap/seconds", float(ap_seconds), epoch)
+            writer.add_scalar("checkpoint/best_val_loss", best_val, epoch)
+            if selection["primary"] == "ap" and ap_state.get("best_score") is not None:
+                writer.add_scalar("checkpoint/best_val_ap", float(ap_state["best_score"]), epoch)
+            if torch.cuda.is_available():
+                writer.add_scalar("system/gpu_max_memory_gb", torch.cuda.max_memory_allocated() / (1024 ** 3), epoch)
+            writer.flush()
 
+    if writer is not None:
+        writer.close()
     log_line(f"Selected checkpoint: {loss_selection_dir / ('best_ap.pt' if selection['primary'] == 'ap' else 'best_loss.pt')}")
     log_line(f"Best loss checkpoint: {loss_selection_dir / 'best_loss.pt'}")
     log_line(f"Selection record: {loss_selection_dir / 'selection.json'}")

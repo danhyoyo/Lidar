@@ -1,0 +1,268 @@
+{
+  "backbone_output_shape": [
+    1,
+    32,
+    200,
+    176
+  ],
+  "backbone_parts": {
+    "c4_attention": 0,
+    "down2": 13920,
+    "down3": 41664,
+    "down4": 110848,
+    "gate_c3": 240,
+    "gate_c4": 480,
+    "lat_c3": 1152,
+    "lat_c4": 4608,
+    "lat_c5": 6144,
+    "out_conv": 6976,
+    "proj_u3": 10416,
+    "refine_u4": 528,
+    "stage2": 42336,
+    "stage3": 205056,
+    "stage4": 177664,
+    "stem": 13376
+  },
+  "budget": {
+    "passes": true,
+    "scope": "backbone including neck",
+    "strict_upper_limit": 1000000
+  },
+  "config_sha256": "189ae8dbedb10a3def37ef7b9b9ae898a21c7c2fef19b795da422f72add7c3b1",
+  "conv2d_mac_estimate": {
+    "by_module": {
+      "backbone.down2.conv": 486604800,
+      "backbone.down3.conv": 364953600,
+      "backbone.down4.conv": 243302400,
+      "backbone.gate_c3": 7603200,
+      "backbone.gate_c4": 3801600,
+      "backbone.lat_c3": 40550400,
+      "backbone.lat_c4": 40550400,
+      "backbone.lat_c5": 13516800,
+      "backbone.out_conv.0": 243302400,
+      "backbone.proj_u3.0": 364953600,
+      "backbone.refine_u4.0": 3801600,
+      "backbone.stage2.0.dwconv": 82790400,
+      "backbone.stage2.0.pw_expand": 202752000,
+      "backbone.stage2.0.pw_project": 202752000,
+      "backbone.stage2.1.dwconv": 82790400,
+      "backbone.stage2.1.pw_expand": 202752000,
+      "backbone.stage2.1.pw_project": 202752000,
+      "backbone.stage2.2.dwconv": 82790400,
+      "backbone.stage2.2.pw_expand": 202752000,
+      "backbone.stage2.2.pw_project": 202752000,
+      "backbone.stage3.0.dwconv": 41395200,
+      "backbone.stage3.0.pw_expand": 202752000,
+      "backbone.stage3.0.pw_project": 202752000,
+      "backbone.stage3.1.dwconv": 41395200,
+      "backbone.stage3.1.pw_expand": 202752000,
+      "backbone.stage3.1.pw_project": 202752000,
+      "backbone.stage3.2.dwconv": 41395200,
+      "backbone.stage3.2.pw_expand": 202752000,
+      "backbone.stage3.2.pw_project": 202752000,
+      "backbone.stage3.3.dwconv": 41395200,
+      "backbone.stage3.3.pw_expand": 202752000,
+      "backbone.stage3.3.pw_project": 202752000,
+      "backbone.stage4.0.dwconv": 13798400,
+      "backbone.stage4.0.pw_expand": 90112000,
+      "backbone.stage4.0.pw_project": 90112000,
+      "backbone.stage4.1.dwconv": 13798400,
+      "backbone.stage4.1.pw_expand": 90112000,
+      "backbone.stage4.1.pw_project": 90112000,
+      "backbone.stem.0": 567705600,
+      "backbone.stem.3": 1297612800,
+      "header.cls.conv1": 324403200,
+      "header.cls.conv2": 324403200,
+      "header.cls.head": 3379200,
+      "header.iou.conv1": 324403200,
+      "header.iou.conv2": 324403200,
+      "header.iou.head": 1126400,
+      "header.offset.conv1": 324403200,
+      "header.offset.conv2": 324403200,
+      "header.offset.head": 2252800,
+      "header.size.conv1": 324403200,
+      "header.size.conv2": 324403200,
+      "header.size.head": 2252800,
+      "header.yaw.conv1": 324403200,
+      "header.yaw.conv2": 324403200,
+      "header.yaw.head": 2252800
+    },
+    "excluded_operations": [
+      "attention matmuls",
+      "normalization",
+      "activations",
+      "interpolation",
+      "elementwise operations",
+      "preprocessing"
+    ],
+    "total": 10574080000
+  },
+  "device": "meta",
+  "encoding_backend": "numpy",
+  "encoding_semantic_hash": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0",
+  "head_mode": "legacy_single",
+  "input_shape": [
+    1,
+    14,
+    800,
+    704
+  ],
+  "limitations": "Shape/count audit only; not measured latency, peak memory, accuracy or 3D readiness",
+  "method": "Instantiated PyTorch parameters and Conv2d output-shape MAC hooks",
+  "output_shapes": {
+    "cls": [
+      1,
+      3,
+      200,
+      176
+    ],
+    "iou": [
+      1,
+      1,
+      200,
+      176
+    ],
+    "offset": [
+      1,
+      2,
+      200,
+      176
+    ],
+    "size": [
+      1,
+      2,
+      200,
+      176
+    ],
+    "yaw": [
+      1,
+      2,
+      200,
+      176
+    ]
+  },
+  "parameter_counts": {
+    "backbone_body": 604864,
+    "backbone_including_neck": 635408,
+    "criterion_train_only": 6,
+    "heads": 93130,
+    "neck": 30544,
+    "total_detector": 728538
+  },
+  "resolved_config": {
+    "augmentation": {
+      "mode": "one_of",
+      "p": 0.5,
+      "rotation": {
+        "limit_angle": 20,
+        "p": 1,
+        "use": true
+      },
+      "scaling": {
+        "p": 1,
+        "range": [
+          0.95,
+          1.05
+        ],
+        "use": true
+      },
+      "translation": {
+        "p": 1,
+        "scale": 0.4,
+        "scale_z": 0.4,
+        "use": true
+      }
+    },
+    "data": {
+      "bev_encoding": {
+        "backend": "numpy",
+        "density_norm": 32,
+        "intensity_scale": 1,
+        "name": "hist14",
+        "version": 1
+      },
+      "gaussian_overlap": 0.1,
+      "kitti": {
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0,
+          "x_res": 0.1,
+          "y_max": 40,
+          "y_min": -40,
+          "y_res": 0.1,
+          "z_max": 1,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "location": "data/kitti/processed",
+        "objects": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "peak_mode": "per_class"
+      },
+      "min_radius": 4,
+      "num_classes": 3,
+      "out_size_factor": 4,
+      "regression_assignment": "nearest_center"
+    },
+    "date": "reproducible",
+    "device": "cuda",
+    "experiment": {
+      "name": "default"
+    },
+    "loss": {
+      "name": "oga",
+      "use_iou": true
+    },
+    "model": {
+      "backbone": "mobilepixornext",
+      "backbone_out_dim": 32,
+      "c4_attention": "none",
+      "c4_attention_qk_norm": "none",
+      "c4_attention_scales": [],
+      "cls_encoding": "gaussian",
+      "deploy": false,
+      "expansion": 2.5,
+      "head_mode": "legacy_single",
+      "header_act": "silu",
+      "header_use_bn": true,
+      "header_use_iou": true,
+      "neck_type": "scale_gated_fpn",
+      "scale_gated_fpn": true,
+      "stage_depths": [
+        3,
+        4,
+        2
+      ],
+      "use_reparam": false
+    },
+    "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+    "seed": 42,
+    "train": {
+      "accumulation_steps": 1,
+      "compile_model": false,
+      "data": "splits/kitti/train.txt",
+      "epochs": 50,
+      "grad_clip_norm": 10.0,
+      "learning_rate": 0.0007,
+      "min_lr": 1e-06,
+      "num_workers": 6,
+      "optimizer": "adamw",
+      "physical_batch_size": 16,
+      "precision": "bf16",
+      "save_every": 5,
+      "target_backend": "numba",
+      "warmup_epochs": 4,
+      "weight_decay": 0.001
+    },
+    "val": {
+      "data": "splits/kitti/val.txt",
+      "physical_batch_size": 32,
+      "val_every": 1
+    },
+    "ver": 1
+  },
+  "torch_version": "2.14.1+cpu"
+}

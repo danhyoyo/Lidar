@@ -97,65 +97,35 @@ def test_notebook_evaluation_reloads_helpers_cached_before_a_colab_pull():
         if c['cell_type'] == 'code' and 'comparison.to_csv' in ''.join(c['source']))
     prefix = cell.split('if RUN_EVALUATION:')[0]
     script = """from tools.kitti_training_pipeline import notebook_workflow
-from tools.benchmarks import benchmark_protocol
 del notebook_workflow.selected_runs
-benchmark_protocol.freeze_protocol = None
-""" + prefix + "\nassert callable(selected_runs) and callable(freeze_protocol)\n"
+""" + prefix + "\nassert callable(selected_runs)\n"
     result = subprocess.run([sys.executable, '-c', script], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-@pytest.mark.parametrize('with_baseline', [False, True])
-def test_actual_notebook_cell_evaluates_both_winners_and_records_independent_evidence(tmp_path, with_baseline):
+@pytest.mark.parametrize('primary', ['ap', 'loss'])
+def test_actual_notebook_cell_evaluates_independent_winners_with_own_config(tmp_path, primary):
+    import shlex
     import train
     from test_ap_training import setup
-    from tools.benchmarks.benchmark_protocol import freeze_protocol
-    from tools.benchmarks.benchmark_evidence import record_evidence, verify_evidence
     from common import read_json
-    config, _, raw, run, args = setup(tmp_path)
+    from notebook_test_utils import notebook_cell, execute_shell_cell
+
+    config, _, raw, run, args = setup(tmp_path, primary=primary)
     train.main(args)
-    benchmark = run/'benchmark'; benchmark.mkdir()
-    commands = []
-    def command(values, **options):
-        values = list(map(str, values)); values[values.index('--device')+1] = 'cpu'
-        commands.append(values)
-        result = subprocess.run(values, cwd=ROOT, capture_output=True, text=True)
-        assert result.returncode == 0, result.stdout+result.stderr
-    namespace = dict(RUN_EVALUATION=True, RUN_DIR=run, REPO_DIR=ROOT, RAW_TRAINING=raw,
-        BENCHMARK_DIR=benchmark, EVALUATION_MODES=['local_bev'], BASELINE_REPORTS={},
-        BASELINE_EVIDENCE={}, COMPARISON_KIND='protocol', selected_run=workflow.selected_run,
-        evaluation_command=workflow.evaluation_command,
-        run_command=command, read_json=read_json, write_json=write_json,
-        freeze_protocol=freeze_protocol, record_evidence=record_evidence)
-    if with_baseline:
-        from benchmark_fixtures import evaluation_fixture
-        baseline = tmp_path/'baseline'
-        files = evaluation_fixture(baseline)
-        shutil.copyfile(files[4], baseline/'config.resolved.json')
-        # A Colab kernel may still hold selected_run's older return dictionary.
-        namespace['baseline_run'] = {'run_dir': baseline}
-        namespace['BASELINE_REPORTS'] = {'local_bev': read_json(files[1])}
-    notebook = json.loads((ROOT/'3D_Lidar_Object_Detection_Notebook_standard.ipynb').read_text())
-    source = next(''.join(c['source']) for c in notebook['cells']
-        if c['cell_type'] == 'code' and 'comparison.to_csv' in ''.join(c['source']))
-    exec(compile(source, 'notebook_dual_evaluation', 'exec'), namespace)
-    assert len(commands) == 2, 'Notebook did not evaluate both best AP and best loss'
+    namespace = dict(RUN_EVALUATION=True, RUN_DIR=run, REPO_DIR=ROOT, RAW_KITTI_ROOT=raw.parent,
+        EVALUATION_MODES=['local_bev'], RUN_NAME=run.name, DEVICE='cpu',
+        q=shlex.quote, sys=sys, Path=Path, read_json=read_json, write_json=write_json,
+        validate_modes=workflow.validate_modes)
+    execute_shell_cell(notebook_cell('comparison.to_csv'), namespace)
     comparison = read_json(run/'comparison.json')
-    assert {r['checkpoint_selection'] for r in comparison['rows']} == {'ap', 'loss'}
-    baseline_rows = [r for r in comparison['rows'] if r['role'] == 'baseline']
-    assert len(baseline_rows) == int(with_baseline)
-    if with_baseline:
-        assert baseline_rows[0]['checkpoint_selection'] == 'loss'
-        assert baseline_rows[0]['validation_loss'] is not None
-    assert all(r['checkpoint_epoch'] >= 1 and r['checkpoint_path'] for r in comparison['rows'])
-    assert set(comparison['checkpoint_evidence']) == {'ap', 'loss'}
-    for kind, policy in [('ap', 'maximum validation AP'), ('loss', 'minimum validation loss')]:
+    expected = {'ap', 'loss'} if primary == 'ap' else {'loss'}
+    assert {r['checkpoint_selection'] for r in comparison['rows']} == expected
+    assert (run/'comparison.csv').is_file()
+    for kind in expected:
+        selected = workflow.selected_run(run, kind=kind)
         report = read_json(run/f'evaluation_{kind}_local_bev.json')
-        evidence = read_json(comparison['checkpoint_evidence'][kind]['local_bev'])
-        assert evidence['selection_policy'] == policy and evidence['checkpoint_selection_verified']
-        assert report['model']['path'] == str(run/f'selected/best_{kind}.pt')
-        verify_evidence(evidence)
-    assert read_json(comparison['candidate_evidence']['local_bev'])['selection_policy'] == 'maximum validation AP'
-    with pytest.raises(ValueError, match='selection protocol'):
-        record_evidence(benchmark/'evaluated_protocol_ap_local_bev.json',
-            run/'evaluation_loss_local_bev.json', run/'selected/selection_loss.json', run/'metrics.jsonl')
+        assert report['model']['path'] == str(selected['checkpoint'])
+        assert report['model']['checkpoint_epoch'] == selected['epoch']
+        assert report['data']['frames'] == report['data']['full_split_frames']
+        assert all(r['validation_loss'] is not None for r in comparison['rows'])

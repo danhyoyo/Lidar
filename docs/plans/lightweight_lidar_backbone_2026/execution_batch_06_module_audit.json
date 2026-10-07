@@ -1,0 +1,55 @@
+{
+  "scope": "CPU standalone residual adapters; meta no-context backbone+neck fusion options; hooks pending",
+  "adapters": {
+    "eca": {
+      "parameters": 4,
+      "output_shape": [
+        1,
+        48,
+        200,
+        176
+      ],
+      "output_finite": true,
+      "beta_gradient_finite_nonzero": true,
+      "all_parameter_gradients_finite_nonzero": true
+    },
+    "simam": {
+      "parameters": 1,
+      "output_shape": [
+        1,
+        48,
+        200,
+        176
+      ],
+      "output_finite": true,
+      "beta_gradient_finite_nonzero": true,
+      "all_parameter_gradients_finite_nonzero": true
+    }
+  },
+  "simam_core_parameters": 0,
+  "fusion_no_context": {
+    "24": {
+      "parameters": 635408,
+      "output_shape": [
+        1,
+        32,
+        200,
+        176
+      ]
+    },
+    "32": {
+      "parameters": 641648,
+      "output_shape": [
+        1,
+        32,
+        200,
+        176
+      ]
+    }
+  },
+  "fusion_parameter_delta": 6240,
+  "focal_fusion32_arithmetic_projection": 666768,
+  "integrated_focal_counts": null,
+  "accuracy_results": null,
+  "gpu_results": null
+}

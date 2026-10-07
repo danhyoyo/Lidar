@@ -1,0 +1,125 @@
+{
+  "accuracy_results": null,
+  "additional_rc_gate": {
+    "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_rc_sgfpn.py",
+    "duration_seconds": 7.58,
+    "passed": 14,
+    "warnings": 0
+  },
+  "artifacts": {
+    "module_audit": "execution_batch_06_module_audit.json"
+  },
+  "batch": 6,
+  "branch": "research/mobilepixornext-under1m",
+  "compatibility": "Fusion24 retains exact legacy initialization, state keys and predictions. RC neck default construction/deploy tests pass; fusion32 RC selection is explicitly rejected.",
+  "completed_through_task": 18,
+  "diff_check": "passed",
+  "final_gate": {
+    "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_light_attention.py tests/test_neck_detail_options.py tests/test_focal_context.py tests/test_backbone_feature_config.py tests/test_mobilepixornext_backbone.py tests/test_model_registry.py tests/test_legacy_detector_contract.py tests/test_lightweight_detector_budget.py tests/test_kitti_config_compatibility.py tests/test_notebook_experiment_config.py tests/test_run_name_and_logging.py tests/test_standard_training_notebook.py tests/test_loss_strategies.py tests/test_iqa_header.py tests/test_small_object_assignment.py tests/test_bev_encoding_spec.py tests/test_hist14_encoding.py tests/test_hist14_backend.py tests/test_rich_encodings.py tests/test_regressions.py",
+    "deselected": 0,
+    "duration_seconds": 20.09,
+    "passed": 608,
+    "skipped": 0,
+    "subtests_passed": 2,
+    "warnings": 1
+  },
+  "focal_fusion32_arithmetic_projection": 666768,
+  "implementation_boundary": "Standalone ECA/SimAM residual adapters and fusion constructor capability. Detail path, local/focal hooks, registry wiring and full recipe creation remain tasks19/20/48.",
+  "integrated_attention_backbone_counts": null,
+  "legacy_fixture": "unchanged",
+  "new_source_whitespace_checks": "passed",
+  "original_dirty_files_configs_splits": "unchanged",
+  "parameters": {
+    "backbone_no_context_fusion24": 635408,
+    "backbone_no_context_fusion32": 641648,
+    "eca_k3_residual_adapter": 4,
+    "eca_k5_residual_adapter": 6,
+    "fusion32_delta_output16_gated": 5088,
+    "fusion32_delta_output32_gated": 6240,
+    "fusion32_delta_output32_ungated": 6160,
+    "simam_core": 0,
+    "simam_residual_adapter": 1
+  },
+  "plan_sequencing_adjustment": "Task18 constructor/tests delivered; complete focal/grouped fusion32 runtime preset creation assigned to task48 after required construction support. No incomplete runnable preset published.",
+  "precision_scope": "CPU explicit FP32/FP16/BF16 and CPU autocast FP16/BF16 fixtures; full-grid adapters CPU and backbone shapes meta. No CUDA evidence.",
+  "source_sha256": {
+    "detector/core/models/backbones/light_attention.py": "3cb7435cffe83c6d8833f19e067a5e00b9fa8d66ee07ddcdf8fde9cb1c15e0f5",
+    "detector/core/models/backbones/mobilepixornext.py": "514db1d0ea8a99257e2ae5fc2da010ddf21dbfff61f7b6091822dfa62c16d3d3",
+    "tests/test_light_attention.py": "875a02b6ca275b52c098a28997293fe0d875101ac8145c0d0e5bf44e8433f17c",
+    "tests/test_neck_detail_options.py": "8b9740dcc919edb94c29a23aed0461b3fd465e0b8c2a190f5211b5848fded49f"
+  },
+  "task_gates": {
+    "task16": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_light_attention.py -k simam",
+      "deselected": 25,
+      "duration_seconds": 1.31,
+      "passed": 22,
+      "scope": "Exact gate before task17 extension; final regression gate includes all expanded tests"
+    },
+    "task17": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_light_attention.py",
+      "duration_seconds": 1.37,
+      "passed": 80
+    },
+    "task18": {
+      "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /tmp/lidar-fixes-env/bin/python -m pytest -q tests/test_neck_detail_options.py -k fusion",
+      "duration_seconds": 1.75,
+      "passed": 20
+    }
+  },
+  "tasks_completed": [
+    16,
+    17,
+    18
+  ],
+  "tasks_pending": [
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58
+  ],
+  "tdd": {
+    "task16_red": "22 intended missing-SimAMCore import failures before implementation",
+    "task17_red": "33 intended missing-adapter/factory failures before implementation",
+    "task18_red": "20 intended missing-neck_fusion_channels constructor failures before implementation"
+  },
+  "training_runs": 0,
+  "unrelated_prior_implementation_sources": "unchanged",
+  "warning": "Existing torch.jit.script compatibility warning on Python 3.14+. Numerical parity test still passes."
+}

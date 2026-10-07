@@ -1,0 +1,608 @@
+{
+  "accuracy_measured": false,
+  "aggregation": {
+    "ap9_macro_mean": "All 3 classes x Easy/Moderate/Hard, separately for each metric and recall sampling",
+    "missing_classes": "Report per-class missing counts; do not silently average a reduced class set",
+    "moderate_macro_mean_classes": [
+      "Car",
+      "Pedestrian",
+      "Cyclist"
+    ]
+  },
+  "candidate_config": {
+    "augmentation": {
+      "AUG_CONFIG_LIST": [
+        {
+          "AZIMUTH_JITTER_DEG": 5,
+          "CACHE_SIZE_MB": 64,
+          "CANDIDATE_MULTIPLIER": 3,
+          "COLLISION_MARGIN": 0.1,
+          "DB_INFO_PATH": [
+            "gt_database/dbinfos_train.json"
+          ],
+          "ENABLE_DENSITY_SUBSAMPLE": true,
+          "ENABLE_GROUND_VALIDATION": true,
+          "ENABLE_LINE_OF_SIGHT": false,
+          "ENABLE_RADIOMETRIC_CALIBRATION": false,
+          "ENABLE_SHADOW_MASKING": false,
+          "ENABLE_STATIC_COLLISION": true,
+          "ENABLE_VISIBILITY_PROTECTION": true,
+          "GEOMETRY_BACKEND": "auto",
+          "LIMIT_WHOLE_SCENE": true,
+          "MAX_PLACEMENT_ATTEMPTS": 6,
+          "MIN_SAMPLE_POINTS": 5,
+          "MIN_VISIBLE_POINTS": 5,
+          "MIN_VISIBLE_RATIO": 0.5,
+          "NAME": "hybrid_gt_sampling",
+          "NUM_POINT_FEATURES": 4,
+          "PLACEMENT_MODE": "source_relative",
+          "PREPARE": {
+            "filter_by_min_points": [
+              "Car:5",
+              "Pedestrian:5",
+              "Cyclist:5"
+            ]
+          },
+          "PROBABILITY": 0.5,
+          "RANGE_SCALE": [
+            0.9,
+            1.1
+          ],
+          "REMOVE_EXTRA_WIDTH": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "SAMPLE_GROUPS": [
+            "Car:8",
+            "Pedestrian:6",
+            "Cyclist:6"
+          ],
+          "SAMPLE_RATE": 1.0,
+          "USE_ROAD_PLANE": false
+        },
+        {
+          "ALONG_AXIS_LIST": [
+            "x"
+          ],
+          "NAME": "random_world_flip",
+          "PROBABILITY": 0.5
+        },
+        {
+          "NAME": "random_world_rotation",
+          "WORLD_ROT_ANGLE": [
+            -0.78539816,
+            0.78539816
+          ]
+        },
+        {
+          "NAME": "random_world_scaling",
+          "WORLD_SCALE_RANGE": [
+            0.95,
+            1.05
+          ]
+        },
+        {
+          "NAME": "random_world_translation",
+          "NOISE_TRANSLATE_STD": [
+            0.2,
+            0.2,
+            0.1
+          ],
+          "PROBABILITY": 0.5
+        }
+      ],
+      "DISABLE_AUG_LIST": [],
+      "mode": "openpcdet"
+    },
+    "data": {
+      "bev_encoding": {
+        "backend": "numpy",
+        "density_norm": 32.0,
+        "intensity_scale": 1.0,
+        "name": "hist14",
+        "version": 1
+      },
+      "box_mode": "3d",
+      "gaussian_overlap": 0.1,
+      "head_groups": [
+        {
+          "classes": [
+            "Car"
+          ],
+          "name": "car"
+        },
+        {
+          "classes": [
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "name": "ped_cyc"
+        }
+      ],
+      "kitti": {
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0,
+          "x_res": 0.1,
+          "y_max": 40,
+          "y_min": -40,
+          "y_res": 0.1,
+          "z_max": 1,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "location": "data/kitti/processed",
+        "objects": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "peak_mode": "per_class"
+      },
+      "min_radius": 4,
+      "num_classes": 3,
+      "out_size_factor": 4,
+      "regression_assignment": "nearest_center"
+    },
+    "date": "reproducible",
+    "device": "cuda",
+    "experiment": {
+      "name": "main_focal_3d"
+    },
+    "loss": {
+      "group_weights": {
+        "car": 1.0,
+        "ped_cyc": 1.0
+      },
+      "iou_target_type": "mgiou",
+      "name": "oga",
+      "use_iou": true,
+      "vertical_loss_weight": 1.0
+    },
+    "model": {
+      "backbone": "mobilepixornext",
+      "backbone_out_dim": 32,
+      "c4_attention": "none",
+      "c4_attention_qk_norm": "none",
+      "c4_attention_scales": [],
+      "c4_context": "focal",
+      "c4_context_bottleneck": 64,
+      "c4_context_dilations": [
+        1,
+        2,
+        3
+      ],
+      "c4_context_layer_scale_init": 0.001,
+      "c4_context_version": 1,
+      "cls_encoding": "gaussian",
+      "deploy": false,
+      "detail_path": false,
+      "expansion": 2.5,
+      "head_mode": "grouped",
+      "header_act": "silu",
+      "header_use_bn": true,
+      "header_use_iou": true,
+      "local_attention": "none",
+      "neck_fusion_channels": 24,
+      "neck_type": "scale_gated_fpn",
+      "scale_gated_fpn": true,
+      "stage_depths": [
+        3,
+        4,
+        2
+      ],
+      "use_reparam": false
+    },
+    "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+    "seed": 42,
+    "train": {
+      "accumulation_steps": 1,
+      "compile_model": false,
+      "data": "splits/kitti/train.txt",
+      "epochs": 50,
+      "grad_clip_norm": 10.0,
+      "learning_rate": 0.0007,
+      "min_lr": 1e-06,
+      "num_workers": 6,
+      "optimizer": "adamw",
+      "physical_batch_size": 16,
+      "precision": "bf16",
+      "save_every": 5,
+      "target_backend": "numba",
+      "warmup_epochs": 4,
+      "weight_decay": 0.001
+    },
+    "val": {
+      "data": "splits/kitti/val.txt",
+      "physical_batch_size": 32,
+      "val_every": 1
+    },
+    "ver": 1
+  },
+  "checkpoint_identity": {
+    "box_mode": "3d",
+    "class_order": [
+      "Car",
+      "Pedestrian",
+      "Cyclist"
+    ],
+    "encoding": {
+      "metadata": {
+        "bin_edges": [
+          -2.5,
+          -1.625,
+          -0.75,
+          0.125,
+          1.0
+        ],
+        "boundary": {
+          "epsilon": 0.001,
+          "interval": "open"
+        },
+        "channel_names": [
+          "height_count_b0",
+          "height_count_b1",
+          "height_count_b2",
+          "height_count_b3",
+          "z_max",
+          "z_mean",
+          "z_span",
+          "z_std",
+          "intensity_max",
+          "intensity_mean",
+          "log_density",
+          "occupancy",
+          "point_offset_x",
+          "point_offset_y"
+        ],
+        "channels": 14,
+        "density_norm": 32.0,
+        "finite_filter": "first_four_columns",
+        "geometry": {
+          "x_max": 70.4,
+          "x_min": 0.0,
+          "x_res": 0.1,
+          "y_max": 40.0,
+          "y_min": -40.0,
+          "y_res": 0.1,
+          "z_max": 1.0,
+          "z_min": -2.5,
+          "z_res": 0.1
+        },
+        "grid_shape_xyz": [
+          704,
+          800,
+          35
+        ],
+        "height_bin_ties": "upper",
+        "intensity_scale": 1.0,
+        "layout": {
+          "encoding": "YXC",
+          "model": "BCYX"
+        },
+        "name": "hist14",
+        "precision": {
+          "accumulation": "float64",
+          "coordinates": "float64",
+          "index": "int64",
+          "output": "float32"
+        },
+        "version": 1
+      },
+      "sha256": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0"
+    },
+    "group_weights": [
+      [
+        "car",
+        0.5
+      ],
+      [
+        "ped_cyc",
+        0.5
+      ]
+    ],
+    "groups": [
+      {
+        "classes": [
+          "Car"
+        ],
+        "global_ids": [
+          0
+        ],
+        "name": "car"
+      },
+      {
+        "classes": [
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "global_ids": [
+          1,
+          2
+        ],
+        "name": "ped_cyc"
+      }
+    ],
+    "model": {
+      "backbone": "mobilepixornext",
+      "backbone_out_dim": 32,
+      "cls_encoding": "gaussian",
+      "deploy": false,
+      "expansion": 2.5,
+      "features": {
+        "config": {
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "focal",
+          "c4_context_bottleneck": 64,
+          "c4_context_dilations": [
+            1,
+            2,
+            3
+          ],
+          "c4_context_layer_scale_init": 0.001,
+          "c4_context_version": 1,
+          "detail_path": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24
+        },
+        "placement": {
+          "context_stride": 8,
+          "local_attention_stride": 4
+        },
+        "resolver_version": 1
+      },
+      "head_mode": "grouped",
+      "header_act": "silu",
+      "header_use_bn": true,
+      "header_use_iou": true,
+      "neck_type": "scale_gated_fpn",
+      "num_range_bands": 4,
+      "scale_gated_fpn": true,
+      "stage_depths": [
+        3,
+        4,
+        2
+      ],
+      "use_reparam": false
+    },
+    "objective": {
+      "iou_loss_weight": 1.0,
+      "iou_target_type": "mgiou",
+      "name": "oga",
+      "use_iou": true,
+      "vertical_loss_weight": 1.0
+    },
+    "output_stride": 4,
+    "training": {
+      "accumulation_steps": 1,
+      "epochs": 50,
+      "grad_clip_norm": 10.0,
+      "learning_rate": 0.0007,
+      "min_lr": 1e-06,
+      "optimizer": "adamw",
+      "physical_batch_size": 16,
+      "precision": "bf16",
+      "scheduler": "cosine",
+      "warmup_epochs": 4,
+      "weight_decay": 0.001
+    },
+    "version": 1
+  },
+  "checkpoint_selection": {
+    "alternate_ap_selection": "Only if explicitly selected, tested and matched across comparators",
+    "policy": "minimum validation loss"
+  },
+  "comparators": [],
+  "comparison_status": "pending comparator protocols",
+  "configured_data": {
+    "audit_complete": false,
+    "exists": false,
+    "label_exists": false,
+    "pointcloud_exists": false,
+    "root": "/home/duyennh/AI_projects/research_lidar/Lidar/data/kitti/processed",
+    "train_gt_database_exists": false
+  },
+  "current_runtime": {
+    "ap_samplings": [
+      "R11",
+      "R40"
+    ],
+    "box_mode": "3d",
+    "gpu_recipe_verified": true,
+    "metric_mode": "bev",
+    "protocol": "full benchmark GT; pinned reference; genuine projected boxes",
+    "reference_equivalence_verified": true
+  },
+  "decode": {
+    "cap_scope": "global after classwise NMS",
+    "max_detections": 500,
+    "nms_alpha": 0.5,
+    "nms_threshold": 0.1,
+    "peak_mode": "per_class",
+    "quality_semantics": "BEV IQA; changing to 3D IoU is a separate feature",
+    "score_threshold": 0.05
+  },
+  "evaluation": {
+    "ap_samplings": [
+      "R11",
+      "R40"
+    ],
+    "classes": [
+      "Car",
+      "Pedestrian",
+      "Cyclist"
+    ],
+    "difficulty_policy": "pinned reference KITTI Easy/Moderate/Hard with ignored/neighbor/DontCare rules",
+    "domain": "full benchmark GT; ROI metrics separate",
+    "iou_thresholds": {
+      "Car": 0.7,
+      "Cyclist": 0.5,
+      "Pedestrian": 0.5
+    },
+    "metric_mode": "bev",
+    "orientation_policy": "pi-symmetric box yaw; no AOS claims",
+    "recall_policy": "Report both reference R11 and R40 independently; never substitute local BEV R40 for AP3D",
+    "reference_evaluator": "unchanged pinned OpenPCDet KITTI evaluator",
+    "reference_revision": "233f849829b6ac19afb8af8837a0246890908755",
+    "reference_source_sha256": {
+      "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "LICENSE.RRPN": "feae9d571bda2ce209db793d0410de4d8a2df12040d293e4260429983412539e",
+      "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eval.py": "d9260a41f68083d685fc43fecac1c417b14a1bc53df4915a46b2924f3a6a3c64",
+      "rotate_iou.py": "d9b2820b5be5d15ee7233147643134c5d73eff129c773aef4b59ce73a8ecd7f4"
+    }
+  },
+  "long_training_allowed": false,
+  "pending_gates": [
+    "configured_data_and_train_only_gt_database_audit",
+    "comparator_protocols_and_reproduced_baseline"
+  ],
+  "resolved_config_sha256": "338dfa7a7ec64594b96a69e131e8dcb14cd2655031ca1080cc7d66830e5197ef",
+  "source": {
+    "commit": "3654a0b534b84b583eee79303e1bcd30eba55432",
+    "dirty": true
+  },
+  "source_config": "/home/duyennh/AI_projects/research_lidar/Lidar/configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json",
+  "source_config_sha256": "8d6992c7bfcb45d0dd01f3a42f65e365f795d6d6f2bc39bfa9e3e149ec0b46af",
+  "splits": {
+    "overlap": [],
+    "train": {
+      "count": 3712,
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/splits/kitti/train.txt",
+      "sha256": "040e6b83709797dcb8637370affda638f4338c4b942053c74ca347a4b1f1a887"
+    },
+    "val": {
+      "count": 3769,
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/splits/kitti/val.txt",
+      "sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+    }
+  },
+  "status": "candidate policy recorded; final benchmark freeze pending gates",
+  "training": {
+    "augmentation": {
+      "AUG_CONFIG_LIST": [
+        {
+          "AZIMUTH_JITTER_DEG": 5,
+          "CACHE_SIZE_MB": 64,
+          "CANDIDATE_MULTIPLIER": 3,
+          "COLLISION_MARGIN": 0.1,
+          "DB_INFO_PATH": [
+            "gt_database/dbinfos_train.json"
+          ],
+          "ENABLE_DENSITY_SUBSAMPLE": true,
+          "ENABLE_GROUND_VALIDATION": true,
+          "ENABLE_LINE_OF_SIGHT": false,
+          "ENABLE_RADIOMETRIC_CALIBRATION": false,
+          "ENABLE_SHADOW_MASKING": false,
+          "ENABLE_STATIC_COLLISION": true,
+          "ENABLE_VISIBILITY_PROTECTION": true,
+          "GEOMETRY_BACKEND": "auto",
+          "LIMIT_WHOLE_SCENE": true,
+          "MAX_PLACEMENT_ATTEMPTS": 6,
+          "MIN_SAMPLE_POINTS": 5,
+          "MIN_VISIBLE_POINTS": 5,
+          "MIN_VISIBLE_RATIO": 0.5,
+          "NAME": "hybrid_gt_sampling",
+          "NUM_POINT_FEATURES": 4,
+          "PLACEMENT_MODE": "source_relative",
+          "PREPARE": {
+            "filter_by_min_points": [
+              "Car:5",
+              "Pedestrian:5",
+              "Cyclist:5"
+            ]
+          },
+          "PROBABILITY": 0.5,
+          "RANGE_SCALE": [
+            0.9,
+            1.1
+          ],
+          "REMOVE_EXTRA_WIDTH": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "SAMPLE_GROUPS": [
+            "Car:8",
+            "Pedestrian:6",
+            "Cyclist:6"
+          ],
+          "SAMPLE_RATE": 1.0,
+          "USE_ROAD_PLANE": false
+        },
+        {
+          "ALONG_AXIS_LIST": [
+            "x"
+          ],
+          "NAME": "random_world_flip",
+          "PROBABILITY": 0.5
+        },
+        {
+          "NAME": "random_world_rotation",
+          "WORLD_ROT_ANGLE": [
+            -0.78539816,
+            0.78539816
+          ]
+        },
+        {
+          "NAME": "random_world_scaling",
+          "WORLD_SCALE_RANGE": [
+            0.95,
+            1.05
+          ]
+        },
+        {
+          "NAME": "random_world_translation",
+          "NOISE_TRANSLATE_STD": [
+            0.2,
+            0.2,
+            0.1
+          ],
+          "PROBABILITY": 0.5
+        }
+      ],
+      "DISABLE_AUG_LIST": [],
+      "mode": "openpcdet"
+    },
+    "main_attention": "focal, local none; optional comparisons named separately",
+    "required_3d_extension": "owned vertical branch/target/loss/decode implemented; fixed vertical weight=1.0",
+    "schedule": {
+      "accumulation_steps": 1,
+      "compile_model": false,
+      "data": "splits/kitti/train.txt",
+      "epochs": 50,
+      "grad_clip_norm": 10.0,
+      "learning_rate": 0.0007,
+      "min_lr": 1e-06,
+      "num_workers": 6,
+      "optimizer": "adamw",
+      "physical_batch_size": 16,
+      "precision": "bf16",
+      "save_every": 5,
+      "target_backend": "numba",
+      "warmup_epochs": 4,
+      "weight_decay": 0.001
+    },
+    "seed": 42
+  },
+  "verification_evidence": {
+    "reference": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/kitti/backbone_audit/batch19/verification.json",
+      "sha256": "fcc03e5a02254b3497f8c41d0dfbde26bbd151fe090e7853459b6be459275e26"
+    },
+    "smoke_reports": [
+      {
+        "path": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/kitti/backbone_audit/batch20/none_workers0.json",
+        "sha256": "af40434ef9cb1b2c234df91f214a74e34e4058855d2f700e59792fd81380a070"
+      },
+      {
+        "path": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/kitti/backbone_audit/batch20/none_workers6.json",
+        "sha256": "2830ac5465d0b359fb3e21c0edd7edb96d8dce5d57bd38c2dc9238d249dd998c"
+      }
+    ]
+  },
+  "version": 1
+}

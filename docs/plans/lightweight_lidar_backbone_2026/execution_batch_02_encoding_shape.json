@@ -1,0 +1,33 @@
+{
+  "config_sha256": "d9cc478c40c33f3a2568fcc424414ed5b45f23997426095b899db41b14dc5c56",
+  "contiguous": true,
+  "device": "cpu",
+  "dtype": "float32",
+  "fastmath": false,
+  "geometry": {
+    "x_max": 70.4,
+    "x_min": 0,
+    "x_res": 0.1,
+    "y_max": 40,
+    "y_min": -40,
+    "y_res": 0.1,
+    "z_max": 1,
+    "z_min": -2.5,
+    "z_res": 0.1
+  },
+  "implementation_version": 1,
+  "input_dtype": "float32",
+  "max_abs_difference": 0.0,
+  "numba_nopython_signatures": [
+    "(Array(float64, 2, 'C', False, aligned=True), int64, int64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64) -> array(float32, 3d, C)"
+  ],
+  "occupied_cells": 999,
+  "payload_bytes": 31539200,
+  "point_count": 1000,
+  "scope": "full KITTI encoding shape and parity, not model/GPU/latency or AP benchmarking",
+  "shape_yxc": [
+    800,
+    704,
+    14
+  ]
+}

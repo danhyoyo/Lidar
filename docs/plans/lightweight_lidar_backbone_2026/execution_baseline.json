@@ -1,0 +1,71 @@
+{
+  "branch": "research/mobilepixornext-under1m",
+  "captured_at_utc": "2026-10-06T17:11:06.745245+00:00",
+  "config_sha256": {
+    "configs/augmentation/hybrid_gt.json": "881412431622d32985e3ce498f5b1017aeaa0e2283e0cfecf6dc4044f3a60508",
+    "configs/augmentation/openpcdet_global.json": "7e2cc669e70249647a90d382551cf15a65476ff1e7b4105a98ab8aafcfcdb8dc",
+    "configs/augmentation/openpcdet_gt.json": "de94b1939da48d5b1736351bc4d98d1f04ee7fafaaa530cb2614444a2e7ceda4",
+    "configs/config.json": "d9cc478c40c33f3a2568fcc424414ed5b45f23997426095b899db41b14dc5c56",
+    "configs/experiments/attention_diagnostic/e0_conv.json": "284526fc3fd7062c4842e643a5ccb016c985cd67e602c61bc870ec05f73e204c",
+    "configs/experiments/attention_diagnostic/e1_litemla.json": "a5339cb0ecd1ab8c9347e8caa6be511417ca55705ea18e46ba2ddc7d7940fc1c",
+    "configs/experiments/qoga_quality/exact_iou_s42.json": "15c61af249b11e372a50f5678fe0df503a7e629f2ba3596566aa107f4db44d7b",
+    "configs/experiments/qoga_quality/exact_iou_warmup8_s42.json": "39880bda90ab5f29a52a90afa5ee6e2793917f99b72c9b0490d29544a45d7387",
+    "configs/experiments/qoga_quality/legacy_s42.json": "0f049b9b1503e4c529495e63be960bc62f66d7adc78a485a0d233378f8146cc0"
+  },
+  "environment": {
+    "device": "cpu",
+    "numba": "0.68.0",
+    "numpy": "2.3.5",
+    "python": "/tmp/lidar-fixes-env/bin/python",
+    "torch": "2.14.1+cpu"
+  },
+  "head": "3654a0b534b84b583eee79303e1bcd30eba55432",
+  "legacy_source_sha256": {
+    "detector/core/datasets/dataset.py": "6ec039ab894f1962cd8d667d98e4ba4bf617645fa8529b7d9215af56c933adb3",
+    "detector/core/datasets/utils_1/preprocess.py": "75cfd40c6f7542e85c7bc4af3c03e31634577cb51067f0f26ea79d1a792fd09a",
+    "detector/core/models/model.py": "d5c74e517c71ff79577e6c003c8202b0ab0253d8995a86b60d5b485e6598becb",
+    "tools/kitti_training_pipeline/common.py": "c3b6b851c18bda8684cd8b3a8884fb3b021f6cc464f4a9753611e7f8bb53f82f",
+    "tools/kitti_training_pipeline/notebook_config.py": "27ab38e0ab794702d98203034744aaf1d26b6fb65bf7d3ea7ac304839311f82f"
+  },
+  "preexisting_modified_sha256": {
+    "3D_Lidar_Object_Detection_Notebook_standard.ipynb": "ac35ae9fb3f487772ba88381d720c1bc914eceb4cf4bab7c4974fa7e59a76f75",
+    "detector/core/losses/iou_targets.py": "9f7fae0980d43a84d5055bfe0bad6bb2906d4c34bf24b4975b4aff3fd497d26f",
+    "detector/core/losses/strategies/q_oga.py": "cc1974bbd83f97355e4ede4db2a9f377914899214c8cb3e78b60575b98f728e3",
+    "tests/test_kitti_config_compatibility.py": "045901bae6fb50535a1e83be152d1844dd75ccf7c6eeb38e20982051532eef17",
+    "tools/kitti_training_pipeline/train.py": "cd53c0574a279e23981159679e173685dcecf76aaeba217bcefa3a9e78859ce0"
+  },
+  "purpose": "Pre-refactor provenance, not accuracy or performance evidence.",
+  "split_sha256": {
+    "splits/kitti/archived_5984_1497/train.txt": "bda0e3fbce5cb31d07593d3997e52b2ae33fcbc57479e262ec86eedabfaf3db7",
+    "splits/kitti/archived_5984_1497/val.txt": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a",
+    "splits/kitti/train.txt": "040e6b83709797dcb8637370affda638f4338c4b942053c74ca347a4b1f1a887",
+    "splits/kitti/val.txt": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+    "splits/train (1).txt": "b6417a1d9b18c8fdb085128e633d28ff321b7674a6d1b3841b8f43d865b281cb",
+    "splits/train.txt": "bda0e3fbce5cb31d07593d3997e52b2ae33fcbc57479e262ec86eedabfaf3db7",
+    "splits/val (1).txt": "657ac4bcc1e156e5b106a4ca18e1f88e012787ea1d2b5d0adeea97fee903fa86",
+    "splits/val.txt": "cae7f7b5a72f28af771ebe878faa97b81bdafbcecd2be51205fd8cb5ecd2733a"
+  },
+  "status_before_batch": [
+    " M 3D_Lidar_Object_Detection_Notebook_standard.ipynb",
+    " M detector/core/losses/iou_targets.py",
+    " M detector/core/losses/strategies/q_oga.py",
+    " M tests/test_kitti_config_compatibility.py",
+    " M tools/kitti_training_pipeline/train.py",
+    "?? configs/experiments/",
+    "?? detector/core/losses/rotated_iou.py",
+    "?? docs/plans/2026-10-05-qoga-exact-quality-plan.md",
+    "?? docs/plans/2026-10-05-qoga-exact-quality.md",
+    "?? docs/plans/attention_artifact_results.csv",
+    "?? docs/plans/attention_artifact_review.md",
+    "?? docs/plans/attention_diagnostic.md",
+    "?? docs/plans/lightweight_lidar_backbone_2026/",
+    "?? docs/plans/oga_iqa_vs_qoga_results.csv",
+    "?? docs/plans/oga_iqa_vs_qoga_review.md",
+    "?? docs/plans/qoga_exact_quality_geometry_check.json",
+    "?? docs/plans/qoga_exact_quality_resume_check.json",
+    "?? e2e_demo/",
+    "?? tests/test_q_oga_exact_quality.py",
+    "?? tests/test_qoga_quality_configs.py",
+    "?? tests/test_rotated_iou_targets.py"
+  ]
+}

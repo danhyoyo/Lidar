@@ -1,0 +1,44 @@
+{
+  "scope": "Standalone full focal and ECA cores, not integrated detector; CPU only",
+  "focal": {
+    "input_shape": [
+      1,
+      96,
+      100,
+      88
+    ],
+    "output_shape": [
+      1,
+      96,
+      100,
+      88
+    ],
+    "parameters": 25120,
+    "finite_output": true,
+    "finite_input_gradient": true,
+    "all_parameter_gradients_finite_nonzero": true
+  },
+  "eca_core": {
+    "parameters_k3": 3,
+    "parameters_k5": 5,
+    "residual_adapter_implemented": false,
+    "input_shape": [
+      1,
+      48,
+      200,
+      176
+    ],
+    "output_shape": [
+      1,
+      48,
+      200,
+      176
+    ],
+    "initial_output_equals_half_input": true
+  },
+  "reference_backbone_including_neck_unchanged": 635408,
+  "integrated_focal_backbone_parameter_count": null,
+  "arithmetic_projection_focal_backbone": 660528,
+  "gpu_results": null,
+  "accuracy_results": null
+}
