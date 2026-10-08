@@ -629,7 +629,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                  "kitti_root": str(kitti_root.resolve()),
                  "split": str(split_path.resolve()), "split_sha256": sha256(split_path),
                  "input_channels": int(input_shape(config)[1]),
-                 "input_bytes_fp32": (None if bev_encoding_spec(config).name == "pillar32"
+                 "input_bytes_fp32": (None if bev_encoding_spec(config).is_packed
                                       else int(np.prod(input_shape(config)) * 4)),
                  "mean_input_bytes": float(np.mean(input_sizes)),
                  "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),

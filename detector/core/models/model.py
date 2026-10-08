@@ -29,11 +29,11 @@ class CustomModel(nn.Module):
         )
 
         self.point_encoder = None
-        if cfg.get("bev_encoding", {}).get("name") == "pillar32":
+        if cfg.get("bev_encoding", {}).get("name") in {"pillar32", "pillar_rich"}:
             if "geometry" not in cfg:
-                raise ValueError("pillar32 model requires geometry")
+                raise ValueError("learned pillar model requires geometry")
             from core.models.encoders.pillar import PillarEncoder
-            self.point_encoder = PillarEncoder(cfg["geometry"])
+            self.point_encoder = PillarEncoder(cfg["geometry"], cfg["bev_encoding"])
 
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)

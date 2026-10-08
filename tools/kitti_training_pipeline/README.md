@@ -61,10 +61,13 @@ decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
 
-For a matched rich8 vs learned point encoder experiment, use
-`configs/experiments/encoders/{rich8,pillar32}.json`. The added `pillar32`
+For matched rich8 vs learned point encoder experiments, use
+`configs/experiments/encoders/{rich8,pillar32,pillar_rich}.json`. The added `pillar32`
 learns a shared 10-to-32 point MLP and pools occupied pillars before the existing
-BEV backbone. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
+BEV backbone. `pillar_rich` concatenates exact rich8 statistics with 24 learned
+features into the same 32-channel BEV. Select `BEV_ENCODING="pillar_rich"` with
+`PRESET="custom"` in existing notebooks, or `PRESET="ENCODER_PILLAR_RICH"` for
+the matched comparator. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
 for paired commands, notebook presets, parameter counts and memory conditions.
 Omitted `--num-workers`, `--target-backend` and `--compile-model` flags use the
 saved training config (historical fallbacks: 2 workers, Python backend, no compile).

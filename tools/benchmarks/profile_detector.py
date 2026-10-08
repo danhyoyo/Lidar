@@ -65,8 +65,8 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
         raise ValueError("body/neck profiling currently requires mobilepixornext")
     detection = detection_spec(config)
     schema = bev_encoding_spec(config)
-    if schema.name == "pillar32":
-        raise ValueError("pillar32 requires packed points; this dense-shape profiler is unsupported. "
+    if schema.is_packed:
+        raise ValueError(f"{schema.name} requires packed points; this dense-shape profiler is unsupported. "
                          "Use model_parameter_report(build_model(config)) for parameter counts.")
     features = backbone_feature_spec(config["model"], geometry=config["data"]["kitti"]["geometry"])
     config["model"].update(features.to_dict())

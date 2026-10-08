@@ -1,6 +1,6 @@
-# So sánh rich8 với learned pillar32
+# So sánh rich8, pillar32 và pillar_rich
 
-`pillar32` là encoder học được bổ sung; `configs/config.json` vẫn mặc định rich8.
+`pillar32` và `pillar_rich` là encoder bổ sung; `configs/config.json` vẫn mặc định rich8.
 Đây là phép thử biểu diễn đầu vào, không phải triển khai toàn bộ detector PointPillars.
 
 ## Kiến trúc
@@ -33,9 +33,37 @@ chọn `collate_fn=collate_detector_batch` từ `core.datasets.dataset`. CLI tra
 PyTorch evaluator tự xử lý đường input này. `common.input_shape(config)` vẫn
 trả shape **BEV vào backbone**, không phải shape packed input của pillar32.
 
-## Chạy hai cấu hình đối chứng
+## pillar_rich: rich8 + learned24
 
-Hai file sau giữ cùng cấu hình ngoài encoder: backbone [3,4,2], attention/context
+`pillar_rich` dùng cùng mười point feature và cùng Linear/BN/ReLU/max-pooling,
+nhưng nhánh học chỉ xuất 24 kênh. Tám thống kê rich8 được tính trên cùng điểm sau
+augmentation/ROI, với cùng XY indexing, height bands, intensity_scale và density_norm:
+
+```text
+Điểm trong từng pillar
+  ├─ rich8 stats [K,8]                         ─┐
+  └─ Linear(10,24) + BN + ReLU → max [K,24]    ─┤
+                                               ↓ concatenate [K,32]
+                                               ↓ scatter một lần
+                                          BEV [B,32,H,W] → backbone/head
+```
+
+Kênh 0–7 giữ đúng rich8; kênh 8–31 là feature học được. Packed input bổ sung
+`rich_features [K,8]`, theo đúng thứ tự `coords`. Không tạo thêm dense rich8 BEV
+trong preprocessing. Rich8 stats không có tham số học; nhánh học có **288 tham số**.
+Ở FP32, tám kênh đầu khớp chính xác với rich8 độc lập trên cùng point cloud float32.
+Khi autocast BF16, rich8 được cast theo dtype nhánh học trước concat, nên có rounding
+BF16 như input convolution trong rich8. Occupied pillars và empty frames dùng cùng
+quy tắc với pillar32. `density_norm` có tác dụng và nằm trong checkpoint identity của
+pillar_rich; ở pillar32 nó không có tác dụng.
+
+Nhánh rich8 giữ mật độ/occupancy/mean mà max pooling không bảo đảm giữ. Ví dụ nhân
+đôi toàn bộ điểm không đổi learned max features khi eval, nhưng đổi kênh log_density
+(trước saturation). Đây là lý do thử hybrid; không phải bằng chứng tăng AP.
+
+## Chạy ba cấu hình đối chứng
+
+Ba file sau giữ cùng cấu hình ngoài encoder: backbone [3,4,2], attention/context
 none, fusion 24, head 16, baseline loss, augmentation standard, seed 42,
 AdamW 7e-4, 50 epoch, batch train 16/val 32, BF16. AP được đo trên toàn validation
 mỗi epoch bằng cùng local BEV R40 protocol và cùng decode settings.
@@ -43,6 +71,8 @@ mỗi epoch bằng cùng local BEV R40 protocol và cùng decode settings.
 - `configs/experiments/encoders/rich8.json`: **648.313** parameters.
 - `configs/experiments/encoders/pillar32.json`: **655.609** parameters; encoder có
   384 parameters, stem tăng 6.912. Tổng tăng **7.296 (1,125%)**.
+- `configs/experiments/encoders/pillar_rich.json`: **655.513** parameters; nhánh học có
+  288 parameters. Tổng ít hơn pillar32 **96**, tăng **7.200 (1,111%)** so với rich8.
 
 Dùng dữ liệu processed ở `data/kitti/processed` và raw KITTI ở `data/kitti/raw`,
 theo hướng dẫn prepare trong `tools/kitti_training_pipeline/README.md`. Chạy từ
@@ -58,9 +88,14 @@ python3 tools/kitti_training_pipeline/train.py \
   --config configs/experiments/encoders/pillar32.json \
   --detector-root detector --output-root artifacts/kitti \
   --run-name encoder-pillar32-s42 --seed 42
+
+python3 tools/kitti_training_pipeline/train.py \
+  --config configs/experiments/encoders/pillar_rich.json \
+  --detector-root detector --output-root artifacts/kitti \
+  --run-name encoder-pillar-rich-s42 --seed 42
 ```
 
-Nếu dữ liệu ở nơi khác, truyền cùng `--override-json` cho cả hai run:
+Nếu dữ liệu ở nơi khác, truyền cùng `--override-json` cho cả ba run:
 
 ```json
 {"data":{"kitti":{"location":"/path/to/processed"}},"evaluation":{"kitti_root":"/path/to/raw"}}
@@ -85,20 +120,26 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
 
 ## Notebook
 
-Trong notebook standard chọn `PRESET = "ENCODER_RICH8"` hoặc
-`PRESET = "ENCODER_PILLAR32"`, dùng cùng `AUGMENTATION = "standard"` và các
+Trong notebook chọn `PRESET = "ENCODER_RICH8"`, `"ENCODER_PILLAR32"` hoặc
+`"ENCODER_PILLAR_RICH"`, dùng cùng `AUGMENTATION = "standard"` và các
 runtime controls. Preset model/loss không lấy custom controls; BOX_MODE,
 checkpoint selection, batch, seed và augmentation vẫn theo runtime controls.
 Chọn cùng `BOX_MODE = "bev"`, `EVALUATION_MODES = ["local_bev"]`,
 `CHECKPOINT_SELECTION = "ap"` để đối chiếu các run BEV hiện tại.
 
 Nếu muốn dùng backbone/head custom đang nghiên cứu, giữ `PRESET = "custom"`,
-chỉ đổi `BEV_ENCODING = "pillar32"`. Notebook tự đặt backend torch và 32 kênh.
+chỉ đổi `BEV_ENCODING = "pillar32"` hoặc `"pillar_rich"`. Resolver đặt backend
+torch và 32 kênh kể cả cell notebook cũ có bảng số kênh chưa chứa encoder mới;
+không cần sửa notebook để dùng pillar_rich. Các giá trị sai khai báo rõ ràng vẫn
+báo lỗi. Giữ cùng `NOTEBOOK_OVERRIDES` khi đối chiếu các encoder.
 Không dùng chung run name/checkpoint của rich8 để resume pillar32; resume yêu cầu
 cùng semantic identity. Để so encoder từ đầu, không warm-start một bên.
+Không resume pillar32 vào pillar_rich: dù BEV đều 32 kênh, semantic identity và
+trọng số nhánh học khác nhau. Chọn run name mới cho từng encoder.
 
 Resolver hỗ trợ cell notebook cũ có bảng số kênh chưa chứa `pillar32`:
-`out_channels=None` được điền thành 32 và backend thiếu được đặt thành torch.
+`out_channels=None` được điền thành 32 và backend thiếu được đặt thành torch
+cho cả pillar32 và pillar_rich.
 Giá trị sai được khai báo rõ ràng (ví dụ 8 kênh hoặc backend numpy) vẫn báo lỗi.
 Nếu dùng code resolver cũ, thêm đoạn sau trước `resolve_notebook_config(...)`:
 
@@ -118,10 +159,14 @@ if BEV_ENCODING == "pillar32":
 - CPU feature preparation được tính trong preprocessing; learned MLP, pooling
   và scatter được tính trong model latency. Evaluator ghi `mean_input_bytes`
   thực tế của packed tensors; `input_bytes_fp32` là null vì input biến độ dài.
+- pillar_rich có cùng bộ nhớ BEV 32 kênh với pillar32, giảm point activation từ
+  32 xuống 24 kênh nhưng bổ sung chuẩn bị/chuyển dữ liệu rich8 stats. Phải đo latency
+  thực tế; số tham số nhỏ hơn không chứng minh chạy nhanh hơn.
 - Bắt đầu với eager (`compile_model=false`). Variable point/pillar counts và
   kiểm tra index có thể gây graph breaks/recompilation khi dùng torch.compile.
 - ONNX/TensorRT hiện có chỉ nhận một dense tensor nên pillar32 được từ chối rõ
-  ràng; train/resume/PyTorch evaluation là đường so sánh được hỗ trợ. Dense-shape
+  ràng cho cả hai learned encoders; train/resume/PyTorch evaluation là đường so
+  sánh được hỗ trợ. Dense-shape
   profiler cũng từ chối packed input; đếm tham số bằng `model_parameter_report`.
 - Đổi encoder không tự đổi BEV head thành full 3D head. AP sau huấn luyện và
   GPU latency cần thí nghiệm thực tế; synthetic smoke tests không chứng minh
@@ -130,7 +175,7 @@ if BEV_ENCODING == "pillar32":
 ## Kiểm tra
 
 ```bash
-python3 -m pytest tests/test_pillar_encoder.py -q
+python3 -m pytest tests/test_pillar_encoder.py tests/test_pillar_rich_encoder.py -q
 python3 -m pytest tests/ -q
 ```
 

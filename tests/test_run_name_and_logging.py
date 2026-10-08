@@ -214,7 +214,7 @@ class TestRunNameAndLogging(unittest.TestCase):
             self.assertIn(parts[1], {"pcu", "standard_aug", "compose_aug", "noaug",
                                      "openpcdet_aug", "openpcdet_gt_aug", "hybrid_gt_aug"})
             self.assertTrue(parts[2].endswith("_loss"))
-            self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "legacy35"})
+            self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "pillar_rich", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})
 
     def test_trainer_has_no_tqdm_overhead(self):

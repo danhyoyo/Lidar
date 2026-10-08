@@ -341,7 +341,7 @@ def resolve_notebook_config(
             config["loss"]["use_iou"] = config["model"]["header_use_iou"]
     config = create_experiment_config(config, runtime_overrides)
     encoding = config["data"].get("bev_encoding", {})
-    if encoding.get("name") == "pillar32":
+    if encoding.get("name") in {"pillar32", "pillar_rich"}:
         # Older notebook width lookups produce None for newly added encoders.
         # Resolve that unspecified width here; keep the core schema strict and
         # preserve validation of explicit widths/backends.
@@ -470,6 +470,13 @@ PRESET_CONFIGS = {
         "loss": {"name": "baseline", "use_iou": False},
         "data": {"bev_encoding": {"name": "pillar32", "version": 1, "backend": "torch",
                                   "out_channels": 32, "intensity_scale": 1}},
+    },
+    "ENCODER_PILLAR_RICH": {
+        "experiment": {"name": "encoder_comparison"},
+        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
+        "loss": {"name": "baseline", "use_iou": False},
+        "data": {"bev_encoding": {"name": "pillar_rich", "version": 1, "backend": "torch",
+                                  "out_channels": 32, "intensity_scale": 1, "density_norm": 32}},
     },
     "TRUC_A_SOTA": {
         "model": {

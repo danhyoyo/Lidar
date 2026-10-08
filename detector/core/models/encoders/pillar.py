@@ -10,19 +10,23 @@ from core.bev_encoding import resolve_bev_encoding
 
 
 class PillarEncoder(nn.Module):
-    """Shared point MLP (10 -> 32), max pooling and dense BEV scatter."""
+    """Point MLP, max pooling, optional rich8 fusion and one dense BEV scatter."""
 
-    def __init__(self, geometry):
+    def __init__(self, geometry, encoding=None):
         super().__init__()
-        schema = resolve_bev_encoding({"name": "pillar32"}, geometry)
+        schema = resolve_bev_encoding(encoding or {"name": "pillar32"}, geometry)
+        if not schema.is_packed:
+            raise ValueError("PillarEncoder requires a packed pillar encoding")
+        self.name = schema.name
         self.width, self.height = schema.grid_shape[:2]
         self.channels = schema.channels
-        self.linear = nn.Linear(10, self.channels, bias=False)
-        self.norm = nn.BatchNorm1d(self.channels, eps=1e-3, momentum=.01)
+        self.learned_channels = 24 if self.name == "pillar_rich" else self.channels
+        self.linear = nn.Linear(10, self.learned_channels, bias=False)
+        self.norm = nn.BatchNorm1d(self.learned_channels, eps=1e-3, momentum=.01)
 
     def forward(self, packed):
         if not isinstance(packed, Mapping):
-            raise ValueError("pillar32 requires packed point features, not an encoded BEV tensor")
+            raise ValueError(f"{self.name} requires packed point features, not an encoded BEV tensor")
         features = packed["features"]
         indices = packed["pillar_indices"]
         coords = packed["coords"]
@@ -35,6 +39,11 @@ class PillarEncoder(nn.Module):
             raise ValueError("pillar coords must be int64 [K, 3] in batch,y,x order")
         if indices.shape != (len(features),) or indices.dtype != torch.int64:
             raise ValueError("pillar_indices must be int64 [N]")
+        rich = packed.get("rich_features")
+        if self.name == "pillar_rich" and (
+                not torch.is_tensor(rich) or rich.shape != (len(coords), 8) or
+                not rich.is_floating_point() or rich.device != features.device):
+            raise ValueError("pillar_rich rich_features must be floating [K, 8] on the point device")
         if not len(features):
             if len(coords):
                 raise ValueError("empty point input must have empty pillar coordinates")
@@ -54,9 +63,11 @@ class PillarEncoder(nn.Module):
         else:
             embedded = self.norm(embedded)
         embedded = F.relu(embedded)
-        pooled = embedded.new_zeros((len(coords), self.channels))
+        pooled = embedded.new_zeros((len(coords), self.learned_channels))
         pooled.scatter_reduce_(0, indices[:, None].expand_as(embedded), embedded,
                                reduce="amax", include_self=True)
+        if self.name == "pillar_rich":
+            pooled = torch.cat((rich.to(pooled.dtype), pooled), dim=1)
         locations = (coords[:, 0] * self.height + coords[:, 1]) * self.width + coords[:, 2]
         dense = pooled.new_zeros((batch_size * self.height * self.width, self.channels))
         dense.index_copy_(0, locations, pooled)
