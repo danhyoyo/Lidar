@@ -210,6 +210,8 @@ def validate_evaluation_checkpoint(checkpoint, config):
 
 def validate_deployment_config(config, consumer):
     """Reject contracts the current four-output deployment consumers cannot honor."""
+    if bev_encoding_spec(config).name == "pillar32":
+        raise ValueError(f"{consumer}: pillar32 packed-point deployment is not supported; use PyTorch evaluation")
     detection = detection_spec(config)
     if detection.box_mode == "3d":
         raise ValueError(f"{consumer}: 3D export/deployment is deferred; vertical output must not be dropped")
@@ -234,6 +236,9 @@ def model_parameter_report(model, criterion=None):
               "total_detector": sum(p.numel() for p in model.parameters()),
               "criterion_train_only": (sum(p.numel() for p in criterion.parameters())
                                        if criterion is not None else None)}
+    encoder = getattr(model, "point_encoder", None)
+    if encoder is not None:
+        counts["point_encoder"] = sum(p.numel() for p in encoder.parameters())
     if hasattr(model.backbone, "c4_context"):
         neck_names = {"rc_neck", "lat_c5", "lat_c4", "lat_c3", "refine_u4", "proj_u3",
                       "gate_c4", "gate_c3", "out_conv", "detail_branch"}
@@ -298,7 +303,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14"}:
+    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -455,7 +460,27 @@ def build_model(config: Dict[str, Any]):
 
 
 def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[int, ...]:
+    """Return the dense BEV backbone shape (packed encoders have separate inputs)."""
     return bev_encoding_spec(config, dataset_name).input_shape
+
+
+def model_input_batch_size(value):
+    """Count frames in either a dense BEV tensor or packed pillar input."""
+    return value["batch_size"] if isinstance(value, dict) else int(value.shape[0])
+
+
+def dummy_model_input(config, batch_size, device):
+    """Build a nonempty compile/profile input that includes learned encoding."""
+    import torch
+    schema = bev_encoding_spec(config)
+    if schema.name != "pillar32":
+        return torch.zeros((batch_size, *schema.input_shape[1:]), device=device)
+    features = torch.zeros((batch_size * 2, 10), device=device)
+    features[1::2] = .1
+    coords = torch.zeros((batch_size, 3), dtype=torch.int64, device=device)
+    coords[:, 0] = torch.arange(batch_size, device=device)
+    return {"features": features, "coords": coords, "batch_size": batch_size,
+            "pillar_indices": torch.arange(batch_size, device=device).repeat_interleave(2)}
 
 
 def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:

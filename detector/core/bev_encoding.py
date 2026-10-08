@@ -34,6 +34,8 @@ def minimum_channels(name: str) -> int | None:
         return None
     if name == "hist14":
         return 14
+    if name == "pillar32":
+        return 32
     if name in _RICH_MINIMUM:
         return _RICH_MINIMUM[name]
     raise ValueError(f"unsupported BEV encoding: {name!r}")
@@ -62,7 +64,22 @@ def _options(encoding):
     if type(version) is not int or version != 1:
         raise ValueError(f"unsupported {name} version: {version!r}; expected integer 1")
     configured = encoding.get("out_channels")
-    if name == "hist14":
+    if name == "pillar32":
+        unsupported = set(encoding) - {"name", "version", "out_channels", "backend",
+                                       "intensity_scale", "density_norm"}
+        if unsupported:
+            raise ValueError(f"unsupported pillar32 options: {sorted(unsupported, key=str)}")
+        if "out_channels" in encoding and (type(configured) is not int or configured != 32):
+            raise ValueError("pillar32 out_channels must be exactly integer 32")
+        if encoding.get("backend", "torch") != "torch":
+            raise ValueError("pillar32 backend must be torch")
+        # Legacy rich recipes may retain density_norm when deep-merged. It has
+        # no effect on point features and is excluded from the learned identity.
+        if "density_norm" in encoding:
+            _positive_float(encoding["density_norm"], "density_norm", 1)
+        intensity = _positive_float(encoding.get("intensity_scale", 1), "intensity_scale", 0)
+        return name, version, 32, None, intensity, "torch"
+    elif name == "hist14":
         unsupported = set(encoding) - _HIST14_OPTIONS
         if unsupported:
             raise ValueError(f"unsupported hist14 options: {sorted(unsupported, key=str)}")
@@ -138,6 +155,26 @@ class BEVEncodingSpec:
 
     def semantic_metadata(self) -> dict:
         """Return a fresh JSON-serializable identity, never mutable internal state."""
+        if self.name == "pillar32":
+            return {
+                "name": self.name, "version": self.version, "channels": self.channels,
+                "channel_names": list(self.channel_names), "geometry": dict(self.geometry),
+                "grid_shape_xyz": list(self.grid_shape), "bin_edges": list(self.bin_edges),
+                "density_norm": None, "intensity_scale": self.intensity_scale,
+                "layout": {"encoding": "packed_points", "model": "packed_pillars", "bev": "BCYX"},
+                "boundary": {"interval": "open", "epsilon": .001},
+                "finite_filter": "first_four_columns",
+                "xy_indexing": "legacy_float32_floor_divide",
+                "precision": {"features": "float32", "indices": "int64"},
+                "learned_encoder": {
+                    "point_features": 10,
+                    "feature_names": ["x", "y", "z", "intensity", "cluster_dx", "cluster_dy",
+                                      "cluster_dz", "center_dx", "center_dy", "center_dz"],
+                    "architecture": "linear_bn_relu", "pooling": "max",
+                    "pillar_center_z": "roi_midpoint", "point_limit": None, "pillar_limit": None,
+                    "singleton_bn": "running_statistics", "empty_bev": "zero",
+                },
+            }
         histogram = self.name == "hist14"
         binary = self.name == "binary_slices"
         result = {
@@ -156,7 +193,7 @@ class BEVEncodingSpec:
                 "output": "float32",
             },
         }
-        if not binary and self.channels >= 12 and not histogram:
+        if self.name in _RICH_MINIMUM and self.channels >= 12:
             result["range_density"] = {"range_scale_m": 20.0, "density_multiplier": 16.0}
         return result
 
@@ -183,6 +220,9 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
         names = _HIST14_CHANNELS
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 4
                       for index in range(5))
+    elif name == "pillar32":
+        names = tuple(f"learned_feature_{index}" for index in range(32))
+        edges = (geom["z_min"], geom["z_max"])
     else:
         names = tuple(_RICH_CHANNELS[index] if index < min(channels, 12) and
                       (index < 8 or channels >= 10) else f"reserved_zero_{index}"

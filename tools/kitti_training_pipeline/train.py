@@ -29,6 +29,8 @@ from common import (
     detection_spec,
     generate_run_name,
     input_shape,
+    dummy_model_input,
+    model_input_batch_size,
     normalize_state_dict,
     read_json,
     sha256,
@@ -471,7 +473,7 @@ def validate(
     started = time.perf_counter()
     for batch_index, batch in enumerate(loader, start=1):
         batch = move_tensor_batch(batch, device)
-        batch_size = int(batch["voxel"].shape[0])
+        batch_size = model_input_batch_size(batch["voxel"])
         with autocast_context(device, precision):
             outputs = model(batch["voxel"])
             losses = criterion(outputs, batch)
@@ -645,7 +647,7 @@ def main(argv=None) -> None:
     configure_matmul_precision()
     args = build_parser().parse_args(argv)
     configure_detector_imports(args.detector_root)
-    from core.datasets.dataset import Dataset
+    from core.datasets.dataset import Dataset, collate_detector_batch
 
     config = read_json(args.config)
     if args.override_json:
@@ -768,6 +770,8 @@ def main(argv=None) -> None:
     )
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
+    if config["data"].get("bev_encoding", {}).get("name") == "pillar32":
+        common_loader["collate_fn"] = collate_detector_batch
     train_loader = DataLoader(
         train_dataset,
         batch_size=physical_batch_size,
@@ -841,8 +845,7 @@ def main(argv=None) -> None:
         model = torch.compile(model)
         try:
             print("Warming up torch.compile kernels...")
-            _, in_ch, h, w = input_shape(config)
-            dummy_voxel = torch.zeros((physical_batch_size, in_ch, h, w), device=device)
+            dummy_voxel = dummy_model_input(config, physical_batch_size, device)
             warmup_model(model, dummy_voxel, optimizer, device, precision)
             synchronize_device(device)
             print("Warmup torch.compile completed.")
@@ -901,7 +904,7 @@ def main(argv=None) -> None:
         log_line(f"Epoch {epoch:03d}/{epochs:03d}: training {batches_this_epoch} batches")
         for batch_index, batch in enumerate(train_loader, start=1):
             batch = move_tensor_batch(batch, device)
-            batch_size = int(batch["voxel"].shape[0])
+            batch_size = model_input_batch_size(batch["voxel"])
             with autocast_context(device, precision):
                 outputs = model(batch["voxel"])
                 losses = criterion(outputs, batch)

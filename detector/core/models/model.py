@@ -28,6 +28,13 @@ class CustomModel(nn.Module):
             default_channels=input_channels,
         )
 
+        self.point_encoder = None
+        if cfg.get("bev_encoding", {}).get("name") == "pillar32":
+            if "geometry" not in cfg:
+                raise ValueError("pillar32 model requires geometry")
+            from core.models.encoders.pillar import PillarEncoder
+            self.point_encoder = PillarEncoder(cfg["geometry"])
+
         backbone_name = str(cfg.get("backbone", "mobilepixor"))
         self.backbone = build_backbone(backbone_name, cfg, input_channels=input_channels)
 
@@ -59,6 +66,8 @@ class CustomModel(nn.Module):
     def forward(self, x):
         if isinstance(x, dict) and "voxel" in x:
             x = x["voxel"]
+        if self.point_encoder is not None:
+            x = self.point_encoder(x)
         features = self.backbone(x)
         pred = (self.grouped_header(features) if self.head_mode == "grouped"
                 else self.header(features))

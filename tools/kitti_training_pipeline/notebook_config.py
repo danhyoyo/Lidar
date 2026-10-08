@@ -437,7 +437,32 @@ def save_notebook_config(run_dir, config):
     return path
 
 
+ENCODER_COMPARISON_MODEL = {
+    "backbone": "mobilepixornext", "backbone_out_dim": 16,
+    "head_mode": "legacy_single", "cls_encoding": "gaussian",
+    "stage_depths": [3, 4, 2], "expansion": 2.5,
+    "neck_type": "scale_gated_fpn", "neck_fusion_channels": 24,
+    "scale_gated_fpn": False, "detail_path": False,
+    "c4_attention": "none", "c4_attention_scales": [], "c4_attention_qk_norm": "none",
+    "c4_context": "none", "local_attention": "none",
+    "header_use_bn": True, "header_act": "silu", "header_use_iou": False,
+    "use_reparam": False, "deploy": False,
+}
+
 PRESET_CONFIGS = {
+    "ENCODER_RICH8": {
+        "experiment": {"name": "encoder_comparison"},
+        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
+        "loss": {"name": "baseline", "use_iou": False},
+        "data": {"bev_encoding": {"name": "rich8", "intensity_scale": 1, "density_norm": 32}},
+    },
+    "ENCODER_PILLAR32": {
+        "experiment": {"name": "encoder_comparison"},
+        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
+        "loss": {"name": "baseline", "use_iou": False},
+        "data": {"bev_encoding": {"name": "pillar32", "version": 1, "backend": "torch",
+                                  "out_channels": 32, "intensity_scale": 1}},
+    },
     "TRUC_A_SOTA": {
         "model": {
             "backbone": "mobilepixornext",

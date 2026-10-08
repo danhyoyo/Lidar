@@ -1,6 +1,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 import torch
+from torch.utils.data import default_collate
 import os
 import math
 from collections.abc import Mapping
@@ -15,6 +16,31 @@ from utils_1.target_backend import (fill_regression_targets_numba, fill_regressi
 from core.bev_encoding import resolve_bev_encoding
 from core.detection_config import resolve_box_mode
 from core.task_groups import resolve_task_groups, validate_resolved_groups
+
+
+def collate_detector_batch(samples):
+    """Collate dense legacy samples or concatenate variable-length pillar data."""
+    if not isinstance(samples[0]["voxel"], Mapping):
+        return default_collate(samples)
+    features, indices, coords = [], [], []
+    pillar_offset = 0
+    for batch_index, sample in enumerate(samples):
+        packed = sample["voxel"]
+        features.append(packed["features"])
+        indices.append(packed["pillar_indices"] + pillar_offset)
+        frame_coords = packed["coords"].clone()
+        frame_coords[:, 0] = batch_index
+        coords.append(frame_coords)
+        pillar_offset += len(frame_coords)
+    metadata_keys = {"points", "boxes", "cls_list", "dtype"}
+    targets = [{key: value for key, value in sample.items()
+                if key != "voxel" and key not in metadata_keys} for sample in samples]
+    result = default_collate(targets)
+    result["voxel"] = {"features": torch.cat(features), "pillar_indices": torch.cat(indices),
+                       "coords": torch.cat(coords), "batch_size": len(samples)}
+    for key in metadata_keys & samples[0].keys():
+        result[key] = [sample[key] for sample in samples]
+    return result
 
 def trasform_label2metric(label, geometry, ratio=4):
     '''
@@ -215,9 +241,7 @@ class Dataset(Dataset):
         points = self.read_points(lidar_path)
 
         if self.task == "test":
-            scan = self.voxelize(points, self.config[data_type]["geometry"])
-            scan = torch.from_numpy(scan)
-            scan = scan.permute(2, 0, 1)
+            scan = self.encode_input(points, self.config[data_type]["geometry"])
             return {"voxel": scan,
                     "points": points,
                     "dtype": data_type
@@ -233,9 +257,7 @@ class Dataset(Dataset):
 
         boxes = self.filter_boxes(boxes, data_type)
 
-        scan = self.voxelize(points, self.config[data_type]["geometry"])
-        scan = torch.from_numpy(scan)
-        scan = scan.permute(2, 0, 1)
+        scan = self.encode_input(points, self.config[data_type]["geometry"])
 
         labels = self.get_label(boxes, self.config[data_type]["geometry"])
         labels["voxel"] = scan
@@ -257,6 +279,15 @@ class Dataset(Dataset):
 
     def voxelize(self, points, geometry):
         return encode_bev(points, geometry, self.bev_encoding)
+
+
+    def encode_input(self, points, geometry):
+        if self.bev_encoding.get("name") == "pillar32":
+            from .utils_1.pillar_backend import prepare_pillars
+            packed = prepare_pillars(points, geometry, self.bev_encoding)
+            return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value
+                    for key, value in packed.items()}
+        return torch.from_numpy(self.voxelize(points, geometry)).permute(2, 0, 1)
 
 
     def get_boxes(self, idx):

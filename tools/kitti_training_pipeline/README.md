@@ -60,6 +60,12 @@ FPN, BN/SiLU heads and baseline loss. Its recipe is AdamW, LR 7e-4, weight
 decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
+
+For a matched rich8 vs learned point encoder experiment, use
+`configs/experiments/encoders/{rich8,pillar32}.json`. The added `pillar32`
+learns a shared 10-to-32 point MLP and pools occupied pillars before the existing
+BEV backbone. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
+for paired commands, notebook presets, parameter counts and memory conditions.
 Omitted `--num-workers`, `--target-backend` and `--compile-model` flags use the
 saved training config (historical fallbacks: 2 workers, Python backend, no compile).
 Explicit flags override the config; `--no-compile-model` disables compilation.
