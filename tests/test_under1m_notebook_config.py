@@ -25,6 +25,31 @@ PRESETS = {
 }
 
 
+@pytest.mark.parametrize("width", [None, 32])
+def test_old_notebook_pillar_lookup_resolves_fixed_width_without_mutation(width):
+    overrides = {"data": {"bev_encoding": {
+        "name": "pillar32", "out_channels": width,
+        "density_norm": 32, "intensity_scale": 1,
+    }}}
+    original = copy.deepcopy(overrides)
+    config = notebook.resolve_notebook_config(ROOT, preset="custom",
+        custom_overrides=overrides, augmentation="config")
+    assert overrides == original
+    assert config["data"]["bev_encoding"]["out_channels"] == 32
+    assert config["data"]["bev_encoding"]["backend"] == "torch"
+    assert notebook.input_shape(config) == (1, 32, 800, 704)
+
+
+@pytest.mark.parametrize("options", [
+    {"out_channels": 8}, {"out_channels": True}, {"out_channels": 32.0},
+    {"out_channels": 32, "backend": "numpy"},
+])
+def test_notebook_pillar_compatibility_keeps_explicit_invalid_options_rejected(options):
+    with pytest.raises(ValueError, match="pillar32"):
+        notebook.resolve_notebook_config(ROOT, preset="custom", augmentation="config",
+            custom_overrides={"data": {"bev_encoding": {"name": "pillar32", **options}}})
+
+
 @pytest.mark.parametrize("preset,recipe", list(PRESETS.items()))
 def test_named_preset_rebuilds_exact_runtime_file_and_checkpoint_identity(preset, recipe):
     config = notebook.resolve_notebook_config(ROOT, preset=preset, augmentation="config")

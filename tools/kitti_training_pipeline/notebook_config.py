@@ -340,6 +340,14 @@ def resolve_notebook_config(
         if "header_use_iou" in overrides.get("model", {}) and "use_iou" not in overrides.get("loss", {}):
             config["loss"]["use_iou"] = config["model"]["header_use_iou"]
     config = create_experiment_config(config, runtime_overrides)
+    encoding = config["data"].get("bev_encoding", {})
+    if encoding.get("name") == "pillar32":
+        # Older notebook width lookups produce None for newly added encoders.
+        # Resolve that unspecified width here; keep the core schema strict and
+        # preserve validation of explicit widths/backends.
+        if encoding.get("out_channels") is None:
+            encoding["out_channels"] = 32
+        encoding.setdefault("backend", "torch")
     validate_notebook_config(config)
     return config
 

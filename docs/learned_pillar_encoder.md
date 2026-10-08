@@ -97,6 +97,18 @@ chỉ đổi `BEV_ENCODING = "pillar32"`. Notebook tự đặt backend torch và
 Không dùng chung run name/checkpoint của rich8 để resume pillar32; resume yêu cầu
 cùng semantic identity. Để so encoder từ đầu, không warm-start một bên.
 
+Resolver hỗ trợ cell notebook cũ có bảng số kênh chưa chứa `pillar32`:
+`out_channels=None` được điền thành 32 và backend thiếu được đặt thành torch.
+Giá trị sai được khai báo rõ ràng (ví dụ 8 kênh hoặc backend numpy) vẫn báo lỗi.
+Nếu dùng code resolver cũ, thêm đoạn sau trước `resolve_notebook_config(...)`:
+
+```python
+if BEV_ENCODING == "pillar32":
+    custom_overrides["data"]["bev_encoding"].update(
+        out_channels=32, version=1, backend="torch"
+    )
+```
+
 ## Chi phí và giới hạn
 
 - Số tham số nhỏ không đảm bảo latency nhỏ. Linear chạy trên mọi điểm, pooling
