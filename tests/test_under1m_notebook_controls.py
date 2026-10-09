@@ -46,6 +46,18 @@ def test_notebook_defaults_select_main_focal_with_hybrid_and_local_none(tmp_path
     assert json.loads(namespace["CONFIG"].read_text()) == config
 
 
+@pytest.mark.parametrize("preset", ["custom", "ENCODER_PILLAR_RICH_GATE"])
+def test_notebook_selects_rich_gate_with_torch_backend_and_fixed_width(tmp_path, preset):
+    namespace = execute_cell(tmp_path, {"PRESET": preset, "BEV_ENCODING": "pillar_rich_gate",
+                                        "AUGMENTATION": "standard"})
+    config = namespace["config_dict"]
+    encoding = config["data"]["bev_encoding"]
+    assert encoding["name"] == "pillar_rich_gate"
+    assert encoding["out_channels"] == 32 and encoding["backend"] == "torch"
+    gate = checkpoint_identity(config)["encoding"]["metadata"]["learned_encoder"]["gate"]
+    assert gate["descriptor"] == "concat(learned_max24, rich8)"
+
+
 def test_notebook_selects_best_ap_and_exposes_independent_ap_interval(tmp_path):
     namespace = execute_cell(tmp_path)
     assert namespace['config_dict']['train'].get('checkpoint_selection', {}).get('primary') == 'ap'

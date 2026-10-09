@@ -304,7 +304,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "pillar_rich", "pillar_rich_eca"}:
+    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -318,11 +318,6 @@ def generate_run_name(
     parts = [backbone, augmentation, loss_name, bev_encoder, iou]
 
     extras: list[str] = []
-    if bev_name == "pillar_rich_eca":
-        # Distinguish kernel sizes even when the default backbone has no
-        # semantic suffix; normalize implicit defaults through the schema.
-        schema = bev_encoding_spec(config)
-        extras.append(f"eca_k{schema.eca_kernel_size}")
     neck_type = model_cfg.get("neck_type")
     if neck_type in ("rc_sgfpn", "rc_bisgfpn"):
         extras.append(neck_type)

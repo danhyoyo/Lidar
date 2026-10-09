@@ -30,7 +30,7 @@ def summary(values):
 
 
 def prepare_input(points, geometry, encoding):
-    if encoding["name"] in {"pillar_rich", "pillar_rich_eca"}:
+    if encoding["name"] in {"pillar_rich", "pillar_rich_gate"}:
         arrays = prepare_pillars(points, geometry, encoding)
         return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value
                 for key, value in arrays.items()}
@@ -57,8 +57,8 @@ def benchmark_models(config, points, *, device="cuda", precision="fp32", warmup=
         "rich8": {"name": "rich8", "density_norm": 32, "intensity_scale": 1},
         "pillar_rich": {"name": "pillar_rich", "out_channels": 32, "backend": "torch",
                         "density_norm": 32, "intensity_scale": 1},
-        "pillar_rich_eca": {"name": "pillar_rich_eca", "out_channels": 32, "backend": "torch",
-                            "density_norm": 32, "intensity_scale": 1, "eca_kernel_size": 3},
+        "pillar_rich_gate": {"name": "pillar_rich_gate", "out_channels": 32, "backend": "torch",
+                             "density_norm": 32, "intensity_scale": 1},
     }
     report = {
         "scope": "Batch-one random-weight eval: CPU preparation + contiguous input/H2D + complete detector forward. Excludes file I/O, decode/NMS, AP, training and ROS.",

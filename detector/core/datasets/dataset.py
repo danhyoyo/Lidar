@@ -290,7 +290,7 @@ class Dataset(Dataset):
 
 
     def encode_input(self, points, geometry):
-        if self.bev_encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
+        if self.bev_encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
             from .utils_1.pillar_backend import prepare_pillars
             packed = prepare_pillars(points, geometry, self.bev_encoding)
             return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value

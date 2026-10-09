@@ -10,7 +10,7 @@ from core.bev_encoding import resolve_bev_encoding
 
 
 class PillarEncoder(nn.Module):
-    """Point MLP, optional ECA max/mean mixing, rich8 fusion and BEV scatter."""
+    """Point MLP, max pooling, optional rich-conditioned gate and BEV scatter."""
 
     def __init__(self, geometry, encoding=None):
         super().__init__()
@@ -25,10 +25,13 @@ class PillarEncoder(nn.Module):
         self.linear = nn.Linear(10, self.learned_channels, bias=False)
         self.norm = nn.BatchNorm1d(self.learned_channels, eps=1e-3, momentum=.01)
         self.pooling = schema.pooling
-        if self.pooling == "max_mean_eca":
-            self.eca = nn.Conv1d(1, 1, schema.eca_kernel_size,
-                                 padding=schema.eca_kernel_size // 2, bias=False)
-            nn.init.zeros_(self.eca.weight)
+        if self.name == "pillar_rich_gate":
+            # These CPU constructors consume RNG even when later zero-initialized.
+            # Preserve the baseline's subsequent backbone/head initialization.
+            with torch.random.fork_rng(devices=[]):
+                self.gate = nn.Sequential(nn.Linear(32, 4), nn.ReLU(), nn.Linear(4, 24))
+                nn.init.zeros_(self.gate[2].weight)
+                nn.init.zeros_(self.gate[2].bias)
 
     def forward(self, packed):
         if not isinstance(packed, Mapping):
@@ -74,25 +77,13 @@ class PillarEncoder(nn.Module):
         pooled = embedded.new_zeros((len(coords), self.learned_channels))
         pooled.scatter_reduce_(0, indices[:, None].expand_as(embedded), embedded,
                                reduce="amax", include_self=True)
-        if self.pooling == "max_mean_eca":
-            # Keep summation and the tiny gate FP32 under BF16/FP16 autocast.
-            # Process occupied pillars only; do not materialize a mean BEV.
-            with torch.autocast(device_type=embedded.device.type, enabled=False):
-                means = embedded.new_zeros((len(coords), self.learned_channels), dtype=torch.float32)
-                means.index_add_(0, indices, embedded.float())
-                counts = torch.bincount(indices, minlength=len(coords)).clamp_min(1)
-                means = means / counts[:, None]
-                # The exact short channel convolution as shifted addcmul:
-                # avoids a Conv1d workspace for K tiny, one-channel sequences.
-                kernel = self.eca.kernel_size[0]
-                padded = F.pad(means, (kernel // 2, kernel // 2)) if kernel > 1 else means
-                weights = self.eca.weight.float().flatten()
-                logits = padded[:, :self.learned_channels] * weights[0]
-                for offset in range(1, kernel):
-                    logits = torch.addcmul(logits, padded[:, offset:offset + self.learned_channels],
-                                          weights[offset])
-                alpha = logits.sigmoid()
-                pooled = torch.lerp(means, pooled.float(), alpha).to(embedded.dtype)
+        if self.name == "pillar_rich_gate":
+            # Reuse the existing bounded rich8 statistics, without another point
+            # reduction or a dense BEV gate. Zero logits give exactly unit scale.
+            descriptor = torch.cat((pooled, rich.to(pooled.dtype)), dim=1)
+            logits = self.gate(descriptor)
+            scale = 2 * torch.sigmoid(logits.float())
+            pooled = (pooled.float() * scale).to(embedded.dtype)
         if self.has_rich:
             pooled = torch.cat((rich.to(pooled.dtype), pooled), dim=1)
         # Scatter into the final layout, avoiding a second full BEV allocation

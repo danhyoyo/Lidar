@@ -69,15 +69,17 @@ features into the same 32-channel BEV. Select `BEV_ENCODING="pillar_rich"` with
 `PRESET="custom"` in existing notebooks, or `PRESET="ENCODER_PILLAR_RICH"` for
 the matched comparator. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
 for paired commands, notebook presets, parameter counts and memory conditions.
-For per-pillar max/mean mixing with a mean-conditioned ECA gate, use
-`configs/experiments/encoders/pillar_rich_eca.json` or
-`PRESET="ENCODER_PILLAR_RICH_ECA"`. The encoder name is `pillar_rich_eca`;
-`pillar_rich` remains max-only. Selecting the new name automatically enables
-max–mean ECA pooling. The original long preset spelling remains an alias.
-It retains 32 BEV channels and adds three kernel weights; max-only checkpoints
-require a separate run.
+For rich-conditioned per-pillar channel gating, use
+`configs/experiments/encoders/pillar_rich_gate.json` or
+`PRESET="ENCODER_PILLAR_RICH_GATE"`. The encoder name is `pillar_rich_gate`;
+`pillar_rich` remains max-only. The fixed Linear(32,4)-ReLU-Linear(4,24) gate
+consumes learned max24 plus existing rich8, and multiplies max24 by 2*sigmoid.
+It retains 32 BEV channels and adds 252 parameters. The final Linear is
+zero-initialized for unit gates; constructor RNG is preserved for matched
+backbone/head initialization. The old ECA encoder/presets are retired;
+start a new run rather than resuming a max-only or ECA checkpoint into gate.
 `tools/benchmarks/benchmark_pillar_encoders.py` compares rich8, max-only and
-max/mean ECA at matched precision with separate preparation/transfer/model
+rich-conditioned gate at matched precision with separate preparation/transfer/model
 timings. Its random-weight benchmark excludes decode/NMS and AP; measure
 actual checkpoint end-to-end latency with the evaluator before claiming speed.
 Omitted `--num-workers`, `--target-backend` and `--compile-model` flags use the

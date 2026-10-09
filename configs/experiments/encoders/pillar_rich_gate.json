@@ -26,9 +26,8 @@
     "bev_encoding": {
       "backend": "torch",
       "density_norm": 32,
-      "eca_kernel_size": 3,
       "intensity_scale": 1,
-      "name": "pillar_rich_eca",
+      "name": "pillar_rich_gate",
       "out_channels": 32,
       "version": 1
     },

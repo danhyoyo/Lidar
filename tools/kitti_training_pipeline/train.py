@@ -770,7 +770,7 @@ def main(argv=None) -> None:
     )
     generator = torch.Generator().manual_seed(seed)
     common_loader = loader_kwargs(args.num_workers, device.type == "cuda")
-    if config["data"].get("bev_encoding", {}).get("name") in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
+    if config["data"].get("bev_encoding", {}).get("name") in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
         common_loader["collate_fn"] = collate_detector_batch
     train_loader = DataLoader(
         train_dataset,

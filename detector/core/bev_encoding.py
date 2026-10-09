@@ -34,7 +34,7 @@ def minimum_channels(name: str) -> int | None:
         return None
     if name == "hist14":
         return 14
-    if name in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
+    if name in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
         return 32
     if name in _RICH_MINIMUM:
         return _RICH_MINIMUM[name]
@@ -53,20 +53,10 @@ def _positive_float(value, name, lower_bound):
 
 def _pillar_pooling_options(encoding):
     name = encoding.get("name")
-    expected = "max_mean_eca" if name == "pillar_rich_eca" else "max"
-    pooling = encoding.get("pooling", expected)
-    if not isinstance(pooling, str) or pooling != expected:
-        if name == "pillar_rich":
-            raise ValueError("pillar_rich uses max pooling; select pillar_rich_eca for max_mean_eca")
-        raise ValueError("pillar_rich_eca pooling must be max_mean_eca")
-    if pooling == "max":
-        if "eca_kernel_size" in encoding:
-            raise ValueError("eca_kernel_size requires pillar_rich_eca")
-        return pooling, None
-    kernel = encoding.get("eca_kernel_size", 3)
-    if type(kernel) is not int or kernel <= 0 or kernel % 2 == 0:
-        raise ValueError("eca_kernel_size must be a positive odd integer")
-    return pooling, kernel
+    pooling = encoding.get("pooling", "max")
+    if not isinstance(pooling, str) or pooling != "max":
+        raise ValueError(f"{name} pooling must be max")
+    return pooling
 
 
 def _options(encoding):
@@ -82,10 +72,10 @@ def _options(encoding):
     if type(version) is not int or version != 1:
         raise ValueError(f"unsupported {name} version: {version!r}; expected integer 1")
     configured = encoding.get("out_channels")
-    if name in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
+    if name in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
         supported = {"name", "version", "out_channels", "backend", "intensity_scale", "density_norm"}
-        if name in {"pillar_rich", "pillar_rich_eca"}:
-            supported.update(("pooling", "eca_kernel_size"))
+        if name in {"pillar_rich", "pillar_rich_gate"}:
+            supported.add("pooling")
             _pillar_pooling_options(encoding)
         unsupported = set(encoding) - supported
         if unsupported:
@@ -100,7 +90,7 @@ def _options(encoding):
             _positive_float(encoding["density_norm"], "density_norm", 1)
         intensity = _positive_float(encoding.get("intensity_scale", 1), "intensity_scale", 0)
         density = (_positive_float(encoding.get("density_norm", 32), "density_norm", 1)
-                   if name in {"pillar_rich", "pillar_rich_eca"} else None)
+                   if name in {"pillar_rich", "pillar_rich_gate"} else None)
         return name, version, 32, density, intensity, "torch"
     elif name == "hist14":
         unsupported = set(encoding) - _HIST14_OPTIONS
@@ -168,15 +158,14 @@ class BEVEncodingSpec:
     intensity_scale: float | None
     backend: str
     pooling: str = "max"
-    eca_kernel_size: int | None = None
 
     @property
     def is_packed(self) -> bool:
-        return self.name in {"pillar32", "pillar_rich", "pillar_rich_eca"}
+        return self.name in {"pillar32", "pillar_rich", "pillar_rich_gate"}
 
     @property
     def is_rich_pillar(self) -> bool:
-        return self.name in {"pillar_rich", "pillar_rich_eca"}
+        return self.name in {"pillar_rich", "pillar_rich_gate"}
 
     @property
     def output_shape(self) -> tuple[int, int, int]:
@@ -216,13 +205,16 @@ class BEVEncodingSpec:
                 }, dict(self.geometry)).semantic_metadata()
                 result["fusion"] = {"operation": "concat_before_scatter", "rich8_channels": [0, 8],
                                     "learned_channels": [8, 32], "rich8_cast": "pooled_dtype"}
-                if self.pooling != "max":
+                if self.name == "pillar_rich_gate":
                     result["learned_encoder"].update({
-                        "pooling": self.pooling, "mean_accumulation": "float32",
-                        "gate": {"type": "eca_max_mean_mix", "kernel_size": self.eca_kernel_size,
-                                 "bias": False, "descriptor": "learned_mean", "scope": "per_pillar",
-                                 "precision": "float32", "initial_alpha": 0.5,
-                                 "fusion": "alpha * max + (1 - alpha) * mean"},
+                        "gate": {"type": "rich_conditioned_channel_gate",
+                                 "descriptor": "concat(learned_max24, rich8)",
+                                 "architecture": "linear_relu_linear", "input_channels": 32,
+                                 "hidden_channels": 4, "output_channels": 24, "bias": True,
+                                 "scope": "per_occupied_pillar", "activation": "2 * sigmoid",
+                                 "precision": {"mlp": "model_autocast", "gate_and_scaling": "float32"},
+                                 "initial_scale": 1, "last_linear_init": "zero",
+                                 "fusion": "max * gate", "rich8_passthrough": True},
                     })
             return result
         histogram = self.name == "hist14"
@@ -273,7 +265,7 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
     elif name == "pillar32":
         names = tuple(f"learned_feature_{index}" for index in range(32))
         edges = (geom["z_min"], geom["z_max"])
-    elif name in {"pillar_rich", "pillar_rich_eca"}:
+    elif name in {"pillar_rich", "pillar_rich_gate"}:
         names = _RICH_CHANNELS[:8] + tuple(f"learned_feature_{index}" for index in range(24))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
@@ -283,10 +275,10 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
                       for index in range(channels))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
-    pooling, kernel = (_pillar_pooling_options(encoding)
-                       if name in {"pillar_rich", "pillar_rich_eca"} else ("max", None))
+    pooling = (_pillar_pooling_options(encoding)
+               if name in {"pillar_rich", "pillar_rich_gate"} else "max")
     return BEVEncodingSpec(name, version, channels, names, normalized, grid, edges,
-                           density, intensity, backend, pooling, kernel)
+                           density, intensity, backend, pooling)
 
 
 def resolve_input_channels(encoding=None, geometry=None, *, default_channels=35) -> int:
