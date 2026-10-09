@@ -23,6 +23,11 @@ class PillarEncoder(nn.Module):
         self.learned_channels = 24 if self.name == "pillar_rich" else self.channels
         self.linear = nn.Linear(10, self.learned_channels, bias=False)
         self.norm = nn.BatchNorm1d(self.learned_channels, eps=1e-3, momentum=.01)
+        self.pooling = schema.pooling
+        if self.pooling == "max_mean_eca":
+            self.eca = nn.Conv1d(1, 1, schema.eca_kernel_size,
+                                 padding=schema.eca_kernel_size // 2, bias=False)
+            nn.init.zeros_(self.eca.weight)
 
     def forward(self, packed):
         if not isinstance(packed, Mapping):
@@ -52,9 +57,11 @@ class PillarEncoder(nn.Module):
             return features.new_zeros((batch_size, self.channels, self.height, self.width)) + zero
         if not len(coords):
             raise ValueError("nonempty points require occupied pillar coordinates")
-        if (torch.any(indices < 0) or torch.any(indices >= len(coords)) or
-                torch.any(coords < 0) or torch.any(coords[:, 0] >= batch_size) or
-                torch.any(coords[:, 1] >= self.height) or torch.any(coords[:, 2] >= self.width)):
+        # A single device predicate avoids five host synchronizations on CUDA.
+        invalid_indices = ((indices < 0) | (indices >= len(coords))).any()
+        invalid_coords = ((coords < 0).any() | (coords[:, 0] >= batch_size).any() |
+                          (coords[:, 1] >= self.height).any() | (coords[:, 2] >= self.width).any())
+        if invalid_indices | invalid_coords:
             raise ValueError("pillar indices or coordinates are outside the batch/grid")
         embedded = self.linear(features)
         if self.training and len(features) == 1:
@@ -66,9 +73,29 @@ class PillarEncoder(nn.Module):
         pooled = embedded.new_zeros((len(coords), self.learned_channels))
         pooled.scatter_reduce_(0, indices[:, None].expand_as(embedded), embedded,
                                reduce="amax", include_self=True)
+        if self.pooling == "max_mean_eca":
+            # Keep summation and the tiny gate FP32 under BF16/FP16 autocast.
+            # Process occupied pillars only; do not materialize a mean BEV.
+            with torch.autocast(device_type=embedded.device.type, enabled=False):
+                means = embedded.new_zeros((len(coords), self.learned_channels), dtype=torch.float32)
+                means.index_add_(0, indices, embedded.float())
+                counts = torch.bincount(indices, minlength=len(coords)).clamp_min(1)
+                means = means / counts[:, None]
+                # The exact short channel convolution as shifted addcmul:
+                # avoids a Conv1d workspace for K tiny, one-channel sequences.
+                kernel = self.eca.kernel_size[0]
+                padded = F.pad(means, (kernel // 2, kernel // 2)) if kernel > 1 else means
+                weights = self.eca.weight.float().flatten()
+                logits = padded[:, :self.learned_channels] * weights[0]
+                for offset in range(1, kernel):
+                    logits = torch.addcmul(logits, padded[:, offset:offset + self.learned_channels],
+                                          weights[offset])
+                alpha = logits.sigmoid()
+                pooled = torch.lerp(means, pooled.float(), alpha).to(embedded.dtype)
         if self.name == "pillar_rich":
             pooled = torch.cat((rich.to(pooled.dtype), pooled), dim=1)
-        locations = (coords[:, 0] * self.height + coords[:, 1]) * self.width + coords[:, 2]
-        dense = pooled.new_zeros((batch_size * self.height * self.width, self.channels))
-        dense.index_copy_(0, locations, pooled)
-        return dense.view(batch_size, self.height, self.width, self.channels).permute(0, 3, 1, 2).contiguous()
+        # Scatter into the final layout, avoiding a second full BEV allocation
+        # and the NHWC -> NCHW contiguous copy (68.75 MiB/frame at KITTI FP32).
+        dense = pooled.new_zeros((batch_size, self.channels, self.height * self.width))
+        dense[coords[:, 0], :, coords[:, 1] * self.width + coords[:, 2]] = pooled
+        return dense.view(batch_size, self.channels, self.height, self.width)

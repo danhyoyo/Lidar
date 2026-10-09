@@ -3,6 +3,131 @@
 `pillar32` và `pillar_rich` là encoder bổ sung; `configs/config.json` vẫn mặc định rich8.
 Đây là phép thử biểu diễn đầu vào, không phải triển khai toàn bộ detector PointPillars.
 
+## pillar_rich max–mean + ECA theo pillar
+
+Biến thể mới giữ nguyên rich8 8 kênh và learned24, cùng BEV **32 kênh**:
+
+```text
+Point features → Linear(10,24) → BN → ReLU
+                       ├─ max theo pillar → m [K,24] ────────┐
+                       └─ mean FP32       → μ [K,24] ────────┤
+                                           └─ ECA → α ─────┤
+                                       α*m + (1−α)*μ [K,24]
+                                                 ↓ concat rich8
+                                             scatter NCHW
+```
+
+`α = sigmoid(Conv1d_k(μ))`, với kernel mặc định 3, không bias. Gate thay đổi
+theo từng occupied pillar và tương tác cục bộ theo chiều kênh. Đây là gate trộn
+max–mean dùng cơ chế kiểu ECA, khác ECA gốc dùng global spatial average trên BEV.
+Không dùng attention giữa các điểm. Gate chỉ tác động learned24, giữ nguyên rich8.
+
+Nhánh learned có **291 tham số** (288 embedding/BN +3 kernel); toàn detector
+comparison preset có **655.516**. Kernel khởi tạo zero nên α ban đầu là 0,5.
+Mean, gate và phép trộn tính FP32 dưới autocast; output cast về dtype embedding.
+Một điểm có max=mean; frame rỗng giữ backward connection tới mọi tham số.
+Mọi điểm ROI hợp lệ vẫn được giữ, không sampling/cap/padding.
+
+Để giảm chi phí, channel convolution ngắn được tính bằng shifted `addcmul`
+(cùng cross-correlation và gradients như Conv1D), trộn bằng `lerp`, không tạo
+dense mean BEV. Encoder scatter trực tiếp vào NCHW thay vì NHWC rồi copy toàn
+BEV; bounds validation gộp thành một device predicate. Đây là tối ưu thực thi,
+không phải bằng chứng tốc độ GPU gần rich8.
+
+### Chọn trong notebook / CLI
+
+```python
+PRESET = "ENCODER_PILLAR_RICH_MAX_MEAN_ECA"
+AUGMENTATION = "standard"
+```
+
+Nếu giữ backbone/head/loss custom, chọn:
+
+```python
+PRESET = "custom"
+BEV_ENCODING = "pillar_rich"
+NOTEBOOK_OVERRIDES = {
+    "data": {"bev_encoding": {
+        "pooling": "max_mean_eca", "eca_kernel_size": 3
+    }}
+}
+```
+
+Gộp phần trên vào `NOTEBOOK_OVERRIDES` hiện có nếu bạn đã đặt các override khác.
+Resolver hỗ trợ notebook cũ trả `out_channels=None`, tự điền 32 và backend torch.
+Biến thể mới có encoding identity và run-name token `pool_max_mean_eca_k3` riêng;
+phải train run mới, không resume checkpoint max-only vào biến thể này.
+`pillar_rich` không khai báo `pooling` vẫn là **max-only**, giữ identity và state
+keys lịch sử. Không bật `local_attention="eca"` nếu mục tiêu là ablation encoder:
+flag đó đặt attention ở backbone stride4.
+
+```bash
+python3 tools/kitti_training_pipeline/train.py \
+  --config configs/experiments/encoders/pillar_rich_max_mean_eca.json \
+  --detector-root detector --output-root artifacts/kitti \
+  --run-name encoder-pillar-rich-max-mean-eca-s42 --seed 42
+```
+
+Config mới giữ cùng recipe với `pillar_rich.json`, gồm 50 epoch, AP mỗi epoch,
+batch train16/val32. Khi so với archive đã chạy AP mỗi10 epoch/val16, cần override
+cùng AP interval và val batch cho các comparator, hoặc chạy lại cùng recipe.
+
+### Đo tốc độ thay vì suy ra từ số tham số
+
+```bash
+python3 tools/benchmarks/benchmark_pillar_encoders.py \
+  --pointcloud /path/to/KITTI/training/velodyne/000000.bin \
+  --device cuda --precision fp32 --warmup 10 --iterations 50 \
+  --output artifacts/pillar-speed/fp32.json
+
+python3 tools/benchmarks/benchmark_pillar_encoders.py \
+  --pointcloud /path/to/KITTI/training/velodyne/000000.bin \
+  --device cuda --precision bf16 --warmup 10 --iterations 50 \
+  --output artifacts/pillar-speed/bf16.json
+```
+
+Benchmark giữ cùng backbone/head từ config, so rich8, pillar max và pillar
+max–mean ECA ở batch1. Ghi hardware/precision, input hash, mean/p50/p95,
+preprocess/contiguous transfer/model, model-only và ratio so rich8. Dùng random
+weights và lặp một point cloud: **không đo AP, không tính I/O/decode/NMS và
+không thay thế đánh giá checkpoint**. Đo nhiều scene có mật độ điểm khác nhau,
+chạy nhiều lần trong cùng runtime; so FP32 với FP32 và BF16 với BF16. Có thể dùng
+`--synthetic --points 100000 --device cpu` để kiểm tra công cụ, nhưng điểm uniform
+không đại diện mật độ/số điểm trên pillar của KITTI.
+
+Dense BEV vẫn 32 kênh nên stem/activation đắt hơn rich8. BF16 có thể giúp trên
+GPU hỗ trợ, nhưng cần đo ratio thực tế và AP với cùng precision. Nếu giữ yêu cầu
+32 kênh/full point retention, không thể cam kết model-only latency bằng rich8;
+pipeline tổng cũng phụ thuộc CPU prep, transfer và NMS. Gate thêm3 tham số không
+có nghĩa segment mean hoặc bộ nhớ FP32 có chi phí bằng zero.
+
+### Số đo ban đầu trên RTX 4050
+
+Đo ngày 2026-10-09 trên **NVIDIA GeForce RTX 4050 Laptop GPU**, PyTorch 2.11.0,
+batch1, FP32, một CPU thread, warmup10 và 50 lượt/frame. Cùng comparison
+backbone/head, random weights, KITTI training frames 000000/000001/000010;
+đo từng frame tuần tự. Đơn vị ms, giá trị mean:
+
+| Frame | rich8 forward | pillar max forward | max–mean ECA forward | rich8 prep+transfer+forward | max–mean ECA prep+transfer+forward |
+|---|---:|---:|---:|---:|---:|
+| 000000 | 6.783 | 7.830 | 7.998 | 16.104 | 17.682 |
+| 000001 | 6.801 | 7.852 | 8.046 | 16.235 | 17.884 |
+| 000010 | 6.730 | 7.773 | 7.962 | 15.675 | 16.469 |
+
+Trong các lượt này, variant mới có forward latency **cao hơn rich8 khoảng
+18%**, prep+transfer+forward cao hơn **5–10%**. Phần mean/gate thêm khoảng
+**0,17–0,19 ms** vào forward so với pillar max. BF16 cùng frame000000:
+rich8 forward5,882 ms, variant6,777 ms; prep+transfer+forward14,748 và16,496 ms.
+Đây là số đo ban đầu trên ba frame, không có I/O/decode/NMS; chưa chứng minh
+latency toàn dataset, tốc độ train, AP hoặc tốc độ trên L4. Báo cáo JSON với
+input/config hashes, p50/p95 và metadata nằm trong
+`artifacts/pillar_max_mean_eca/rtx4050_kitti_*_*.json` (không đưa vào git).
+
+```bash
+python3 -m pytest tests/test_pillar_max_mean_eca.py \
+  tests/test_pillar_encoder.py tests/test_pillar_rich_encoder.py -q
+```
+
 ## Kiến trúc
 
 ```text

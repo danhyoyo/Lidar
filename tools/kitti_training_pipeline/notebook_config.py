@@ -478,6 +478,14 @@ PRESET_CONFIGS = {
         "data": {"bev_encoding": {"name": "pillar_rich", "version": 1, "backend": "torch",
                                   "out_channels": 32, "intensity_scale": 1, "density_norm": 32}},
     },
+    "ENCODER_PILLAR_RICH_MAX_MEAN_ECA": {
+        "experiment": {"name": "encoder_comparison"},
+        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
+        "loss": {"name": "baseline", "use_iou": False},
+        "data": {"bev_encoding": {"name": "pillar_rich", "version": 1, "backend": "torch",
+                                  "out_channels": 32, "intensity_scale": 1, "density_norm": 32,
+                                  "pooling": "max_mean_eca", "eca_kernel_size": 3}},
+    },
     "TRUC_A_SOTA": {
         "model": {
             "backbone": "mobilepixornext",

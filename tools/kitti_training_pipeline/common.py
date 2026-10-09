@@ -318,6 +318,11 @@ def generate_run_name(
     parts = [backbone, augmentation, loss_name, bev_encoder, iou]
 
     extras: list[str] = []
+    if bev_name == "pillar_rich" and bev_cfg.get("pooling", "max") != "max":
+        # Distinguish pooling even when the default backbone has no semantic
+        # suffix. Resolve the schema to validate and normalize implicit defaults.
+        schema = bev_encoding_spec(config)
+        extras.append(f"pool_{schema.pooling}_k{schema.eca_kernel_size}")
     neck_type = model_cfg.get("neck_type")
     if neck_type in ("rc_sgfpn", "rc_bisgfpn"):
         extras.append(neck_type)

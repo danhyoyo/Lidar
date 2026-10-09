@@ -1,0 +1,133 @@
+{
+  "augmentation": {
+    "mode": "one_of",
+    "p": 0.5,
+    "rotation": {
+      "limit_angle": 20,
+      "p": 1,
+      "use": true
+    },
+    "scaling": {
+      "p": 1,
+      "range": [
+        0.95,
+        1.05
+      ],
+      "use": true
+    },
+    "translation": {
+      "p": 1,
+      "scale": 0.4,
+      "scale_z": 0.4,
+      "use": true
+    }
+  },
+  "data": {
+    "bev_encoding": {
+      "backend": "torch",
+      "density_norm": 32,
+      "eca_kernel_size": 3,
+      "intensity_scale": 1,
+      "name": "pillar_rich",
+      "out_channels": 32,
+      "pooling": "max_mean_eca",
+      "version": 1
+    },
+    "gaussian_overlap": 0.1,
+    "kitti": {
+      "geometry": {
+        "x_max": 70.4,
+        "x_min": 0,
+        "x_res": 0.1,
+        "y_max": 40,
+        "y_min": -40,
+        "y_res": 0.1,
+        "z_max": 1,
+        "z_min": -2.5,
+        "z_res": 0.1
+      },
+      "location": "data/kitti/processed",
+      "objects": {
+        "Car": 0,
+        "Cyclist": 2,
+        "Pedestrian": 1
+      },
+      "peak_mode": "per_class"
+    },
+    "min_radius": 4,
+    "num_classes": 3,
+    "out_size_factor": 4,
+    "regression_assignment": "nearest_center"
+  },
+  "date": "reproducible",
+  "device": "cuda",
+  "evaluation": {
+    "kitti_root": "data/kitti/raw",
+    "max_detections": 500,
+    "nms_threshold": 0.1,
+    "score_threshold": 0.05
+  },
+  "experiment": {
+    "name": "encoder_comparison"
+  },
+  "loss": {
+    "name": "baseline",
+    "use_iou": false
+  },
+  "model": {
+    "backbone": "mobilepixornext",
+    "backbone_out_dim": 16,
+    "c4_attention": "none",
+    "c4_attention_qk_norm": "none",
+    "c4_attention_scales": [],
+    "c4_context": "none",
+    "cls_encoding": "gaussian",
+    "deploy": false,
+    "detail_path": false,
+    "expansion": 2.5,
+    "head_mode": "legacy_single",
+    "header_act": "silu",
+    "header_use_bn": true,
+    "header_use_iou": false,
+    "local_attention": "none",
+    "neck_fusion_channels": 24,
+    "neck_type": "scale_gated_fpn",
+    "scale_gated_fpn": false,
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "use_reparam": false
+  },
+  "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+  "seed": 42,
+  "train": {
+    "accumulation_steps": 1,
+    "checkpoint_selection": {
+      "ap_every": 1,
+      "metric_mode": "auto",
+      "primary": "ap"
+    },
+    "compile_model": false,
+    "data": "splits/kitti/train.txt",
+    "epochs": 50,
+    "grad_clip_norm": 10.0,
+    "learning_rate": 0.0007,
+    "min_lr": 1e-06,
+    "num_workers": 6,
+    "optimizer": "adamw",
+    "physical_batch_size": 16,
+    "precision": "bf16",
+    "save_every": 5,
+    "target_backend": "numba",
+    "warmup_epochs": 4,
+    "weight_decay": 0.001
+  },
+  "val": {
+    "data": "splits/kitti/val.txt",
+    "physical_batch_size": 32,
+    "val_every": 1
+  },
+  "ver": 1
+}

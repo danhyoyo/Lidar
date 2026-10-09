@@ -51,6 +51,20 @@ def _positive_float(value, name, lower_bound):
     return result
 
 
+def _pillar_pooling_options(encoding):
+    pooling = encoding.get("pooling", "max")
+    if not isinstance(pooling, str) or pooling not in ("max", "max_mean_eca"):
+        raise ValueError("pillar_rich pooling must be max or max_mean_eca")
+    if pooling == "max":
+        if "eca_kernel_size" in encoding:
+            raise ValueError("eca_kernel_size requires max_mean_eca pooling")
+        return pooling, None
+    kernel = encoding.get("eca_kernel_size", 3)
+    if type(kernel) is not int or kernel <= 0 or kernel % 2 == 0:
+        raise ValueError("eca_kernel_size must be a positive odd integer")
+    return pooling, kernel
+
+
 def _options(encoding):
     if encoding is None:
         encoding = {}
@@ -65,8 +79,11 @@ def _options(encoding):
         raise ValueError(f"unsupported {name} version: {version!r}; expected integer 1")
     configured = encoding.get("out_channels")
     if name in {"pillar32", "pillar_rich"}:
-        unsupported = set(encoding) - {"name", "version", "out_channels", "backend",
-                                       "intensity_scale", "density_norm"}
+        supported = {"name", "version", "out_channels", "backend", "intensity_scale", "density_norm"}
+        if name == "pillar_rich":
+            supported.update(("pooling", "eca_kernel_size"))
+            _pillar_pooling_options(encoding)
+        unsupported = set(encoding) - supported
         if unsupported:
             raise ValueError(f"unsupported {name} options: {sorted(unsupported, key=str)}")
         if "out_channels" in encoding and (type(configured) is not int or configured != 32):
@@ -146,6 +163,8 @@ class BEVEncodingSpec:
     density_norm: float | None
     intensity_scale: float | None
     backend: str
+    pooling: str = "max"
+    eca_kernel_size: int | None = None
 
     @property
     def is_packed(self) -> bool:
@@ -189,6 +208,14 @@ class BEVEncodingSpec:
                 }, dict(self.geometry)).semantic_metadata()
                 result["fusion"] = {"operation": "concat_before_scatter", "rich8_channels": [0, 8],
                                     "learned_channels": [8, 32], "rich8_cast": "pooled_dtype"}
+                if self.pooling != "max":
+                    result["learned_encoder"].update({
+                        "pooling": self.pooling, "mean_accumulation": "float32",
+                        "gate": {"type": "eca_max_mean_mix", "kernel_size": self.eca_kernel_size,
+                                 "bias": False, "descriptor": "learned_mean", "scope": "per_pillar",
+                                 "precision": "float32", "initial_alpha": 0.5,
+                                 "fusion": "alpha * max + (1 - alpha) * mean"},
+                    })
             return result
         histogram = self.name == "hist14"
         binary = self.name == "binary_slices"
@@ -248,8 +275,9 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
                       for index in range(channels))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
+    pooling, kernel = _pillar_pooling_options(encoding) if name == "pillar_rich" else ("max", None)
     return BEVEncodingSpec(name, version, channels, names, normalized, grid, edges,
-                           density, intensity, backend)
+                           density, intensity, backend, pooling, kernel)
 
 
 def resolve_input_channels(encoding=None, geometry=None, *, default_channels=35) -> int:
