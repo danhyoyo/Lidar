@@ -28,9 +28,8 @@
       "density_norm": 32,
       "eca_kernel_size": 3,
       "intensity_scale": 1,
-      "name": "pillar_rich",
+      "name": "pillar_rich_eca",
       "out_channels": 32,
-      "pooling": "max_mean_eca",
       "version": 1
     },
     "gaussian_overlap": 0.1,

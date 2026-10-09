@@ -30,7 +30,7 @@ def summary(values):
 
 
 def prepare_input(points, geometry, encoding):
-    if encoding["name"] == "pillar_rich":
+    if encoding["name"] in {"pillar_rich", "pillar_rich_eca"}:
         arrays = prepare_pillars(points, geometry, encoding)
         return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value
                 for key, value in arrays.items()}
@@ -55,11 +55,10 @@ def benchmark_models(config, points, *, device="cuda", precision="fp32", warmup=
     geometry = config["data"]["kitti"]["geometry"]
     encodings = {
         "rich8": {"name": "rich8", "density_norm": 32, "intensity_scale": 1},
-        "pillar_rich_max": {"name": "pillar_rich", "out_channels": 32, "backend": "torch",
-                            "density_norm": 32, "intensity_scale": 1},
-        "pillar_rich_max_mean_eca": {"name": "pillar_rich", "out_channels": 32, "backend": "torch",
-                                     "density_norm": 32, "intensity_scale": 1,
-                                     "pooling": "max_mean_eca", "eca_kernel_size": 3},
+        "pillar_rich": {"name": "pillar_rich", "out_channels": 32, "backend": "torch",
+                        "density_norm": 32, "intensity_scale": 1},
+        "pillar_rich_eca": {"name": "pillar_rich_eca", "out_channels": 32, "backend": "torch",
+                            "density_norm": 32, "intensity_scale": 1, "eca_kernel_size": 3},
     }
     report = {
         "scope": "Batch-one random-weight eval: CPU preparation + contiguous input/H2D + complete detector forward. Excludes file I/O, decode/NMS, AP, training and ROS.",

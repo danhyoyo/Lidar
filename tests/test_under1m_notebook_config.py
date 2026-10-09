@@ -26,7 +26,7 @@ PRESETS = {
 
 
 @pytest.mark.parametrize("width", [None, 32])
-@pytest.mark.parametrize("encoder", ["pillar32", "pillar_rich"])
+@pytest.mark.parametrize("encoder", ["pillar32", "pillar_rich", "pillar_rich_eca"])
 def test_old_notebook_pillar_lookup_resolves_fixed_width_without_mutation(width, encoder):
     overrides = {"data": {"bev_encoding": {
         "name": encoder, "out_channels": width,
@@ -45,7 +45,7 @@ def test_old_notebook_pillar_lookup_resolves_fixed_width_without_mutation(width,
     {"out_channels": 8}, {"out_channels": True}, {"out_channels": 32.0},
     {"out_channels": 32, "backend": "numpy"},
 ])
-@pytest.mark.parametrize("encoder", ["pillar32", "pillar_rich"])
+@pytest.mark.parametrize("encoder", ["pillar32", "pillar_rich", "pillar_rich_eca"])
 def test_notebook_pillar_compatibility_keeps_explicit_invalid_options_rejected(options, encoder):
     with pytest.raises(ValueError, match=encoder):
         notebook.resolve_notebook_config(ROOT, preset="custom", augmentation="config",

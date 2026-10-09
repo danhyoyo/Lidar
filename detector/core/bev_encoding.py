@@ -34,7 +34,7 @@ def minimum_channels(name: str) -> int | None:
         return None
     if name == "hist14":
         return 14
-    if name in {"pillar32", "pillar_rich"}:
+    if name in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
         return 32
     if name in _RICH_MINIMUM:
         return _RICH_MINIMUM[name]
@@ -52,12 +52,16 @@ def _positive_float(value, name, lower_bound):
 
 
 def _pillar_pooling_options(encoding):
-    pooling = encoding.get("pooling", "max")
-    if not isinstance(pooling, str) or pooling not in ("max", "max_mean_eca"):
-        raise ValueError("pillar_rich pooling must be max or max_mean_eca")
+    name = encoding.get("name")
+    expected = "max_mean_eca" if name == "pillar_rich_eca" else "max"
+    pooling = encoding.get("pooling", expected)
+    if not isinstance(pooling, str) or pooling != expected:
+        if name == "pillar_rich":
+            raise ValueError("pillar_rich uses max pooling; select pillar_rich_eca for max_mean_eca")
+        raise ValueError("pillar_rich_eca pooling must be max_mean_eca")
     if pooling == "max":
         if "eca_kernel_size" in encoding:
-            raise ValueError("eca_kernel_size requires max_mean_eca pooling")
+            raise ValueError("eca_kernel_size requires pillar_rich_eca")
         return pooling, None
     kernel = encoding.get("eca_kernel_size", 3)
     if type(kernel) is not int or kernel <= 0 or kernel % 2 == 0:
@@ -78,9 +82,9 @@ def _options(encoding):
     if type(version) is not int or version != 1:
         raise ValueError(f"unsupported {name} version: {version!r}; expected integer 1")
     configured = encoding.get("out_channels")
-    if name in {"pillar32", "pillar_rich"}:
+    if name in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
         supported = {"name", "version", "out_channels", "backend", "intensity_scale", "density_norm"}
-        if name == "pillar_rich":
+        if name in {"pillar_rich", "pillar_rich_eca"}:
             supported.update(("pooling", "eca_kernel_size"))
             _pillar_pooling_options(encoding)
         unsupported = set(encoding) - supported
@@ -91,12 +95,12 @@ def _options(encoding):
         if encoding.get("backend", "torch") != "torch":
             raise ValueError(f"{name} backend must be torch")
         # Legacy rich recipes may retain density_norm when deep-merged.
-        # pillar32 ignores it; pillar_rich uses it for its handcrafted branch.
+        # pillar32 ignores it; rich pillar variants use it for rich8 statistics.
         if "density_norm" in encoding:
             _positive_float(encoding["density_norm"], "density_norm", 1)
         intensity = _positive_float(encoding.get("intensity_scale", 1), "intensity_scale", 0)
         density = (_positive_float(encoding.get("density_norm", 32), "density_norm", 1)
-                   if name == "pillar_rich" else None)
+                   if name in {"pillar_rich", "pillar_rich_eca"} else None)
         return name, version, 32, density, intensity, "torch"
     elif name == "hist14":
         unsupported = set(encoding) - _HIST14_OPTIONS
@@ -168,7 +172,11 @@ class BEVEncodingSpec:
 
     @property
     def is_packed(self) -> bool:
-        return self.name in {"pillar32", "pillar_rich"}
+        return self.name in {"pillar32", "pillar_rich", "pillar_rich_eca"}
+
+    @property
+    def is_rich_pillar(self) -> bool:
+        return self.name in {"pillar_rich", "pillar_rich_eca"}
 
     @property
     def output_shape(self) -> tuple[int, int, int]:
@@ -200,7 +208,7 @@ class BEVEncodingSpec:
                     "singleton_bn": "running_statistics", "empty_bev": "zero",
                 },
             }
-            if self.name == "pillar_rich":
+            if self.is_rich_pillar:
                 result["learned_encoder"]["out_channels"] = 24
                 result["handcrafted_encoder"] = resolve_bev_encoding({
                     "name": "rich8", "density_norm": self.density_norm,
@@ -265,7 +273,7 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
     elif name == "pillar32":
         names = tuple(f"learned_feature_{index}" for index in range(32))
         edges = (geom["z_min"], geom["z_max"])
-    elif name == "pillar_rich":
+    elif name in {"pillar_rich", "pillar_rich_eca"}:
         names = _RICH_CHANNELS[:8] + tuple(f"learned_feature_{index}" for index in range(24))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
@@ -275,7 +283,8 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
                       for index in range(channels))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
-    pooling, kernel = _pillar_pooling_options(encoding) if name == "pillar_rich" else ("max", None)
+    pooling, kernel = (_pillar_pooling_options(encoding)
+                       if name in {"pillar_rich", "pillar_rich_eca"} else ("max", None))
     return BEVEncodingSpec(name, version, channels, names, normalized, grid, edges,
                            density, intensity, backend, pooling, kernel)
 

@@ -10,7 +10,7 @@ from core.bev_encoding import resolve_bev_encoding
 
 
 class PillarEncoder(nn.Module):
-    """Point MLP, max pooling, optional rich8 fusion and one dense BEV scatter."""
+    """Point MLP, optional ECA max/mean mixing, rich8 fusion and BEV scatter."""
 
     def __init__(self, geometry, encoding=None):
         super().__init__()
@@ -20,7 +20,8 @@ class PillarEncoder(nn.Module):
         self.name = schema.name
         self.width, self.height = schema.grid_shape[:2]
         self.channels = schema.channels
-        self.learned_channels = 24 if self.name == "pillar_rich" else self.channels
+        self.has_rich = schema.is_rich_pillar
+        self.learned_channels = 24 if self.has_rich else self.channels
         self.linear = nn.Linear(10, self.learned_channels, bias=False)
         self.norm = nn.BatchNorm1d(self.learned_channels, eps=1e-3, momentum=.01)
         self.pooling = schema.pooling
@@ -45,10 +46,10 @@ class PillarEncoder(nn.Module):
         if indices.shape != (len(features),) or indices.dtype != torch.int64:
             raise ValueError("pillar_indices must be int64 [N]")
         rich = packed.get("rich_features")
-        if self.name == "pillar_rich" and (
+        if self.has_rich and (
                 not torch.is_tensor(rich) or rich.shape != (len(coords), 8) or
                 not rich.is_floating_point() or rich.device != features.device):
-            raise ValueError("pillar_rich rich_features must be floating [K, 8] on the point device")
+            raise ValueError(f"{self.name} rich_features must be floating [K, 8] on the point device")
         if not len(features):
             if len(coords):
                 raise ValueError("empty point input must have empty pillar coordinates")
@@ -92,7 +93,7 @@ class PillarEncoder(nn.Module):
                                           weights[offset])
                 alpha = logits.sigmoid()
                 pooled = torch.lerp(means, pooled.float(), alpha).to(embedded.dtype)
-        if self.name == "pillar_rich":
+        if self.has_rich:
             pooled = torch.cat((rich.to(pooled.dtype), pooled), dim=1)
         # Scatter into the final layout, avoiding a second full BEV allocation
         # and the NHWC -> NCHW contiguous copy (68.75 MiB/frame at KITTI FP32).

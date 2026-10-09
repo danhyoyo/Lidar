@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "detector"),
                str(ROOT / "detector/core/datasets"),
                str(ROOT / "tools/kitti_training_pipeline")]
-from core.bev_encoding import resolve_bev_encoding
+from core.bev_encoding import minimum_channels, resolve_bev_encoding, resolve_input_channels
 from core.datasets.dataset import collate_detector_batch
 from core.datasets.utils_1.pillar_backend import prepare_pillars
 from core.models.encoders.pillar import PillarEncoder
@@ -22,7 +22,7 @@ from core.models.encoders.pillar import PillarEncoder
 GEOMETRY = {"x_min": 0, "x_max": 16, "x_res": .5,
             "y_min": -8, "y_max": 8, "y_res": .5,
             "z_min": -2.5, "z_max": 1, "z_res": .1}
-OPTIONS = {"name": "pillar_rich", "pooling": "max_mean_eca", "eca_kernel_size": 3}
+OPTIONS = {"name": "pillar_rich_eca", "eca_kernel_size": 3}
 CLOUD = [[.1, .1, -.5, .2], [.4, .1, .5, .8], [1.1, -.1, -.2, .6]]
 
 
@@ -55,12 +55,16 @@ def test_pooling_identity_keeps_historical_default_and_describes_local_gate():
     old = resolve_bev_encoding({"name": "pillar_rich"}, GEOMETRY)
     explicit = resolve_bev_encoding({"name": "pillar_rich", "pooling": "max"}, GEOMETRY)
     assert old.semantic_hash == explicit.semantic_hash
+    assert old.semantic_hash == "e05ae9866d3e51a4ead83821ea5a1144e6f240af860071e08e50655cc7814d60"
     assert old.semantic_metadata()["learned_encoder"]["pooling"] == "max"
     new = resolve_bev_encoding(OPTIONS, GEOMETRY)
     assert new.is_packed and new.channels == 32
+    assert new.name == "pillar_rich_eca" and new.pooling == "max_mean_eca"
+    assert minimum_channels(new.name) == resolve_input_channels({"name": new.name}) == 32
     assert new.semantic_hash != old.semantic_hash
     assert new.semantic_metadata()["learned_encoder"]["pooling"] == "max_mean_eca"
-    assert new.semantic_hash == resolve_bev_encoding({"name": "pillar_rich", "pooling": "max_mean_eca"}, GEOMETRY).semantic_hash
+    assert new.semantic_hash == resolve_bev_encoding({"name": "pillar_rich_eca"}, GEOMETRY).semantic_hash
+    assert new.semantic_hash == resolve_bev_encoding({**OPTIONS, "pooling": "max_mean_eca"}, GEOMETRY).semantic_hash
     assert new.semantic_hash != resolve_bev_encoding({**OPTIONS, "eca_kernel_size": 5}, GEOMETRY).semantic_hash
 
 
@@ -73,7 +77,14 @@ def test_pooling_identity_keeps_historical_default_and_describes_local_gate():
 ])
 def test_invalid_pooling_and_gate_options_are_rejected(options):
     with pytest.raises(ValueError):
-        resolve_bev_encoding({"name": "pillar_rich", **options}, GEOMETRY)
+        resolve_bev_encoding({"name": "pillar_rich_eca", **options}, GEOMETRY)
+
+
+def test_pillar_rich_cannot_silently_enable_eca_under_the_baseline_name():
+    with pytest.raises(ValueError, match="pillar_rich_eca"):
+        resolve_bev_encoding({"name": "pillar_rich", "pooling": "max_mean_eca"}, GEOMETRY)
+    with pytest.raises(ValueError, match="eca_kernel_size"):
+        resolve_bev_encoding({"name": "pillar_rich", "eca_kernel_size": 3}, GEOMETRY)
 
 
 def test_pillar32_does_not_silently_accept_hybrid_gate():
@@ -182,9 +193,11 @@ def test_cuda_gate_matches_reference_and_receives_finite_gradients(precision):
 def test_preset_config_model_counts_and_checkpoint_identity_are_consistent():
     from common import build_model, checkpoint_identity, generate_run_name, validate_evaluation_checkpoint
     from notebook_config import resolve_notebook_config
-    new = resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH_MAX_MEAN_ECA", augmentation="config")
-    saved = json.loads((ROOT / "configs/experiments/encoders/pillar_rich_max_mean_eca.json").read_text())
+    new = resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH_ECA", augmentation="config")
+    saved = json.loads((ROOT / "configs/experiments/encoders/pillar_rich_eca.json").read_text())
     assert new == saved
+    assert new["data"]["bev_encoding"]["name"] == "pillar_rich_eca"
+    assert resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH_MAX_MEAN_ECA", augmentation="config") == new
     model = build_model(new)
     assert sum(p.numel() for p in model.parameters()) == 655516
     old = resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH", augmentation="config")
@@ -204,6 +217,8 @@ def test_pooling_variant_names_stay_unique_with_default_backbone():
     config["data"]["bev_encoding"] = OPTIONS.copy()
     assert generate_run_name(config) != old_name
     first = generate_run_name(config)
+    assert "-pillar_rich_eca-" in first
+    assert "legacy35" not in first
     config["data"]["bev_encoding"]["eca_kernel_size"] = 5
     assert generate_run_name(config) != first
 
@@ -233,7 +248,8 @@ def test_random_weight_benchmark_reports_boundaries_and_keeps_config_unchanged()
                               device="cpu", warmup=0, iterations=1)
     assert config == before
     assert "Excludes file I/O, decode/NMS, AP" in report["scope"]
-    assert report["results"]["pillar_rich_max_mean_eca"]["parameter_counts"]["total_detector"] == 655516
+    assert report["results"]["pillar_rich_eca"]["parameter_counts"]["total_detector"] == 655516
+    assert report["results"]["pillar_rich_eca"]["encoding"]["name"] == "pillar_rich_eca"
     assert report["results"]["rich8"]["model_ratio_to_rich8"] == 1
     for result in report["results"].values():
         assert result["model_only"]["samples"] == 1

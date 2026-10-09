@@ -29,7 +29,7 @@ def collate_detector_batch(samples):
     for batch_index, sample in enumerate(samples):
         packed = sample["voxel"]
         if ("rich_features" in packed) != has_rich:
-            raise ValueError("cannot mix pillar32 and pillar_rich inputs in one batch")
+            raise ValueError("cannot mix pillar32 and rich pillar inputs in one batch")
         if has_rich:
             rich_features.append(packed["rich_features"])
         features.append(packed["features"])
@@ -290,7 +290,7 @@ class Dataset(Dataset):
 
 
     def encode_input(self, points, geometry):
-        if self.bev_encoding.get("name") in {"pillar32", "pillar_rich"}:
+        if self.bev_encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
             from .utils_1.pillar_backend import prepare_pillars
             packed = prepare_pillars(points, geometry, self.bev_encoding)
             return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value

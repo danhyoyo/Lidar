@@ -29,7 +29,7 @@ class CustomModel(nn.Module):
         )
 
         self.point_encoder = None
-        if cfg.get("bev_encoding", {}).get("name") in {"pillar32", "pillar_rich"}:
+        if cfg.get("bev_encoding", {}).get("name") in {"pillar32", "pillar_rich", "pillar_rich_eca"}:
             if "geometry" not in cfg:
                 raise ValueError("learned pillar model requires geometry")
             from core.models.encoders.pillar import PillarEncoder

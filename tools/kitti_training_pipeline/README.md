@@ -70,9 +70,12 @@ features into the same 32-channel BEV. Select `BEV_ENCODING="pillar_rich"` with
 the matched comparator. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
 for paired commands, notebook presets, parameter counts and memory conditions.
 For per-pillar max/mean mixing with a mean-conditioned ECA gate, use
-`configs/experiments/encoders/pillar_rich_max_mean_eca.json` or
-`PRESET="ENCODER_PILLAR_RICH_MAX_MEAN_ECA"`. It retains 32 BEV channels and
-adds three kernel weights; max-only checkpoints require a separate run.
+`configs/experiments/encoders/pillar_rich_eca.json` or
+`PRESET="ENCODER_PILLAR_RICH_ECA"`. The encoder name is `pillar_rich_eca`;
+`pillar_rich` remains max-only. Selecting the new name automatically enables
+max–mean ECA pooling. The original long preset spelling remains an alias.
+It retains 32 BEV channels and adds three kernel weights; max-only checkpoints
+require a separate run.
 `tools/benchmarks/benchmark_pillar_encoders.py` compares rich8, max-only and
 max/mean ECA at matched precision with separate preparation/transfer/model
 timings. Its random-weight benchmark excludes decode/NMS and AP; measure

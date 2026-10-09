@@ -28,7 +28,7 @@ def prepare_pillars(points, geometry, encoding=None):
         result = {"features": np.empty((0, 10), dtype=np.float32),
                   "pillar_indices": np.empty(0, dtype=np.int64),
                   "coords": np.empty((0, 3), dtype=np.int64), "batch_size": 1}
-        if schema.name == "pillar_rich":
+        if schema.is_rich_pillar:
             result["rich_features"] = np.empty((0, 8), dtype=np.float32)
         return result
     # Match rich8's float32 floor-division at exact cell boundaries so encoder
@@ -51,7 +51,7 @@ def prepare_pillars(points, geometry, encoding=None):
     result = {"features": np.concatenate((pts, cluster, center), axis=1),
               "pillar_indices": inverse.astype(np.int64), "coords": coords,
               "batch_size": 1}
-    if schema.name == "pillar_rich":
+    if schema.is_rich_pillar:
         # Match the legacy rasterizer on occupied groups, without allocating
         # a separate dense rich8 BEV or applying intensity_scale twice.
         rich = np.zeros((len(occupied), 8), dtype=np.float32)

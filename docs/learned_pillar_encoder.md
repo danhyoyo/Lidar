@@ -1,9 +1,19 @@
-# So sánh rich8, pillar32 và pillar_rich
+# So sánh rich8, pillar32, pillar_rich và pillar_rich_eca
 
-`pillar32` và `pillar_rich` là encoder bổ sung; `configs/config.json` vẫn mặc định rich8.
+`pillar32`, `pillar_rich` và `pillar_rich_eca` là encoder bổ sung; `configs/config.json` vẫn mặc định rich8.
 Đây là phép thử biểu diễn đầu vào, không phải triển khai toàn bộ detector PointPillars.
 
-## pillar_rich max–mean + ECA theo pillar
+## pillar_rich_eca: max–mean + ECA theo pillar
+
+Hai biến thể có tên encoder riêng:
+
+| Encoder | Learned pooling | Preset |
+|---|---|---|
+| `pillar_rich` | max-only | `ENCODER_PILLAR_RICH` |
+| `pillar_rich_eca` | max–mean, gate ECA | `ENCODER_PILLAR_RICH_ECA` |
+
+Chỉ cần chọn `name="pillar_rich_eca"` là bật gate, không cần thêm flag pooling.
+`eca_kernel_size` mặc định 3; có thể khai báo một số nguyên dương lẻ khác.
 
 Biến thể mới giữ nguyên rich8 8 kênh và learned24, cùng BEV **32 kênh**:
 
@@ -37,7 +47,7 @@ không phải bằng chứng tốc độ GPU gần rich8.
 ### Chọn trong notebook / CLI
 
 ```python
-PRESET = "ENCODER_PILLAR_RICH_MAX_MEAN_ECA"
+PRESET = "ENCODER_PILLAR_RICH_ECA"
 AUGMENTATION = "standard"
 ```
 
@@ -45,27 +55,31 @@ Nếu giữ backbone/head/loss custom, chọn:
 
 ```python
 PRESET = "custom"
-BEV_ENCODING = "pillar_rich"
+BEV_ENCODING = "pillar_rich_eca"
 NOTEBOOK_OVERRIDES = {
     "data": {"bev_encoding": {
-        "pooling": "max_mean_eca", "eca_kernel_size": 3
+        "eca_kernel_size": 3
     }}
 }
 ```
 
 Gộp phần trên vào `NOTEBOOK_OVERRIDES` hiện có nếu bạn đã đặt các override khác.
 Resolver hỗ trợ notebook cũ trả `out_channels=None`, tự điền 32 và backend torch.
-Biến thể mới có encoding identity và run-name token `pool_max_mean_eca_k3` riêng;
+Biến thể mới có encoding identity và run-name chứa `pillar_rich_eca` / `eca_k3` riêng;
 phải train run mới, không resume checkpoint max-only vào biến thể này.
-`pillar_rich` không khai báo `pooling` vẫn là **max-only**, giữ identity và state
-keys lịch sử. Không bật `local_attention="eca"` nếu mục tiêu là ablation encoder:
+`pillar_rich` luôn là **max-only**, giữ identity và state keys lịch sử.
+Config cũ ghi `name="pillar_rich", pooling="max_mean_eca"` phải đổi name thành
+`pillar_rich_eca`; không sửa metadata checkpoint để ép resume qua tên encoder.
+Preset dài `ENCODER_PILLAR_RICH_MAX_MEAN_ECA` vẫn là alias của preset mới và
+luôn resolve thành encoder `pillar_rich_eca`.
+Không bật `local_attention="eca"` nếu mục tiêu là ablation encoder:
 flag đó đặt attention ở backbone stride4.
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
-  --config configs/experiments/encoders/pillar_rich_max_mean_eca.json \
+  --config configs/experiments/encoders/pillar_rich_eca.json \
   --detector-root detector --output-root artifacts/kitti \
-  --run-name encoder-pillar-rich-max-mean-eca-s42 --seed 42
+  --run-name encoder-pillar-rich-eca-s42 --seed 42
 ```
 
 Config mới giữ cùng recipe với `pillar_rich.json`, gồm 50 epoch, AP mỗi epoch,
@@ -86,8 +100,8 @@ python3 tools/benchmarks/benchmark_pillar_encoders.py \
   --output artifacts/pillar-speed/bf16.json
 ```
 
-Benchmark giữ cùng backbone/head từ config, so rich8, pillar max và pillar
-max–mean ECA ở batch1. Ghi hardware/precision, input hash, mean/p50/p95,
+Benchmark giữ cùng backbone/head từ config, so `rich8`, `pillar_rich` và
+`pillar_rich_eca` ở batch1. Ghi hardware/precision, input hash, mean/p50/p95,
 preprocess/contiguous transfer/model, model-only và ratio so rich8. Dùng random
 weights và lặp một point cloud: **không đo AP, không tính I/O/decode/NMS và
 không thay thế đánh giá checkpoint**. Đo nhiều scene có mật độ điểm khác nhau,
@@ -245,15 +259,16 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
 
 ## Notebook
 
-Trong notebook chọn `PRESET = "ENCODER_RICH8"`, `"ENCODER_PILLAR32"` hoặc
-`"ENCODER_PILLAR_RICH"`, dùng cùng `AUGMENTATION = "standard"` và các
+Trong notebook chọn `PRESET = "ENCODER_RICH8"`, `"ENCODER_PILLAR32"`,
+`"ENCODER_PILLAR_RICH"` hoặc `"ENCODER_PILLAR_RICH_ECA"`, dùng cùng
+`AUGMENTATION = "standard"` và các
 runtime controls. Preset model/loss không lấy custom controls; BOX_MODE,
 checkpoint selection, batch, seed và augmentation vẫn theo runtime controls.
 Chọn cùng `BOX_MODE = "bev"`, `EVALUATION_MODES = ["local_bev"]`,
 `CHECKPOINT_SELECTION = "ap"` để đối chiếu các run BEV hiện tại.
 
 Nếu muốn dùng backbone/head custom đang nghiên cứu, giữ `PRESET = "custom"`,
-chỉ đổi `BEV_ENCODING = "pillar32"` hoặc `"pillar_rich"`. Resolver đặt backend
+chỉ đổi `BEV_ENCODING = "pillar32"`, `"pillar_rich"` hoặc `"pillar_rich_eca"`. Resolver đặt backend
 torch và 32 kênh kể cả cell notebook cũ có bảng số kênh chưa chứa encoder mới;
 không cần sửa notebook để dùng pillar_rich. Các giá trị sai khai báo rõ ràng vẫn
 báo lỗi. Giữ cùng `NOTEBOOK_OVERRIDES` khi đối chiếu các encoder.
@@ -264,7 +279,7 @@ trọng số nhánh học khác nhau. Chọn run name mới cho từng encoder.
 
 Resolver hỗ trợ cell notebook cũ có bảng số kênh chưa chứa `pillar32`:
 `out_channels=None` được điền thành 32 và backend thiếu được đặt thành torch
-cho cả pillar32 và pillar_rich.
+cho cả pillar32, pillar_rich và pillar_rich_eca.
 Giá trị sai được khai báo rõ ràng (ví dụ 8 kênh hoặc backend numpy) vẫn báo lỗi.
 Nếu dùng code resolver cũ, thêm đoạn sau trước `resolve_notebook_config(...)`:
 
