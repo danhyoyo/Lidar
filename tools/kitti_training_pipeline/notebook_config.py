@@ -437,6 +437,15 @@ def save_notebook_config(run_dir, config):
     path = run_dir / "config.json"
     trained = (run_dir / "run.json").is_file() or any((run_dir / "checkpoints").glob("*.pt"))
     if path.is_file() and trained and read_json(path) != config:
+        saved, requested = read_json(path), copy.deepcopy(config)
+        for candidate in (saved, requested):
+            model = candidate.get("model", {})
+            if model.get("rc_gate_mode", "mul") == "mul":
+                model.pop("rc_gate_mode", None)
+        if saved == requested:
+            # Keep the original snapshot/hash when a new notebook only makes
+            # the historical multiplicative default explicit.
+            return path
         raise ValueError(
             "Run đã có metadata/checkpoint với config khác. Đổi EXPERIMENT_TAG hoặc "
             "CUSTOM_RUN_NAME để tạo run mới; config cũ được giữ nguyên."

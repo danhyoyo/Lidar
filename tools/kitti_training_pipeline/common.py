@@ -136,6 +136,14 @@ def checkpoint_identity(config):
             model.setdefault(key, default)
         if model["neck_type"] in (None, "sgfpn"):
             model["neck_type"] = "scale_gated_fpn"
+    # Omitted and explicit mul retain historical checkpoint identities,
+    # including custom notebooks selecting a backbone without an RC neck.
+    # Additive gating has the same training tensor shapes but new semantics.
+    gate_mode = str(model.get("rc_gate_mode", "mul")).lower()
+    if gate_mode == "mul":
+        model.pop("rc_gate_mode", None)
+    else:
+        model["rc_gate_mode"] = gate_mode
     objective = copy.deepcopy(config.get("loss", {}))
     objective.update(name=str(objective.get("name", "baseline")).lower(),
                      use_iou=detection.use_iou)
@@ -321,6 +329,8 @@ def generate_run_name(
     neck_type = model_cfg.get("neck_type")
     if neck_type in ("rc_sgfpn", "rc_bisgfpn"):
         extras.append(neck_type)
+        if str(model_cfg.get("rc_gate_mode", "mul")).lower() == "add":
+            extras.append("rcadd")
     elif model_cfg.get("scale_gated_fpn", False):
         extras.append("sgfpn")
     scales = model_cfg.get("c4_attention_scales")

@@ -97,6 +97,11 @@ def _choice(config, name, default, choices):
     return value.lower()
 
 
+def resolve_rc_gate_mode(mode="mul"):
+    """Keep legacy multiplicative gating unless additive gating is explicit."""
+    return _choice({"rc_gate_mode": mode}, "rc_gate_mode", "mul", {"mul", "add"})
+
+
 def _reject_present(config, fields, reason):
     invalid = set(config) & set(fields)
     if invalid:
@@ -158,6 +163,10 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
         _reject_present(cfg, _NEW_FIELDS, "feature options require MobilePixorNeXt")
     neck = _choice(cfg, "neck_type", "scale_gated_fpn",
                    {"scale_gated_fpn", "rc_sgfpn", "rc_bisgfpn"})
+    gate_mode = resolve_rc_gate_mode(cfg.get("rc_gate_mode", "mul"))
+    if gate_mode == "add" and (backbone != "mobilepixornext" or
+                               neck not in {"rc_sgfpn", "rc_bisgfpn"}):
+        raise ValueError("rc_gate_mode=add requires a MobilePixorNeXt RC-SGFPN neck")
     if neck != "scale_gated_fpn":
         incompatible = {key for key, default in (("neck_fusion_channels", 24), ("detail_path", False))
                         if key in cfg and cfg[key] != default}

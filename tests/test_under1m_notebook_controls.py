@@ -67,6 +67,27 @@ def test_notebook_selects_best_ap_and_exposes_independent_ap_interval(tmp_path):
     assert changed['config_dict']['evaluation']['kitti_root']
 
 
+@pytest.mark.parametrize("mode", ["mul", "add"])
+def test_custom_rc_gate_mode_reaches_snapshot_and_model(tmp_path, mode):
+    namespace = execute_cell(tmp_path, {"PRESET": "custom", "NECK_TYPE": "rc_sgfpn",
+                                        "RC_GATE_MODE": mode, "AUGMENTATION": "none"})
+    config = namespace["config_dict"]
+    assert config["model"]["rc_gate_mode"] == mode
+    assert json.loads(namespace["CONFIG"].read_text())["model"]["rc_gate_mode"] == mode
+    from common import build_model
+    model = build_model(config)
+    assert model.backbone.rc_neck.gate_td3.gate_mode == mode
+    assert model.backbone.rc_neck.gate_td4.gate_mode == mode
+
+
+def test_custom_rc_add_mode_generates_a_distinct_run_name(tmp_path):
+    edits = {"PRESET": "custom", "NECK_TYPE": "rc_sgfpn", "AUGMENTATION": "none"}
+    mul = execute_cell(tmp_path / "mul", {**edits, "RC_GATE_MODE": "mul"})
+    add = execute_cell(tmp_path / "add", {**edits, "RC_GATE_MODE": "add"})
+    assert mul["RUN_NAME"] != add["RUN_NAME"]
+    assert "rcadd" in add["RUN_NAME"]
+
+
 def test_notebook_short_smoke_disables_full_split_ap_selection():
     notebook = json.loads((ROOT/'3D_Lidar_Object_Detection_Notebook_standard.ipynb').read_text())
     source = next(''.join(cell['source']) for cell in notebook['cells'] if 'smoke_config =' in ''.join(cell['source']))
@@ -127,5 +148,5 @@ def test_configuration_cell_keeps_single_occurrence_of_controls_and_valid_python
     controls = [target.id for node in tree.body if isinstance(node, ast.Assign)
                 for target in node.targets if isinstance(target, ast.Name)]
     for key in ["PRESET", "BEV_BACKEND", "STAGE_DEPTHS", "HEAD_MODE", "HEAD_GROUPS", "GROUP_WEIGHTS",
-                "C4_CONTEXT", "LOCAL_ATTENTION", "NECK_FUSION_CHANNELS", "DETAIL_PATH"]:
+                "C4_CONTEXT", "LOCAL_ATTENTION", "NECK_FUSION_CHANNELS", "DETAIL_PATH", "RC_GATE_MODE"]:
         assert controls.count(key) == 1

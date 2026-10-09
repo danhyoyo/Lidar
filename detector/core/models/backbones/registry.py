@@ -70,7 +70,10 @@ def _build_mobilepixor_coordatt(cfg: Dict[str, Any], input_channels: int = 35) -
 
 @register_backbone("mobilepixornext")
 def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
-    features = resolve_backbone_features({k: v for k, v in cfg.items() if k != "neck_type"})
+    feature_cfg = dict(cfg)
+    if feature_cfg.get("neck_type") in (None, "sgfpn"):
+        feature_cfg["neck_type"] = "scale_gated_fpn"
+    features = resolve_backbone_features(feature_cfg)
     new_options = {k: v for k, v in features.to_dict().items()
                    if k not in {"c4_attention", "c4_attention_scales", "c4_attention_qk_norm"}}
     return MobilePixorNeXtBackbone(
@@ -86,6 +89,7 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
         neck_type=cfg.get("neck_type", "scale_gated_fpn"),
         geometry=cfg.get("geometry") or cfg.get("kitti", {}).get("geometry") or cfg.get("data", {}).get("kitti", {}).get("geometry"),
         num_range_bands=cfg.get("num_range_bands", 4),
+        rc_gate_mode=cfg.get("rc_gate_mode", "mul"),
         stage_depths=cfg.get("stage_depths", (2, 4, 2)),
         **new_options,
     )

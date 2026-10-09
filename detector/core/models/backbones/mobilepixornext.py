@@ -13,7 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from core.backbone_config import resolve_backbone_features
+from core.backbone_config import resolve_backbone_features, resolve_rc_gate_mode
 
 from core.models.backbones.mobilepixornext_blocks import (
     MobilePixorNeXtBlock,
@@ -41,6 +41,7 @@ class MobilePixorNeXtBackbone(nn.Module):
         geometry: LiDAR metric bounds dictionary.
         stage_depths: Positive block counts at strides 4/8/16; legacy default (2,4,2).
         neck_fusion_channels: Standard SG-FPN final fusion width; 24 legacy or 32 explicit.
+        rc_gate_mode: RC range conditioning ('mul' legacy default or 'add').
     """
 
     def __init__(
@@ -69,6 +70,7 @@ class MobilePixorNeXtBackbone(nn.Module):
         local_attention_eca_kernel_size=None,
         local_attention_simam_lambda=None,
         local_attention_layer_scale_init=None,
+        rc_gate_mode: str = "mul",
     ):
         super().__init__()
         if (not isinstance(stage_depths, (list, tuple)) or len(stage_depths) != 3 or
@@ -83,6 +85,9 @@ class MobilePixorNeXtBackbone(nn.Module):
         self.neck_type = str(neck_type).lower() if neck_type else "scale_gated_fpn"
         if self.neck_type == "sgfpn":
             self.neck_type = "scale_gated_fpn"
+        self.rc_gate_mode = resolve_rc_gate_mode(rc_gate_mode)
+        if self.rc_gate_mode == "add" and self.neck_type not in ("rc_sgfpn", "rc_bisgfpn"):
+            raise ValueError("rc_gate_mode=add requires an RC-SGFPN neck")
         options = dict(c4_attention=c4_attention, c4_attention_qk_norm=c4_attention_qk_norm,
                        c4_context=c4_context, local_attention=local_attention,
                        neck_fusion_channels=neck_fusion_channels, detail_path=detail_path,
@@ -117,6 +122,7 @@ class MobilePixorNeXtBackbone(nn.Module):
                 num_range_bands=num_range_bands,
                 geometry=geometry,
                 deploy=self.deploy,
+                gate_mode=self.rc_gate_mode,
             )
         else:
             self.rc_neck = None
