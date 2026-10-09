@@ -89,8 +89,8 @@ def build_database(processed_root, train_manifest, output_dir, *,
 def parser():
     value = argparse.ArgumentParser(description=__doc__)
     value.add_argument("--processed-root", required=True, type=Path)
-    value.add_argument("--train-split", type=Path, default=ROOT / "splits/kitti/train.txt")
-    value.add_argument("--val-split", type=Path, default=ROOT / "splits/kitti/val.txt")
+    value.add_argument("--train-split", "--train-manifest", dest="train_split", type=Path, default=ROOT / "splits/kitti/train.txt")
+    value.add_argument("--val-split", "--val-manifest", dest="val_split", type=Path, default=ROOT / "splits/kitti/val.txt")
     value.add_argument("--output-dir", type=Path)
     value.add_argument("--min-points", type=int, default=1)
     return value

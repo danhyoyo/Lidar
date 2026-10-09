@@ -30,6 +30,7 @@ outputs/
 # Local datasets, reports, and experiment results
 /artifacts/
 /data/
+/Kitti_Raw/
 /docs/*
 !/docs/superpowers/
 !/docs/plans/
