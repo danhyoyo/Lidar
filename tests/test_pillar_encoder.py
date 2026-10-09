@@ -165,7 +165,7 @@ def test_detector_loss_updates_encoder_and_preserves_prediction_shapes(device, p
     optimizer.step()
     assert not torch.equal(initial, model.point_encoder.linear.weight)
     assert model_parameter_report(model)["parameter_counts"]["point_encoder"] == {
-        "pillar32": 384, "pillar_rich": 288, "pillar_rich_gate": 540}[encoder_name]
+        "pillar32": 384, "pillar_rich": 288, "pillar_rich_gate": 1224}[encoder_name]
 
 
 def test_packed_compile_warmup_preserves_bn_and_training_state(encoder_name):

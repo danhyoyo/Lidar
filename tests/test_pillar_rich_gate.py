@@ -38,8 +38,8 @@ def reference(encoder, value):
     for index, (batch, y, x) in enumerate(value["coords"].tolist()):
         maximum = embedded[value["pillar_indices"] == index].max(dim=0).values
         rich = value["rich_features"][index].to(embedded.dtype)
-        logits = encoder.gate(torch.cat((maximum, rich)))
-        learned = (maximum.float() * (2 * logits.float().sigmoid())).to(embedded.dtype)
+        residual = encoder.gate(torch.cat((maximum, rich)))
+        learned = (maximum.float() + residual.float()).to(embedded.dtype)
         output[batch, :, y, x] = torch.cat((rich, learned))
     return output
 
@@ -48,7 +48,7 @@ def activate_gate(encoder):
     with torch.no_grad():
         encoder.gate[0].weight.fill_(.02)
         encoder.gate[0].bias.fill_(.1)
-        encoder.gate[2].weight.copy_(torch.linspace(-.3, .3, 96).reshape(24, 4))
+        encoder.gate[2].weight.copy_(torch.linspace(-.3, .3, 384).reshape(24, 16))
         encoder.gate[2].bias.copy_(torch.linspace(-.1, .1, 24))
 
 
@@ -65,7 +65,7 @@ def test_schema_preserves_baseline_identity_and_describes_fixed_gate():
     gate = learned["gate"]
     assert gate["type"] == "rich_conditioned_channel_gate"
     assert gate["descriptor"] == "concat(learned_max24, rich8)"
-    assert gate["hidden_channels"] == 4 and gate["initial_scale"] == 1
+    assert gate["hidden_channels"] == 16 and gate["initial_scale"] == 1
 
 
 @pytest.mark.parametrize("options", [{"pooling": "max_mean_eca"}, {"pooling": []},
@@ -104,8 +104,8 @@ def test_initial_gate_matches_baseline_exactly_and_preserves_full_model_rng(prec
     right = PillarEncoder(GEOMETRY, OPTIONS).eval()
     with torch.autocast("cpu", dtype=torch.bfloat16, enabled=precision == "bf16"):
         torch.testing.assert_close(right(packed(CLOUD)), left(packed(CLOUD)), rtol=0, atol=0)
-    assert sum(p.numel() for p in right.gate.parameters()) == 252
-    assert sum(p.numel() for p in right.parameters()) == 540
+    assert sum(p.numel() for p in right.gate.parameters()) == 936
+    assert sum(p.numel() for p in right.parameters()) == 1224
 
 
 @pytest.mark.parametrize("precision", ["fp32", "bf16"])
@@ -192,7 +192,7 @@ def test_preset_matches_file_parameter_count_and_rejects_other_checkpoint_identi
     new = resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH_GATE", augmentation="config")
     saved = json.loads((ROOT / "configs/experiments/encoders/pillar_rich_gate.json").read_text())
     assert new == saved
-    assert sum(p.numel() for p in build_model(new).parameters()) == 655765
+    assert sum(p.numel() for p in build_model(new).parameters()) == 656449
     old = resolve_notebook_config(ROOT, preset="ENCODER_PILLAR_RICH", augmentation="config")
     assert generate_run_name(old) != generate_run_name(new)
     assert "-pillar_rich_gate-" in generate_run_name(new)
@@ -228,7 +228,7 @@ def test_random_weight_benchmark_reports_boundaries_and_keeps_config_unchanged()
                               device="cpu", warmup=0, iterations=1)
     assert config == before
     assert "Excludes file I/O, decode/NMS, AP" in report["scope"]
-    assert report["results"]["pillar_rich_gate"]["parameter_counts"]["total_detector"] == 655765
+    assert report["results"]["pillar_rich_gate"]["parameter_counts"]["total_detector"] == 656449
     assert report["results"]["pillar_rich_gate"]["encoding"]["name"] == "pillar_rich_gate"
     assert report["results"]["rich8"]["model_ratio_to_rich8"] == 1
     for result in report["results"].values():
@@ -277,5 +277,5 @@ def test_gate_survives_cli_train_resume_and_evaluation(tmp_path, monkeypatch):
                             kitti_root=raw.parent, split_path=Path(config["val"]["data"]),
                             device="cpu", warmup_frames=0, progress_every=0)
     assert result["status"] == "ok"
-    assert result["model"]["parameter_counts"]["point_encoder"] == 540
+    assert result["model"]["parameter_counts"]["point_encoder"] == 1224
     assert result["data"]["checkpoint_identity"]["encoding"]["metadata"]["learned_encoder"]["gate"]["type"] == "rich_conditioned_channel_gate"

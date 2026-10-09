@@ -19,13 +19,13 @@ Point features → Linear(10,24) → BN → ReLU → max m [K,24] ────�
                                               │                 │
 rich8 r [K,8] ─────────────────── concat [m,r] [K,32]             │
                                               ↓                 │
-                                 Linear(32,4) → ReLU             │
+                                 Linear(32,16) → SiLU             │
                                               ↓                 │
-                                    Linear(4,24)                 │
+                                    Linear(16,24)                 │
                                               ↓                 │
-                                      2 * sigmoid → g ── m * g ─┘
+                                      delta [K,24] ─── m + delta ─┘
                                                                   ↓
-                                              concat [r, m*g] [K,32]
+                                              concat [r, m+delta] [K,32]
                                                                   ↓
                                                         scatter NCHW
 ```
@@ -36,10 +36,10 @@ mean pooling trên embedding từng điểm. Gate chạy riêng trên mỗi occu
 không gom cả batch, không có attention theo không gian BEV hoặc trên từng điểm.
 Rich8 giữ nguyên ở kênh 0–7; gate chỉ tác động learned24 ở kênh 8–31.
 
-Hai Linear đều có bias: gate thêm **252 parameters**, tổng point encoder **540**
-(288 point embedding/BN +252 gate). Toàn detector comparison preset có **655.765**.
+Hai Linear đều có bias: gate thêm **936 parameters**, tổng point encoder **1224**
+(288 point embedding/BN +252 gate). Toàn detector comparison preset có **656.449**.
 Weight và bias Linear cuối khởi tạo zero; Linear đầu khởi tạo bình thường.
-Do đó g ban đầu bằng 1, output bằng baseline max-only. Constructors của gate
+Do đó delta ban đầu bằng 0, output bằng baseline max-only theo cơ chế additive residual. Constructors của gate
 nằm trong `torch.random.fork_rng(devices=[])` để không làm lệch khởi tạo
 backbone/head dù dùng cùng seed. Khi gate học, hệ số nằm trong (0,2), có thể tăng
 hoặc giảm feature. Đây là biến thể gating kiểu SE, không phải SE chuẩn trên BEV.
@@ -95,8 +95,58 @@ batch1, precision, input và seed. Báo cáo prep, transfer, forward, p50/p95,
 input hash và parameter counts. Random weights, không đo AP/I/O/decode/NMS.
 Có thể smoke-test bằng `--synthetic --points 1000 --device cpu`.
 Gate không cần mean reduction mới nhưng MLP/scaling vẫn có chi phí. Dense BEV32
-vẫn lớn hơn rich8. Chưa có AP hoặc số đo GPU của gate; số đo ECA cũ không phải
-bằng chứng tốc độ của thiết kế này.
+vẫn lớn hơn rich8. Benchmark dùng random weights nên không đo AP; số đo ECA cũ
+không phải bằng chứng tốc độ của thiết kế này.
+
+### Tối ưu chuẩn bị pillar trên CPU
+
+`prepare_pillars` tự dùng Numba khi thư viện có sẵn, áp dụng cho `pillar32`,
+`pillar_rich` và `pillar_rich_gate`. Lọc finite/ROI và copy điểm float32/float64
+được gộp trong kernel; grouping dùng bincount/lookup thay sorting trên lưới KITTI.
+Kernel tiếp theo gộp tính trung bình xyz, rich8 và mười point features. Như vậy,
+phần rich8 **bên trong packed pillar** cũng được tối ưu; rasterizer rich8 độc lập
+vẫn dùng đường hiện tại.
+
+Kernel serial, không fastmath; giữ thứ tự cộng float64 và output float32 như bản
+NumPy. XY floor-division, intensity clipping, normalized height và log-density
+vẫn dùng phép toán NumPy cũ. Lưới lớn hoặc quá thưa quay về grouping `unique`
+để giới hạn bộ nhớ lookup. Các dtype/scalar bounds khác giữ lọc NumPy.
+Không đổi channel, parameter, pooling/gate, checkpoint identity hay config train.
+
+Numba JIT có chi phí lần gọi đầu; kernel được cache và chi phí này được báo riêng.
+Nếu thiếu Numba, tự quay về bản NumPy. Để đối chiếu hoặc dùng lại implementation
+cũ khi gọi Python, truyền `prepare_pillars(..., cpu_backend="numpy")`; đây là
+tham số thực thi preprocessing, độc lập với `bev_encoding.backend="torch"`
+và `target_backend` cho label generation.
+
+```bash
+python3 tools/benchmarks/benchmark_pillar_preparation.py \
+  --pointcloud-dir /path/to/KITTI/training/velodyne \
+  --frames 000000 000001 000010 000100 001000 002000 003000 004000 006000 \
+  --device cuda --precision bf16 --warmup 10 --iterations 50 \
+  --output artifacts/pillar-preparation-speed/cuda-bf16.json
+```
+
+Benchmark so NumPy/Numba xen kẽ, dùng cùng một model và cùng input, kiểm tra từng
+bit của feature và output model chính xác. Pipeline gồm CPU prep, H2D và forward;
+không gồm đọc file, decode/NMS hoặc DataLoader overlap. Không suy ra tăng tốc
+training theo tỷ lệ này; khi workers đã che được prep thì lợi ích có thể nhỏ hơn.
+
+Đo ngày 2026-10-09 trên RTX 4050 Laptop, BF16, batch1, PyTorch 2.11.0/CUDA 13.0,
+NumPy 2.4.6, Numba 0.67.0; 9 frame như lệnh trên, warmup10/50 lần đo:
+
+| Phần đo | NumPy cũ | Numba mới | Giảm latency |
+|---|---:|---:|---:|
+| CPU prep | 8,685 ms | 3,857 ms | 55,6% |
+| CPU prep + H2D + detector forward | 16,365 ms | 11,245 ms | 31,3% |
+
+Lấy trung bình mean latency mỗi frame. Prepared inputs khớp từng bit trên 100
+frame thật (11.861.298 điểm), output BF16 khớp chính xác trên cả 9 frame đo với
+gate khác identity. Lần gọi Numba đầu 256 ms khi đã có disk cache; lần compile
+mới có thể lâu hơn. Trên riêng frame 000000, pipeline rich8 là 14,946 ms,
+pillar_rich 10,834 ms và pillar_rich_gate 10,841 ms; đây là số đo một frame,
+không suy rộng thành ưu thế trên mọi hệ thống. Report đầy đủ nằm tại
+`artifacts/pillar_preparation_speed/` trên máy đo và không được commit.
 
 ```bash
 python3 -m pytest tests/test_pillar_rich_gate.py \

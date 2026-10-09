@@ -209,12 +209,12 @@ class BEVEncodingSpec:
                     result["learned_encoder"].update({
                         "gate": {"type": "rich_conditioned_channel_gate",
                                  "descriptor": "concat(learned_max24, rich8)",
-                                 "architecture": "linear_relu_linear", "input_channels": 32,
-                                 "hidden_channels": 4, "output_channels": 24, "bias": True,
-                                 "scope": "per_occupied_pillar", "activation": "2 * sigmoid",
-                                 "precision": {"mlp": "model_autocast", "gate_and_scaling": "float32"},
+                                 "architecture": "linear_silu_linear", "input_channels": 32,
+                                 "hidden_channels": 16, "output_channels": 24, "bias": True,
+                                 "scope": "per_occupied_pillar", "activation": "residual_add",
+                                 "precision": {"mlp": "model_autocast", "residual": "float32"},
                                  "initial_scale": 1, "last_linear_init": "zero",
-                                 "fusion": "max * gate", "rich8_passthrough": True},
+                                 "fusion": "max + residual", "rich8_passthrough": True},
                     })
             return result
         histogram = self.name == "hist14"
