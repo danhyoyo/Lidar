@@ -29,7 +29,7 @@ class PillarEncoder(nn.Module):
             # These CPU constructors consume RNG even when later zero-initialized.
             # Preserve the baseline's subsequent backbone/head initialization.
             with torch.random.fork_rng(devices=[]):
-                self.gate = nn.Sequential(nn.Linear(32, 16), nn.SiLU(), nn.Linear(16, 24))
+                self.gate = nn.Sequential(nn.Linear(32, 4), nn.ReLU(), nn.Linear(4, 24))
                 nn.init.zeros_(self.gate[2].weight)
                 nn.init.zeros_(self.gate[2].bias)
 
@@ -79,10 +79,11 @@ class PillarEncoder(nn.Module):
                                reduce="amax", include_self=True)
         if self.name == "pillar_rich_gate":
             # Reuse the existing bounded rich8 statistics, without another point
-            # reduction or a dense BEV gate. Zero weights give exact identity (residual add).
+            # reduction or a dense BEV gate. Zero logits give exactly unit scale.
             descriptor = torch.cat((pooled, rich.to(pooled.dtype)), dim=1)
-            residual = self.gate(descriptor)
-            pooled = (pooled.float() + residual.float()).to(embedded.dtype)
+            logits = self.gate(descriptor)
+            scale = 2 * torch.sigmoid(logits.float())
+            pooled = (pooled.float() * scale).to(embedded.dtype)
         if self.has_rich:
             pooled = torch.cat((rich.to(pooled.dtype), pooled), dim=1)
         # Scatter into the final layout, avoiding a second full BEV allocation

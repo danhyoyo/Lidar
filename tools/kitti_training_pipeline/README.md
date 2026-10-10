@@ -72,10 +72,10 @@ for paired commands, notebook presets, parameter counts and memory conditions.
 For rich-conditioned per-pillar channel gating, use
 `configs/experiments/encoders/pillar_rich_gate.json` or
 `PRESET="ENCODER_PILLAR_RICH_GATE"`. The encoder name is `pillar_rich_gate`;
-`pillar_rich` remains max-only. The fixed Linear(32,16)-SiLU-Linear(16,24) gate
-consumes learned max24 plus existing rich8, adding an additive residual delta to max24.
-It retains 32 BEV channels and adds 936 parameters. The final Linear is
-zero-initialized for exact identity residual add; constructor RNG is preserved for matched
+`pillar_rich` remains max-only. The fixed Linear(32,4)-ReLU-Linear(4,24) gate
+consumes learned max24 plus existing rich8, and multiplies max24 by 2*sigmoid.
+It retains 32 BEV channels and adds 252 parameters. The final Linear is
+zero-initialized for unit gates; constructor RNG is preserved for matched
 backbone/head initialization. The old ECA encoder/presets are retired;
 start a new run rather than resuming a max-only or ECA checkpoint into gate.
 `tools/benchmarks/benchmark_pillar_encoders.py` compares rich8, max-only and
