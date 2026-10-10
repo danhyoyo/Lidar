@@ -104,7 +104,7 @@ def test_notebook_short_smoke_disables_full_split_ap_selection():
 def test_custom_controls_reach_encoding_groups_context_and_neck(tmp_path, local, options):
     namespace = execute_cell(tmp_path, {"PRESET": "custom", "BEV_ENCODING": "hist14", "BEV_BACKEND": "numpy",
         "STAGE_DEPTHS": [3, 4, 2], "BACKBONE_OUT_DIM": 32, "HEAD_MODE": "grouped",
-        "HEADER_USE_IOU": True, "LOSS_NAME": "oga", "C4_ATTENTION": "none", "C4_CONTEXT": "focal",
+        "HEADER_USE_IOU": True, "LOSS_NAME": "oga", "C4_CONTEXT": "focal",
         "C4_CONTEXT_BOTTLENECK": 32, "C4_CONTEXT_DILATIONS": [1, 3], "LOCAL_ATTENTION": local,
         "NECK_FUSION_CHANNELS": 32, "DETAIL_PATH": True, "AUGMENTATION": "none", **options})
     config = namespace["config_dict"]

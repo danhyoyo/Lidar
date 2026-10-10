@@ -100,7 +100,7 @@ def test_vertical_model_strict_state_roundtrip_and_semantic_identity():
         build_model(bev).load_state_dict(original.state_dict(), strict=True)
 
 
-@pytest.mark.parametrize("strategy", ["uwag", "gw_qal", "q_oga"])
+@pytest.mark.parametrize("strategy", ["uwag", "q_oga"])
 def test_3d_rejects_unimplemented_strategy_extensions(strategy):
     with pytest.raises(ValueError, match="3D.*baseline.*oga"):
         detection_spec(config_3d(strategy=strategy, iqa=False))

@@ -25,21 +25,15 @@ BASE_CONFIG = json.loads((ROOT / "configs" / "config.json").read_text(encoding="
 
 TEST_VARIANTS = {
     "default_config": {},
-    "truc_a_sota": {
-        "model": {"scale_gated_fpn": True, "c4_attention": "litemla", "c4_attention_scales": [3, 5],
-                  "c4_attention_qk_norm": "rmsnorm", "use_reparam": True, "header_use_iou": True},
+    "oga_reparam_iqa": {
+        "model": {"scale_gated_fpn": True, "c4_attention": "none", "c4_attention_scales": [],
+                  "c4_attention_qk_norm": "none", "use_reparam": True, "header_use_iou": True},
         "loss": {"name": "oga", "use_iou": True},
     },
-    "truc_b_sota": {
-        "model": {"scale_gated_fpn": True, "c4_attention": "litemla", "c4_attention_scales": [3, 5],
-                  "c4_attention_qk_norm": "rmsnorm", "use_reparam": True, "header_use_iou": False},
+    "qoga_reparam": {
+        "model": {"scale_gated_fpn": True, "c4_attention": "none", "c4_attention_scales": [],
+                  "c4_attention_qk_norm": "none", "use_reparam": True, "header_use_iou": False},
         "loss": {"name": "q_oga", "use_iou": False},
-    },
-    "gw_qal": {
-        "loss": {"name": "gw_qal"},
-    },
-    "rich12": {
-        "data": {"bev_encoding": {"name": "rich12", "out_channels": 12, "density_norm": 32, "intensity_scale": 1}},
     },
     "mobilepixor_legacy35": {
         "model": {"backbone": "mobilepixor", "scale_gated_fpn": False, "c4_attention": "none", "header_use_bn": False, "header_act": "relu"},

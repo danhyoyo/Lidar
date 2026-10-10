@@ -42,9 +42,7 @@
     "backbone_out_dim": 16,
     "cls_encoding": "gaussian",
     "c4_attention": "none",
-    "c4_attention_scales": [
-      5
-    ],
+    "c4_attention_scales": [],
     "c4_attention_qk_norm": "none",
     "scale_gated_fpn": true,
     "expansion": 2.5,

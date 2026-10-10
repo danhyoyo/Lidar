@@ -12,7 +12,7 @@ import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-_RICH_MINIMUM = {"rich8": 8, "rich10": 10, "rich11": 11, "rich12": 12}
+_RICH_MINIMUM = {"rich8": 8}
 _HIST14_CHANNELS = (
     "height_count_b0", "height_count_b1", "height_count_b2", "height_count_b3",
     "z_max", "z_mean", "z_span", "z_std", "intensity_max", "intensity_mean",
@@ -21,7 +21,6 @@ _HIST14_CHANNELS = (
 _RICH_CHANNELS = (
     "height_occupancy_b0", "height_occupancy_b1", "height_occupancy_b2",
     "z_max", "z_mean", "intensity_max", "intensity_mean", "log_density",
-    "z_span", "z_std", "intensity_contrast", "range_compensated_density",
 )
 _HIST14_OPTIONS = frozenset({
     "name", "version", "out_channels", "density_norm", "intensity_scale", "backend",
@@ -235,8 +234,6 @@ class BEVEncodingSpec:
                 "output": "float32",
             },
         }
-        if self.name in _RICH_MINIMUM and self.channels >= 12:
-            result["range_density"] = {"range_scale_m": 20.0, "density_multiplier": 16.0}
         return result
 
     @property
@@ -270,8 +267,7 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
     else:
-        names = tuple(_RICH_CHANNELS[index] if index < min(channels, 12) and
-                      (index < 8 or channels >= 10) else f"reserved_zero_{index}"
+        names = tuple(_RICH_CHANNELS[index] if index < len(_RICH_CHANNELS) else f"reserved_zero_{index}"
                       for index in range(channels))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))

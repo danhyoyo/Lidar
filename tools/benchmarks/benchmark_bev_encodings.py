@@ -21,7 +21,7 @@ from core.bev_encoding import resolve_bev_encoding
 from utils_1.preprocess import encode_bev
 from utils_1.bev_backend import HIST14_IMPLEMENTATION_VERSION
 
-ENCODINGS = ("binary_slices", "rich8", "rich10", "rich11", "rich12",
+ENCODINGS = ("binary_slices", "rich8",
              "hist14_numpy", "hist14_numba")
 
 

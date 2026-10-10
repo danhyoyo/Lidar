@@ -12,7 +12,7 @@ from core.losses.iou_targets import compute_iou_targets
 
 CASES = [
     ("gaussian", "baseline", True), ("gaussian", "oga", True),
-    ("gaussian", "uwag", False), ("gaussian", "gw_qal", False),
+    ("gaussian", "uwag", False),
     ("gaussian", "q_oga", False), ("gaussian", "exact_q_oga", False),
     ("binary", "baseline", True), ("binary", "oga", True),
     ("binary", "uwag", False),

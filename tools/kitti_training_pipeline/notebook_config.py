@@ -21,7 +21,7 @@ MODEL_DEFAULTS = {
     "neck_type": None, "scale_gated_fpn": True,
     "use_reparam": False, "header_use_iou": False,
     "header_use_bn": True, "header_act": "silu",
-    "c4_attention": "litemla", "c4_attention_scales": [5],
+    "c4_attention": "none", "c4_attention_scales": [],
     "c4_attention_qk_norm": "none", "deploy": False,
 }
 
@@ -393,17 +393,6 @@ def validate_notebook_config(config):
         if model.get("neck_type") in ("rc_sgfpn", "rc_bisgfpn") or model.get("use_reparam", False):
             raise ValueError("Range-conditioned necks and USE_REPARAM require mobilepixornext")
         model["c4_attention"] = "none"
-    if model.get("c4_attention", "none") not in ("none", "litemla"):
-        raise ValueError("C4_ATTENTION must be none or litemla")
-    if model.get("c4_attention", "none") == "none":
-        model["c4_attention_scales"] = []
-        model["c4_attention_qk_norm"] = "none"
-    else:
-        scales = model.get("c4_attention_scales", [5])
-        if not scales or any(isinstance(k, bool) or not isinstance(k, int) or k <= 0 or k % 2 == 0 for k in scales):
-            raise ValueError("C4_ATTENTION_SCALES must contain positive odd integers")
-        if model.get("c4_attention_qk_norm", "none") not in ("none", "rmsnorm", "layernorm"):
-            raise ValueError("Unsupported C4_ATTENTION_QK_NORM")
     input_shape(config)
     epochs, warmup = train["epochs"], train.get("warmup_epochs", 0)
     if not isinstance(epochs, int) or not isinstance(warmup, int) or epochs <= 0 or not 0 <= warmup < epochs:
@@ -494,52 +483,6 @@ PRESET_CONFIGS = {
         "data": {"bev_encoding": {"name": "pillar_rich_gate", "version": 1, "backend": "torch",
                                   "out_channels": 32, "intensity_scale": 1, "density_norm": 32}},
     },
-    "TRUC_A_SOTA": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True,
-            "c4_attention": "litemla",
-            "c4_attention_scales": [
-                3,
-                5
-            ],
-            "c4_attention_qk_norm": "rmsnorm",
-            "use_reparam": True,
-            "header_use_iou": True
-        },
-        "loss": {
-            "name": "oga",
-            "use_iou": True
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich8"
-            }
-        }
-    },
-    "TRUC_B_SOTA": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True,
-            "c4_attention": "litemla",
-            "c4_attention_scales": [
-                3,
-                5
-            ],
-            "c4_attention_qk_norm": "rmsnorm",
-            "use_reparam": True,
-            "header_use_iou": False
-        },
-        "loss": {
-            "name": "q_oga",
-            "use_iou": False
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich8"
-            }
-        }
-    },
     "TRUC_A_M1": {
         "model": {
             "backbone": "mobilepixornext",
@@ -547,29 +490,6 @@ PRESET_CONFIGS = {
             "use_reparam": True,
             "header_use_iou": False,
             "c4_attention": "none"
-        },
-        "loss": {
-            "name": "oga",
-            "use_iou": False
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich8"
-            }
-        }
-    },
-    "TRUC_A_M2": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True,
-            "c4_attention": "litemla",
-            "c4_attention_scales": [
-                3,
-                5
-            ],
-            "c4_attention_qk_norm": "rmsnorm",
-            "use_reparam": True,
-            "header_use_iou": False
         },
         "loss": {
             "name": "oga",
@@ -607,39 +527,6 @@ PRESET_CONFIGS = {
         "data": {
             "bev_encoding": {
                 "name": "rich8"
-            }
-        }
-    },
-    "RICH10_SGFPN": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich10"
-            }
-        }
-    },
-    "RICH11_SGFPN": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich11"
-            }
-        }
-    },
-    "RICH12_SGFPN": {
-        "model": {
-            "backbone": "mobilepixornext",
-            "scale_gated_fpn": True
-        },
-        "data": {
-            "bev_encoding": {
-                "name": "rich12"
             }
         }
     },

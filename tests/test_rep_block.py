@@ -396,7 +396,7 @@ def test_pytorch_runner_deploy_and_save_deploy(tmp_path):
     assert deploy_ckpt_path.is_file()
     assert runner.metadata()["deploy"] is True
     deploy_param_count = runner.metadata()["parameters"]
-    assert deploy_param_count == 692361
+    assert deploy_param_count == 634185
 
     # 3. Load the saved deploy checkpoint directly in another runner
     runner_from_deploy = PyTorchRunner(
@@ -405,7 +405,7 @@ def test_pytorch_runner_deploy_and_save_deploy(tmp_path):
         device="cpu",
     )
     assert runner_from_deploy.is_deployed is True
-    assert runner_from_deploy.metadata()["parameters"] == 692361
+    assert runner_from_deploy.metadata()["parameters"] == 634185
 
 
 

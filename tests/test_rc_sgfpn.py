@@ -75,7 +75,6 @@ def test_range_conditioned_scale_gate_switch_to_deploy():
     assert torch.allclose(out_train, out_deploy, atol=1e-5)
 
 
-
 from core.models.backbones.rc_sgfpn import RangeConditionedSGFPN
 
 
@@ -113,7 +112,6 @@ def test_rc_sgfpn_bidirectional_shape_and_deploy():
     out_deploy = neck(c3, c4, c5)
     assert out_deploy.shape == (2, 16, 200, 176)
     assert torch.allclose(out, out_deploy, atol=1e-5)
-
 
 
 def test_rc_sgfpn_gradient_flow_and_autocast_safety():
@@ -154,7 +152,6 @@ def test_rc_sgfpn_gradient_flow_and_autocast_safety():
     assert torch.isfinite(neck.bu_refine_p3.weight.grad).all()
 
 
-
 from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
 
@@ -174,7 +171,6 @@ def test_mobilepixornext_with_rc_sgfpn():
     bb_bi.switch_to_deploy()
     out_bi_deploy = bb_bi(x)
     assert out_bi_deploy.shape == (2, 16, 200, 176)
-
 
 
 from core.models.model import CustomModel
@@ -230,9 +226,9 @@ def test_mobilepixornext_rc_sgfpn_no_dead_parameters():
     assert not hasattr(bb, "gate_c3")
     assert not hasattr(bb, "out_conv")
 
-    # Verify parameter count is lean (around 675k, exactly 674,904)
+    # Convolutional C4 removes 58,176 retired attention parameters.
     param_count = sum(p.numel() for p in bb.parameters())
-    assert param_count == 674904
+    assert param_count == 616728
 
 
 def test_rc_sgfpn_empty_background_zero_activation():
@@ -270,7 +266,7 @@ def test_rc_bisgfpn_deploy_state_dict_roundtrip(tmp_path):
             "backbone": "mobilepixornext",
             "neck_type": "rc_bisgfpn",
             "backbone_out_dim": 16,
-            "c4_attention": "litemla",
+            "c4_attention": "none",
             "scale_gated_fpn": True,
             "use_reparam": False,
             "deploy": False,

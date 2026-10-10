@@ -187,7 +187,7 @@ def stochastic_step(config, parts, target, epoch):
 
 
 @pytest.mark.parametrize("strategy,iqa", [("baseline", True), ("oga", True), ("uwag", False),
-                                         ("gw_qal", False), ("q_oga", False), ("exact_q_oga", False)])
+                                         ("q_oga", False), ("exact_q_oga", False)])
 @pytest.mark.parametrize("empty", [False, True])
 def test_uninterrupted_and_restored_next_optimizer_step_match_rng_ema_curriculum_and_scheduler(strategy, iqa, empty):
     train.seed_everything(91)
@@ -358,8 +358,8 @@ def test_real_cli_epoch_one_resume_matches_uninterrupted_epoch_two_with_workers_
 def test_backbone_only_warm_start_preserves_new_input_stage_context_heads_and_training_state(wrapped):
     source_config = configured_model(grouped=False)
     source_config["data"]["bev_encoding"] = {"name": "rich8"}
-    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="litemla",
-                                   c4_attention_scales=[5])
+    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="none",
+                                   c4_attention_scales=[])
     source = components(source_config)
     with torch.no_grad():
         for value in source[0].state_dict().values():
@@ -372,7 +372,6 @@ def test_backbone_only_warm_start_preserves_new_input_stage_context_heads_and_tr
     assert result["loaded"] and result["skipped"] and result["missing"]
     assert "backbone.stem.0.weight" in result["skipped"]
     assert any(name.startswith("header.") for name in result["skipped"])
-    assert any(name.startswith("backbone.c4_attention.") for name in result["skipped"])
     assert any(name.startswith("backbone.stage2.2.") for name in result["missing"])
     assert any(name.startswith("backbone.c4_context.") for name in result["missing"])
     source_state = source[0].state_dict()
@@ -427,8 +426,8 @@ def test_actual_cli_warm_start_reports_keys_and_starts_fresh_exact_quality_train
     config["val"] = {"data": str(validation), "physical_batch_size": 1}
     source_config = configured_model(grouped=False)
     source_config["data"]["bev_encoding"] = {"name": "rich8"}
-    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="litemla",
-                                  c4_attention_scales=[5])
+    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="none",
+                                  c4_attention_scales=[])
     source = components(source_config)
     source[-1].manual_seed(99)
     for value in source[1].state_dict().values():

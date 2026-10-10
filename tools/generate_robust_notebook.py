@@ -32,7 +32,7 @@ def build_notebook():
     # Cell 0: Header Markdown
     cells.append(make_markdown_cell("""# 🚗 Robust 3D LiDAR Object Detection Pipeline (Colab & Local)
 
-Pipeline nghiên cứu và huấn luyện mô hình phát hiện vật thể 3D LiDAR siêu nhẹ (<1M parameters), hỗ trợ kiến trúc **MobilePixorNeXt**, **BEVNeXt**, cơ chế mã hóa **hist14**, **Focal Context**, **Grouped Heads**, các hàm mất mát tiên tiến (**OGA**, **Q-OGA**, **GW-QAL**) và kỹ thuật tăng cường **Hybrid-GT**.
+Pipeline nghiên cứu và huấn luyện mô hình phát hiện vật thể 3D LiDAR siêu nhẹ (<1M parameters), hỗ trợ kiến trúc **MobilePixorNeXt**, **BEVNeXt**, cơ chế mã hóa **hist14**, **Focal Context**, **Grouped Heads**, các hàm mất mát tiên tiến (**OGA**, **Q-OGA**) và kỹ thuật tăng cường **Hybrid-GT**.
 
 ### 📌 Các tính năng chính trong Notebook này:
 1. **Thiết lập môi trường linh hoạt**: Tự động nhận diện Google Colab (mount Drive) hoặc Local máy trạm, kiểm tra VRAM và hỗ trợ BF16.
@@ -73,7 +73,7 @@ if IN_COLAB:
     drive.mount("/content/drive")
     DEFAULT_REPO_DIR = Path("/content/Lidar").resolve()
     DRIVE_BASE = Path("/content/drive/MyDrive/lidar_project").resolve()
-    
+
     # Auto-clone repository if not present on Colab
     if not (DEFAULT_REPO_DIR / "configs/config.json").is_file():
         if (Path.cwd() / "configs/config.json").is_file():
@@ -189,7 +189,7 @@ COMPILE_MODEL = False         # torch.compile (tùy chọn)
 PRESET = "custom"             # "custom" | "config" | "UNDER1M_FOCAL_OGA_IQA" | "UNDER1M_FOCAL_ECA_OGA_IQA"
 BACKBONE = "mobilepixornext"
 BACKBONE_OUT_DIM = 32         # 32 (Focal main) hoặc 16 (legacy)
-BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "rich8" | "rich12" | "binary_slices"
+BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "rich8" | "binary_slices"
 BEV_BACKEND = "numpy"         # "numpy" | "numba"
 STAGE_DEPTHS = [3, 4, 2]
 
@@ -225,7 +225,7 @@ LOCAL_ATTENTION_SIMAM_LAMBDA = 0.0001
 LOCAL_ATTENTION_LAYER_SCALE_INIT = 0.001
 
 # --- 3. LOSS & CRITERION ---
-LOSS_NAME = "oga"             # "oga" (Oriented Geometry-Aware) | "q_oga" | "baseline" | "gw_qal"
+LOSS_NAME = "oga"             # "oga" (Oriented Geometry-Aware) | "q_oga" | "baseline"
 IOU_TARGET_TYPE = "mgiou"     # "mgiou" | "yaw_footprint"
 IOU_LOSS_WEIGHT = 1.0
 VERTICAL_LOSS_WEIGHT = 1.0    # Trọng số nhánh z/height khi BOX_MODE="3d"
@@ -295,7 +295,7 @@ custom_overrides = {
     "data": {
         "bev_encoding": {
             "name": BEV_ENCODING, "density_norm": 32, "intensity_scale": 1,
-            "out_channels": {"rich8": 8, "rich10": 10, "rich11": 11, "rich12": 12, "hist14": 14}.get(BEV_ENCODING),
+            "out_channels": {"rich8": 8, "hist14": 14}.get(BEV_ENCODING),
         }
     },
 }

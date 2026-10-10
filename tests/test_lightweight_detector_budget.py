@@ -13,7 +13,6 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "detector"), str(ROOT / "detector/core/datasets")]
 
-from core.models.backbones.mobilepixornext_blocks import LiteMLARefinement
 from core.models.model import CustomModel
 
 
@@ -31,7 +30,7 @@ def test_actual_reference_backbone_full_shape_and_strict_under1m_budget():
     assert config["data"]["bev_encoding"]["name"] == "hist14"
     with torch.device("meta"):
         model = CustomModel(dict(config["model"], bev_encoding=config["data"]["bev_encoding"]), num_classes=3)
-    assert not any(isinstance(m, LiteMLARefinement) for m in model.modules())
+    assert isinstance(model.backbone.c4_attention, torch.nn.Identity)
     report = module.profile_detector(config)
     counts = report["parameter_counts"]
     assert counts == {"backbone_body": 604864, "neck": 30544,

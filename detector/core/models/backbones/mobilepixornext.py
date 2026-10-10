@@ -3,7 +3,7 @@
 Architectural highlights:
 - 7x7 Depthwise Conv Inverted Bottleneck blocks; metric footprint depends on stage stride.
 - Smooth SiLU activations replacing legacy ReLU.
-- Strategic single-stage C4 LiteMLA attention (linear complexity, FP32 accumulation).
+- Optional Focal Context at C4 and local ECA/SimAM attention at C3.
 - Pure-convolution C5 stage to prevent cascading attention interference.
 - Bilinear Scale-Gated FPN Neck replacing ConvTranspose2d to eliminate checkerboard artifacts.
 """
@@ -18,7 +18,6 @@ from core.backbone_config import resolve_backbone_features, resolve_rc_gate_mode
 from core.models.backbones.mobilepixornext_blocks import (
     MobilePixorNeXtBlock,
     DownsampleBlock,
-    LiteMLARefinement,
 )
 from core.models.backbones.rc_sgfpn import RangeConditionedSGFPN
 
@@ -29,9 +28,9 @@ class MobilePixorNeXtBackbone(nn.Module):
     Args:
         input_channels: Number of BEV input slices (e.g. 8 for RichBEV, 35 for binary slices).
         backbone_out_dim: Channels of the output feature map (default 16 for Header).
-        c4_attention: Attention adapter at Stage 3 ('none' or 'litemla').
-        c4_attention_scales: Regional kernel scales used by LiteMLA.
-        c4_attention_qk_norm: QK normalization mode ('none', 'rmsnorm', or 'layernorm').
+        c4_attention: Retired option; only 'none' is supported.
+        c4_attention_scales: Retired option; must be empty.
+        c4_attention_qk_norm: Retired option; only 'none' is supported.
         scale_gated_fpn: Whether to use learnable depthwise scale gating in FPN fusion.
         expansion: Channel expansion ratio inside MobilePixorNeXt blocks.
         use_reparam: Whether to use RepConv7x7 structural reparameterization.
@@ -48,7 +47,7 @@ class MobilePixorNeXtBackbone(nn.Module):
         self,
         input_channels: int = 8,
         backbone_out_dim: int = 16,
-        c4_attention: str = "litemla",
+        c4_attention: str = "none",
         c4_attention_scales: tuple = None,
         c4_attention_qk_norm: str = "none",
         scale_gated_fpn: bool = True,
@@ -150,7 +149,7 @@ class MobilePixorNeXtBackbone(nn.Module):
 
         # -------------------------------------------------------------
         # 3. Stage 3 (200x176 -> 100x88, stride 8, 96 channels)
-        # Core semantic-geometric stage with single-stage attention hook
+        # Core semantic-geometric convolution stage
         # -------------------------------------------------------------
         self.down3 = DownsampleBlock(48, 96, stride=2)
         self.stage3 = nn.Sequential(
@@ -158,20 +157,8 @@ class MobilePixorNeXtBackbone(nn.Module):
               for _ in range(self.stage_depths[1])),
         )
 
-        attn_choice = feature_options.c4_attention
-        if attn_choice == "none":
-            self.c4_attention = nn.Identity()
-        elif attn_choice == "litemla":
-            self.c4_attention = LiteMLARefinement(
-                channels=96,
-                head_dim=16,
-                scales=feature_options.c4_attention_scales,
-                layer_scale_init=0.01,
-                qk_norm=feature_options.c4_attention_qk_norm,
-            )
-        else:
-            raise ValueError(f"Unsupported c4_attention {c4_attention!r}; expected 'none' or 'litemla'")
-        self.c4_attention_name = attn_choice
+        self.c4_attention = nn.Identity()
+        self.c4_attention_name = "none"
 
         # -------------------------------------------------------------
         # 4. Stage 4 (100x88 -> 50x44, stride 16, 128 channels)

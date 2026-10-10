@@ -52,7 +52,7 @@ python3 tools/kitti_training_pipeline/train.py \
   --num-workers 4
 ```
 
-The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, LiteMLA attention), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `gw_qal`, `uwag`), and data augmentation.
+The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, optional Focal Context), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `uwag`), and data augmentation.
 
 Resume with `--resume /path/to/checkpoint.pt`.
 
@@ -86,12 +86,17 @@ The repository utilizes **a single master configuration file** (`configs/config.
 Experiments, ablation studies, and benchmarks are customized directly through the standard Colab notebook (`3D_Lidar_Object_Detection_Notebook_standard.ipynb`) or CLI overrides:
 
 - **Backbones**: `mobilepixornext`, `mobilepixor`, `mobilepixor_coordatt`
-- **BEV Encodings**: `rich8` (8ch), `rich10` (10ch), `rich11` (11ch), `rich12` (12ch), `binary_slices` (35ch)
+- **BEV Encodings**: `rich8` (8ch), `hist14` (14ch), `binary_slices` (35ch), and pillar encoders (32ch)
 - **Necks**: `scale_gated_fpn` (SG-FPN), `neck_type` (`sgfpn`, `rc_sgfpn`, `rc_bisgfpn`)
-- **Attention**: `c4_attention: "litemla"` with scales `[5]` or `[3, 5]` and QK normalization (`none`, `rmsnorm`)
+- **Context and Attention**: optional `c4_context: "focal"` and `local_attention: "eca"` or `"simam"`; C4 uses convolution by default
 - **Structural Reparameterization**: `use_reparam: true` (fused into 7x7 depthwise at deployment via `--deploy`)
 - **Decoupled Quality Head**: `header_use_iou: true` (IoU-aware quality header with Joint NMS)
-- **Loss Strategies**: `baseline`, `oga`, `q_oga`, `gw_qal`, `uwag`
+- **Loss Strategies**: `baseline`, `oga`, `q_oga`, `uwag`
+
+Retired C4 attention settings are accepted only as `none`, empty scales, and
+`none` QK normalization. Old checkpoints containing C4 attention weights require
+the earlier code revision. Reports under `docs/plans/` preserve historical
+experiment results; they are not the current list of supported options.
 
 The notebook resolves a fresh configuration every time its configuration cell runs.
 You can switch experiments by editing notebook options without changing
@@ -100,7 +105,7 @@ You can switch experiments by editing notebook options without changing
 ```python
 # Model options in the configuration cell
 PRESET = "custom"                 # Or a named preset; "config" keeps the base model/loss/BEV
-BEV_ENCODING = "rich12"
+BEV_ENCODING = "rich8"
 BACKBONE_OUT_DIM = 32              # Neck output / head input channels; MobilePixorNeXt only
 LOSS_NAME = "oga"
 HEADER_USE_IOU = True

@@ -182,13 +182,13 @@ class TestLossStrategies(unittest.TestCase):
         strat = build_loss_strategy("temp_loss_override_test", "gaussian")
         self.assertEqual(strat(self.pred, self.target)["loss"].item(), 3.0)
 
-    def test_q_oga_and_gw_qal_config_integration(self):
+    def test_q_oga_config_integration(self):
         cfg_path = REPO_ROOT / "configs" / "config.json"
         self.assertTrue(cfg_path.exists(), f"Missing config: {cfg_path}")
         with open(cfg_path) as f:
             base_cfg = json.load(f)
 
-        for loss_name in ("q_oga", "gw_qal"):
+        for loss_name in ("q_oga",):
             with self.subTest(loss_name=loss_name):
                 cfg = create_experiment_config(base_cfg, {"loss": {"name": loss_name}})
                 self.assertEqual(cfg["loss"]["name"], loss_name)
@@ -200,7 +200,7 @@ class TestLossStrategies(unittest.TestCase):
                 self.assertTrue(pred["offset"].grad is not None)
                 self.assertTrue(torch.isfinite(loss).item())
 
-    def test_q_oga_and_gw_qal_strategies_and_empty_mask(self):
+    def test_q_oga_strategies_and_empty_mask(self):
         crit_qoga = LossFunction("gaussian", {
             "name": "q_oga",
             "temperature": 2.0,
@@ -217,26 +217,9 @@ class TestLossStrategies(unittest.TestCase):
         loss_dict_qoga["loss"].backward()
         self.assertTrue(pred_qoga["offset"].grad is not None)
 
-        crit_gw = LossFunction("gaussian", {
-            "name": "gw_qal",
-            "temperature": 2.0,
-            "clamp_bound": 3.0,
-            "tau_gwa": 2.0,
-            "tau_sim": 2.0,
-            "beta_q": 1.0,
-            "rda_gamma": 1.5,
-        })
-        pred_gw = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}
-        loss_dict_gw = crit_gw(pred_gw, self.target)
-        for key in ("loss", "cls", "offset", "size", "yaw", "geo", "w2_mean_dist", "rda_mean_weight"):
-            self.assertIn(key, loss_dict_gw)
-            self.assertTrue(torch.isfinite(loss_dict_gw[key]))
-        loss_dict_gw["loss"].backward()
-        self.assertTrue(pred_gw["offset"].grad is not None)
-
         empty_target = dict(self.target)
         empty_target["reg_mask"] = torch.zeros(self.B, self.H, self.W)
-        for name in ("q_oga", "gw_qal"):
+        for name in ("q_oga",):
             with self.subTest(loss_name=name):
                 c = LossFunction("gaussian", {"name": name})
                 p = {k: v.clone().detach().requires_grad_(True) for k, v in self.pred.items()}

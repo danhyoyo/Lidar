@@ -161,7 +161,7 @@ def test_iqa_objective_reaches_only_its_quality_head_and_shared_features(strateg
     assert all(parameter.grad is None for parameter in heads.heads["ped_cyc"].parameters())
 
 
-@pytest.mark.parametrize("strategy", ("uwag", "gw_qal", "q_oga"))
+@pytest.mark.parametrize("strategy", ("uwag", "q_oga"))
 def test_direct_grouped_factory_rejects_strategies_without_separate_iqa(strategy):
     with pytest.raises(ValueError, match="IQA"):
         build("gaussian", {"name": strategy, "use_iou": True}, groups())

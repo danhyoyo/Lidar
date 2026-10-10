@@ -110,7 +110,7 @@ def test_existing_trained_run_is_preserved_when_recipe_changes(tmp_path):
     assert read_json(path) == first
 
 
-@pytest.mark.parametrize("preset", ["TRUC_A_SOTA", "TRUC_B_SOTA", "RICH12_SGFPN", "LEGACY35_BASELINE"])
+@pytest.mark.parametrize("preset", ["TRUC_A_M1", "TRUC_B_M1", "RICH8_SGFPN", "LEGACY35_BASELINE"])
 def test_historical_presets_keep_their_flat_contract(preset):
     config = notebook.resolve_notebook_config(ROOT, preset=preset)
     assert config["model"].get("head_mode", "legacy_single") == "legacy_single"
@@ -118,7 +118,7 @@ def test_historical_presets_keep_their_flat_contract(preset):
     assert config["data"]["bev_encoding"]["name"] != "hist14"
 
 
-@pytest.mark.parametrize("encoding,width", [("rich8", 8), ("rich12", 12), ("binary_slices", 35)])
+@pytest.mark.parametrize("encoding,width", [("rich8", 8), ("rich8", 16), ("binary_slices", 35)])
 def test_hist14_preset_replaces_previous_encoding_width_from_edited_base(tmp_path, encoding, width):
     base = read_json(ROOT / "configs/config.json")
     base["data"]["bev_encoding"] = {"name": encoding, "out_channels": width}

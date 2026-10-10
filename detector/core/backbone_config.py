@@ -1,10 +1,9 @@
 """Pure resolution of backbone feature options; no model/backend imports.
 
 Inactive new module-specific fields are rejected rather than silently discarded.
-Legacy configs retain LiteMLA defaults, saved inactive LiteMLA settings and their
-existing geometry behavior. Candidate topologies require inactive LiteMLA fields
-to be empty/none explicitly.
-Construction and central detector validation consume this contract in task 20/23.
+Legacy geometry behavior is preserved. Retired C4 attention options are accepted
+only in their disabled form so saved convolutional configurations still resolve.
+Construction and central detector validation consume this contract.
 """
 
 from __future__ import annotations
@@ -50,8 +49,8 @@ def resolve_focal_settings(*, version=1, bottleneck=64, dilations=(1, 2, 3),
 
 @dataclass(frozen=True)
 class BackboneFeatureConfig:
-    c4_attention: str = "litemla"
-    c4_attention_scales: tuple[int, ...] = (5,)
+    c4_attention: str = "none"
+    c4_attention_scales: tuple[int, ...] = ()
     c4_attention_qk_norm: str = "none"
     c4_context: str = "none"
     c4_context_version: int | None = None
@@ -153,7 +152,7 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
     if not isinstance(cfg, Mapping):
         raise ValueError("model_config must be a mapping")
     unknown = [k for k in cfg if isinstance(k, str) and
-               k.startswith(("c4_context", "local_attention", "neck_fusion", "detail_path"))
+               k.startswith(("c4_attention", "c4_context", "local_attention", "neck_fusion", "detail_path"))
                and k not in _FIELDS]
     if unknown:
         raise ValueError(f"unsupported feature options: {sorted(unknown)}")
@@ -172,23 +171,14 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
                         if key in cfg and cfg[key] != default}
         _reject_present(cfg, incompatible,
                         "fusion/detail options require standard SG-FPN")
-    attention = _choice(cfg, "c4_attention", "litemla", {"none", "litemla"})
+    attention = _choice(cfg, "c4_attention", "none", {"none"})
     context = _choice(cfg, "c4_context", "none", {"none", "focal"})
     local = _choice(cfg, "local_attention", "none", {"none", "eca", "simam"})
-    if context == "focal" and attention == "litemla":
-        raise ValueError("c4_context=focal and c4_attention=litemla are mutually exclusive")
-    scales = cfg.get("c4_attention_scales", (5,) if attention == "litemla" else ())
-    qk = _choice(cfg, "c4_attention_qk_norm", "none", {"none", "rmsnorm", "layernorm"})
-    if attention == "litemla":
-        if (not isinstance(scales, (list, tuple)) or not scales or
-                any(type(s) is not int or s < 3 or s % 2 == 0 for s in scales) or
-                len(set(scales)) != len(scales)):
-            raise ValueError("c4_attention_scales must contain distinct odd integers >= 3")
-    elif not isinstance(scales, (list, tuple)):
-        raise ValueError("c4_attention_scales must be a list or tuple")
-    elif _candidate_requested(cfg, context, local) and (len(scales) or qk != "none"):
-        raise ValueError("c4_attention_scales must be empty and c4_attention_qk_norm none when attention is none")
-    values = dict(c4_attention=attention, c4_attention_scales=tuple(scales),
+    scales = cfg.get("c4_attention_scales", ())
+    qk = _choice(cfg, "c4_attention_qk_norm", "none", {"none"})
+    if not isinstance(scales, (list, tuple)) or scales:
+        raise ValueError("c4_attention_scales must be empty; C4 attention has been removed")
+    values = dict(c4_attention=attention, c4_attention_scales=(),
                   c4_attention_qk_norm=qk, c4_context=context, local_attention=local)
     if context == "focal":
         settings = resolve_focal_settings(

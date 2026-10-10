@@ -55,7 +55,7 @@ python3 tools/kitti_training_pipeline/train.py \
   --override-json '{"evaluation":{"kitti_root":"/path/to/KITTI/object"}}'
 ```
 
-The master config currently uses MobilePixorNeXt, Rich8, LiteMLA, scale-gated
+The master config currently uses MobilePixorNeXt, Rich8, convolutional C4, scale-gated
 FPN, BN/SiLU heads and baseline loss. Its recipe is AdamW, LR 7e-4, weight
 decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
@@ -258,7 +258,7 @@ machine containing the raw dataset and processed point clouds. Adjust the three
 paths to that machine; use the same config/checkpoint for both modes:
 
 ```bash
-LIDAR_RUN_DIR=/path/to/mobilepixornext-standard_aug-oga_loss-rich10-iqa-sgfpn-reparam-s42
+LIDAR_RUN_DIR=/path/to/mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-reparam-s42
 LIDAR_KITTI_ROOT=/path/to/KITTI_DATASET
 LIDAR_COMPARE_DIR=artifacts/kitti_decoder_comparison
 

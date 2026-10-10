@@ -89,9 +89,9 @@ def test_invalid_geometry_fails_before_shape_resolution():
 
 
 @pytest.mark.parametrize("name,configured,expected", [
-    ("rich8", None, 8), ("rich10", 8, 10), ("rich11", None, 11),
-    ("rich12", None, 12), ("rich8", 9, 9), ("rich8", 12, 12),
-    ("rich10", 16, 16), ("rich8", "10", 10),
+    ("rich8", None, 8),
+    ("rich8", 9, 9), ("rich8", 12, 12),
+    ("rich8", 16, 16), ("rich8", "10", 10),
 ])
 def test_rich_legacy_channel_padding_agrees_with_actual_encoder(name, configured, expected):
     from detector.core.datasets.utils_1.preprocess import encode_bev
@@ -101,15 +101,9 @@ def test_rich_legacy_channel_padding_agrees_with_actual_encoder(name, configured
     actual = encode_bev(points, GEOMETRY, options)
     assert actual.shape == schema.output_shape == (48, 32, expected)
     assert resolve_input_channels(options) == expected
-    if expected == 9:
-        assert schema.channel_names[8] == "reserved_zero_8"
-        assert not actual[..., 8].any()
-    if expected >= 10:
-        assert schema.channel_names[8:10] == ("z_span", "z_std")
-        assert actual[..., 8].max() > 0
-    if expected > 12:
-        assert not actual[..., 12:].any()
-        assert schema.channel_names[12] == "reserved_zero_12"
+    if expected > 8:
+        assert schema.channel_names[8:] == tuple(f"reserved_zero_{index}" for index in range(8, expected))
+        assert not actual[..., 8:].any()
 
 
 def test_binary_slices_preserve_geometry_channels_and_ignore_out_channels():
@@ -168,8 +162,8 @@ sys.path.insert(0, {str(ROOT / 'tools/kitti_training_pipeline')!r})
 from common import input_shape
 from notebook_config import resolve_notebook_config
 assert input_shape({{'data': {{'bev_encoding': {{'name': 'hist14'}}, 'kitti': {{'geometry': {GEOMETRY!r}}}}}}}) == (1, 14, 48, 32)
-cfg = resolve_notebook_config({str(ROOT)!r}, preset='RICH10_SGFPN', augmentation='none')
-assert input_shape(cfg)[1] == 10
+cfg = resolve_notebook_config({str(ROOT)!r}, preset='RICH8_SGFPN', augmentation='none')
+assert input_shape(cfg)[1] == 8
 assert 'torch' not in sys.modules
 """
     subprocess.run([sys.executable, "-c", script], cwd=tmp_path, check=True)

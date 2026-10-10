@@ -79,9 +79,9 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
     return MobilePixorNeXtBackbone(
         input_channels=input_channels,
         backbone_out_dim=cfg.get("backbone_out_dim", 16),
-        c4_attention=cfg.get("c4_attention", "litemla"),
+        c4_attention=features.c4_attention,
         c4_attention_scales=features.c4_attention_scales,
-        c4_attention_qk_norm=cfg.get("c4_attention_qk_norm", "none"),
+        c4_attention_qk_norm=features.c4_attention_qk_norm,
         scale_gated_fpn=cfg.get("scale_gated_fpn", True),
         expansion=cfg.get("expansion", 2.5),
         use_reparam=cfg.get("use_reparam", False),

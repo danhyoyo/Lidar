@@ -11,7 +11,6 @@ sys.path[:0] = [
 from core.models.backbones.mobilepixornext_blocks import (
     MobilePixorNeXtBlock,
     DownsampleBlock,
-    LiteMLARefinement,
 )
 
 
@@ -40,20 +39,10 @@ def test_downsample_block():
     assert out.shape == (2, 64, 50, 44), f"Expected (2, 64, 50, 44), got {out.shape}"
 
 
-def test_litemla_block():
-    attn = LiteMLARefinement(channels=96, head_dim=16, scales=(5,), layer_scale_init=0.01)
-    x = torch.randn(2, 96, 50, 44, requires_grad=True)
-    out = attn(x)
-    assert out.shape == (2, 96, 50, 44), f"Expected (2, 96, 50, 44), got {out.shape}"
-    out.sum().backward()
-    assert x.grad is not None, "Gradient should propagate through LiteMLA"
-    assert not torch.isnan(x.grad).any(), "Gradient should not contain NaNs"
-
-
 def test_mobilepixornext_backbone_forward_and_shapes():
     from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
-    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
+    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="none")
     x = torch.randn(2, 8, 800, 704, requires_grad=True)
     out = backbone(x)
     assert out.shape == (2, 16, 200, 176), f"Expected (2, 16, 200, 176), got {out.shape}"
@@ -65,21 +54,11 @@ def test_mobilepixornext_backbone_forward_and_shapes():
 def test_mobilepixornext_backbone_parameter_budget():
     from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
-    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="litemla")
+    backbone = MobilePixorNeXtBackbone(input_channels=8, backbone_out_dim=16, c4_attention="none")
     total_params = sum(p.numel() for p in backbone.parameters())
     print(f"\nMobilePixorNeXt Backbone Parameters: {total_params:,}")
     assert total_params < 2_000_000, f"Backbone must be < 2M params, got {total_params:,}"
     assert total_params > 500_000, f"Backbone should have enough capacity, got {total_params:,}"
-
-
-def test_mobilepixornext_backbone_attention_options():
-    from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
-
-    bb_none = MobilePixorNeXtBackbone(input_channels=8, c4_attention="none")
-    bb_litemla = MobilePixorNeXtBackbone(input_channels=8, c4_attention="litemla")
-    params_none = sum(p.numel() for p in bb_none.parameters())
-    params_litemla = sum(p.numel() for p in bb_litemla.parameters())
-    assert params_litemla > params_none, "LiteMLA should add attention parameters"
 
 
 def test_custom_model_mobilepixornext():
@@ -89,7 +68,7 @@ def test_custom_model_mobilepixornext():
         "backbone": "mobilepixornext",
         "cls_encoding": "gaussian",
         "backbone_out_dim": 16,
-        "c4_attention": "litemla",
+        "c4_attention": "none",
         "scale_gated_fpn": True,
     }
     model = CustomModel(cfg, num_classes=4, input_channels=8)
@@ -190,26 +169,6 @@ def test_mobilepixornext_torchscript_compilation():
     assert torch.allclose(out_eager_nogate, out_scripted_nogate, atol=1e-5)
 
 
-def test_litemla_numerical_stability():
-    attn = LiteMLARefinement(channels=96, head_dim=16, scales=(5,), eps=1e-6)
-
-    # 1. Zero input (e.g. empty pointcloud BEV grid)
-    x_zero = torch.zeros(2, 96, 50, 44, requires_grad=True)
-    out_zero = attn(x_zero)
-    assert not torch.isnan(out_zero).any(), "Zero input must not produce NaN"
-    assert not torch.isinf(out_zero).any(), "Zero input must not produce Inf"
-    out_zero.sum().backward()
-    assert x_zero.grad is not None and not torch.isnan(x_zero.grad).any(), "Gradients of zero input must not be NaN"
-
-    # 2. Extreme large magnitude input
-    x_large = (torch.randn(2, 96, 50, 44) * 50.0).requires_grad_(True)
-    out_large = attn(x_large)
-    assert not torch.isnan(out_large).any(), "Large input must not produce NaN"
-    assert not torch.isinf(out_large).any(), "Large input must not produce Inf"
-    out_large.sum().backward()
-    assert x_large.grad is not None and not torch.isnan(x_large.grad).any(), "Gradients of large input must not be NaN"
-
-
 def test_explicit_legacy_depths_preserve_weights_keys_counts_and_predictions():
     from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
     with torch.random.fork_rng(devices=[]):
@@ -217,7 +176,7 @@ def test_explicit_legacy_depths_preserve_weights_keys_counts_and_predictions():
         default = MobilePixorNeXtBackbone().eval()
         torch.manual_seed(17)
         explicit = MobilePixorNeXtBackbone(stage_depths=[2, 4, 2]).eval()
-    assert sum(p.numel() for p in explicit.parameters()) == 674256
+    assert sum(p.numel() for p in explicit.parameters()) == 616080
     assert list(default.state_dict()) == list(explicit.state_dict())
     for key, value in default.state_dict().items():
         torch.testing.assert_close(value, explicit.state_dict()[key], rtol=0, atol=0)

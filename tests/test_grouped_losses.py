@@ -163,7 +163,7 @@ def test_factory_keeps_legacy_facade_and_strict_state_keys():
 @pytest.mark.parametrize("classification,config", [
     ("gaussian", {"name": "uwag", "use_iou": True}),
     ("gaussian", {"name": "q_oga", "quality_target": "rotated_iou", "use_iou": True}),
-    ("binary", {"name": "q_oga"}), ("binary", {"name": "gw_qal"}),
+    ("binary", {"name": "q_oga"}),
 ])
 def test_direct_grouped_construction_enforces_loss_capabilities(classification, config):
     with pytest.raises(ValueError):

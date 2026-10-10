@@ -94,7 +94,7 @@ def configured_model(classification="gaussian", strategy="oga", iqa=True, groupe
 
 @pytest.mark.parametrize("classification,strategy,iqa", [
     ("gaussian", "baseline", True), ("gaussian", "oga", True), ("gaussian", "uwag", False),
-    ("gaussian", "gw_qal", False), ("gaussian", "q_oga", False),
+    ("gaussian", "q_oga", False),
     ("binary", "baseline", True), ("binary", "oga", True), ("binary", "uwag", False),
 ])
 @pytest.mark.parametrize("empty_vru", [False, True])

@@ -542,7 +542,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--override-json",
         type=str,
         default=None,
-        help="JSON string of config keys to override dynamically (e.g. '{\"loss\": {\"name\": \"gw_qal\"}}')",
+        help="JSON string of config keys to override dynamically (e.g. '{\"loss\": {\"name\": \"oga\"}}')",
     )
     return parser
 

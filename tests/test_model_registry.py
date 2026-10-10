@@ -38,7 +38,7 @@ class TestBackboneRegistry(unittest.TestCase):
 
         bb_mobilepixornext = build_backbone(
             "mobilepixornext",
-            {"backbone_out_dim": 16, "c4_attention": "litemla", "scale_gated_fpn": True},
+            {"backbone_out_dim": 16, "c4_attention": "none", "scale_gated_fpn": True},
             input_channels=8,
         )
         self.assertIsInstance(bb_mobilepixornext, MobilePixorNeXtBackbone)

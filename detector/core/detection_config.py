@@ -75,7 +75,7 @@ def resolve_detection_config(config):
     use_iou = _boolean(model, "header_use_iou")
     if use_iou != _boolean(loss, "use_iou"):
         raise ValueError("header_use_iou and loss.use_iou must agree")
-    strategy = _choice(loss, "name", "baseline", {"baseline", "oga", "uwag", "gw_qal", "q_oga"})
+    strategy = _choice(loss, "name", "baseline", {"baseline", "oga", "uwag", "q_oga"})
     if box_mode == "3d" and strategy not in ("baseline", "oga"):
         raise ValueError("3D supports only baseline or oga; other strategy extensions are unimplemented")
     vertical_weight = (finite_scalar(loss.get("vertical_loss_weight"), "vertical_loss_weight", positive=True)
@@ -120,7 +120,7 @@ def resolve_detection_config(config):
             raise ValueError("quality curriculum requires quality_target='rotated_iou'")
         if quality == "rotated_iou" and classification != "gaussian":
             raise ValueError("Exact Q-OGA requires Gaussian classification and BEV boxes")
-    if mode == "grouped" and classification == "binary" and strategy in ("q_oga", "gw_qal"):
+    if mode == "grouped" and classification == "binary" and strategy == "q_oga":
         raise ValueError(f"{strategy}: binary grouped support awaits explicit parity evidence")
 
     normalized = copy.deepcopy(dict(model))

@@ -60,7 +60,7 @@ def test_registry_threads_every_feature_option_without_mutating_config():
 
 
 @pytest.mark.parametrize('cfg', [
-    {'c4_context':'focal'}, {**BASE,'c4_context_version':1},
+    {**BASE,'c4_context_version':1},
     {**BASE,'local_attention':'eca','local_attention_simam_lambda':0.001},
     {**BASE,'detail_path':True,'neck_type':'rc_sgfpn'},
     {**BASE,'c4_context':'focal','c4_attention_scales':[5]},

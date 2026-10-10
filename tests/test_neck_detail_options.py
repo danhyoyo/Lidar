@@ -23,7 +23,7 @@ def test_fusion24_explicit_and_default_keep_exact_legacy_weights_keys_and_predic
     assert set(default.state_dict()) == set(explicit.state_dict())
     for key, value in default.state_dict().items():
         assert torch.equal(value, explicit.state_dict()[key]), key
-    assert sum(p.numel() for p in default.parameters()) == 674256
+    assert sum(p.numel() for p in default.parameters()) == 616080
     x = torch.randn(1, 8, 32, 48)
     with torch.no_grad():
         torch.testing.assert_close(default(x), explicit(x), rtol=0, atol=0)

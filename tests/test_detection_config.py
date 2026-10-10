@@ -54,18 +54,18 @@ def test_invalid_weights(weights):
         resolve(config)
 
 
-@pytest.mark.parametrize("strategy", ["baseline", "oga", "uwag", "gw_qal", "q_oga"])
+@pytest.mark.parametrize("strategy", ["baseline", "oga", "uwag", "q_oga"])
 @pytest.mark.parametrize("classification", ["gaussian", "binary"])
 def test_grouped_strategy_support_matrix(strategy, classification):
     config = candidate(loss=strategy, iqa=False, classification=classification)
-    if classification == "binary" and strategy in ("q_oga", "gw_qal"):
+    if classification == "binary" and strategy in ("q_oga",):
         with pytest.raises(ValueError, match="binary grouped"):
             resolve(config)
     else:
         assert resolve(config).cls_encoding == classification
 
 
-@pytest.mark.parametrize("strategy", ["baseline", "oga", "uwag", "gw_qal", "q_oga"])
+@pytest.mark.parametrize("strategy", ["baseline", "oga", "uwag", "q_oga"])
 def test_iqa_only_when_supervised_by_supported_strategy(strategy):
     config = candidate(loss=strategy)
     if strategy in ("baseline", "oga"):
@@ -100,7 +100,7 @@ def test_legacy_rejects_group_only_options_but_retains_unadvertised_binary_losse
             config["loss"]["group_weights"] = {}
         with pytest.raises(ValueError, match="legacy_single"):
             resolve(config)
-    for strategy in ("q_oga", "gw_qal"):
+    for strategy in ("q_oga",):
         assert resolve(candidate(False, strategy, False, "binary")).head_mode == "legacy_single"
 
 
@@ -130,13 +130,6 @@ def test_exact_qoga_restrictions_and_curriculum_validation():
         invalid["loss"]["quality_target"] = "rotated_iou"
         with pytest.raises(ValueError, match="Gaussian"):
             resolve(invalid)
-
-
-def test_shared_backbone_contract_rejects_focal_litemla_conflict():
-    config = candidate()
-    config["model"]["c4_context"] = "focal"
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        resolve(config)
 
 
 @pytest.mark.parametrize("boundary", ["pipeline", "notebook"])

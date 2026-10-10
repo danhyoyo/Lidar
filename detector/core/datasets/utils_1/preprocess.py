@@ -17,22 +17,6 @@ def _grid_shape(geometry):
     return tuple(shape)
 
 
-_R_GRID_CACHE = {}
-
-
-def _get_range_grid(geometry, y_size: int, x_size: int) -> np.ndarray:
-    key = (
-        float(geometry["x_min"]), float(geometry["x_max"]), float(geometry["x_res"]),
-        float(geometry["y_min"]), float(geometry["y_max"]), float(geometry["y_res"]),
-        y_size, x_size,
-    )
-    if key not in _R_GRID_CACHE:
-        y_coords = (np.arange(y_size, dtype=np.float32) + 0.5) * float(geometry["y_res"]) + float(geometry["y_min"])
-        x_coords = (np.arange(x_size, dtype=np.float32) + 0.5) * float(geometry["x_res"]) + float(geometry["x_min"])
-        _R_GRID_CACHE[key] = np.sqrt(y_coords[:, None]**2 + x_coords[None, :]**2).ravel()
-    return _R_GRID_CACHE[key]
-
-
 def encode_bev(points, geometry, bev_encoding=None):
     """Encode KITTI points as binary slices, legacy RichBEV or hist14 v1."""
     encoding = bev_encoding or {"name": "binary_slices"}
@@ -47,20 +31,14 @@ def encode_bev(points, geometry, bev_encoding=None):
         from .bev_backend import encode_hist14
 
         return encode_hist14(points, resolve_bev_encoding(encoding, geometry))
-    valid_names = {"rich8", "rich10", "rich11", "rich12"}
+    valid_names = {"rich8"}
     if name not in valid_names:
         raise ValueError(f"unsupported BEV encoding: {name!r}. Supported: {sorted(valid_names)}")
     if points.ndim != 2 or points.shape[1] < 4:
         raise ValueError(f"{name} expects points shaped (N, >=4)")
 
-    default_channels = {
-        "rich8": 8,
-        "rich10": 10,
-        "rich11": 11,
-        "rich12": 12,
-    }
     configured = encoding.get("out_channels")
-    out_channels = default_channels[name] if configured is None else max(int(configured), default_channels[name])
+    out_channels = 8 if configured is None else max(int(configured), 8)
 
     density_norm = float(encoding.get("density_norm", 32.0))
     intensity_scale = float(encoding.get("intensity_scale", 1.0))
@@ -99,31 +77,6 @@ def encode_bev(points, geometry, bev_encoding=None):
     np.maximum.at(output[5], flat, intensity)
     output[6] = np.bincount(flat, weights=intensity, minlength=output.shape[1]) / np.maximum(count, 1)
     output[7] = np.minimum(1.0, np.log1p(count) / np.log1p(density_norm))
-
-    if out_channels >= 10:
-        # Channel 8: Height span Delta_z = z_max - z_min (normalized)
-        z_min_arr = np.full(y_size * x_size, 1.0, dtype=np.float32)
-        np.minimum.at(z_min_arr, flat, z_norm)
-        output[8] = np.where(count > 0, np.maximum(0.0, output[3] - z_min_arr), 0.0).astype(np.float32)
-
-        # Channel 9: Vertical height standard deviation sigma_z = sqrt(max(0, E[z^2] - (E[z])^2))
-        z_sq_mean = np.bincount(flat, weights=z_norm**2, minlength=output.shape[1]) / np.maximum(count, 1)
-        var_z = np.maximum(0.0, z_sq_mean - output[4]**2)
-        output[9] = np.where(count > 1, np.sqrt(var_z), 0.0).astype(np.float32)
-
-    if out_channels >= 11:
-        # Channel 10: Intensity contrast Delta_i = i_max - i_mean
-        output[10] = np.where(count > 0, np.maximum(0.0, output[5] - output[6]), 0.0).astype(np.float32)
-
-    if out_channels >= 12:
-        # Channel 11: Range-compensated density (log-density with quadratic range boost)
-        r_grid = _get_range_grid(geometry, y_size, x_size)
-        r_scale = 1.0 + (r_grid / 20.0) ** 2
-        output[11] = np.where(
-            count > 0,
-            np.minimum(1.0, np.log1p(count * r_scale) / np.log1p(density_norm * 16.0)),
-            0.0,
-        ).astype(np.float32)
 
     return output.reshape(out_channels, y_size, x_size).transpose(1, 2, 0).astype(np.float32, copy=False)
 
@@ -187,15 +140,6 @@ def trasform_label2metric(label, geometry, ratio=4):
 
     return metric
 
-def transform_metric2label(metric, ratio=4, grid_size=0.1, base_height=100):
-    '''
-    :param label: numpy array of shape [..., 2] of coordinates in metric space
-    :return: numpy array of shape [..., 2] of the same coordinates in label_map space
-    '''
-
-    label = (metric / ratio ) / grid_size
-    label[..., 1] += base_height
-    return label
 
 def get_points_in_a_rotated_box(corners, label_shape=[200, 175]):
     def minY(x0, y0, x1, y1, x):

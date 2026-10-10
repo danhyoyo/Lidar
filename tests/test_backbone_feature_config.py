@@ -29,10 +29,10 @@ def test_resolver_exists_without_importing_numeric_frameworks():
                    cwd=ROOT, check=True)
 
 
-def test_missing_fields_preserve_historical_topology_and_are_immutable():
+def test_missing_fields_use_convolutional_topology_and_are_immutable():
     result = resolve({})
-    assert result.c4_attention == "litemla"
-    assert result.c4_attention_scales == (5,)
+    assert result.c4_attention == "none"
+    assert result.c4_attention_scales == ()
     assert result.c4_attention_qk_norm == "none"
     assert result.c4_context == result.local_attention == "none"
     assert result.neck_fusion_channels == 24 and result.detail_path is False
@@ -87,7 +87,6 @@ def test_invalid_focal_and_common_settings():
 
 def test_conflicting_or_ignored_module_fields_are_rejected():
     conflicting_configs = [
-        {"c4_context": "focal"},  # missing legacy attention still means LiteMLA
         {**FOCAL, "c4_attention_scales": [5]},
         {**FOCAL, "c4_attention_qk_norm": "rmsnorm"},
         {"c4_context_bottleneck": 64}, {"c4_context_version": 1},
@@ -95,7 +94,7 @@ def test_conflicting_or_ignored_module_fields_are_rejected():
         {"local_attention_layer_scale_init": 0.001},
         {"local_attention": "eca", "local_attention_simam_lambda": 0.0001},
         {"local_attention": "simam", "local_attention_eca_kernel_size": 3},
-        {"c4_attention": "other"}, {"c4_attention_scales": []},
+        {"c4_attention": "other"}, {"c4_attention_scales": None},
         {"c4_attention_scales": [True]}, {"c4_attention_scales": [4]},
         {"c4_attention_scales": [5, 5]}, {"c4_attention_qk_norm": "other"},
         {"c4_context_typo": 1}, {"local_attention_typo": 1},
@@ -163,17 +162,13 @@ def test_resolver_accepts_legacy_non_next_config_without_new_options():
                     "c4_attention_qk_norm": "none"}).c4_attention_scales == ()
 
 
-def test_historical_conv_diagnostic_keeps_its_inactive_attention_fields_in_saved_identity():
-    cfg = json.loads((ROOT / "configs/experiments/attention_diagnostic/e0_conv.json").read_text())["model"]
-    result = resolve(cfg)
-    assert result.c4_attention == "none"
-    assert result.c4_attention_scales == (5,)
-    assert result.to_dict()["c4_attention_scales"] == [5]
-    assert resolve(result.to_dict()) == result
-    with pytest.raises(ValueError):
-        resolve({**cfg, "c4_context": "focal"})
-
-
 def test_unrepresentable_scalar_fails_with_configuration_error():
     with pytest.raises(ValueError, match="c4_context_layer_scale_init"):
         resolve({**FOCAL, "c4_context_layer_scale_init": 10**400})
+
+
+def test_conv_diagnostic_has_only_disabled_attention_settings():
+    cfg = json.loads((ROOT / "configs/experiments/attention_diagnostic/e0_conv.json").read_text())["model"]
+    result = resolve(cfg)
+    assert result.c4_attention == "none" and result.c4_attention_scales == ()
+    assert resolve({**cfg, "c4_context": "focal"}).c4_context == "focal"

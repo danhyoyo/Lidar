@@ -33,7 +33,7 @@ def config(local="none", strategy="oga", iqa=True, classification="gaussian"):
 @pytest.mark.parametrize("local", ["none", "eca", "simam"])
 @pytest.mark.parametrize("classification,strategy,iqa", [
     ("gaussian", "baseline", True), ("gaussian", "oga", True), ("gaussian", "uwag", False),
-    ("gaussian", "gw_qal", False), ("gaussian", "q_oga", False), ("gaussian", "exact_q_oga", False),
+    ("gaussian", "q_oga", False), ("gaussian", "exact_q_oga", False),
     ("binary", "baseline", True), ("binary", "oga", True), ("binary", "uwag", False)])
 def test_cuda_fp32_all_adapters_supported_objectives_and_empty_targets(local, classification, strategy, iqa):
     report = module().run_smoke(config(local, strategy, iqa, classification), device="cuda",

@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "detector"),
                str(ROOT / "detector/core/datasets"), str(ROOT / "tools/kitti_training_pipeline")]
 from core.losses.loss_fn import build_loss_function
-from core.models.backbones.mobilepixornext_blocks import LiteMLARefinement
 from tools.kitti_training_pipeline.common import (backbone_feature_spec, build_model, bev_encoding_spec,
                                                  detection_spec, model_parameter_report)
 
@@ -104,8 +103,6 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
     counts = parameters["parameter_counts"]
     if backbone >= max_backbone_parameters:
         raise ValueError(f"backbone including neck has {backbone} parameters; must be strictly less than {max_backbone_parameters}")
-    if torch.device(device).type == "meta" and any(isinstance(m, LiteMLARefinement) for m in model.modules()):
-        raise ValueError("LiteMLA autocast cannot run on meta; select --device cpu for this legacy variant")
 
     conv_macs, feature_shape, handles = {}, [], []
     for name, module in model.named_modules():

@@ -19,7 +19,7 @@ class TestRunNameAndLogging(unittest.TestCase):
         cfg = create_experiment_config(self.base_cfg, {
             "model": {
                 "scale_gated_fpn": True,
-                "c4_attention_scales": [3, 5],
+                "c4_attention_scales": [],
                 "use_reparam": True,
                 "header_use_iou": True,
             },
@@ -30,7 +30,7 @@ class TestRunNameAndLogging(unittest.TestCase):
         run_name = generate_run_name(cfg, seed=42)
         self.assertEqual(
             run_name,
-            "mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-ms_litemla-reparam-s42",
+            "mobilepixornext-standard_aug-oga_loss-rich8-iqa-sgfpn-reparam-s42",
         )
 
     def test_run_name_format_iqa(self):
@@ -141,62 +141,6 @@ class TestRunNameAndLogging(unittest.TestCase):
             "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-s42",
         )
 
-    def test_run_name_format_ms_litemla(self):
-        cfg = create_experiment_config(self.base_cfg, {
-            "model": {
-                "backbone": "mobilepixornext",
-                "scale_gated_fpn": True,
-                "c4_attention": "litemla",
-                "c4_attention_scales": [3, 5],
-                "header_use_iou": False,
-                "use_reparam": False,
-            },
-            "loss": {"name": "baseline", "use_iou": False},
-            "data": {"bev_encoding": {"name": "rich8"}},
-            "augmentation": {"p": 0.5},
-        })
-        run_name = generate_run_name(cfg, seed=42)
-        self.assertEqual(
-            run_name,
-            "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-sgfpn-ms_litemla-s42",
-        )
-
-    def test_run_name_distinguishes_truc_b_variants(self):
-        cfg1 = create_experiment_config(self.base_cfg, {
-            "model": {
-                "scale_gated_fpn": True,
-                "c4_attention_scales": [],
-                "use_reparam": True,
-                "header_use_iou": False,
-            },
-            "loss": {"name": "q_oga", "use_iou": False},
-            "data": {"bev_encoding": {"name": "rich8"}},
-            "augmentation": {"p": 0.5},
-        })
-        cfg2 = create_experiment_config(self.base_cfg, {
-            "model": {
-                "scale_gated_fpn": True,
-                "c4_attention_scales": [3, 5],
-                "use_reparam": True,
-                "header_use_iou": False,
-            },
-            "loss": {"name": "q_oga", "use_iou": False},
-            "data": {"bev_encoding": {"name": "rich8"}},
-            "augmentation": {"p": 0.5},
-        })
-        name1 = generate_run_name(cfg1, seed=42)
-        name2 = generate_run_name(cfg2, seed=42)
-        self.assertNotEqual(name1, name2)
-        self.assertNotIn("ms_litemla", name1)
-        self.assertIn("ms_litemla", name2)
-        self.assertEqual(
-            name1,
-            "mobilepixornext-standard_aug-q_oga_loss-rich8-baseline_iou-sgfpn-reparam-s42",
-        )
-        self.assertEqual(
-            name2,
-            "mobilepixornext-standard_aug-q_oga_loss-rich8-baseline_iou-sgfpn-ms_litemla-reparam-s42",
-        )
 
     def test_all_configs_generate_valid_run_name_format(self):
         configs = list((REPO_ROOT / "configs").rglob("*.json"))
@@ -214,7 +158,7 @@ class TestRunNameAndLogging(unittest.TestCase):
             self.assertIn(parts[1], {"pcu", "standard_aug", "compose_aug", "noaug",
                                      "openpcdet_aug", "openpcdet_gt_aug", "hybrid_gt_aug"})
             self.assertTrue(parts[2].endswith("_loss"))
-            self.assertIn(parts[3], {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate", "legacy35"})
+            self.assertIn(parts[3], {"rich8", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate", "legacy35"})
             self.assertIn(parts[4], {"baseline_iou", "iqa"})
 
     def test_trainer_has_no_tqdm_overhead(self):
@@ -241,12 +185,12 @@ class TestRunNameAndLogging(unittest.TestCase):
             "--config", "configs/config.json",
             "--detector-root", "detector",
             "--output-root", "/tmp",
-            "--override-json", '{"loss": {"name": "gw_qal", "beta_q": 1.0}}',
+            "--override-json", '{"loss": {"name": "oga", "corner_beta": 1.0}}',
         ])
-        self.assertEqual(args.override_json, '{"loss": {"name": "gw_qal", "beta_q": 1.0}}')
+        self.assertEqual(args.override_json, '{"loss": {"name": "oga", "corner_beta": 1.0}}')
         parsed = json.loads(args.override_json)
-        self.assertEqual(parsed["loss"]["name"], "gw_qal")
-        self.assertEqual(parsed["loss"]["beta_q"], 1.0)
+        self.assertEqual(parsed["loss"]["name"], "oga")
+        self.assertEqual(parsed["loss"]["corner_beta"], 1.0)
 
 
 if __name__ == "__main__":

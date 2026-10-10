@@ -312,7 +312,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "rich10", "rich11", "rich12", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate"}:
+    if bev_name in {"rich8", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -333,9 +333,6 @@ def generate_run_name(
             extras.append("rcadd")
     elif model_cfg.get("scale_gated_fpn", False):
         extras.append("sgfpn")
-    scales = model_cfg.get("c4_attention_scales")
-    if (model_cfg.get("c4_attention") == "ms_litemla" or (scales and len(scales) > 1)) and "ms_litemla" not in extras:
-        extras.append("ms_litemla")
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
     if backbone == "mobilepixornext" and (

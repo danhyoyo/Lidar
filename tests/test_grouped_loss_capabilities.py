@@ -79,7 +79,7 @@ def test_supported_binary_total_and_gradients_match_group_local_legacy_criteria(
                                        cloned["groups"][name][key].grad, rtol=0, atol=0)
 
 
-@pytest.mark.parametrize("strategy", ("gw_qal", "q_oga"))
+@pytest.mark.parametrize("strategy", ("q_oga",))
 @pytest.mark.parametrize("name", ("car", "ped_cyc"))
 @pytest.mark.parametrize("empty", (False, True))
 def test_legacy_binary_quality_coupled_classification_is_not_end_to_end_supported(strategy, name, empty):
@@ -89,18 +89,9 @@ def test_legacy_binary_quality_coupled_classification_is_not_end_to_end_supporte
         tgt["cls"].zero_()
         tgt["reg_mask"].zero_()
     legacy = LossFunction("binary", {"name": strategy})
-    if strategy == "gw_qal" and empty:
-        # Its empty branch falls back to ordinary softmax focal loss; this
-        # says nothing about the populated CQFL branch.
-        result = legacy(pred, tgt)
-        assert torch.isfinite(result["loss"])
-        result["loss"].backward()
-        assert all(value.grad is not None and torch.isfinite(value.grad).all() for value in pred.values())
-    else:
-        # CQFL requires Gaussian [B,C,H,W] targets, whereas binary produces
-        # integer [B,H,W] labels. Retain legacy behavior; grouped fails early.
-        with pytest.raises(IndexError, match="shape of the mask"):
-            legacy(pred, tgt)
+    # CQFL requires Gaussian [B,C,H,W] targets; binary labels are [B,H,W].
+    with pytest.raises(IndexError, match="shape of the mask"):
+        legacy(pred, tgt)
     with pytest.raises(ValueError, match="binary grouped support"):
         build("binary", {"name": strategy}, groups())
 

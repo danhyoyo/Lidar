@@ -81,11 +81,9 @@
   "model": {
     "backbone": "mobilepixornext",
     "backbone_out_dim": 16,
-    "c4_attention": "litemla",
+    "c4_attention": "none",
     "c4_attention_qk_norm": "none",
-    "c4_attention_scales": [
-      5
-    ],
+    "c4_attention_scales": [],
     "cls_encoding": "gaussian",
     "expansion": 2.5,
     "header_act": "silu",
@@ -95,7 +93,7 @@
     "use_reparam": false
   },
   "multi_gpu": false,
-  "note": "Q-OGA quality ablation; archive rich8/LiteMLA/SG-FPN recipe, actual batch 16, seed 42",
+  "note": "Q-OGA quality ablation; archive rich8/convolutional C4/SG-FPN recipe, actual batch 16, seed 42",
   "seed": 42,
   "train": {
     "accumulation_steps": 1,

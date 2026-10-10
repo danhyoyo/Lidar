@@ -11,7 +11,7 @@ from test_grouped_header import header
 from core.losses.loss_fn import LossFunction
 
 
-STRATEGIES = ("oga", "uwag", "gw_qal", "q_oga")
+STRATEGIES = ("oga", "uwag", "q_oga")
 
 
 def snapshot(module):
@@ -134,7 +134,7 @@ def test_eval_preserves_group_emas_and_criterion_roundtrip_preserves_next_traini
     assert_state_equal(restored, snapshot(criterion))
 
 
-@pytest.mark.parametrize("strategy", ("oga", "gw_qal", "q_oga"))
+@pytest.mark.parametrize("strategy", ("oga", "q_oga"))
 def test_invalid_later_group_shape_does_not_update_earlier_ema(strategy):
     criterion = build("gaussian", {"name": strategy}, groups())
     prediction, target = tensors()
