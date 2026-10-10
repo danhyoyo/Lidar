@@ -148,3 +148,61 @@ def test_geometry_tolerance_cannot_alias_an_out_of_grid_point_into_next_row(back
     cloud = np.array([[1000.005, -1.8, -.5, .4]])
     with pytest.raises(ValueError, match="outside.*grid"):
         encoded(cloud, backend, geometry)
+
+
+@pytest.mark.parametrize("backend", ["numpy", "numba"])
+@pytest.mark.parametrize("kind", ["empty", "random", "strided", "integer", "constant"])
+def test_direct_chw_matches_public_hwc_and_owns_each_result(backend, kind):
+    module = importlib.import_module("utils_1.bev_backend")
+    rng = np.random.default_rng(42)
+    points = rng.uniform([0, -2, -2.5, 0], [4, 2, 1, 1], (2000, 4)).astype(np.float32)
+    if kind == "empty":
+        points = points[:0]
+    elif kind == "strided":
+        points = points[::2, ::-1]
+    elif kind == "integer":
+        points = np.array([[1, -1, 0, 1], [2, 1, -1, 0]], dtype=np.int64)
+    elif kind == "constant":
+        points = np.tile([.1, -1.8, -.7, .4], (10001, 1))
+    original = points.copy()
+    schema = resolve_bev_encoding({"name": "hist14", "backend": backend}, GEOMETRY)
+    actual = module.encode_hist14_chw(points, schema)
+    expected = encoded(points, "numpy").transpose(2, 0, 1)
+    assert actual.shape == (14, 8, 16)
+    assert actual.dtype == np.float32 and actual.flags.c_contiguous
+    np.testing.assert_allclose(actual, expected, atol=1e-6, rtol=1e-5)
+    saved = actual.copy()
+    later = module.encode_hist14_chw(np.array([[3.5, 1.5, .5, .8]]), schema)
+    assert not np.shares_memory(actual, later)
+    np.testing.assert_array_equal(actual, saved)
+    np.testing.assert_array_equal(points, original)
+
+
+@pytest.mark.parametrize("backend", ["numpy", "numba"])
+def test_direct_chw_calls_are_safe_to_run_concurrently(backend):
+    from concurrent.futures import ThreadPoolExecutor
+    module = importlib.import_module("utils_1.bev_backend")
+    schema = resolve_bev_encoding({"name": "hist14", "backend": backend}, GEOMETRY)
+    clouds = [np.tile([.1 + index * .3, -1.8, -.5, .4], (index + 1, 1))
+              for index in range(8)]
+    expected = [encoded(points, "numpy").transpose(2, 0, 1) for points in clouds]
+    # Initialize compilation before exercising concurrent rasterization.
+    module.encode_hist14_chw(clouds[0], schema)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        actual = list(pool.map(lambda points: module.encode_hist14_chw(points, schema), clouds))
+    for value, reference in zip(actual, expected):
+        np.testing.assert_allclose(value, reference, atol=1e-6, rtol=1e-5)
+    assert all(not np.shares_memory(a, b) for index, a in enumerate(actual) for b in actual[index + 1:])
+
+
+def test_compiled_large_unsaturated_counts_and_read_only_strided_inputs():
+    module = importlib.import_module("utils_1.bev_backend")
+    schema = resolve_bev_encoding({"name": "hist14", "backend": "numba", "density_norm": 4096}, GEOMETRY)
+    cloud = np.tile([.1, -1.8, -.5, .4, np.nan, np.inf], (2048, 1))
+    points = cloud[::2]
+    points.flags.writeable = False
+    reference = encoded(points, "numpy", density_norm=4096)
+    actual = module.encode_hist14_chw(points, schema)
+    np.testing.assert_allclose(actual, reference.transpose(2, 0, 1), atol=1e-6, rtol=1e-5)
+    assert 0 < actual[2, 0, 0] < 1
+    assert 0 < actual[10, 0, 0] < 1

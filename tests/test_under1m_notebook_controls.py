@@ -67,6 +67,17 @@ def test_notebook_selects_best_ap_and_exposes_independent_ap_interval(tmp_path):
     assert changed['config_dict']['evaluation']['kitti_root']
 
 
+def test_notebook_default_hist14_uses_numba_and_preserves_numpy_checkpoint_identity(tmp_path):
+    import copy
+    namespace = execute_cell(tmp_path)
+    config = namespace["config_dict"]
+    assert config["data"]["bev_encoding"]["name"] == "hist14"
+    assert config["data"]["bev_encoding"]["backend"] == "numba"
+    legacy = copy.deepcopy(config)
+    legacy["data"]["bev_encoding"]["backend"] = "numpy"
+    assert checkpoint_identity(legacy) == checkpoint_identity(config)
+
+
 @pytest.mark.parametrize("mode", ["mul", "add"])
 def test_custom_rc_gate_mode_reaches_snapshot_and_model(tmp_path, mode):
     namespace = execute_cell(tmp_path, {"PRESET": "custom", "NECK_TYPE": "rc_sgfpn",

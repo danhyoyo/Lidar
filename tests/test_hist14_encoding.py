@@ -245,6 +245,18 @@ def test_hist14_validation_and_test_keep_unaugmented_points(tmp_path, task):
         np.testing.assert_array_equal(sample["points"], points)
 
 
+@pytest.mark.parametrize("backend", ["numpy", "numba"])
+def test_hist14_dataset_provides_contiguous_chw_without_transfer_copy(tmp_path, backend):
+    dataset, _, points = small_hist14_dataset(tmp_path, "test")
+    dataset.bev_encoding["backend"] = backend
+    tensor = dataset[0]["voxel"]
+    assert tensor.is_contiguous()
+    assert tensor.contiguous().data_ptr() == tensor.data_ptr()
+    expected = reference(points, dataset.config["kitti"]["geometry"]).transpose(2, 0, 1)
+    np.testing.assert_allclose(tensor.numpy(), expected,
+                               atol=1e-6, rtol=1e-5)
+
+
 def test_hist14_dataset_accepts_empty_scene(tmp_path):
     dataset, _, _ = small_hist14_dataset(tmp_path, empty=True)
     sample = dataset[0]

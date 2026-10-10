@@ -86,7 +86,7 @@
   },
   "data": {
     "bev_encoding": {
-      "backend": "numpy",
+      "backend": "numba",
       "density_norm": 32.0,
       "intensity_scale": 1.0,
       "name": "hist14",

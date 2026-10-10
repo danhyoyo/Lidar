@@ -13,7 +13,7 @@
         "version": 1,
         "density_norm": 32.0,
         "intensity_scale": 1.0,
-        "backend": "numpy"
+        "backend": "numba"
       },
       "out_size_factor": 4,
       "box_mode": "bev",

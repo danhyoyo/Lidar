@@ -30,7 +30,7 @@ def test_manifest_bev_recipe_is_complete_rebuildable_and_matches_actual_counts(v
     assert saved == resolved
     assert checkpoint_identity(saved) == checkpoint_identity(json.loads(json.dumps(saved)))
     schema = bev_encoding_spec(saved)
-    assert schema.channels == 14 and schema.backend == "numpy"
+    assert schema.channels == 14 and schema.backend == "numba"
     assert schema.input_shape == (1, 14, 800, 704)
     detection = detection_spec(saved)
     assert detection.box_mode == "bev" and detection.use_iou

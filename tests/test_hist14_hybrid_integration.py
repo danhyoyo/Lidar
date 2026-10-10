@@ -92,3 +92,20 @@ def test_encoding_benchmark_cli_records_initialization_warmup_and_steady_state(t
     assert results["hist14_numpy"]["semantic_hash"] == results["hist14_numba"]["semantic_hash"]
     assert results["hist14_numpy"]["backend"] == "numpy"
     assert results["hist14_numba"]["backend"] == "numba"
+
+
+def test_encoding_benchmark_chw_cli_measures_contiguous_model_input(tmp_path):
+    output = tmp_path / "chw.json"
+    subprocess.run([sys.executable, str(ROOT / "tools/benchmarks/benchmark_bev_encodings.py"),
+                    "--synthetic", "--points", "30", "--warmup", "1", "--iterations", "2",
+                    "--encodings", "rich8", "hist14_numpy", "hist14_numba",
+                    "--layout", "chw", "--output", str(output)],
+                   cwd=tmp_path, check=True, capture_output=True, text=True)
+    report = json.loads(output.read_text())
+    assert "CHW" in report["scope"]
+    for name, value in report["results"].items():
+        channels = 8 if name == "rich8" else 14
+        assert value["output_layout"] == "chw"
+        assert value["result_shape"] == [channels, 800, 704]
+        assert value["shape_yxc"] == [800, 704, channels]
+        assert value["output_contiguous"] is True

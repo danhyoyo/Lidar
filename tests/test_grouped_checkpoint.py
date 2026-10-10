@@ -160,6 +160,8 @@ def test_matching_pure_legacy_weights_load_explicitly_without_claiming_training_
 
 def test_backend_change_requires_explicit_parity_assertion_and_is_reported():
     config, _ = fixture()
+    # Exercise a historical NumPy checkpoint even when runtime presets use Numba.
+    config["data"]["bev_encoding"]["backend"] = "numpy"
     saved = payload(config, components(config))
     changed = copy.deepcopy(config)
     changed["data"]["bev_encoding"]["backend"] = "numba"

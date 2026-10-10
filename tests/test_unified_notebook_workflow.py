@@ -232,7 +232,7 @@ def test_focal_ablation_rejects_changes_to_other_controlled_conditions(problem):
     elif problem=='schedule':baseline['train']['epochs']+=1
     elif problem=='augmentation':baseline['augmentation']['AUG_CONFIG_LIST'][0]['PROBABILITY']=.3
     elif problem=='loss':baseline['loss']['name']='baseline'
-    elif problem=='encoding':baseline['data']['bev_encoding']['backend']='numba'
+    elif problem=='encoding':baseline['data']['bev_encoding']['backend']='numpy'
     elif problem=='heads':baseline['model']['backbone_out_dim']=24
     else:baseline['model']['local_attention']='eca'
     with pytest.raises(ValueError,match='ablation|match'):module.validate_comparator(candidate,baseline)
