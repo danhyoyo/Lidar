@@ -3,6 +3,18 @@
 This directory contains the preparation, training, evaluation, ONNX export and
 TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
 
+## Backbone diagrams
+
+Open [NN-SVG Backbone Studio](tools/visualization/nn_svg/Backbone.html) locally to
+draw and customize the current MobilePixorNeXt backbone in editable **2D paper style**
+or 3D tensor style. Add/remove/duplicate blocks, edit labels/shapes/colors, move/resize,
+connect branches, group blocks, undo/redo and save portable JSON. The
+[reference-style figure](diagrams/reference_2d/README.md) follows `diagrams/other_paper*.png`
+and includes SVG, vector PDF, 600-dpi PNG and its editable source. The [two-column paper figure](diagrams/paper_2d/README.md)
+includes vector PDF, editable SVG and a 600-dpi PNG. [3D figures](diagrams/nn_svg/README.md)
+and [configuration export instructions](tools/visualization/nn_svg/README.md)
+are included; the backbone viewer runs offline without a build step.
+
 ## Environment
 
 The reproduced run used Python 3.10, PyTorch 2.11.0+cu128, CUDA 12.8 and an

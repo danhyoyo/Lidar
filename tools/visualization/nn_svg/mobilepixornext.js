@@ -1,0 +1,1870 @@
+window.BACKBONE_DIAGRAM = {
+  "schema_version": 1,
+  "name": "MobilePixorNeXt",
+  "source": "configs/config.json",
+  "shape_mode": "inferred from repository architecture and shared configuration contracts",
+  "source_files": [
+    "detector/core/models/backbones/mobilepixornext.py",
+    "detector/core/models/backbones/mobilepixornext_blocks.py",
+    "detector/core/models/backbones/rep_blocks.py",
+    "detector/core/models/backbones/focal_context.py",
+    "detector/core/models/backbones/light_attention.py"
+  ],
+  "input_encoding": "rich8",
+  "options": {
+    "stage_depths": [
+      2,
+      4,
+      2
+    ],
+    "expansion": 2.5,
+    "use_reparam": false,
+    "deploy": false,
+    "scale_gated_fpn": true,
+    "backbone_out_dim": 16,
+    "c4_attention": "none",
+    "c4_attention_scales": [],
+    "c4_attention_qk_norm": "none",
+    "c4_context": "none",
+    "local_attention": "none",
+    "neck_fusion_channels": 24,
+    "detail_path": false
+  },
+  "views": {
+    "overview": {
+      "title": "MobilePixorNeXt · backbone + Scale-Gated FPN",
+      "description": "Bottom-up encoder → top-down FPN → stride-4 feature for the detection header. C2 is consumed by lat_c3; C4 is stride 8. Tensor labels are C × H × W (batch omitted).",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "BEV · rich8",
+          "shape": [
+            8,
+            800,
+            704
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input",
+          "source": "core.bev_encoding",
+          "channel_names": [
+            "height_occupancy_b0",
+            "height_occupancy_b1",
+            "height_occupancy_b2",
+            "z_max",
+            "z_mean",
+            "intensity_max",
+            "intensity_mean",
+            "log_density"
+          ]
+        },
+        {
+          "id": "stem",
+          "label": "Stem · stride 2",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv",
+          "detail_view": "stem",
+          "source": "stem"
+        },
+        {
+          "id": "stage2",
+          "label": "Stage 2 · stride 4",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "block",
+          "repeat": 2,
+          "detail_view": "stage2",
+          "source": "down2 → stage2",
+          "operations": [
+            "Conv 3×3 s2 · 32 → 48 + BN + SiLU",
+            "MobilePixorNeXtBlock × 2"
+          ],
+          "footprint": "7×7 kernel span: 2.8 m × 2.8 m"
+        },
+        {
+          "id": "stage3",
+          "label": "Stage 3 · stride 8",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "block",
+          "repeat": 4,
+          "detail_view": "stage3",
+          "source": "down3 → stage3",
+          "operations": [
+            "Conv 3×3 s2 · 48 → 96 + BN + SiLU",
+            "MobilePixorNeXtBlock × 4"
+          ],
+          "footprint": "7×7 kernel span: 5.6 m × 5.6 m"
+        },
+        {
+          "id": "stage4",
+          "label": "Stage 4 · stride 16",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 6,
+          "row": 1,
+          "kind": "block",
+          "repeat": 2,
+          "detail_view": "stage4",
+          "source": "down4 → stage4",
+          "operations": [
+            "Conv 3×3 s2 · 96 → 128 + BN + SiLU",
+            "MobilePixorNeXtBlock × 2"
+          ],
+          "footprint": "7×7 kernel span: 11.2 m × 11.2 m"
+        },
+        {
+          "id": "l5",
+          "label": "L5 · lateral 1×1",
+          "shape": [
+            48,
+            50,
+            44
+          ],
+          "col": 6,
+          "row": 3,
+          "kind": "conv",
+          "source": "lat_c5",
+          "kernel": 1
+        },
+        {
+          "id": "l4",
+          "label": "L4 · lateral 1×1",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 2,
+          "kind": "conv",
+          "source": "lat_c4",
+          "kernel": 1
+        },
+        {
+          "id": "l3",
+          "label": "L3 · lateral 1×1",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 2,
+          "kind": "conv",
+          "source": "lat_c3",
+          "kernel": 1
+        },
+        {
+          "id": "u4",
+          "label": "U4 · bilinear ↑2",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 5,
+          "row": 3,
+          "kind": "upsample",
+          "operations": [
+            "Bilinear ×2, align_corners=False",
+            "DW 3×3 + BN + SiLU"
+          ],
+          "detail_view": "u4",
+          "source": "refine_u4"
+        },
+        {
+          "id": "p4",
+          "label": "P4 · scale gate",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 3,
+          "kind": "gate",
+          "detail_view": "gate4",
+          "formula": "P4 = U4 + 2σ(DW(L4 + U4)) ⊙ L4"
+        },
+        {
+          "id": "u3",
+          "label": "U3 · bilinear ↑2",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 3,
+          "kind": "upsample",
+          "operations": [
+            "Bilinear ×2, align_corners=False",
+            "Conv 3×3 · 48 → 24 + BN + SiLU"
+          ],
+          "detail_view": "u3",
+          "source": "proj_u3"
+        },
+        {
+          "id": "p3",
+          "label": "P3 · scale gate",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 3,
+          "kind": "gate",
+          "detail_view": "gate3",
+          "formula": "P3 = U3 + 2σ(DW(L3 + U3)) ⊙ L3"
+        },
+        {
+          "id": "out_conv",
+          "label": "Output 3×3 + BN + SiLU",
+          "shape": [
+            16,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 3,
+          "kind": "conv",
+          "source": "out_conv",
+          "detail_view": "output_projection",
+          "kernel": 3
+        },
+        {
+          "id": "output",
+          "label": "To detection header · stride 4",
+          "shape": [
+            16,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 3,
+          "kind": "output"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "stem",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "stem",
+          "target": "stage2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "stage2",
+          "target": "stage3",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "stage3",
+          "target": "stage4",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "stage4",
+          "target": "l5",
+          "label": "lateral",
+          "kind": "lateral"
+        },
+        {
+          "source": "stage3",
+          "target": "l4",
+          "label": "lateral",
+          "kind": "lateral"
+        },
+        {
+          "source": "stage2",
+          "target": "l3",
+          "label": "lateral",
+          "kind": "lateral"
+        },
+        {
+          "source": "l5",
+          "target": "u4",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "u4",
+          "target": "p4",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "l4",
+          "target": "p4",
+          "label": "lateral",
+          "kind": "lateral"
+        },
+        {
+          "source": "p4",
+          "target": "u3",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "u3",
+          "target": "p3",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "l3",
+          "target": "p3",
+          "label": "lateral",
+          "kind": "lateral"
+        },
+        {
+          "source": "p3",
+          "target": "out_conv",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "out_conv",
+          "target": "output",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "stage2": {
+      "title": "Stage 2 · each residual block",
+      "description": "Downsample first; each numbered block has its own weights.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Stage input",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "down",
+          "label": "Conv 3×3 · s2 + BN + SiLU",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv",
+          "source": "down2",
+          "kernel": 3,
+          "stride": 2,
+          "padding": 1
+        },
+        {
+          "id": "block0",
+          "label": "NeXt block 1",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "block",
+          "source": "stage2.0",
+          "detail_view": "block2"
+        },
+        {
+          "id": "block1",
+          "label": "NeXt block 2",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "block",
+          "source": "stage2.1",
+          "detail_view": "block2"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "down",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "down",
+          "target": "block0",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "block0",
+          "target": "block1",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "block2": {
+      "title": "MobilePixorNeXtBlock · Stage 2",
+      "description": "C=48; expansion=2.5; hidden=round(C × expansion)=120. Residual path preserves BCHW; gamma is learned per channel.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "X",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "dw",
+          "label": "DW 7×7",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 7,
+          "groups": 48,
+          "padding": 3,
+          "bias": false,
+          "source": "dwconv"
+        },
+        {
+          "id": "norm1",
+          "label": "BatchNorm",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "expand",
+          "label": "PW 1×1 · expand",
+          "shape": [
+            120,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "silu",
+          "label": "SiLU",
+          "shape": [
+            120,
+            200,
+            176
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "activation"
+        },
+        {
+          "id": "project",
+          "label": "PW 1×1 · project",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "norm2",
+          "label": "BatchNorm",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 6,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "scale",
+          "label": "LayerScale γ",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 7,
+          "row": 1,
+          "kind": "scale",
+          "initial_value": 1e-05,
+          "formula": "γ ⊙ F(X)"
+        },
+        {
+          "id": "add",
+          "label": "Residual add",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 8,
+          "row": 1,
+          "kind": "add"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "dw",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "dw",
+          "target": "norm1",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm1",
+          "target": "expand",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "expand",
+          "target": "silu",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "silu",
+          "target": "project",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "project",
+          "target": "norm2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm2",
+          "target": "scale",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "scale",
+          "target": "add",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "input",
+          "target": "add",
+          "label": "identity",
+          "kind": "skip"
+        }
+      ]
+    },
+    "stage3": {
+      "title": "Stage 3 · each residual block",
+      "description": "Downsample first; each numbered block has its own weights.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Stage input",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "down",
+          "label": "Conv 3×3 · s2 + BN + SiLU",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv",
+          "source": "down3",
+          "kernel": 3,
+          "stride": 2,
+          "padding": 1
+        },
+        {
+          "id": "block0",
+          "label": "NeXt block 1",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "block",
+          "source": "stage3.0",
+          "detail_view": "block3"
+        },
+        {
+          "id": "block1",
+          "label": "NeXt block 2",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "block",
+          "source": "stage3.1",
+          "detail_view": "block3"
+        },
+        {
+          "id": "block2",
+          "label": "NeXt block 3",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "block",
+          "source": "stage3.2",
+          "detail_view": "block3"
+        },
+        {
+          "id": "block3",
+          "label": "NeXt block 4",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "block",
+          "source": "stage3.3",
+          "detail_view": "block3"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "down",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "down",
+          "target": "block0",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "block0",
+          "target": "block1",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "block1",
+          "target": "block2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "block2",
+          "target": "block3",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "block3": {
+      "title": "MobilePixorNeXtBlock · Stage 3",
+      "description": "C=96; expansion=2.5; hidden=round(C × expansion)=240. Residual path preserves BCHW; gamma is learned per channel.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "X",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "dw",
+          "label": "DW 7×7",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 7,
+          "groups": 96,
+          "padding": 3,
+          "bias": false,
+          "source": "dwconv"
+        },
+        {
+          "id": "norm1",
+          "label": "BatchNorm",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "expand",
+          "label": "PW 1×1 · expand",
+          "shape": [
+            240,
+            100,
+            88
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "silu",
+          "label": "SiLU",
+          "shape": [
+            240,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "activation"
+        },
+        {
+          "id": "project",
+          "label": "PW 1×1 · project",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "norm2",
+          "label": "BatchNorm",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 6,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "scale",
+          "label": "LayerScale γ",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 7,
+          "row": 1,
+          "kind": "scale",
+          "initial_value": 1e-05,
+          "formula": "γ ⊙ F(X)"
+        },
+        {
+          "id": "add",
+          "label": "Residual add",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 8,
+          "row": 1,
+          "kind": "add"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "dw",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "dw",
+          "target": "norm1",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm1",
+          "target": "expand",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "expand",
+          "target": "silu",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "silu",
+          "target": "project",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "project",
+          "target": "norm2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm2",
+          "target": "scale",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "scale",
+          "target": "add",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "input",
+          "target": "add",
+          "label": "identity",
+          "kind": "skip"
+        }
+      ]
+    },
+    "stage4": {
+      "title": "Stage 4 · each residual block",
+      "description": "Downsample first; each numbered block has its own weights.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Stage input",
+          "shape": [
+            96,
+            100,
+            88
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "down",
+          "label": "Conv 3×3 · s2 + BN + SiLU",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv",
+          "source": "down4",
+          "kernel": 3,
+          "stride": 2,
+          "padding": 1
+        },
+        {
+          "id": "block0",
+          "label": "NeXt block 1",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "block",
+          "source": "stage4.0",
+          "detail_view": "block4"
+        },
+        {
+          "id": "block1",
+          "label": "NeXt block 2",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "block",
+          "source": "stage4.1",
+          "detail_view": "block4"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "down",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "down",
+          "target": "block0",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "block0",
+          "target": "block1",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "block4": {
+      "title": "MobilePixorNeXtBlock · Stage 4",
+      "description": "C=128; expansion=2.5; hidden=round(C × expansion)=320. Residual path preserves BCHW; gamma is learned per channel.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "X",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "dw",
+          "label": "DW 7×7",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 7,
+          "groups": 128,
+          "padding": 3,
+          "bias": false,
+          "source": "dwconv"
+        },
+        {
+          "id": "norm1",
+          "label": "BatchNorm",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "expand",
+          "label": "PW 1×1 · expand",
+          "shape": [
+            320,
+            50,
+            44
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "silu",
+          "label": "SiLU",
+          "shape": [
+            320,
+            50,
+            44
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "activation"
+        },
+        {
+          "id": "project",
+          "label": "PW 1×1 · project",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "norm2",
+          "label": "BatchNorm",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 6,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "scale",
+          "label": "LayerScale γ",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 7,
+          "row": 1,
+          "kind": "scale",
+          "initial_value": 1e-05,
+          "formula": "γ ⊙ F(X)"
+        },
+        {
+          "id": "add",
+          "label": "Residual add",
+          "shape": [
+            128,
+            50,
+            44
+          ],
+          "col": 8,
+          "row": 1,
+          "kind": "add"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "dw",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "dw",
+          "target": "norm1",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm1",
+          "target": "expand",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "expand",
+          "target": "silu",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "silu",
+          "target": "project",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "project",
+          "target": "norm2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm2",
+          "target": "scale",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "scale",
+          "target": "add",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "input",
+          "target": "add",
+          "label": "identity",
+          "kind": "skip"
+        }
+      ]
+    },
+    "gate4": {
+      "title": "Scale-gated FPN fusion · P4",
+      "description": "L = lateral projection; U = resized and refined top-down feature. Depthwise gate weights and bias initialize to zero, giving gate=1.",
+      "nodes": [
+        {
+          "id": "lateral",
+          "label": "L · lateral",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 0,
+          "row": 0,
+          "kind": "input"
+        },
+        {
+          "id": "up",
+          "label": "U · top-down",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 0,
+          "row": 2,
+          "kind": "input"
+        },
+        {
+          "id": "sum",
+          "label": "L + U",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "add"
+        },
+        {
+          "id": "dw",
+          "label": "DW 3×3 · gate logits",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 3,
+          "padding": 1,
+          "groups": 48,
+          "bias": true,
+          "initial_value": 0
+        },
+        {
+          "id": "sigmoid",
+          "label": "2 × sigmoid",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "activation",
+          "formula": "G = 2σ(DW(L + U))"
+        },
+        {
+          "id": "multiply",
+          "label": "G ⊙ L",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "multiply"
+        },
+        {
+          "id": "output",
+          "label": "P4 = U + G ⊙ L",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "add"
+        }
+      ],
+      "edges": [
+        {
+          "source": "lateral",
+          "target": "sum",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "up",
+          "target": "sum",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "sum",
+          "target": "dw",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "dw",
+          "target": "sigmoid",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "sigmoid",
+          "target": "multiply",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "multiply",
+          "target": "output",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "lateral",
+          "target": "multiply",
+          "label": "lateral",
+          "kind": "skip"
+        },
+        {
+          "source": "up",
+          "target": "output",
+          "label": "top-down",
+          "kind": "skip"
+        }
+      ]
+    },
+    "u4": {
+      "title": "Top-down upsampling · U4",
+      "description": "Interpolation creates no parameters; convolution refines the resized tensor.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Top-down input",
+          "shape": [
+            48,
+            50,
+            44
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "resize",
+          "label": "Bilinear ↑2",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "upsample",
+          "align_corners": false
+        },
+        {
+          "id": "conv",
+          "label": "DW 3×3",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 3,
+          "groups": 48
+        },
+        {
+          "id": "norm",
+          "label": "BatchNorm",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "act",
+          "label": "SiLU",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "activation"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "resize",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "resize",
+          "target": "conv",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "conv",
+          "target": "norm",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm",
+          "target": "act",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "gate3": {
+      "title": "Scale-gated FPN fusion · P3",
+      "description": "L = lateral projection; U = resized and refined top-down feature. Depthwise gate weights and bias initialize to zero, giving gate=1.",
+      "nodes": [
+        {
+          "id": "lateral",
+          "label": "L · lateral",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 0,
+          "kind": "input"
+        },
+        {
+          "id": "up",
+          "label": "U · top-down",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 2,
+          "kind": "input"
+        },
+        {
+          "id": "sum",
+          "label": "L + U",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "add"
+        },
+        {
+          "id": "dw",
+          "label": "DW 3×3 · gate logits",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "depthwise",
+          "kernel": 3,
+          "padding": 1,
+          "groups": 24,
+          "bias": true,
+          "initial_value": 0
+        },
+        {
+          "id": "sigmoid",
+          "label": "2 × sigmoid",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "activation",
+          "formula": "G = 2σ(DW(L + U))"
+        },
+        {
+          "id": "multiply",
+          "label": "G ⊙ L",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "multiply"
+        },
+        {
+          "id": "output",
+          "label": "P3 = U + G ⊙ L",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "add"
+        }
+      ],
+      "edges": [
+        {
+          "source": "lateral",
+          "target": "sum",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "up",
+          "target": "sum",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "sum",
+          "target": "dw",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "dw",
+          "target": "sigmoid",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "sigmoid",
+          "target": "multiply",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "multiply",
+          "target": "output",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "lateral",
+          "target": "multiply",
+          "label": "lateral",
+          "kind": "skip"
+        },
+        {
+          "source": "up",
+          "target": "output",
+          "label": "top-down",
+          "kind": "skip"
+        }
+      ]
+    },
+    "u3": {
+      "title": "Top-down upsampling · U3",
+      "description": "Interpolation creates no parameters; convolution refines the resized tensor.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Top-down input",
+          "shape": [
+            48,
+            100,
+            88
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "resize",
+          "label": "Bilinear ↑2",
+          "shape": [
+            48,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "upsample",
+          "align_corners": false
+        },
+        {
+          "id": "conv",
+          "label": "Conv 3×3 · projection",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "conv",
+          "kernel": 3,
+          "groups": 1
+        },
+        {
+          "id": "norm",
+          "label": "BatchNorm",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "act",
+          "label": "SiLU",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "activation"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "resize",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "resize",
+          "target": "conv",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "conv",
+          "target": "norm",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "norm",
+          "target": "act",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "stem": {
+      "title": "Stem · two spatial convolutions",
+      "description": "First convolution downsamples by 2; second keeps the spatial resolution.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "BEV input",
+          "shape": [
+            8,
+            800,
+            704
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "op0",
+          "label": "Conv 3×3 · s2",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv",
+          "source": "stem.0"
+        },
+        {
+          "id": "op1",
+          "label": "BatchNorm",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "norm",
+          "source": "stem.1"
+        },
+        {
+          "id": "op2",
+          "label": "SiLU",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "activation",
+          "source": "stem.2"
+        },
+        {
+          "id": "op3",
+          "label": "Conv 3×3 · s1",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 4,
+          "row": 1,
+          "kind": "conv",
+          "source": "stem.3"
+        },
+        {
+          "id": "op4",
+          "label": "BatchNorm",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 5,
+          "row": 1,
+          "kind": "norm",
+          "source": "stem.4"
+        },
+        {
+          "id": "op5",
+          "label": "SiLU",
+          "shape": [
+            32,
+            400,
+            352
+          ],
+          "col": 6,
+          "row": 1,
+          "kind": "activation",
+          "source": "stem.5"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "op0",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "op0",
+          "target": "op1",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "op1",
+          "target": "op2",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "op2",
+          "target": "op3",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "op3",
+          "target": "op4",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "op4",
+          "target": "op5",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    },
+    "output_projection": {
+      "title": "Output projection · detector interface",
+      "description": "Backbone output only; detection heads are outside this figure.",
+      "nodes": [
+        {
+          "id": "input",
+          "label": "Fused P3",
+          "shape": [
+            24,
+            200,
+            176
+          ],
+          "col": 0,
+          "row": 1,
+          "kind": "input"
+        },
+        {
+          "id": "conv",
+          "label": "Conv 3×3",
+          "shape": [
+            16,
+            200,
+            176
+          ],
+          "col": 1,
+          "row": 1,
+          "kind": "conv"
+        },
+        {
+          "id": "bn",
+          "label": "BatchNorm",
+          "shape": [
+            16,
+            200,
+            176
+          ],
+          "col": 2,
+          "row": 1,
+          "kind": "norm"
+        },
+        {
+          "id": "silu",
+          "label": "SiLU",
+          "shape": [
+            16,
+            200,
+            176
+          ],
+          "col": 3,
+          "row": 1,
+          "kind": "activation"
+        }
+      ],
+      "edges": [
+        {
+          "source": "input",
+          "target": "conv",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "conv",
+          "target": "bn",
+          "label": "",
+          "kind": "flow"
+        },
+        {
+          "source": "bn",
+          "target": "silu",
+          "label": "",
+          "kind": "flow"
+        }
+      ]
+    }
+  }
+};

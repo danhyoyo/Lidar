@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NN-SVG · Backbone Studio</title>
+    <link rel="stylesheet" href="backbone.css">
+</head>
+<body>
+    <button id="controls-backdrop" class="backdrop" aria-label="Đóng bảng điều khiển" tabindex="-1" hidden></button>
+    <aside id="controls" class="sidebar" aria-label="Điều khiển bản vẽ">
+        <div class="sidebar-heading">
+            <a class="brand" href="Backbone.html"><span class="brand-mark">N</span><span>NN-SVG <small>BACKBONE STUDIO</small></span></a>
+            <button id="close-controls" class="secondary" aria-label="Đóng bảng điều khiển">✕</button>
+        </div>
+        <div class="panel-tabs" role="tablist" aria-label="Bảng điều khiển">
+            <button id="tab-setup" role="tab" aria-controls="panel-setup" aria-selected="true">Kiến trúc</button>
+            <button id="tab-blocks" role="tab" aria-controls="panel-blocks" aria-selected="false" tabindex="-1">Block</button>
+            <button id="tab-groups" role="tab" aria-controls="panel-groups" aria-selected="false" tabindex="-1">Nhóm</button>
+            <button id="tab-save" role="tab" aria-controls="panel-save" aria-selected="false" tabindex="-1">Lưu</button>
+        </div>
+        <section id="panel-setup" role="tabpanel" aria-labelledby="tab-setup">
+            <h1 id="model-name">MobilePixorNeXt</h1>
+            <p class="subtle" id="model-summary"></p>
+            <label for="view">Hình đang xem</label>
+            <select id="view"></select>
+            <button id="overview" class="secondary">← Kiến trúc tổng thể</button>
+            <label for="presentation">Kiểu hình</label>
+            <select id="presentation"><option value="reference">2D · màu theo hình mẫu</option><option value="paper">2D · trắng đen</option><option value="paper-composite">2D · ba panel cũ</option><option value="3d">Tensor 3D · NN-SVG</option></select>
+            <p id="paper-help" class="help"></p>
+            <div id="3d-controls" hidden>
+                <label for="spacing">Khoảng cách các khối <output id="spacing-value" for="spacing">1×</output></label>
+                <div class="slider-control"><input id="spacing" type="range" min="0.8" max="2" step="0.05" value="1"><input id="spacing-number" type="number" aria-label="Khoảng cách các khối, đơn vị lần" min="0.8" max="2" step="0.05" value="1"></div>
+                <label for="depth">Độ sâu khối 3D <output id="depth-value" for="depth">1×</output></label>
+                <div class="slider-control"><input id="depth" type="range" min="0" max="2" step="0.1" value="1"><input id="depth-number" type="number" aria-label="Độ sâu khối 3D, đơn vị lần" min="0" max="2" step="0.1" value="1"></div>
+                <label for="font-size">Cỡ chữ <output id="font-value" for="font-size">15 px</output></label>
+                <div class="slider-control"><input id="font-size" type="range" min="11" max="21" step="1" value="15"><input id="font-size-number" type="number" aria-label="Cỡ chữ 3D, đơn vị pixel" min="11" max="21" step="1" value="15"></div>
+                <label class="check"><input id="shapes" type="checkbox" checked> Hiện kích thước tensor</label>
+                <label class="check"><input id="dark" type="checkbox"> Nền tối</label>
+                <div class="color-controls">
+                    <label for="color-block">NeXt block <input id="color-block" type="color" value="#8b6bc1"></label>
+                    <label for="color-dw">Depthwise <input id="color-dw" type="color" value="#cf8635"></label>
+                    <label for="color-gate">Gate / Add <input id="color-gate" type="color" value="#399d89"></label>
+                </div>
+                <button id="reset-3d" class="secondary">Đặt lại trình bày 3D</button>
+            </div>
+            <nav class="upstream-nav" aria-label="NN-SVG styles"><a href="index.html">FCNN</a><a href="LeNet.html">LeNet</a><a href="AlexNet.html">AlexNet</a><a href="Backbone.html" aria-current="page">Backbone</a></nav>
+        </section>
+        <section id="panel-blocks" role="tabpanel" aria-labelledby="tab-blocks" hidden>
+            <h2>Thêm block</h2>
+            <label for="block-library">Loại block</label>
+            <div class="inline-controls"><select id="block-library"></select><button id="add-node" class="secondary">＋ Thêm</button></div>
+            <p id="editing-help" class="help">Chọn block để sửa. Bật “Kéo / resize” để kéo thân hoặc góc block.</p>
+            <details id="new-edge-section" class="editor-section"><summary>Thêm kết nối bằng danh sách</summary>
+                <form id="new-edge-form">
+                    <label for="new-edge-source">Block nguồn</label><select id="new-edge-source"></select>
+                    <label for="new-edge-target">Block đích</label><select id="new-edge-target"></select>
+                    <button id="add-edge" type="submit" class="secondary">＋ Tạo kết nối</button>
+                </form>
+            </details>
+            <div class="section-label">ĐANG CHỌN</div>
+            <div id="inspector" class="inspector"><p class="subtle">Chọn một block hoặc đường nối trên sơ đồ.</p></div>
+        </section>
+        <section id="panel-groups" role="tabpanel" aria-labelledby="tab-groups" hidden>
+            <h2>Khung nhóm nét đứt</h2>
+            <p class="help">Khung tự bao quanh các block đã chọn. Xóa nhóm giữ lại các block.</p>
+            <label for="group-select">Nhóm đang sửa</label><select id="group-select"></select>
+            <div class="inline-controls"><button id="add-group" class="secondary">＋ Nhóm</button><button id="remove-group" class="secondary danger">Xóa nhóm</button></div>
+            <form id="group-form" novalidate hidden>
+                <div class="field-grid group-name-color"><label for="group-label">Tên nhóm<input id="group-label" maxlength="200" required></label><label for="group-fill">Màu<input id="group-fill" type="color"></label></div>
+                <fieldset class="membership"><legend>Block trong nhóm</legend>
+                    <div class="membership-tools"><span id="group-count"></span><button id="group-all" type="button">Chọn tất cả</button><button id="group-none" type="button">Bỏ chọn</button></div>
+                    <div id="group-nodes" class="membership-list"></div>
+                </fieldset>
+                <p id="group-empty" class="help" hidden>Nhóm chưa có block nên chưa hiện khung. Tích block bên trên rồi áp dụng.</p>
+                <div class="form-actions"><span class="form-state" aria-live="polite"></span><button id="group-apply" type="submit" class="primary">Áp dụng nhóm</button><button id="group-cancel" type="button" class="secondary">Hủy sửa</button></div>
+            </form>
+        </section>
+        <section id="panel-save" role="tabpanel" aria-labelledby="tab-save" hidden>
+            <h2>Lưu và nạp bản vẽ</h2>
+            <button id="download-json" class="primary">↓ Lưu JSON chỉnh sửa</button>
+            <button id="import-button" class="secondary">↥ Nạp kiến trúc JSON</button>
+            <input id="import-file" type="file" accept=".json,application/json" hidden>
+            <p class="help">JSON giữ block, đường nối, nhóm và vị trí. SVG dùng để đưa vào bài báo hoặc sửa trong Inkscape/Illustrator.</p>
+            <p id="draft-status" class="help"></p>
+            <div class="editor-section"><button id="new-drawing" class="secondary">＋ Bản vẽ mới</button><button id="reset-preset" class="secondary">Khôi phục backbone từ config</button><p class="help">Có thể hoàn tác bằng ↶ sau khi tạo mới hoặc khôi phục.</p></div>
+        </section>
+        <footer><a href="https://github.com/alexlenail/NN-SVG">NN-SVG / Alexander Lenail</a><br>MIT · Mở rộng cho backbone BEV LiDAR</footer>
+    </aside>
+    <main>
+        <header class="toolbar">
+            <div class="toolbar-heading"><span class="eyebrow">MODEL ARCHITECTURE</span><span id="view-title">Backbone + FPN</span></div>
+            <div class="actions">
+                <button id="toggle-controls" class="secondary" aria-controls="controls" aria-expanded="false">Điều khiển</button>
+                <button id="undo" class="secondary icon-button" title="Hoàn tác (Ctrl/Cmd+Z)" aria-label="Hoàn tác">↶</button><button id="redo" class="secondary icon-button" title="Làm lại (Ctrl/Cmd+Shift+Z)" aria-label="Làm lại">↷</button>
+                <button id="add-block" class="secondary">＋ Block</button><button id="selection-properties" class="secondary" disabled>Thuộc tính</button>
+                <button id="select-mode" class="secondary" aria-pressed="false" title="Kéo nền để chọn nhiều block; Shift/Ctrl/Cmd để thêm vào vùng chọn">Chọn vùng</button><button id="edit-mode" class="secondary" aria-pressed="false">Kéo / resize</button><button id="connect-mode" class="secondary" aria-pressed="false">Nối block</button><button id="fit" class="secondary">Vừa khung</button><button id="download" class="primary">↓ Xuất SVG</button>
+            </div>
+        </header>
+        <div class="source-bar"><span class="status-dot"></span><span id="source"></span><span id="shape-mode"></span></div>
+        <div id="mode-banner" class="mode-banner" hidden><span id="mode-instruction"></span><button id="cancel-mode" class="secondary">Xong / Esc</button></div>
+        <div id="canvas" tabindex="0" aria-label="Sơ đồ backbone tương tác"></div>
+        <div class="canvas-footer"><span id="interaction-state">Kéo nền: di chuyển · Cuộn: zoom · Nhấp đúp: mở chi tiết</span><span id="graph-count"></span><span id="selection-count" role="status" aria-live="polite" hidden></span><div class="zoom-controls" aria-label="Thu phóng"><button id="zoom-out" class="secondary icon-button" aria-label="Thu nhỏ">−</button><output id="zoom-percent" aria-label="Mức zoom">100%</output><button id="zoom-in" class="secondary icon-button" aria-label="Phóng to">＋</button></div></div>
+    </main>
+    <div class="notifications"><p id="error" class="error" role="alert" hidden></p><p id="feedback" class="feedback" role="status" aria-live="polite" hidden></p></div>
+    <script src="mobilepixornext.js"></script><script src="Backbone.js"></script><script src="Paper.js"></script><script src="Editor.js"></script><script src="Reference.js"></script><script src="backbone-ui.js"></script>
+</body>
+</html>

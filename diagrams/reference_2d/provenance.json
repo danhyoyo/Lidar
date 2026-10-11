@@ -1,0 +1,22 @@
+{
+  "input_kind": "model_config",
+  "source": "configs/config.json",
+  "source_sha256": "8d68970d03074273beb395cf2d174af520103daa9f4f684328e3f644e490d79f",
+  "shape_mode": "inferred from repository architecture and shared configuration contracts",
+  "width_mm": 182,
+  "png_dpi": 600,
+  "svg_sha256": "6bab976d7b34cb665e446d4462165448349fb140834d42ade6ae0d7bf080074a",
+  "document_sha256": "c656061e0f36c5d1161f3566f6eefb3c8cf004ad099e797c9a01f8ce3a128d60",
+  "renderer_sha256": {
+    "Backbone.js": "94c60c65ca187e4c2100a7d100028629713e16f6e9c65f044e134c5d621f3e30",
+    "Editor.js": "f093e84ae591f6cad33628566213a5651f564dc640cd34525a30d8d36caedeb9",
+    "Reference.js": "d95f5f7ccab40234ff8a6d8ca6f60e8f96eda4769b1c760274dee5e367a04abc"
+  },
+  "architecture_source_sha256": {
+    "detector/core/models/backbones/mobilepixornext.py": "d9cc88190c699870e8c3657681c3ea25b1f34bfaab7b931feb10c1f0d6c96fea",
+    "detector/core/models/backbones/mobilepixornext_blocks.py": "fbf986a1f9216c1ff43217644f5f3863624d4a99dbdce24f990cab565175d0ea",
+    "detector/core/models/backbones/rep_blocks.py": "ee9ba08d81ba2385f712d144d0c06356095d11f9b0eb289391577ddba5a8fb50",
+    "detector/core/models/backbones/focal_context.py": "bff9be303f88c035d0beaa286c81081cbb5ddb394e6aa26411e927e4f34e07af",
+    "detector/core/models/backbones/light_attention.py": "3cb7435cffe83c6d8833f19e067a5e00b9fa8d66ee07ddcdf8fde9cb1c15e0f5"
+  }
+}
