@@ -14,13 +14,16 @@ class Calibration:
     p2: np.ndarray
 
     def __post_init__(self):
+        # KITTI's rectified P2 includes a small nonzero depth translation.
+        # Keep it for homogeneous projection instead of requiring [0, 0, 1, 0].
         transform, projection = np.array(self.velo_to_rect, dtype=np.float64), np.array(self.p2, dtype=np.float64)
         if (transform.shape != (4, 4) or projection.shape != (3, 4) or
                 not np.isfinite(transform).all() or not np.isfinite(projection).all() or
                 not np.allclose(transform[3], [0, 0, 0, 1]) or
                 not np.allclose(transform[:3, :3].T @ transform[:3, :3], np.eye(3), atol=1e-3) or
                 np.linalg.det(transform[:3, :3]) <= 0 or
-                not np.allclose(projection[2], [0, 0, 1, 0])):
+                not np.allclose(projection[2, :3], [0, 0, 1]) or
+                abs(projection[2, 3]) > 0.05):
             raise ValueError("Invalid KITTI calibration matrices")
         # Camera X/Z heading plane -> LiDAR X/Y, matching prepare_kitti.
         inverse = np.linalg.inv(transform)[:3, :3]

@@ -134,11 +134,21 @@ def test_prediction_annotation_uses_reference_dimension_order_and_no_aos():
     assert module.predictions_to_annotation(np.empty((0,9)),calib,OBJECTS)["bbox"].shape==(0,4)
 
 
-@pytest.mark.parametrize("field",["transform","projection"])
+@pytest.mark.parametrize("field",["transform","projection","tilted_axis","excessive_tz"])
 def test_invalid_calibration_is_rejected(field):
     module=conversion();calib=calibration()
     transform=calib.velo_to_rect.copy();projection=calib.p2.copy()
     if field=="transform":transform[:3,:3]=0
-    else:projection[0,0]=np.nan
+    elif field=="projection":projection[0,0]=np.nan
+    elif field=="tilted_axis":projection[2,:]=[0,1,0,0]
+    else:projection[2,3]=0.1
     with pytest.raises(ValueError,match="calibration|Calibration"):
         module.Calibration(transform,projection)
+
+
+def test_real_kitti_calibration_with_depth_offset_is_accepted():
+    module=conversion();calib=calibration()
+    projection=calib.p2.copy()
+    projection[2,3]=0.004981016
+    real_calib=module.Calibration(calib.velo_to_rect,projection)
+    assert real_calib.p2[2,3]==pytest.approx(0.004981016)
