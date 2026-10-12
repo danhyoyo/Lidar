@@ -202,13 +202,13 @@ def test_actual_robust_cell_uses_bundled_json_without_extracting_images(tmp_path
         'checkpoint_selection': {'primary': 'ap', 'metric_mode': 'auto'}}}
     namespace = dict(IN_COLAB=False, DRIVE_RAW_DIR=drive, RAW_KITTI_ROOT=raw,
         REPO_DIR=repo, MYDRIVE_ROOT=drive, BOX_MODE='3d', EVALUATION_MODES=['3d', 'bev'],
-        RUN_REFERENCE_EVALUATION=True, reference_images_required=workflow().reference_images_required,
         config_dict=config)
     execute_shell_cell(source, namespace)
     assert (raw / 'training/kitti_image_sizes.json').read_bytes() == bundled.read_bytes()
     assert 'image_2' not in namespace['archives_spec']
     assert not (raw / 'training/image_2').exists()
     assert config['train']['checkpoint_selection']['primary'] == 'ap'
+    assert namespace['RUN_REFERENCE_EVALUATION'] is True
 
 
 def test_local_evaluation_command_uses_own_config_split_and_configured_decode(tmp_path):

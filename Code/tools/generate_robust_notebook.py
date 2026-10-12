@@ -57,6 +57,7 @@ import shlex
 import shutil
 import hashlib
 import tempfile
+import subprocess
 from pathlib import Path
 import torch
 
@@ -67,29 +68,44 @@ IN_COLAB = "google.colab" in sys.modules
 GIT_REPO_URL = "https://github.com/danhyoyo/Lidar.git"
 GIT_BRANCH = "research/mobilepixornext-under1m"
 
+def find_code_root(candidate):
+    # Recognize the current Code/ layout and historical flat checkouts.
+    candidate = Path(candidate).expanduser().resolve()
+    for root in (candidate / "Code", candidate):
+        if ((root / "configs/config.json").is_file()
+                and (root / "detector").is_dir()
+                and (root / "tools/kitti_training_pipeline").is_dir()):
+            return root
+    return None
+
+
 if IN_COLAB:
     print("Detected Google Colab environment. Mounting Google Drive...")
     from google.colab import drive
     drive.mount("/content/drive")
-    DEFAULT_REPO_DIR = Path("/content/Lidar").resolve()
+    DEFAULT_CHECKOUT_DIR = Path("/content/Lidar").resolve()
     DRIVE_BASE = Path("/content/drive/MyDrive/lidar_project").resolve()
 
-    # Auto-clone repository if not present on Colab
-    if not (DEFAULT_REPO_DIR / "configs/config.json").is_file():
-        if (Path.cwd() / "configs/config.json").is_file():
-            DEFAULT_REPO_DIR = Path.cwd().resolve()
-            print(f"Using repository in current working directory: {DEFAULT_REPO_DIR}")
-        elif (Path("/content/drive/MyDrive/Lidar/configs/config.json")).is_file():
-            DEFAULT_REPO_DIR = Path("/content/drive/MyDrive/Lidar").resolve()
-            print(f"Found repository on Google Drive: {DEFAULT_REPO_DIR}")
-        else:
-            print(f"Repository not found at {DEFAULT_REPO_DIR}. Cloning branch '{GIT_BRANCH}' from GitHub...")
-            if DEFAULT_REPO_DIR.exists():
-                shutil.rmtree(DEFAULT_REPO_DIR, ignore_errors=True)
-            !git clone -b {q(GIT_BRANCH)} {q(GIT_REPO_URL)} {q(str(DEFAULT_REPO_DIR))}
-            if not (DEFAULT_REPO_DIR / "configs/config.json").is_file():
-                raise FileNotFoundError(f"Failed to clone repository from {GIT_REPO_URL} into {DEFAULT_REPO_DIR}")
-            print(f"✓ Cloned branch '{GIT_BRANCH}' successfully into {DEFAULT_REPO_DIR}")
+    candidates = [DEFAULT_CHECKOUT_DIR, Path.cwd(), Path("/content/drive/MyDrive/Lidar")]
+    DEFAULT_REPO_DIR = next((root for candidate in candidates
+                             if (root := find_code_root(candidate)) is not None), None)
+    if DEFAULT_REPO_DIR is None:
+        if DEFAULT_CHECKOUT_DIR.exists() and any(DEFAULT_CHECKOUT_DIR.iterdir()):
+            raise FileNotFoundError(
+                f"Existing checkout is incomplete: {DEFAULT_CHECKOUT_DIR}. Expected "
+                "Code/configs/config.json, Code/detector and Code/tools/kitti_training_pipeline "
+                "(or the historical flat layout). Inspect/update this checkout before retrying; "
+                "existing files have been preserved.")
+        print(f"Repository not found at {DEFAULT_CHECKOUT_DIR}. Cloning branch '{GIT_BRANCH}' from GitHub...")
+        subprocess.run(["git", "clone", "-b", GIT_BRANCH, GIT_REPO_URL,
+                        str(DEFAULT_CHECKOUT_DIR)], check=True)
+        DEFAULT_REPO_DIR = find_code_root(DEFAULT_CHECKOUT_DIR)
+        if DEFAULT_REPO_DIR is None:
+            raise FileNotFoundError(
+                f"Clone completed, but no valid code directory was found in {DEFAULT_CHECKOUT_DIR}. "
+                "Expected Code/configs/config.json or configs/config.json.")
+        print(f"✓ Cloned branch '{GIT_BRANCH}' successfully into {DEFAULT_CHECKOUT_DIR}")
+    print(f"Using project code directory: {DEFAULT_REPO_DIR}")
 
     print("Verifying requirements on Colab...")
     !pip install -q -r {q(str(DEFAULT_REPO_DIR / "requirements-kitti.txt"))}
@@ -103,7 +119,11 @@ if IN_COLAB:
     DEFAULT_PROCESSED_ROOT = Path("/content/kitti_processed").resolve()
 else:
     print("Running in local workstation environment.")
-    DEFAULT_REPO_DIR = Path.cwd().resolve()
+    local_candidates = [Path.cwd(), *Path.cwd().parents]
+    DEFAULT_REPO_DIR = next((root for candidate in local_candidates
+                             if (root := find_code_root(candidate)) is not None), None)
+    if DEFAULT_REPO_DIR is None:
+        raise FileNotFoundError("No project code directory found. Run from the Lidar checkout or its Code directory.")
     DEFAULT_ARTIFACT_ROOT = (DEFAULT_REPO_DIR / "artifacts").resolve()
     DEFAULT_DRIVE_RAW_DIR = (DEFAULT_REPO_DIR / "data/kitti/raw").resolve()
     DEFAULT_RAW_ROOT = (DEFAULT_REPO_DIR / "data/kitti/raw").resolve()
@@ -406,7 +426,7 @@ print("=" * 80)"""))
 - Bỏ qua tự động nếu thư mục cục bộ đã có đủ 7,481 files."""))
 
     # Cell 5: Code Download & Extract
-    cells.append(make_code_cell("""# ==============================================================================
+    cells.append(make_code_cell(r"""# ==============================================================================
 # Cell 3: Extract KITTI Dataset (.rar / .zip) from Google Drive to Local Colab SSD
 # ==============================================================================
 import os
@@ -414,6 +434,16 @@ import sys
 import shutil
 from pathlib import Path
 from shlex import quote as q
+from tools.kitti_training_pipeline.extract_kitti_images import find_images_zip, extract_training_images
+from tools.kitti_training_pipeline.image_metadata import read_image_sizes, load_image_sizes
+from tools.kitti_training_pipeline.notebook_workflow import reference_images_required
+
+# Giữ lựa chọn False nếu đã đặt ở Cell 2; tương thích kernel chạy Cell 2 bản cũ.
+RUN_REFERENCE_EVALUATION = globals().get("RUN_REFERENCE_EVALUATION", True)
+
+# None: tự tìm kitti_images.zip trong MyDrive; có thể đặt đường dẫn đầy đủ.
+DRIVE_IMAGES_ZIP = globals().get("DRIVE_IMAGES_ZIP", None)
+MYDRIVE_ROOT = Path(globals().get("MYDRIVE_ROOT", "/content/drive/MyDrive"))
 
 # 1. Đảm bảo tiện ích unrar đã sẵn sàng
 if shutil.which("unrar") is None:
@@ -468,8 +498,33 @@ archives_spec = {
     "label_2": ("*.txt", 7481, ["label_2", "label", "labels"]),
     "calib": ("*.txt", 7481, ["calib"]),
 }
-if BOX_MODE == "3d" or "3d" in EVALUATION_MODES or "bev" in EVALUATION_MODES:
-    archives_spec["image_2"] = ("*.png", 7481, ["image_2", "image", "images"])
+# Reference AP cần kích thước ảnh từng frame; JSON có thể thay toàn bộ PNG.
+NEEDS_PROJECTION_DIMENSIONS = reference_images_required(config_dict, EVALUATION_MODES,
+                             run_evaluation=RUN_REFERENCE_EVALUATION)
+projection_json = config_dict.get("evaluation", {}).get("image_sizes_json")
+if NEEDS_PROJECTION_DIMENSIONS:
+    if projection_json is None:
+        metadata_candidates = [RAW_TRAINING / "kitti_image_sizes.json"]
+        if IN_COLAB:
+            metadata_candidates.append(Path("/content/kitti_image_sizes.json"))
+        if "REPO_DIR" in globals():
+            metadata_candidates.append(Path(REPO_DIR) / "configs/datasets/kitti_image_sizes.json")
+        projection_json = next((path for path in metadata_candidates if path.is_file()), None)
+    if projection_json is not None:
+        projection_json = Path(projection_json).expanduser().resolve()
+        sizes = read_image_sizes(projection_json)
+        if len(sizes) < 7481:
+            raise ValueError(f"Incomplete training image metadata: {len(sizes)}/7481 frames in {projection_json}")
+        # Config có đường dẫn explicit thì evaluator dùng đường dẫn đó; mặc định dùng raw training root.
+        if not config_dict.get("evaluation", {}).get("image_sizes_json"):
+            metadata_target = RAW_TRAINING / "kitti_image_sizes.json"
+            if projection_json != metadata_target.resolve():
+                shutil.copyfile(projection_json, metadata_target)
+            projection_json = metadata_target
+        print(f"Reference AP uses per-frame image dimensions from JSON: {projection_json}. PNG extraction skipped.")
+    else:
+        print("Reference AP projection needs image_2 dimensions from JSON or PNG headers; RGB pixels are not model input.")
+        archives_spec["image_2"] = ("*.png", 7481, ["image_2", "image", "images"])
 
 print("=" * 80)
 print(f"📂 Google Drive Source Path : {DRIVE_DATASET_PATH}")
@@ -489,6 +544,17 @@ for name, (pattern, expected_count, keywords) in archives_spec.items():
         continue
 
     print(f"[{name.upper()}] Incomplete or missing ({current_count}/{expected_count}). Searching on Google Drive...")
+
+    # ZIP ảnh có thể nằm ở thư mục khác trên MyDrive với các archive LiDAR.
+    if name == "image_2":
+        images_zip = find_images_zip(
+            [DRIVE_DATASET_PATH, EXTRACTION_ROOT, MYDRIVE_ROOT], explicit=DRIVE_IMAGES_ZIP)
+        if images_zip is not None:
+            print(f"Found KITTI image ZIP: {images_zip}")
+            image_report = extract_training_images(
+                images_zip, target_folder, expected_count=expected_count)
+            print(f"[IMAGE_2] Verified {image_report['image_count']} training PNGs in {target_folder}.")
+            continue
 
     # 1. Tìm kiếm file nén (.rar, .zip, .tar)
     archive_candidates = [
@@ -580,10 +646,18 @@ for name, (pattern, expected_count, keywords) in archives_spec.items():
             !cp -r {q(str(drive_folder))} {q(str(target_folder))}
         else:
             drive_contents = [p.name for p in DRIVE_DATASET_PATH.iterdir()] if DRIVE_DATASET_PATH.is_dir() else []
+            if name == "image_2":
+                raise FileNotFoundError(
+                    "Reference AP evaluation needs image_2 PNG dimensions or kitti_image_sizes.json for the evaluated frames. "
+                    "The LiDAR model does not use RGB pixels.\n"
+                    "Add kitti_image_sizes.json or image_2 data, or rerun Cell 2 with CHECKPOINT_SELECTION=\"loss\" "
+                    "and RUN_REFERENCE_EVALUATION=False to train without reference AP.\n"
+                    f"Searched in: {DRIVE_DATASET_PATH}; available files: {drive_contents}"
+                )
             raise FileNotFoundError(
-                f"Could not find '{name}' archive (.rar/.zip) on Google Drive!\\n"
-                f"Searched in: {DRIVE_DATASET_PATH}\\n"
-                f"Files found in Drive folder: {drive_contents}\\n"
+                f"Could not find '{name}' archive (.rar/.zip) on Google Drive!\n"
+                f"Searched in: {DRIVE_DATASET_PATH}\n"
+                f"Files found in Drive folder: {drive_contents}\n"
                 f"Please verify your Drive folder path in DRIVE_DATASET_PATH."
             )
 
@@ -591,6 +665,10 @@ for name, (pattern, expected_count, keywords) in archives_spec.items():
     print(f"[{name.upper()}] Verified {final_count} files in {target_folder}.")
     if final_count < expected_count:
         print(f"⚠️ Warning: Found {final_count} files for {name}, expected {expected_count}.")
+
+if NEEDS_PROJECTION_DIMENSIONS:
+    lidar_ids = sorted(path.stem for path in (RAW_TRAINING / "velodyne").glob("*.bin"))
+    load_image_sizes(RAW_TRAINING, lidar_ids, metadata_path=projection_json)
 
 print("=" * 80)
 print("✓ All raw KITTI data extracted to local SSD and verified.")"""))
