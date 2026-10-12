@@ -15,7 +15,8 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tools/kitti_training_pipeline')]
 from common import read_json, sha256, write_json
 from prepare_kitti import parse_calibration, read_ids
 from tools.kitti_training_pipeline.kitti_box_conversion import read_calibration
-from tools.kitti_training_pipeline.evaluate_kitti_3d import read_annotation, png_image_size
+from tools.kitti_training_pipeline.evaluate_kitti_3d import read_annotation
+from tools.kitti_training_pipeline.image_metadata import load_image_sizes
 
 
 def canonical_hash(value):
@@ -98,10 +99,10 @@ def audit_assets(config_path, repo_root=ROOT, *, kitti_root, metric_mode='local_
         if metric_mode != 'local_bev':
             read_calibration(path)
         record(path)
-        if metric_mode != 'local_bev':
-            path = raw / 'image_2' / f'{identifier}.png'
-            if min(png_image_size(path)) <= 0:
-                raise ValueError(f'Invalid evaluation image: {path}')
+    if metric_mode != 'local_bev':
+        _, projection_assets = load_image_sizes(raw, ids['val'],
+            metadata_path=config.get('evaluation', {}).get('image_sizes_json'))
+        for path in projection_assets:
             record(path)
     source = repo_path(database_source_split, repo_root) if database_source_split else splits['train']
     if set(checked_ids(source)) != train_ids:

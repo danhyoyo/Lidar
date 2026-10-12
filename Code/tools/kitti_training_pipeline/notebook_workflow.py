@@ -24,6 +24,7 @@ def source_preflight(repo_root):
         'tools/kitti_training_pipeline/notebook_workflow.py', 'tools/benchmarks/audit_kitti_assets.py',
         'tools/benchmarks/benchmark_evidence.py', 'tools/benchmarks/benchmark_protocol.py',
         'tools/benchmarks/smoke_detector.py', 'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
+        'tools/kitti_training_pipeline/image_metadata.py',
         'detector/core/models/heads/grouped.py', 'detector/core/models/backbones/focal_context.py']
     missing = [p for p in required if not (root / p).is_file()]
     if missing:
@@ -40,6 +41,20 @@ def validate_modes(config, modes):
     if not set(modes) <= allowed:
         raise ValueError('BEV checkpoints use local_bev; final 3d/bev reference metrics require a trained 3D config')
     return tuple(modes)
+
+
+def reference_images_required(config, modes, *, run_evaluation=True):
+    """Image dimensions support reference AP, independently of model RGB inputs."""
+    try:
+        from .checkpoint_selection import selection_settings
+    except ImportError:
+        from checkpoint_selection import selection_settings
+    validate_modes(config, modes)
+    selection = selection_settings(config)
+    reference_modes = {'3d', 'bev'}
+    training_ap = selection['primary'] == 'ap' and selection['metric_mode'] in reference_modes
+    final_ap = bool(run_evaluation) and bool(reference_modes.intersection(modes))
+    return training_ap or final_ap
 
 
 def selected_run(run_dir, *, kind=None):

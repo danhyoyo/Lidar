@@ -39,6 +39,8 @@ from common import (
 )
 from checkpoint_selection import (selection_settings, ap_due, ap_measurement,
                                   advance_ap_state, save_selections)
+from image_metadata import load_image_sizes
+from prepare_kitti import read_ids
 
 
 def seed_everything(seed: int) -> None:
@@ -744,9 +746,12 @@ def main(argv=None) -> None:
         raw = Path(raw).expanduser().resolve()
         if (raw / 'training').is_dir():
             raw = raw / 'training'
-        for folder in ('label_2', 'calib') + (('image_2',) if selection['metric_mode'] != 'local_bev' else ()):
+        for folder in ('label_2', 'calib'):
             if not (raw / folder).is_dir():
                 raise FileNotFoundError(f'AP validation asset directory is missing: {raw / folder}')
+        if selection['metric_mode'] != 'local_bev':
+            load_image_sizes(raw, read_ids(Path(config['val']['data'])),
+                metadata_path=config.get('evaluation', {}).get('image_sizes_json'))
 
     dataset_groups = spec.groups if spec.head_mode == "grouped" else None
     train_dataset = Dataset(

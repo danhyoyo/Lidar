@@ -8,7 +8,6 @@ import importlib
 import json
 import os
 import platform
-import struct
 import sys
 import tempfile
 import time
@@ -21,11 +20,13 @@ try:
                          checkpoint_identity, git_metadata, evaluation_asset_hashes)
     from .kitti_box_conversion import empty_annotation, predictions_to_annotation, read_calibration
     from .prepare_kitti import read_ids
+    from .image_metadata import load_image_sizes, png_image_size, training_root
 except ImportError:
     from common import (configure_detector_imports, detection_spec, read_json, sha256, write_json,
                         checkpoint_identity, git_metadata, evaluation_asset_hashes)
     from kitti_box_conversion import empty_annotation, predictions_to_annotation, read_calibration
     from prepare_kitti import read_ids
+    from image_metadata import load_image_sizes, png_image_size, training_root
 
 CLASSES = ("Car", "Pedestrian", "Cyclist")
 DIFFICULTIES = ("Easy", "Moderate", "Hard")
@@ -103,14 +104,6 @@ def evaluate_annotations(ground_truth, detections, *, metric_mode="3d"):
     return result
 
 
-def png_image_size(path):
-    with Path(path).open("rb") as stream:
-        header = stream.read(24)
-    if len(header) != 24 or header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
-        raise ValueError(f"Expected KITTI PNG image with IHDR: {path}")
-    return struct.unpack(">II", header[16:24])
-
-
 def _report(ids, ground_truth, detections, *, metric_mode, root, split_path, source):
     import numba
     from numba import cuda
@@ -181,7 +174,9 @@ def run_evaluation(*, name, backend, model_path, config_path, detector_root, kit
         raise ValueError("Split must contain unique nonempty frame IDs")
     if max_frames is not None:
         ids = ids[:max_frames]
-    root = Path(kitti_root)
+    root = training_root(kitti_root)
+    image_sizes, projection_assets = load_image_sizes(root, ids,
+        metadata_path=config.get('evaluation', {}).get('image_sizes_json'))
     input_asset_sha256 = evaluation_asset_hashes(config, ids, root, reference=True)
     runner = PyTorchRunner(Path(model_path),config,device,reference_3d=True)
     annotations, gt, calibration_hashes = [], [], {}
@@ -203,7 +198,7 @@ def run_evaluation(*, name, backend, model_path, config_path, detector_root, kit
             path = root/"calib"/f"{identifier}.txt"
             calibration_hashes[identifier] = sha256(path)
             annotations.append(predictions_to_annotation(rows,read_calibration(path),config["data"]["kitti"]["objects"],
-                                                        image_size=png_image_size(root/"image_2"/f"{identifier}.png")))
+                                                        image_size=image_sizes[identifier]))
             gt.append(read_annotation(root/"label_2"/f"{identifier}.txt"))
             if progress_every and (i+1)%progress_every == 0:
                 print(f"Reference inference {i+1}/{len(ids)}",flush=True)
@@ -215,7 +210,9 @@ def run_evaluation(*, name, backend, model_path, config_path, detector_root, kit
         score_threshold=score_threshold,nms_threshold=nms_threshold,max_detections=max_detections,
         nms_metric="classwise BEV footprint; one global cap",checkpoint_identity=checkpoint_identity(config))
     result["data"].update(resolved_config_sha256=sha256(Path(config_path)),calibration_sha256=calibration_hashes,
-                          input_asset_sha256=input_asset_sha256)
+                          input_asset_sha256=input_asset_sha256,
+                          image_sizes={identifier: list(size) for identifier, size in image_sizes.items()},
+                          image_size_source_paths=[str(path) for path in projection_assets])
     result["runtime"]["elapsed_seconds"] = time.time()-started
     result["runtime"]["source"] = git_metadata(Path(__file__).resolve().parents[2])
     if output_path is not None:

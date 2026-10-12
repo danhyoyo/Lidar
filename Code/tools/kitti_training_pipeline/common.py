@@ -70,7 +70,14 @@ def evaluation_asset_hashes(config, frame_ids, kitti_root, *, reference=False):
             # Reference inference constructs validation targets as well; the
             # historical local test Dataset consumes only the point cloud.
             paths.append(processed / "label" / f"{identifier}.txt")
-            paths.append(raw / "image_2" / f"{identifier}.png")
+    if reference:
+        try:
+            from .image_metadata import load_image_sizes
+        except ImportError:
+            from image_metadata import load_image_sizes
+        _, projection_assets = load_image_sizes(raw, frame_ids,
+            metadata_path=config.get('evaluation', {}).get('image_sizes_json'))
+        paths.extend(projection_assets)
     return {str(path.resolve()): sha256(path) for path in paths}
 
 

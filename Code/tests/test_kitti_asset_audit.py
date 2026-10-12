@@ -87,6 +87,29 @@ def test_local_bev_audit_does_not_require_reference_images(tmp_path):
     assert audit_module().audit_assets(path,kitti_root=raw)['status']=='passed'
 
 
+@pytest.mark.parametrize('mode', ['bev', '3d'])
+def test_reference_audit_and_input_hashes_use_json_without_any_pngs(tmp_path, mode):
+    from tools.kitti_training_pipeline.common import evaluation_asset_hashes, sha256
+    from test_kitti_image_metadata import write_metadata
+    config, path, _, raw = asset_fixture(tmp_path, box_mode='3d')
+    for image in (raw / 'image_2').glob('*.png'):
+        image.unlink()
+    metadata = raw / 'kitti_image_sizes.json'
+    data = write_metadata(metadata, {'000002': {'width': 1238, 'height': 374}})
+    module = audit_module()
+    report = module.audit_assets(path, kitti_root=raw, metric_mode=mode)
+    assert report['checks']['reference_projection_inputs']
+    assert any(record['path'] == str(metadata.resolve()) for record in report['asset_files'])
+    hashes = evaluation_asset_hashes(config, ['000002'], raw, reference=True)
+    assert hashes[str(metadata.resolve())] == sha256(metadata)
+    assert not any('image_2' in Path(key).parts for key in hashes)
+    assert module.verify_asset_audit(report, path, metric_mode=mode)
+    data['frames']['000002']['width'] = 1242
+    metadata.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match='stale|changed|match'):
+        module.verify_asset_audit(report, path, metric_mode=mode)
+
+
 def test_stale_report_is_rejected_by_current_asset_verification(tmp_path):
     _,path,processed,raw=asset_fixture(tmp_path)
     module=audit_module();report=module.audit_assets(path,kitti_root=raw)

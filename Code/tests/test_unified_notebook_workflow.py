@@ -79,6 +79,138 @@ def test_explicit_3d_accepts_both_final_reference_metrics():
     assert workflow().validate_modes({'data':{'box_mode':'3d'}}, ['3d','bev']) == ('3d','bev')
 
 
+@pytest.mark.parametrize('box,primary,modes,run_final,expected', [
+    ('3d', 'loss', ['3d', 'bev'], False, False),
+    ('3d', 'loss', ['3d'], True, True),
+    ('3d', 'loss', ['bev'], True, True),
+    ('3d', 'ap', ['3d', 'bev'], False, True),
+    ('bev', 'loss', ['local_bev'], True, False),
+    ('bev', 'ap', ['local_bev'], True, False),
+])
+def test_reference_images_depend_on_actual_evaluation_and_ap_selection(box, primary, modes, run_final, expected):
+    config = {'data': {'box_mode': box}, 'train': {
+        'checkpoint_selection': {'primary': primary, 'metric_mode': 'auto'}}}
+    assert workflow().reference_images_required(config, modes,
+        run_evaluation=run_final) is expected
+
+
+def test_robust_notebook_can_disable_final_reference_evaluation_without_changing_3d_model():
+    notebook = json.loads((ROOT / '3D_Lidar_Detection_Pipeline_Robust.ipynb').read_text())
+    sources = [''.join(cell.get('source', [])) for cell in notebook['cells']]
+    configuration = next(source for source in sources if 'CHECKPOINT_SELECTION =' in source)
+    extraction = next(source for source in sources if 'archives_spec =' in source)
+    evaluation = next(source for source in sources if 'for mode in EVALUATION_MODES:' in source)
+    assert 'RUN_REFERENCE_EVALUATION = True' in configuration
+    assert 'reference_images_required(config_dict, EVALUATION_MODES,' in extraction
+    assert 'run_evaluation=RUN_REFERENCE_EVALUATION' in extraction
+    assert 'RUN_EVALUATION = RUN_REFERENCE_EVALUATION' in evaluation
+
+
+@pytest.mark.parametrize('primary,run_final,requires_images', [
+    ('loss', False, False), ('loss', True, True), ('ap', False, True),
+])
+def test_actual_robust_extraction_cell_accepts_lidar_only_training_but_checks_reference_ap(
+        tmp_path, monkeypatch, primary, run_final, requires_images):
+    from notebook_test_utils import execute_shell_cell
+    notebook = json.loads((ROOT / '3D_Lidar_Detection_Pipeline_Robust.ipynb').read_text())
+    source = next(''.join(cell.get('source', [])) for cell in notebook['cells']
+                  if 'archives_spec =' in ''.join(cell.get('source', [])))
+    source = source.replace('7481', '2')
+    raw, drive = tmp_path / 'raw', tmp_path / 'drive'
+    drive.mkdir()
+    (drive / 'calib.tar').touch()
+    for folder, extension in [('velodyne', 'bin'), ('label_2', 'txt'), ('calib', 'txt')]:
+        directory = raw / 'training' / folder
+        directory.mkdir(parents=True)
+        for identifier in ('000001', '000002'):
+            (directory / f'{identifier}.{extension}').touch()
+    real_which = shutil.which
+    monkeypatch.setattr(shutil, 'which', lambda name: '/usr/bin/unrar' if name == 'unrar' else real_which(name))
+    namespace = dict(IN_COLAB=False, DRIVE_RAW_DIR=drive, RAW_KITTI_ROOT=raw,
+        BOX_MODE='3d', EVALUATION_MODES=['3d', 'bev'], RUN_REFERENCE_EVALUATION=run_final,
+        reference_images_required=workflow().reference_images_required,
+        config_dict={'data': {'box_mode': '3d'}, 'train': {
+            'checkpoint_selection': {'primary': primary, 'metric_mode': 'auto'}}})
+    if requires_images:
+        with pytest.raises(FileNotFoundError, match='Reference AP evaluation needs image_2 PNG dimensions'):
+            execute_shell_cell(source, namespace)
+    else:
+        execute_shell_cell(source, namespace)
+        assert 'image_2' not in namespace['archives_spec']
+        assert namespace['BOX_MODE'] == '3d'
+
+
+def test_actual_robust_cell_uses_image_zip_from_another_mydrive_folder_for_best_ap(tmp_path, monkeypatch):
+    import struct
+    from zipfile import ZipFile
+    from notebook_test_utils import execute_shell_cell
+    notebook = json.loads((ROOT / '3D_Lidar_Detection_Pipeline_Robust.ipynb').read_text())
+    source = next(''.join(cell.get('source', [])) for cell in notebook['cells']
+                  if 'archives_spec =' in ''.join(cell.get('source', []))).replace('7481', '2')
+    mydrive, raw = tmp_path / 'MyDrive', tmp_path / 'raw'
+    dataset = mydrive / 'KITTI_DATASET_ZIP'
+    dataset.mkdir(parents=True)
+    (dataset / 'calib.tar').touch()
+    for folder, extension in [('velodyne', 'bin'), ('label_2', 'txt'), ('calib', 'txt')]:
+        directory = raw / 'training' / folder
+        directory.mkdir(parents=True)
+        for identifier in ('000001', '000002'):
+            (directory / f'{identifier}.{extension}').touch()
+    images = mydrive / 'downloaded_images/kitti_images.zip'
+    images.parent.mkdir()
+    png = b'\x89PNG\r\n\x1a\n' + struct.pack('>I', 13) + b'IHDR' + struct.pack('>II', 1242, 375)
+    with ZipFile(images, 'w') as archive:
+        for identifier in ('000001', '000002'):
+            archive.writestr(f'training/image_2/{identifier}.png', png)
+            archive.writestr(f'testing/image_2/{identifier}.png', png)
+    real_which = shutil.which
+    monkeypatch.setattr(shutil, 'which', lambda name: '/usr/bin/unrar' if name == 'unrar' else real_which(name))
+    config = {'data': {'box_mode': '3d'}, 'train': {
+        'checkpoint_selection': {'primary': 'ap', 'metric_mode': 'auto'}}}
+    namespace = dict(IN_COLAB=False, DRIVE_RAW_DIR=dataset, RAW_KITTI_ROOT=raw,
+        MYDRIVE_ROOT=mydrive, BOX_MODE='3d', EVALUATION_MODES=['3d', 'bev'],
+        RUN_REFERENCE_EVALUATION=True, reference_images_required=workflow().reference_images_required,
+        config_dict=config)
+    execute_shell_cell(source, namespace)
+    assert (raw / 'training/image_2/000001.png').read_bytes() == png
+    assert namespace['images_zip'] == images.resolve()
+    assert config['train']['checkpoint_selection']['primary'] == 'ap'
+    assert not (raw / 'testing').exists()
+
+
+def test_actual_robust_cell_uses_bundled_json_without_extracting_images(tmp_path, monkeypatch):
+    from notebook_test_utils import execute_shell_cell
+    from test_kitti_image_metadata import write_metadata
+    notebook = json.loads((ROOT / '3D_Lidar_Detection_Pipeline_Robust.ipynb').read_text())
+    source = next(''.join(cell.get('source', [])) for cell in notebook['cells']
+                  if 'archives_spec =' in ''.join(cell.get('source', []))).replace('7481', '2')
+    raw, drive, repo = tmp_path / 'raw', tmp_path / 'drive', tmp_path / 'repo'
+    drive.mkdir()
+    (drive / 'calib.tar').touch()
+    for folder, extension in [('velodyne', 'bin'), ('label_2', 'txt'), ('calib', 'txt')]:
+        directory = raw / 'training' / folder
+        directory.mkdir(parents=True)
+        for identifier in ('000001', '000002'):
+            (directory / f'{identifier}.{extension}').touch()
+    bundled = repo / 'configs/datasets/kitti_image_sizes.json'
+    bundled.parent.mkdir(parents=True)
+    write_metadata(bundled, {'000001': {'width': 1242, 'height': 375},
+                            '000002': {'width': 1238, 'height': 374}})
+    real_which = shutil.which
+    monkeypatch.setattr(shutil, 'which', lambda name: '/usr/bin/unrar' if name == 'unrar' else real_which(name))
+    config = {'data': {'box_mode': '3d'}, 'train': {
+        'checkpoint_selection': {'primary': 'ap', 'metric_mode': 'auto'}}}
+    namespace = dict(IN_COLAB=False, DRIVE_RAW_DIR=drive, RAW_KITTI_ROOT=raw,
+        REPO_DIR=repo, MYDRIVE_ROOT=drive, BOX_MODE='3d', EVALUATION_MODES=['3d', 'bev'],
+        RUN_REFERENCE_EVALUATION=True, reference_images_required=workflow().reference_images_required,
+        config_dict=config)
+    execute_shell_cell(source, namespace)
+    assert (raw / 'training/kitti_image_sizes.json').read_bytes() == bundled.read_bytes()
+    assert 'image_2' not in namespace['archives_spec']
+    assert not (raw / 'training/image_2').exists()
+    assert config['train']['checkpoint_selection']['primary'] == 'ap'
+
+
 def test_local_evaluation_command_uses_own_config_split_and_configured_decode(tmp_path):
     module = workflow(); args = actual_run(tmp_path)
     run = module.selected_run(tmp_path)

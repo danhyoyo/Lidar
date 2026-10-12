@@ -17,6 +17,28 @@ only required for engine export/evaluation.
 
 ## Download KITTI
 
+Reference AP3D/APBEV can use per-frame image dimensions instead of RGB PNGs.
+The supplied `configs/datasets/kitti_image_sizes.json` covers all 7,481 KITTI
+training frames. The robust notebook copies it into the raw training directory
+as `kitti_image_sizes.json` and skips image extraction. CLI evaluation, AP-based
+checkpoint selection and asset auditing use that JSON automatically. You can
+also set `evaluation.image_sizes_json` to an explicit file path. If no JSON is
+available, the original `training/image_2/<frame>.png` header workflow remains.
+Metadata is validated before inference and included in input SHA256 records;
+missing frame IDs or invalid dimensions fail explicitly. Projection, clipping
+and the pinned OpenPCDet AP calculation use the same per-frame dimensions as
+the PNG workflow. The JSON schema is:
+
+```json
+{
+  "format": "kitti_image_sizes_v1",
+  "split": "training",
+  "camera": "image_2",
+  "image_count": 1,
+  "frames": {"000000": {"width": 1224, "height": 370}}
+}
+```
+
 Download the KITTI Object Detection Velodyne, calibration and training-label
 archives yourself. Do not commit the dataset to this repository. Expected layout:
 
@@ -130,6 +152,24 @@ entire validation split; the default is 1 and the final epoch is always evaluate
 The fixed selection objective is R40 Moderate AP averaged equally across Car,
 Pedestrian and Cyclist. `metric_mode="auto"` selects the local ROI BEV evaluator
 for BEV models, or pinned reference AP3D for explicitly trained 3D models.
+
+For a separately downloaded image archive named `kitti_images.zip`, the robust
+notebook's extraction cell searches MyDrive and its subfolders independently of
+the LiDAR/label/calibration archive folder. Set `DRIVE_IMAGES_ZIP` to an explicit
+path if several copies exist. It extracts training left-camera PNGs directly into
+`training/image_2` and records each frame's actual image dimensions in
+`training/image_2_extraction.json`. Testing images and right-camera images remain
+in the archive. The standalone helper can also run in Colab after Drive is mounted:
+
+```bash
+python tools/kitti_training_pipeline/extract_kitti_images.py \
+  --mydrive-root /content/drive/MyDrive \
+  --output-dir /content/kitti_raw/training/image_2
+```
+
+Keep `CHECKPOINT_SELECTION="ap"` and `RUN_REFERENCE_EVALUATION=True` for reference
+AP checkpoint selection and final evaluation. RGB pixels are not model inputs;
+the existing reference conversion reads PNG dimensions when projecting boxes.
 
 Set `evaluation.kitti_root` to the raw KITTI root containing `training/`, or to
 `training/` itself. Local BEV requires original labels and calibration; reference
