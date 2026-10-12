@@ -1,0 +1,117 @@
+{
+  "config": "configs/experiments/under1m/hist14_local3_focal_eca_grouped_oga_iqa.json",
+  "config_sha256": "d63fa0a00bd3a7bcc8702f6fcbfa7620f56693fdb17d963e900347b12a6779f3",
+  "encoding": "hist14",
+  "input_shape": [
+    1,
+    14,
+    800,
+    704
+  ],
+  "output_shape": [
+    1,
+    32,
+    200,
+    176
+  ],
+  "shapes": {
+    "stem": [
+      1,
+      32,
+      400,
+      352
+    ],
+    "c3_light_attention": [
+      1,
+      48,
+      200,
+      176
+    ],
+    "c4_context": [
+      1,
+      96,
+      100,
+      88
+    ],
+    "stage4": [
+      1,
+      128,
+      50,
+      44
+    ],
+    "lat_c5": [
+      1,
+      48,
+      50,
+      44
+    ],
+    "lat_c4": [
+      1,
+      48,
+      100,
+      88
+    ],
+    "refine_u4": [
+      1,
+      48,
+      100,
+      88
+    ],
+    "lat_c3": [
+      1,
+      24,
+      200,
+      176
+    ],
+    "proj_u3": [
+      1,
+      24,
+      200,
+      176
+    ],
+    "out_conv": [
+      1,
+      32,
+      200,
+      176
+    ]
+  },
+  "stage_depths": [
+    3,
+    4,
+    2
+  ],
+  "expansion": 2.5,
+  "layer_scale_init": 9.999999747378752e-06,
+  "fusion_channels": 24,
+  "scale_gated_fpn": true,
+  "focal": true,
+  "focal_bottleneck": 64,
+  "focal_dilations": [
+    1,
+    2,
+    3
+  ],
+  "eca": true,
+  "eca_kernel": 3,
+  "parameters_including_neck": 660532,
+  "grouped": true,
+  "head_groups": [
+    {
+      "classes": [
+        "Car"
+      ],
+      "name": "car"
+    },
+    {
+      "classes": [
+        "Pedestrian",
+        "Cyclist"
+      ],
+      "name": "ped_cyc"
+    }
+  ],
+  "num_classes": 3,
+  "iou": true,
+  "verified": "CPU eval forward at full configured resolution; finite output and checked shapes"
+}

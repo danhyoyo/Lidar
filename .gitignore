@@ -42,9 +42,15 @@ outputs/
 /splits/
 
 *.pdf
+!/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
 *.xlsx
 *.dot
 
 # AI Agents
 .agents/
 e2e_demo/
+
+# Local upstream checkout for architecture drawing
+/third_party/PlotNeuralNet/
+/diagrams/plotneuralnet/*_latex.aux
+/diagrams/plotneuralnet/*_latex.log
