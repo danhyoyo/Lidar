@@ -1,0 +1,44 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (26,7);
+\node[anchor=center,align=center,text=ink,font=\fontsize{20}{24.0}\selectfont \bfseries ] at (13.0,6.52) {Stage 4 / C5};
+\node[anchor=center,align=center,text=muted,font=\fontsize{10}{12.0}\selectfont ] at (13.0,5.85) {Stride 16 $\cdot$ 2 NeXt blocks $\cdot$ expansion 2.5};
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt,dashed] (0.4499999999999993,0.8000000000000003) rectangle (25.55,5.35);
+\node[anchor=west,align=left,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.8,4.85) {};
+\draw[draw=ink,fill=offset,rounded corners=3pt,line width=.7pt] (4.9,2.7) rectangle (7.9,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (6.4,3.25) {Input\\96 $\times$ 100 $\times$ 88};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (7.9,3.25) -- (8.450000000000001,3.25);
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (8.450000000000001,2.7) rectangle (12.450000000000001,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (10.450000000000001,3.25) {Downsample\\Conv 3$\times$3, 96$\rightarrow$128, s=2\\BN + SiLU};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (12.450000000000001,3.25) -- (13.000000000000002,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (13.000000000000002,2.7) rectangle (15.100000000000003,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (14.050000000000002,3.25) {NeXt 1\\128$\rightarrow$320$\rightarrow$128};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (15.100000000000001,3.25) -- (15.650000000000002,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (15.650000000000002,2.7) rectangle (17.750000000000004,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (16.700000000000003,3.25) {NeXt 2\\128$\rightarrow$320$\rightarrow$128};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (17.750000000000004,3.25) -- (18.300000000000004,3.25);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (18.300000000000004,2.7) rectangle (21.1,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (19.700000000000003,3.25) {C5\\128 $\times$ 50 $\times$ 44};
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13,1.55) {Residual NeXt blocks preserve channel count and spatial resolution};
+\end{tikzpicture}
+\end{document}

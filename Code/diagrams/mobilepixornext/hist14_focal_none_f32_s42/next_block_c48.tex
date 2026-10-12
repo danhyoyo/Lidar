@@ -1,0 +1,98 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (19.1,8.7);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt,dashed] (0.6999999999999993,0.9500000000000002) rectangle (18.7,7.8);
+\node[anchor=west,align=left,text=ink,font=\fontsize{14}{16.8}\selectfont \bfseries ] at (1.05,7.3) {NeXt block $\cdot$ C=48, expanded C=120};
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (9.7,6.340000000000001) {Depthwise spatial mixing $\rightarrow$ pointwise channel expansion $\rightarrow$ residual};
+\node[anchor=center,align=center,text=ink,font=\fontsize{14}{16.8}\selectfont \bfseries ] at (1.38,4.33) {X};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (1.7,4.33) -- (2.375,4.33);
+
+\pic[shift=(0,0,0)] at (2.375,4.33,0) {
+    Box={opacity=1,
+        name=tensor5,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=blue,
+        height=5.8999999999999995,
+        width=8.249999999999998,
+        depth=1.2
+    }
+};
+
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (3.2,4.33) {DW 7$\times$7\\48$\rightarrow$48};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4.125,4.33) -- (4.725,4.33);
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (4.725,3.74) rectangle (5.875,4.92);
+\node[anchor=center,align=center,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (5.3,4.33) {BN};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (5.875,4.33) -- (6.4,4.33);
+
+\pic[shift=(0,0,0)] at (6.4,4.33,0) {
+    Box={opacity=1,
+        name=tensor11,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=peach,
+        height=5.8999999999999995,
+        width=11.499999999999998,
+        depth=1.2
+    }
+};
+
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (7.55,4.33) {PW 1$\times$1\\48$\rightarrow$120};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (8.799999999999999,4.33) -- (9.38,4.33);
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (9.38,3.74) rectangle (10.88,4.92);
+\node[anchor=center,align=center,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (10.13,4.33) {SiLU};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (10.88,4.33) -- (11.5,4.33);
+
+\pic[shift=(0,0,0)] at (11.5,4.33,0) {
+    Box={opacity=1,
+        name=tensor17,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=peach,
+        height=5.8999999999999995,
+        width=11.499999999999998,
+        depth=1.2
+    }
+};
+
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (12.65,4.33) {PW 1$\times$1\\120$\rightarrow$48};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.9,4.33) -- (14.319999999999999,4.33);
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (14.319999999999999,3.74) rectangle (15.42,4.92);
+\node[anchor=center,align=center,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (14.87,4.33) {BN};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (15.42,4.33) -- (15.87,4.33);
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (15.87,3.74) rectangle (16.669999999999998,4.92);
+\node[anchor=center,align=center,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (16.27,4.33) {$\gamma$};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.669999999999998,4.33) -- (17.37,4.33);
+\draw[fill=white,draw=ink,line width=.8pt] (17.67,4.33) circle (0.3);
+\node at (17.67,4.33) {+};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (17.97,4.33) -- (18.35,4.33);
+\node[anchor=center,align=center,text=ink,font=\fontsize{12}{14.399999999999999}\selectfont \bfseries ] at (18.3,5.1000000000000005) {Y};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (1.7,4.33) -- (1.7,2.4) -- (17.67,2.4) -- (17.67,4.03);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (9.7,2.67) {Identity shortcut};
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (9.7,1.5599999999999998) {Y = X + $\gamma$ $\odot$ F(X)    $\cdot$    $\gamma$ is learned per channel; initialized to $10^{-5}$};
+\node[anchor=center,align=center,text=ink,font=\fontsize{9}{10.799999999999999}\selectfont ] at (9.55,0.35) {DW7$\times$7: padding 3, groups=C $\cdot$ PW1$\times$1: groups=1 $\cdot$ all convolutions: bias=False};
+\end{tikzpicture}
+\end{document}

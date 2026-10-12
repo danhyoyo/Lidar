@@ -1,0 +1,158 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (34,25);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{22}{26.4}\selectfont \bfseries ] at (17.0,24.4) {Focal Context $\cdot$ Feature-based Context Modulation};
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{11}{13.2}\selectfont ] at (17.0,23.6) {C4 / stride 8 $\cdot$ C=96, bottleneck D=64, dilations=(1,2,3) $\cdot$ 25,120 parameters};
+\draw[draw=ink,fill=panel,rounded corners=3pt,line width=.7pt,dashed] (0.5,1.5999999999999996) rectangle (33.5,22.799999999999997);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.85,22.3) {FocalContext v1 $\cdot$ sequential local levels + gated global context};
+
+\pic[shift=(0,0,0)] at (2.0,20.5,0) {
+    Box={opacity=1,
+        name=tensor4,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=offset,
+        height=7.5,
+        width=25.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (4.5,20.5) {Input X\\96 $\times$ 100 $\times$ 88};
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (8.5,19.65) rectangle (15.5,21.35);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (12,20.5) {BatchNorm\\Conv1$\times$1: 96$\rightarrow$132, bias=False};
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (16.1,19.65) rectangle (20.5,21.35);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (18.3,20.5) {Split Q / S / G\\64 / 64 / 4};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (7,20.5) -- (8.5,20.5);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (15.5,20.5) -- (16.1,20.5);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18.3,19.65) -- (18.3,19.2) -- (4.5,19.2);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4.5,19.2) -- (29.5,19.2);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4.5,19.2) -- (4.5,18.4);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.7,19.2) -- (13.7,18.4);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (29.5,19.2) -- (29.5,18.4);
+
+\pic[shift=(0,0,0)] at (2.0,17.8,0) {
+    Box={opacity=1,
+        name=tensor17,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=offset,
+        height=5.999999999999999,
+        width=25.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (4.5,17.8) {Query Q\\64 $\times$ 100 $\times$ 88};
+
+\pic[shift=(0,0,0)] at (10.7,17.8,0) {
+    Box={opacity=1,
+        name=tensor19,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=size,
+        height=5.999999999999999,
+        width=30.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (13.7,17.8) {Context seed S\\64 $\times$ 100 $\times$ 88};
+
+\pic[shift=(0,0,0)] at (26.5,17.8,0) {
+    Box={opacity=1,
+        name=tensor21,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=yaw,
+        height=5.999999999999999,
+        width=30.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (29.5,17.8) {Gate logits G\\4 $\times$ 100 $\times$ 88};
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt] (26.5,15.500000000000002) rectangle (32.5,16.700000000000003);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (29.5,16.1) {Softmax over 4 levels\\FP32 $\cdot$ sumlevel w=1};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (29.5,17.2) -- (29.5,16.7);
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (10.7,14.1) rectangle (16.7,15.700000000000001);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13.7,14.9) {Depthwise Conv3$\times$3 $\cdot$ dilation 1\\64 groups $\cdot$ padding 1 $\cdot$ SiLU};
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (10.7,11.7) rectangle (16.7,13.3);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13.7,12.5) {Depthwise Conv3$\times$3 $\cdot$ dilation 2\\64 groups $\cdot$ padding 2 $\cdot$ SiLU};
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (10.7,9.299999999999999) rectangle (16.7,10.9);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13.7,10.1) {Depthwise Conv3$\times$3 $\cdot$ dilation 3\\64 groups $\cdot$ padding 3 $\cdot$ SiLU};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.7,17.2) -- (13.7,15.7);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.7,14.1) -- (13.7,13.3);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.7,11.7) -- (13.7,10.9);
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt] (10.7,6.9) rectangle (16.7,8.5);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13.7,7.7) {Global spatial mean of S3\\FP32 $\cdot$ 64 $\times$ 1 $\times$ 1};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.7,9.3) -- (13.7,8.5);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (20.0,6.9) rectangle (26.0,15.700000000000001);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (23,11.3) {Weighted context fusion\\\\F = w1 S1 + w2 S2\\+ w3 S3 + w4 global(S3)\\\\Global vector is broadcast\\Gates vary per pixel\\64 $\times$ 100 $\times$ 88};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.7,14.9) -- (20,14.9);
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{9}{10.799999999999999}\selectfont ] at (18.35,15.25) {S1};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.7,12.5) -- (20,12.5);
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{9}{10.799999999999999}\selectfont ] at (18.35,12.85) {S2};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.7,10.1) -- (20,10.1);
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{9}{10.799999999999999}\selectfont ] at (18.35,10.45) {S3};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.7,7.7) -- (20,7.7);
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{9}{10.799999999999999}\selectfont ] at (18.35,8.05) {global};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (26.5,16.1) -- (23,16.1) -- (23,15.7);
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (26.5,10.5) rectangle (32.5,12.100000000000001);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (29.5,11.3) {Context Conv1$\times$1\\64$\rightarrow$64, bias=False};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (26,11.3) -- (26.5,11.3);
+\draw[fill=white,draw=ink,line width=.8pt] (15.5,5.5) circle (0.3);
+\node at (15.5,5.5) {$\times$};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4.5,17.2) -- (4.5,5.5) -- (15.2,5.5);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (29.5,10.5) -- (29.5,5.5) -- (15.8,5.5);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (15.5,6.25) {Q $\times$ projected context $\cdot$ FP32};
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (18.6,2.9000000000000004) rectangle (26.6,4.5);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (22.6,3.7) {Conv1$\times$1: 64$\rightarrow$96 $\cdot$ BatchNorm\\$\times$ gamma $\cdot$ 96 learned channel scales};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (15.5,5.2) -- (15.5,3.7) -- (18.6,3.7);
+\draw[fill=white,draw=ink,line width=.8pt] (29,3.7) circle (0.3);
+\node at (29,3.7) {+};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (26.6,3.7) -- (28.7,3.7);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (2,20.5) -- (1,20.5) -- (1,2.65) -- (29,2.65) -- (29,3.4);
+
+\pic[shift=(0,0,0)] at (30.75,3.7,0) {
+    Box={opacity=1,
+        name=tensor62,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=offset,
+        height=7.5,
+        width=12.5,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{9}{10.799999999999999}\selectfont ] at (32,3.7) {Output Y\\96$\times$100$\times$88};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (29.3,3.7) -- (30.75,3.7);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (17,0.7) {Y = X + gamma $\odot$ BN(Conv1$\times$1(Q $\odot$ Conv1$\times$1(F))) $\cdot$ gamma initial=0.001 $\cdot$ spatial size preserved};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,130 @@
+{
+  "focal": {
+    "parameters": 25120,
+    "input_output_shape": [
+      1,
+      96,
+      100,
+      88
+    ],
+    "projection_split": [
+      64,
+      64,
+      4
+    ],
+    "sequential_dilations": [
+      1,
+      2,
+      3
+    ],
+    "global_pool_source": "last local level",
+    "gamma_shape": [
+      1,
+      96,
+      1,
+      1
+    ]
+  },
+  "simam": {
+    "core_parameters": 0,
+    "adapter_parameters": 1,
+    "input_output_shape": [
+      1,
+      48,
+      200,
+      176
+    ],
+    "lambda": 0.0001,
+    "beta_initial": 0.0010000000474974513
+  },
+  "oga": {
+    "tasks": [
+      "cls",
+      "offset",
+      "size",
+      "yaw",
+      "geo",
+      "iou"
+    ],
+    "learned_weight_parameters": 6,
+    "loss": 10.27290153503418,
+    "all_prediction_gradients_finite": true
+  },
+  "q_oga_alternatives": {
+    "mgiou_warmup0": {
+      "quality_range": [
+        0.0,
+        0.9526063799858093
+      ],
+      "loss": 7.0506978034973145,
+      "task_names": [
+        "cls",
+        "offset",
+        "size",
+        "yaw",
+        "geo"
+      ],
+      "quality_detached": true,
+      "learned_weight_parameters": 5
+    },
+    "rotated_iou_warmup0": {
+      "quality_range": [
+        0.0,
+        0.9191059470176697
+      ],
+      "loss": 8.49908447265625,
+      "task_names": [
+        "cls",
+        "offset",
+        "size",
+        "yaw",
+        "geo"
+      ],
+      "quality_detached": true,
+      "learned_weight_parameters": 5
+    },
+    "rotated_iou_warmup4": {
+      "quality_range": [
+        0.0,
+        0.9582152366638184
+      ],
+      "loss": 6.499474048614502,
+      "task_names": [
+        "cls",
+        "offset",
+        "size",
+        "yaw",
+        "geo"
+      ],
+      "quality_detached": true,
+      "learned_weight_parameters": 5
+    }
+  },
+  "checks": [
+    "focal reconstruction and gates sum to 1",
+    "SimAM formula and residual reconstruction",
+    "OGA and all Q-OGA alternatives forward/backward finite",
+    "detached quality in [0,1]; curriculum epochs 0/2/4",
+    "CQFL at quality=1 equals modified focal loss"
+  ],
+  "source_config": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/configs/experiments/under1m/hist14_local3_focal_simam_fusion32_shared_grouped_oga_iqa.json",
+  "config_sha256": "88bcd82c3683069bb3d369b4198cad6f77dc563bf24d51544d4a8300071a4157",
+  "source_hashes": {
+    "detector/core/losses/strategies/oga.py": "8292240e4f75c6bc99c428f2c10689c97611fb56b1d6cb95c8cc807ec923be98",
+    "detector/core/losses/strategies/q_oga.py": "cc1974bbd83f97355e4ede4db2a9f377914899214c8cb3e78b60575b98f728e3",
+    "detector/core/losses/strategies/base.py": "16833266d1ffded4a4d152b967d1f95cc4a41d2e58fdafc6282729bf7c16fc86",
+    "detector/core/losses/grouped.py": "c2378fe04528657eb152e04f683b96df281f3d7ca889501a73919c1e9c86ab0a",
+    "detector/core/losses/oriented_geometry_loss.py": "2d2c1a82c4abe3500db8ed5635b923c23f49d758a59ad3e9dd0a7f4e343fd7ad",
+    "detector/core/losses/smooth_corner_loss.py": "bc1185e64b116dcbe20566d7fe50e20a15a5f874202810351b78413927fd471f",
+    "detector/core/losses/focal_loss.py": "ac2aac3371f500f30f0f2bc84c3b5ec8b7bce2bad5bc98628ad934bd1ca45a86",
+    "detector/core/losses/quality_focal_loss.py": "55067052be09289391daa91fb952d22805844739effc6d6f7639862cb48d86ce",
+    "detector/core/losses/iou_targets.py": "ec5f7ac0e13c35f68aa1762b28addfb54ba8a3f3222717a9be2d4f9c85c43bf2",
+    "detector/core/losses/uncertainty_weighting.py": "976d3ccf8f897ca056026edf2b22d77cd6fc582699b6b7a482cc5db457ac0ce6",
+    "detector/core/losses/l1_loss.py": "7e9323f5d9b023ad2510445016da7c4acfe4864b56a8be615650249ce8117a55",
+    "detector/core/models/backbones/focal_context.py": "bff9be303f88c035d0beaa286c81081cbb5ddb394e6aa26411e927e4f34e07af",
+    "detector/core/models/backbones/light_attention.py": "3cb7435cffe83c6d8833f19e067a5e00b9fa8d66ee07ddcdf8fde9cb1c15e0f5",
+    "detector/core/models/backbones/mobilepixornext.py": "d9cc88190c699870e8c3657681c3ea25b1f34bfaab7b931feb10c1f0d6c96fea"
+  },
+  "generator_sha256": "7cbc0328082472787a706cb8781c4bca2e6aebdb1b5d3fac9fe0c68e160144eb",
+  "scope": "Source-verified diagrams; production model/loss/config unchanged; Q-OGA is an alternative"
+}

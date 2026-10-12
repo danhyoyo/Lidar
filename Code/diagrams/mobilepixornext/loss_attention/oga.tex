@@ -1,0 +1,98 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (36,24);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{22}{26.4}\selectfont \bfseries ] at (18.0,23.4) {OGA $\cdot$ Oriented Geometric Alignment \& Adaptive Loss};
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{11}{13.2}\selectfont ] at (18.0,22.6) {Gaussian BEV $\cdot$ one independent criterion per task group $\cdot$ optional IoU quality supervision};
+\draw[draw=ink,fill=panel,rounded corners=3pt,line width=.7pt,dashed] (0.5,13.0) rectangle (35.5,21.6);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.85,21.1) {Dual-stream supervision: parameter losses + joint geometry};
+
+\pic[shift=(0,0,0)] at (6.0,19.7,0) {
+    Box={opacity=1,
+        name=tensor4,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=offset,
+        height=6.5,
+        width=120.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{12}{14.399999999999999}\selectfont ] at (18,19.7) {Prediction + ground truth $\cdot$ heatmap, metric offset, log-size, doubled-yaw vector [+ IoU logit]};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18,19.05) -- (18,17.7) -- (4,17.7);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4,17.7) -- (32,17.7);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4,17.7) -- (4,16.95);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (11,17.7) -- (11,16.95);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18,17.7) -- (18,16.95);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (25,17.7) -- (25,16.95);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (32,17.7) -- (32,16.95);
+\draw[draw=ink,fill=heat,rounded corners=3pt,line width=.7pt] (1.1,14.65) rectangle (6.9,16.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (4,15.8) {Heatmap classification\\Modified focal loss\\all grid cells};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4,14.65) -- (4,14.100000000000001);
+\draw[draw=ink,fill=offset,rounded corners=3pt,line width=.7pt] (8.1,14.65) rectangle (13.9,16.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (11,15.8) {Offset regression\\Masked Smooth-L1\\positive cells};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (11,14.65) -- (11,14.100000000000001);
+\draw[draw=ink,fill=size,rounded corners=3pt,line width=.7pt] (15.1,14.65) rectangle (20.9,16.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (18,15.8) {Log-size regression\\Masked Smooth-L1\\positive cells};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18,14.65) -- (18,14.100000000000001);
+\draw[draw=ink,fill=yaw,rounded corners=3pt,line width=.7pt] (22.1,14.65) rectangle (27.9,16.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (25,15.8) {Doubled-yaw regression\\Masked Smooth-L1\\positive cells};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (25,14.65) -- (25,14.100000000000001);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (29.1,14.65) rectangle (34.9,16.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (32,15.8) {Oriented geometry\\Lgeo = Lproj + $\beta$corner D\\derived from regression};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (32,14.65) -- (32,14.100000000000001);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (4,14.100000000000001) -- (32,14.100000000000001);
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (4.5,10.1) rectangle (25.5,12.1);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{12}{14.399999999999999}\selectfont ] at (15,11.1) {T-SBUW $\cdot$ EMA calibration + learned temperature-softmax task weights\\Tasks: cls, offset, size, yaw, geo [+ iou] $\cdot$ M=5 or 6};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18,14.100000000000001) -- (18,12.1);
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt,dashed] (26.0,8.6) rectangle (35.5,12.799999999999999);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (26.35,12.3) {Optional IQA $\cdot$ enabled here};
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (26.75,9.4) rectangle (34.75,11.6);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (30.75,10.5) {Quality target q = stop-gradient MGIoU\\BCEWithLogits(iou\_logit, q)\\reg\_mask only $\cdot$ iou\_loss\_weight=1};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (30,19.7) -- (35.75,19.7) -- (35.75,10.5) -- (34.75,10.5);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (26.75,10.5) -- (25.9,10.5) -- (25.9,11.1) -- (25.5,11.1);
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{10}{12.0}\selectfont ] at (13,9.1) {Repeat independently per group: separate learned task logits and EMA buffers};
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt,dashed] (0.5,2.8000000000000003) rectangle (25.0,8.5);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.85,8.0) {Geometry supervision $\cdot$ positive cells only};
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (1.25,4.449999999999999) rectangle (11.75,7.15);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (6.5,5.8) {Decode predicted and GT corners\\size = exp(clamp(log-size, $-$10, 10))\\angle = 0.5 atan2(sin2, cos2)\\center = metric offset};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (11.75,5.8) -- (13.1,5.8);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (13.55,4.449999999999999) rectangle (24.05,7.15);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (18.8,5.8) {Four projection axes $\cdot$ pred + GT\\Lproj = mean[(1 $-$ meanaxis GIoU)/2]\\Corner distances: direct d0, reversed d180\\Normalize by GT diagonal};
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (12.75,3.6999999999999997) {Dpi = mean[min(d0, d180) / diagGT] $\cdot$ $\beta$corner=1 $\cdot$ no extra geometry head};
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt,dashed] (26.0,2.8000000000000003) rectangle (35.5,8.5);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (26.35,8.0) {Grouped objective};
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (26.5,5.6499999999999995) rectangle (30.5,6.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (28.5,6.3) {Car\\Lcar};
+\draw[draw=ink,fill=white,rounded corners=3pt,line width=.7pt] (31.0,5.6499999999999995) rectangle (35.0,6.95);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (33,6.3) {Ped / Cyc\\Lvru};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (28.5,5.6499999999999995) -- (28.5,5.0) -- (30.75,5.0);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (33,5.6499999999999995) -- (33,5.0) -- (30.75,5.0);
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (26.75,3.3999999999999995) rectangle (34.75,4.5);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (30.75,3.9499999999999997) {Ltotal = 0.5 Lcar + 0.5 Lvru};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (30.75,5.0) -- (30.75,4.5);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (18,1.55) {Masked Smooth-L1 divides by selected scalar coordinates + 1e$-$4; geometry averages positive boxes.};
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{10}{12.0}\selectfont ] at (18,0.7) {Empty targets: regression, geometry and IQA terms return differentiable zero; background focal supervision remains.};
+\end{tikzpicture}
+\end{document}

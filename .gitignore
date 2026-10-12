@@ -54,3 +54,17 @@ e2e_demo/
 /third_party/PlotNeuralNet/
 /diagrams/plotneuralnet/*_latex.aux
 /diagrams/plotneuralnet/*_latex.log
+
+# Reorganized project tree
+/Code/data/
+/Code/Kitti_Raw/
+/Code/splits/
+/Code/evaluation/
+/Code/docs/*
+!/Code/docs/superpowers/
+!/Code/docs/plans/
+!/Code/docs/*.md
+/Code/third_party/PlotNeuralNet/
+/Code/diagrams/plotneuralnet/*_latex.aux
+/Code/diagrams/plotneuralnet/*_latex.log
+/Result/artifacts/

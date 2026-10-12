@@ -1,0 +1,53 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (26,7);
+\node[anchor=center,align=center,text=ink,font=\fontsize{20}{24.0}\selectfont \bfseries ] at (13.0,6.52) {Stage 3 / C4};
+\node[anchor=center,align=center,text=muted,font=\fontsize{10}{12.0}\selectfont ] at (13.0,5.85) {Stride 8 $\cdot$ 4 NeXt blocks $\cdot$ expansion 2.5};
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt,dashed] (0.4499999999999993,0.8000000000000003) rectangle (25.55,5.35);
+\node[anchor=west,align=left,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.8,4.85) {};
+\draw[draw=ink,fill=offset,rounded corners=3pt,line width=.7pt] (0.6749999999999994,2.7) rectangle (3.6749999999999994,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (2.1749999999999994,3.25) {Input\\48 $\times$ 200 $\times$ 176};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (3.6749999999999994,3.25) -- (4.225,3.25);
+\draw[draw=ink,fill=peach,rounded corners=3pt,line width=.7pt] (4.225,2.7) rectangle (8.225,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (6.225,3.25) {Downsample\\Conv 3$\times$3, 48$\rightarrow$96, s=2\\BN + SiLU};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (8.225,3.25) -- (8.775,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (8.775,2.7) rectangle (10.875000000000002,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (9.825000000000001,3.25) {NeXt 1\\96$\rightarrow$240$\rightarrow$96};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (10.875,3.25) -- (11.425,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (11.425,2.7) rectangle (13.525000000000002,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (12.475000000000001,3.25) {NeXt 2\\96$\rightarrow$240$\rightarrow$96};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (13.525,3.25) -- (14.075000000000001,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (14.075000000000001,2.7) rectangle (16.175,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (15.125000000000002,3.25) {NeXt 3\\96$\rightarrow$240$\rightarrow$96};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (16.175,3.25) -- (16.725,3.25);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (16.725,2.7) rectangle (18.825000000000003,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (17.775000000000002,3.25) {NeXt 4\\96$\rightarrow$240$\rightarrow$96};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (18.825000000000003,3.25) -- (19.375000000000004,3.25);
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (19.375000000000004,2.7) rectangle (21.975000000000005,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (20.675000000000004,3.25) {Focal Context\\96$\rightarrow$64$\rightarrow$96};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (21.975000000000005,3.25) -- (22.525000000000006,3.25);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (22.525000000000006,2.7) rectangle (25.325000000000003,3.8);
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (23.925000000000004,3.25) {C4\\96 $\times$ 100 $\times$ 88};
+\node[anchor=center,align=center,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (13,1.55) {Focal output feeds both L4 and Downsample 4};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,91 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\subimport{layers/}{init.tex}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{ink}{HTML}{242629}
+\definecolor{muted}{HTML}{59616a}
+\definecolor{panel}{HTML}{f6f6f3}
+\definecolor{blue}{HTML}{dfeaf5}
+\definecolor{peach}{HTML}{f7cdae}
+\definecolor{green}{HTML}{a9ce91}
+\definecolor{yellow}{HTML}{ffe49b}
+\definecolor{purple}{HTML}{d5c5e8}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{heat}{HTML}{e89a50}
+\definecolor{offset}{HTML}{a6bdd8}
+\definecolor{size}{HTML}{ddc66e}
+\definecolor{yaw}{HTML}{a8c983}
+\definecolor{iou}{HTML}{b6a1cd}
+\begin{document}
+\begin{tikzpicture}[x=1.524cm,y=1.524cm,z={(0.9906cm,0.73152cm)}]
+\path[use as bounding box] (0,0) rectangle (34,20);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{22}{26.4}\selectfont \bfseries ] at (17.0,19.4) {SimAM $\cdot$ Spatial Energy Attention + Residual Adapter};
+\node[anchor=center,align=center,rotate=0,text=muted,font=\fontsize{11}{13.2}\selectfont ] at (17.0,18.6) {Stage 2 / C3 $\cdot$ 48 $\times$ 200 $\times$ 176 $\cdot$ per-batch, per-channel spatial statistics};
+\draw[draw=ink,fill=panel,rounded corners=3pt,line width=.7pt,dashed] (0.5,5.799999999999999) rectangle (33.5,17.5);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.85,17.0) {SimAMCore $\cdot$ zero learned parameters};
+
+\pic[shift=(0,0,0)] at (1.0999999999999996,15.3,0) {
+    Box={opacity=1,
+        name=tensor4,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=offset,
+        height=6.5,
+        width=27.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (3.8,15.3) {Input X\\48 $\times$ 200 $\times$ 176};
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt] (8.5,14.4) rectangle (14.5,16.2);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (11.5,15.3) {Spatial mean m = meanHW(X)\\FP32 $\cdot$ B $\times$ C $\times$ 1 $\times$ 1};
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt] (16.5,14.4) rectangle (23.5,16.2);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{12}{14.399999999999999}\selectfont ] at (20,15.3) {Squared deviation\\d = (X $-$ m)\textasciicircum{}2};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (6.5,15.3) -- (8.5,15.3);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (14.5,15.3) -- (16.5,15.3);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (3.8,15.95) -- (3.8,16.5) -- (20,16.5) -- (20,16.2);
+\draw[draw=ink,fill=yellow,rounded corners=3pt,line width=.7pt] (16.5,11.5) rectangle (23.5,13.3);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (20,12.4) {Channel-local variance\\v = sumHW(d) / max(HW$-$1, 1)};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (20,14.4) -- (20,13.3);
+\draw[draw=ink,fill=green,rounded corners=3pt,line width=.7pt] (25.3,11.450000000000001) rectangle (32.3,13.35);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (28.8,12.4) {Energy score\\e = d / [4(v + $\lambda$)] + 0.5\\$\lambda$=0.0001};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (23.5,12.4) -- (25.3,12.4);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (23.5,15.3) -- (28.8,15.3) -- (28.8,13.35);
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (25.8,8.75) rectangle (31.8,10.25);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{10}{12.0}\selectfont ] at (28.8,9.5) {Spatial gate = sigmoid(e)\\FP32 $\rightarrow$ cast to input dtype};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (28.8,11.45) -- (28.8,10.25);
+\draw[fill=white,draw=ink,line width=.8pt] (21.5,9.5) circle (0.3);
+\node at (21.5,9.5) {$\times$};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (25.8,9.5) -- (21.8,9.5);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (3.8,14.65) -- (3.8,6.8) -- (21.5,6.8) -- (21.5,9.2);
+
+\pic[shift=(0,0,0)] at (12.0,9.5,0) {
+    Box={opacity=1,
+        name=tensor26,
+        caption=,
+        xlabel={ "", },
+        zlabel=,
+        fill=green,
+        height=7.5,
+        width=35.0,
+        depth=1.4999999999999998
+    }
+};
+
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (15.5,9.5) {T(X) = X $\odot$ sigmoid(e)\\48 $\times$ 200 $\times$ 176};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (21.2,9.5) -- (19,9.5);
+\draw[draw=ink,fill=blue,rounded corners=3pt,line width=.7pt,dashed] (0.5,1.3000000000000003) rectangle (33.5,5.5);
+\node[anchor=west,align=left,rotate=0,text=ink,font=\fontsize{15}{18.0}\selectfont \bfseries ] at (0.85,5.0) {ResidualLightAttention $\cdot$ one learned scalar $\beta$};
+\draw[draw=ink,fill=offset,rounded corners=3pt,line width=.7pt] (9.0,2.7) rectangle (25.0,4.1);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{13}{15.6}\selectfont ] at (17,3.4) {Output Y = X + $\beta$ [T(X) $-$ X]\\48 $\times$ 200 $\times$ 176 $\cdot$ input dtype preserved};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (15.5,8.75) -- (15.5,4.1);
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (1.1,15.3) -- (0.7,15.3) -- (0.7,3.4) -- (9,3.4);
+\draw[draw=ink,fill=purple,rounded corners=3pt,line width=.7pt] (25.5,2.7) rectangle (32.5,4.1);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (29,3.4) {Learned scalar $\beta$\\initial value=0.001};
+\draw[-{Stealth[length=4pt]},draw=ink,line width=.7pt] (25.5,3.4) -- (25,3.4);
+\node[anchor=center,align=center,rotate=0,text=ink,font=\fontsize{11}{13.2}\selectfont ] at (17,0.55) {Placement: after Stage 2 / C3, before Down3 and the C3 lateral projection to the FPN};
+\end{tikzpicture}
+\end{document}
