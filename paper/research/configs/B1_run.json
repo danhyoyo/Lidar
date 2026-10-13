@@ -1,0 +1,11 @@
+{
+  "accumulation_steps": 1,
+  "config_sha256": "5a709273b5281c70cc5e0f87462a661bc8f29a58a5548889a7a4da332e60d2df",
+  "epochs": 100,
+  "physical_batch_size": 16,
+  "precision": "bf16",
+  "run_name": "mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+  "seed": 42,
+  "target_backend": "numba",
+  "variant": "mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42"
+}

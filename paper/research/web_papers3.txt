@@ -1,0 +1,237 @@
+The KITTI Vision Benchmark Suite (https://www.cvlibs.net/datasets/kitti/)
+citeturn4search0 [wordlim: 200] Crawled: today; @inproceedings{Geiger2012CVPR, ...   booktitle = {Conference on Computer Vision and Pattern Recognition (CVPR)}, ...   * 10.10.2013: We are organizing a workshop on reconstruction meets recognition at ICCV 2013! ...   * 23.07.2012: The color image data of our object benchmark has been updated, fixing the broken test image 006887.png. ...   * 20.03.2012: The KITTI Vision Benchmark Suite goes online, starting with the stereo, flow and odometry benchmarks.
+Important note: On September 7, 2026, the KITTI and KITTI-360 servers had to be restored to the backed-up state of August 7, 2026. Results within this period have to be resubmitted.
+
+# The KITTI Vision Benchmark Suite
+
+## A project of Karlsruhe Institute of Technology
+and Toyota Technological Institute at Chicago
+
+  * home
+  * setup
+  * stereo
+    * Stereo 2012
+    * Stereo 2015
+  * flow
+    * Flow 2012
+    * Flow 2015
+  * sceneflow
+  * depth
+    * Depth Completion
+    * Depth Prediction
+  * odometry
+  * object
+    * 2d object
+    * 3d object
+    * bird's eye view
+  * tracking
+    * multi-object tracking
+    * multi-object tracking and segmentation
+    * segmenting and tracking every pixel
+  * road
+  * semantics
+    * pixel-level
+    * instance-level
+  * raw data
+  * submit results
+
+A. Geiger | P. Lenz | C. Stiller | R. Urtasun
+
+Log in
+
+## Welcome to the KITTI Vision Benchmark Suite!
+
+Image We take advantage of our autonomous driving platform Annieway to develop novel challenging real-world computer vision benchmarks. Our tasks of interest are: stereo, optical flow, visual odometry, 3D object detection and 3D tracking. For this purpose, we equipped a standard station wagon with two high-resolution color and grayscale video cameras. Accurate ground truth is provided by a Velodyne laser scanner and a GPS localization system. Our datsets are captured by driving around the mid-size city of Karlsruhe, in rural areas and on highways. Up to 15 cars and 30 pedestrians are visible per image. Besides providing all data in raw format, we extract benchmarks for each task. For each of our benchmarks, we also provide an evaluation metric and this evaluation website. Preliminary experiments show that methods ranking high on established benchmarks such as Middlebury perform below average when being moved outside the laboratory to the real world. Our goal is to reduce this bias and complement existing benchmarks by providing real-world benchmarks with novel difficulties to the community.
+
+To get started, grab a cup of your favorite beverage and watch our video trailer (5 minutes):
+iframe
+
+## Copyright
+
+Image: Creative Commons LicenseAll datasets and benchmarks on this page are copyright by us and published under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License. This means that you must attribute the work in the manner specified by the authors, you may not use this work for commercial purposes and if you alter, transform, or build upon this work, you may distribute the resulting work only under the same license.
+
+## Citation
+
+When using this dataset in your research, we will be happy if you cite us! (or bring us some self-made cake or ice-cream)
+For the stereo 2012, flow 2012, odometry, object detection or tracking benchmarks, please cite:
+@inproceedings{Geiger2012CVPR,
+  author = {Andreas Geiger and Philip Lenz and Raquel Urtasun},
+  title = {Are we ready for Autonomous Driving? The KITTI Vision Benchmark Suite},
+  booktitle = {Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year = {2012}
+}
+For the raw dataset, please cite:
+@article{Geiger2013IJRR,
+  author = {Andreas Geiger and Philip Lenz and Christoph Stiller and Raquel Urtasun},
+  title = {Vision meets Robotics: The KITTI Dataset},
+  journal = {International Journal of Robotics Research (IJRR)},
+  year = {2013}
+}
+For the road benchmark, please cite:
+@inproceedings{Fritsch2013ITSC,
+  author = {Jannik Fritsch and Tobias Kuehnl and Andreas Geiger},
+  title = {A New Performance Measure and Evaluation Benchmark for Road Detection Algorithms},
+  booktitle = {International Conference on Intelligent Transportation Systems (ITSC)},
+  year = {2013}
+}
+For the stereo 2015, flow 2015 and scene flow 2015 benchmarks, please cite:
+@inproceedings{Menze2015CVPR,
+  author = {Moritz Menze and Andreas Geiger},
+  title = {Object Scene Flow for Autonomous Vehicles},
+  booktitle = {Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year = {2015}
+}
+
+  * 04.07.2012: Added error evaluation functions to stereo/flow development kit, which can be used to train model parameters.
+  * 03.07.2012: Don't care labels for regions with unlabeled objects have been added to the object dataset.
+  * 02.07.2012: Mechanical Turk occlusion and 2D bounding box corrections have been added to raw data labels.
+  * 28.06.2012: Minimum time enforced between submission has been increased to 72 hours.
+  * 27.06.2012: Solved some security issues. Login system now works with cookies.
+  * 02.06.2012: The training labels and the development kit for the object benchmarks have been released.
+  * 29.05.2012: The images for the object detection and orientation estimation benchmarks have been released.
+  * 28.05.2012: We have added the average disparity / optical flow errors as additional error measures.
+  * 27.05.2012: Large parts of our raw data recordings have been added, including sensor calibration.
+  * 08.05.2012: Added color sequences to visual odometry benchmark downloads.
+  * 24.04.2012: Changed colormap of optical flow to a more representative one (new devkit available). Added references to method rankings.
+  * 23.04.2012: Added paper references and links of all submitted methods to ranking tables. Thanks to Daniel Scharstein for suggesting!
+  * 05.04.2012: Added links to the most relevant related datasets and benchmarks for each category.
+  * 04.04.2012: Our CVPR 2012 paper is available for download now!
+  * 20.03.2012: The KITTI Vision Benchmark Suite goes online, starting with the stereo, flow and odometry benchmarks.
+
+--------------------------------------------------------------------------------
+CVPR 2022 Open Access Repository (https://openaccess.thecvf.com/content/CVPR2022/html/Liu_A_ConvNet_for_the_2020s_CVPR_2022_paper.html)
+citeturn4search1 [wordlim: 200] Crawled: 4 months ago; These CVPR 2022 papers are the Open Access versions, provided by the Computer Vision Foundation. ... @InProceedings{Liu_2022_CVPR, author = {Liu, Zhuang and Mao, Hanzi and Wu, Chao-Yuan and Feichtenhofer, Christoph and Darrell, Trevor and Xie, Saining}, title = {A ConvNet for the 2020s}, booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, month = {June}, year = {2022}, pages = {11976-11986} }
+
+These CVPR 2022 papers are the Open Access versions, provided by the Computer Vision Foundation.
+Except for the watermark, they are identical to the accepted versions; the final published version of the proceedings is available on IEEE Xplore.
+
+This material is presented to ensure timely dissemination of scholarly and technical work. Copyright and all rights therein are retained by authors or by other copyright holders. All persons copying this information are expected to adhere to the terms and constraints invoked by each author's copyright.
+
+
+A ConvNet for the 2020s     
+
+Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, Saining Xie; Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2022, pp. 11976-11986
+
+Abstract
+
+The "Roaring 20s" of visual recognition began with the introduction of Vision Transformers (ViTs), which quickly superseded ConvNets as the state-of-the-art image classification model. A vanilla ViT, on the other hand, faces difficulties when applied to general computer vision tasks such as object detection and semantic segmentation. It is the hierarchical Transformers (e.g., Swin Transformers) that reintroduced several ConvNet priors, making Transformers practically viable as a generic vision backbone and demonstrating remarkable performance on a wide variety of vision tasks. However, the effectiveness of such hybrid approaches is still largely credited to the intrinsic superiority of Transformers, rather than the inherent inductive biases of convolutions. In this work, we reexamine the design spaces and test the limits of what a pure ConvNet can achieve. We gradually "modernize" a standard ResNet toward the design of a vision Transformer, and discover several key components that contribute to the performance difference along the way. The outcome of this exploration is a family of pure ConvNet models dubbed ConvNeXt. Constructed entirely from standard ConvNet modules, ConvNeXts compete favorably with Transformers in terms of accuracy and scalability, achieving 87.8% ImageNet top-1 accuracy and outperforming Swin Transformers on COCO detection and ADE20K segmentation, while maintaining the simplicity and efficiency of standard ConvNets.
+
+Related Material
+    [pdf] [supp] [arXiv]
+
+[bibtex]
+
+@InProceedings{Liu_2022_CVPR, author = {Liu, Zhuang and Mao, Hanzi and Wu, Chao-Yuan and Feichtenhofer, Christoph and Darrell, Trevor and Xie, Saining}, title = {A ConvNet for the 2020s}, booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, month = {June}, year = {2022}, pages = {11976-11986} }--------------------------------------------------------------------------------
+The KITTI Vision Benchmark Suite (https://www.cvlibs.net/datasets/kitti/eval_object.php)
+citeturn4search2 [wordlim: 200] Crawled: last week; # The KITTI Vision Benchmark Suite ...   * Qianli Liao (NYU) has put together code to convert from KITTI to PASCAL VOC file format (documentation included, requires Emacs). ... We evaluate object detection performance using the PASCAL criteria and object detection and orientation estimation performance using the measure discussed in our CVPR 2012 publication. ... ICCV 2021.
+Important note: On September 7, 2026, the KITTI and KITTI-360 servers had to be restored to the backed-up state of August 7, 2026. Results within this period have to be resubmitted.
+
+# The KITTI Vision Benchmark Suite
+
+## A project of Karlsruhe Institute of Technology
+and Toyota Technological Institute at Chicago
+
+## Object Detection Evaluation 2012
+
+Image
+The object detection and object orientation estimation benchmark consists of 7481 training images and 7518 test images, comprising a total of 80.256 labeled objects. All images are color and saved as png. For evaluation, we compute precision-recall curves for object detection and orientation-similarity-recall curves for joint object detection and orientation estimation. In the latter case not only the object 2D bounding box has to be located correctly, but also the orientation estimate in bird's eye view is evaluated. To rank the methods we compute average precision and average orientation similiarity. --------------------------------------------------------------------------------
+CVPR 2020 Open Access Repository (https://openaccess.thecvf.com/content_CVPR_2020/html/Wang_ECA-Net_Efficient_Channel_Attention_for_Deep_Convolutional_Neural_Networks_CVPR_2020_paper.html)
+citeturn4search3 [wordlim: 200] Crawled: 4 months ago; ECA-Net: Efficient Channel Attention for Deep Convolutional Neural NetworksQilong Wang, Banggu Wu, Pengfei Zhu, Peihua Li, Wangmeng Zuo, Qinghua Hu; Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2020, pp.
+--------------------------------------------------------------------------------
+Andreas Geiger (https://www.cvlibs.net/publications.php)
+citeturn4search4 [wordlim: 200] Crawled: today; We achieve this by lifting captured 2D RGB images into the 3D space via 3D Gaussian Splatting, improving the rendering quality for closed-loop scenarios, and building the closed-loop environment. ... Moreover, HUGSIM offers a comprehensive benchmark across more than 70 sequences from KITTI-360, Waymo, nuScenes, and PandaSet, along with over 400 varying scenarios, providing a fair and realistic evaluation platform for existing autonomous driving algorithms. ...   author = {Hongyu Zhou and Longzhong Lin and Jiabao Wang and Yichong Lu and Dongfeng Bai and Bingbing Liu and Yue Wang and Andreas Geiger and Yiyi Liao}, ...   journal = {Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}, ... We demonstrate the effectiveness of our algorithms on the KITTI and PETS2009 benchmarks and show state-of-the-art performance, while being significantly faster than existing solvers. ... @inproceedings{Lenz2015ICCV,
+--------------------------------------------------------------------------------
+Are we ready for Autonomous Driving?  The KITTI Vision Benchmark Suite (https://www.cvlibs.net/publications/Geiger2012CVPR_slides.pdf)
+citeturn4search12 [wordlim: 200] Published: 14.3 years ago; Geiger: The KITTI Vision Benchmark Suite – www.cvlibs.net
+--------------------------------------------------------------------------------
+Are We Ready for Autonomous Driving? the KITTI Vision Benchmark Suite | ML Anthology (https://mlanthology.org/cvpr/2012/geiger2012cvpr-we/)
+citeturn4search5 [wordlim: 200] Published: 14.8 years ago; Crawled: 4 months ago; the KITTI Vision Benchmark Suite ... Our benchmarks are available online at: www.cvlibs.net/datasets/kitti. ... IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2012.](https://mlanthology.org/cvpr/2012/geiger2012cvpr-we/) doi:10.1109/CVPR.2012.6248074`
+--------------------------------------------------------------------------------
+Publications (https://www.cvlibs.net/publications.php?layout=avg)
+citeturn4search6 [wordlim: 200] Crawled: last month; ## Publications of the Autonomous Vision Group ... Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2022 ... All data and annotations are made publicly available on the KITTI online evaluation website in order to serve as a common benchmark for road terrain detection algorithms. ... @inproceedings{Geiger2011CVPR, ... Asian Conference on Computer Vision (ACCV), 2010 ... We demonstrate the effectiveness of our approach on the large-scale Middlebury benchmark, and show that state-of-the-art performance can be achieved with significant speedups.
+--------------------------------------------------------------------------------
+The KITTI Vision Benchmark Suite (https://www.cvlibs.net/datasets/kitti/eval_object_detail.php?result=db52e2bb0b406c3bcfad411560365007be5a35ad)
+citeturn4search7 [wordlim: 200] Published: 6.7 years ago; Crawled: 3 weeks ago; Gap in 3D Object Detection for Autonomous Driving ... @InProceedings{Wang_2019_CVPR, ... Car (Detection) 85.40 % 67.79 % 58.50 %
+--------------------------------------------------------------------------------
+KIT - MRT - Staff - Alumni (https://www.mrt.kit.edu/english/alumni_geiger.php)
+citeturn4search8 [wordlim: 200] Crawled: 3 weeks ago; Andreas Geiger, Martin Lauer, Frank Moosmann, Benjamin Ranft, Holger Rapp, Christoph Stiller, Julius Ziegler. ... The KITTI Vision Benchmark Suite.In Computer Vision and Pattern Recognition (CVPR), Providence, USA, June 2012.
+--------------------------------------------------------------------------------
+dblp: Are we ready for autonomous driving? The KITTI vision benchmark suite. (https://dblp.org/rec/conf/cvpr/GeigerLU12.html)
+citeturn4search9 [wordlim: 200] Crawled: last month; The KITTI vision benchmark suite." ... Andreas Geiger, Philip Lenz, Raquel Urtasun (2012) ...       * conf/cvpr/GeigerLU12
+--------------------------------------------------------------------------------
+A ConvNet for the 2020s (https://openaccess.thecvf.com/content/CVPR2022/papers/Liu_A_ConvNet_for_the_2020s_CVPR_2022_paper)
+citeturn4search13 [wordlim: 200] The original ViT [20] first studied a hybrid configuration, and a large body of follow-up works focused on reintroducing convolutional priors to ViT, either in an explicit [15, 16, 21, 82, 86, 88] or implicit [45] fashion. ... In the 2020s, vision Transformers, particularly hierarchical ones such as Swin Transformers, began to overtake ConvNets as the favored choice for generic vision backbones. ... We propose ConvNeXts, a pure ConvNet model that can compete favorably with state-of-the-art hierarchical vision Transformers across multiple computer vision benchmarks, while retaining the simplicity and efficiency of standard ConvNets.
+--------------------------------------------------------------------------------
+Are we ready for autonomous driving? The KITTI vision benchmark suite (2012) – 2009 IEEE Conference on Computer Vision and Pattern Recognition | Metascience Observatory Explorer (https://explore.metascienceobservatory.org/papers/W2150066425)
+citeturn4search10 [wordlim: 200] Published: 14.8 years ago; Crawled: last week; LIBSVM 2011 • 40,614 citations Histograms of Oriented Gradients for Human Detection 2005 • 30,198 citations Gaussian Processes for Machine Learning 2005 • 17,068 citations Gaussian Processes for Machine Learning 2005 • 11,091 citations Object Detection with Discriminatively Trained Part-Based Models 2009 • 9,815 citations Libsvm : A library for support vector machines 2008 • 8,632 citations Untitled 2002 • 6,646 citations Stereo Processing by Semiglobal Matching and Mutual Information 2007 • 3,887 citations LabelMe: A Database and Web-Based Tool for Image Annotation 2007 • 3,573 citations The OpenCV library 2000 • 3,227 citations Pedestrian Detection: An Evaluation of the State of the Art 2011 • 3,115 citations High Accuracy Optical Flow Estimation Based on a Theory for Warping 2004 • 2,554 citations A Database and Evaluation Methodology for Optical Flow 2010 • 2,156 citations Learning generative visual models from few training examples: An incremental Bayesian approach tested on 101 object categories 2007 • 2,009 citations A Duality Based Approach for Realtime TV-L 1 Optical Flow 2007 • 1,627 citations Pyramidal implementation of the Lucas Kanade feature tracker description of the algorithm 1999 • 1,591 citations Columbia Object Image Library (COIL100)1996 • 1,370 citations Secrets of optical flow estimation and their principles 2010 • 1,349 citations Large Displacement Optical Flow: Descriptor Matching in Variational Motion Estimation 2010 • 1,260 citations Computing visual correspondence with occlusions using graph cuts 2002 • 1,111 citations StereoScan: Dense 3d reconstruction in real-time 2011 • 1,067 citations Efficient Large-Scale Stereo Matching 2011 • 754 citations The 2005 PASCAL Visual Object Classes Challenge 2006 • 747 citations Automatic camera and range sensor calibration using a single shot 2012 • 556 citations Depth and Appearance for Mobile Scene Analysis 2007 • 530 citations Fast cost-volume filtering for visual correspondence and beyond 2011 • 479 citations Evaluation of Features Detectors and Descriptors based on 3D Objects 2006 • 422 citations On measuring the accuracy of SLAM algorithms 2009 • 319 citations Ford Campus vision and lidar data set 2011 • 317 citations The New College Vision and Laser Data Set 2009 • 297 citations Simultaneous robot-world and hand-eye calibration 1998 • 263 citations Pose estimation for category specific multiview object localization 2009 • 224 citations Generic and real-time structure from motion using local bundle adjustment 2008 • 217 citations Depth estimation using monocular and stereo cues 2007 • 210 citations A collection of outdoor robotic datasets with centimeter-accuracy ground truth 2009 • 165 citations“Determining optical flow”: a retrospective 1993 • 164 citations Continuous Markov Random Fields for Robust Stereo Estimation 2012 • 114 citations Pushing the limits of stereo using variational stereo estimation 2012 • 104 citations Scene flow estimation by growing correspondence seeds 2011 • 99 citations Towards a benchmark for RGB-D SLAM evaluation 2011 • 87 citations Efficient Sampling of Disparity Space for Fast And Accurate Matching 2007 • 87 citations A new benchmark for stereo-based pedestrian detection 2011 • 79 citations Streetscenes: towards scene understanding in still images 2006 • 71 citations A Real-Time-capable Hard-and Software Architecture for Joint Image and Knowledge Processing in Cognitive Automobiles 2007 • 71 citations Joint Optimisation for Object Class Segmentation and Dense Stereo Reconstruction 2010 • 64 citations Flow separation for fast and robust stereo odometry 2009 • 60 citations Visual odometry priors for robust EKF-SLAM 2010 • 41 citations Stratified Dense Matching for Stereopsis in Complex Scenes 2003 • 36 citations Ground Truth Evaluation of Stereo Algorithms for Real World Applications 2011 • 19 citations Continuous Markov Random Fields for Robust Stereo Estimation 2012 • 8 citations
+--------------------------------------------------------------------------------
+GitHub - lzccccc/kitti_eval_offline: evaluate KITTI detection on 40 recall points · GitHub (https://github.com/lzccccc/kitti_eval_offline)
+citeturn4search11 [wordlim: 200] Crawled: last week; Evaluate detection model on KITTI offline using 40 recall positions as proposed in MonoDIS [1]. ... Disentangling monocular 3d object detection.In ICCV, 2019.
+--------------------------------------------------------------------------------
+A ConvNet for the 2020s (https://arxiv.org/abs/2201.03545)
+citeturn4academia14 [wordlim: 200] Published: 4.8 years ago; Title: A ConvNet for the 2020s ... In this work, we reexamine the design spaces and test the limits of what a pure ConvNet can achieve.
+--------------------------------------------------------------------------------
+30
+
+CHAPTER 4. DATASETS & BENCHMARKS
+
+<table id="e (https://www.cvlibs.net/publications/Janai2017ARXIV.pdf)
+citeturn4search15 [wordlim: 200] Published: 6.8 years ago; <tr><td>Playing for Data [551]</td><td>+</td><td>+</td><td>✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td>L</td><td></td><td></td><td></td></tr> ... <tr><td>VPGNet Dataset [394]</td><td>++</td><td>+</td><td>✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>L</td><td></td></tr> ... <tr><td>KITTI [238]</td><td>++</td><td>+</td><td>✓</td><td>✓</td><td>S</td><td>S</td><td>S</td><td>M</td><td></td><td>S</td><td>S</td><td>S</td><td>M</td></tr> ... Overview of popular datasets for Stereo, Reconstruction, Optical Flow, Object Detection, Traffic Sign Detection, Semantic Segmentation, Road Detection, Lane Detection, Tracking.
+--------------------------------------------------------------------------------
+The HCI Benchmark Suite: Stereo and Flow Ground Truth With Uncertainties for Urban Autonomous Driving (https://openaccess.thecvf.com/content_cvpr_2016_workshops/w3/papers/Kondermann_The_HCI_Benchmark_CVPR_2016_paper.pdf)
+citeturn4search16 [wordlim: 200] Crawled: 10 months ago; A color-coded comparison table titled by the figure caption as an overview of dataset and benchmark requirements for autonomous driving. ... - Year of Publication: Stereo Middlebury 2003-6 / 2014; KITTI 2012 / 2015; MPI-Sintel 2016; Ours 2016. ... Flow Middlebury 2007; KITTI 2012 / 2015; MPI-Sintel 2012; Ours 2016.
+--------------------------------------------------------------------------------
+The HCI Benchmark Suite: Stereo And Flow Ground Truth With Uncertainties (https://www.cv-foundation.org/openaccess/content_cvpr_2016_workshops/w3/papers/Kondermann_The_HCI_Benchmark_CVPR_2016_paper.pdf)
+citeturn4search17 [wordlim: 200] Published: 11 months ago;  | Middlebury  |  | KITTI  |  | MPI-Sintel  | Ours  | Cityscapes  | Middlebury  | KITTI  |  | MPI-Sintel  | Ours ... Year of Publication  | 2003-6  | 2014  | 2012  | 2015  | 2016  | 2016  | 2015  |  |  |  |  | ... The benchmark website and dataset are
+--------------------------------------------------------------------------------
+Performance Evaluation in the KITTI Vision Benchmark (https://hci.iwr.uni-heidelberg.de/sites/default/files/profiles/khonauer/files/KITTIVisionBenchmark-AndreasGeiger-cvpr2015.pdf)
+citeturn4search18 [wordlim: 200] Published: 11.3 years ago; Brief History of KITTI: 2011■CVPR 2011 ... http://www.cvlibs.net/projects/intersection/
+--------------------------------------------------------------------------------
+List of datasets in computer vision and image processing (https://en.wikipedia.org/wiki/List_of_datasets_in_computer_vision_and_image_processing)
+citeturn4search19 [wordlim: 200] Crawled: 6 months ago; KITTI Vision Benchmark Dataset | Autonomous vehicles driving through a mid-size city captured images of various areas using cameras and laser scanners. ... | >100 GB of data | Images, text | Classification, object detection | 2012 |  | A. ... | 8500 | Images | Object recognition and classification, scene recognition | 2019 |  | Oliver Zendel, Markus Murschitz, Marcel Zeilinger, Daniel Steininger, Sara Abbasi, Csaba Beleznai
+--------------------------------------------------------------------------------
+KITTI Vision dataset website (https://www.reddit.com/r/computervision/comments/cl7fwi)
+citeturn4reddit20 [wordlim: 200] Published: 7.2 years ago; Crawled: 7.2 years ago; http://www.cvlibs.net/datasets/kitti/Does anyone knows that maybe there is another website to download KITTI dataset?
+--------------------------------------------------------------------------------
+[R] ConvNets vs Transformers (https://www.reddit.com/r/MachineLearning/comments/s252wb)
+citeturn4reddit21 [wordlim: 200] Published: 4.8 years ago; Crawled: 2.3 years ago; A ConvNet for the 2020s \- nice read to start 2022. ... 00:00 A ConvNet for the 2020s
+--------------------------------------------------------------------------------
+KITTI-360: A Novel Dataset and Benchmarks for Urban Scene Understanding in 2D and 3D (https://arxiv.org/abs/2109.13410)
+citeturn4academia22 [wordlim: 200] Published: 5.0 years ago; Title: KITTI-360: A Novel Dataset and Benchmarks for Urban Scene Understanding in 2D and 3DAuthors: Yiyi Liao, Jun Xie, Andreas Geiger
+--------------------------------------------------------------------------------
+help calculating AP for yolov3 on matlab also my recall precision plot looks jank, more info in comments (https://www.reddit.com/r/computervision/comments/m7v4na)
+citeturn4reddit23 [wordlim: 200] Published: 5.6 years ago; I'm using the kitti object detection dataset. ... What I would like help with is how to get the AP for Easy, Medium, and Hard as defined here http://www.cvlibs.net/datasets/kitti/eval\_object.php? ... That being said my recall precision plot looks pretty jank, please also let me know if I am getting recall and precision correctly.
+--------------------------------------------------------------------------------
+[D] Paper Explained – ConvNeXt: A ConvNet for the 2020s (https://www.reddit.com/r/MachineLearning/comments/t75zsc)
+citeturn4reddit24 [wordlim: 200] Published: 4.6 years ago; Crawled: 3.0 years ago; This video explains the “A ConvNet for the 2020s.” paper  by Liu et al. ... 00:00 A ConvNet for the 2020s
+--------------------------------------------------------------------------------
+Vision transformer (https://en.wikipedia.org/wiki/Vision_transformer)
+citeturn4search25 [wordlim: 200] Crawled: 5 months ago; A ConvNet for the 2020s.
+--------------------------------------------------------------------------------
+[R] Facebook AI & UC Berkeley’s ConvNeXts Compete Favourably With SOTA Hierarchical ViTs on CV Benchmarks (https://www.reddit.com/r/deeplearning/comments/s322xd)
+citeturn4reddit26 [wordlim: 200] Published: 4.7 years ago; Crawled: 4.7 years ago; A team from Facebook AI Research and UC Berkeley proposes ConvNeXts, a pure ConvNet model that achieves performance comparable with state-of-the-art hierarchical vision transformers on computer vision benchmarks while retaining the simplicity and efficiency of standard ConvNets. ... The paper *A ConvNet for the 2020s* is on arXiv.
+--------------------------------------------------------------------------------
+[R] Facebook AI & UC Berkeley’s ConvNeXts Compete Favourably With SOTA Hierarchical ViTs on CV Benchmarks (https://www.reddit.com/r/artificial/comments/s3233b)
+citeturn4reddit27 [wordlim: 200] Published: 4.7 years ago; Crawled: 4.7 years ago; A team from Facebook AI Research and UC Berkeley proposes ConvNeXts, a pure ConvNet model that achieves performance comparable with state-of-the-art hierarchical vision transformers on computer vision benchmarks while retaining the simplicity and efficiency of standard ConvNets. ... The paper *A ConvNet for the 2020s* is on arXiv.
+--------------------------------------------------------------------------------
+[R] Facebook AI & UC Berkeley’s ConvNeXts Compete Favourably With SOTA Hierarchical ViTs on CV Benchmarks (https://www.reddit.com/r/ArtificialInteligence/comments/s322z9)
+citeturn4reddit28 [wordlim: 200] Published: 4.7 years ago; Crawled: 4.7 years ago; A team from Facebook AI Research and UC Berkeley proposes ConvNeXts, a pure ConvNet model that achieves performance comparable with state-of-the-art hierarchical vision transformers on computer vision benchmarks while retaining the simplicity and efficiency of standard ConvNets. ... The paper *A ConvNet for the 2020s* is on arXiv.
+--------------------------------------------------------------------------------
+The GAP Benchmark Suite (https://arxiv.org/abs/1508.03619)
+citeturn4academia29 [wordlim: 200] Published: 11.2 years ago; Title: The GAP Benchmark Suite ... These baseline implementations are representative of state-of-the-art performance, and thus new contributions should outperform them to demonstrate an improvement.
+--------------------------------------------------------------------------------
+Stereo Matching by Training a Convolutional Neural Network to Compare Image Patches (https://arxiv.org/abs/1510.05970)
+citeturn4academia30 [wordlim: 200] Published: 11.0 years ago; We evaluate our method on the KITTI 2012, KITTI 2015, and Middlebury stereo data sets and show that it outperforms other approaches on all three data sets.
+--------------------------------------------------------------------------------
+KITTI Dataset: How do you increase accuracy through better data? (https://www.reddit.com/r/computervision/comments/mwr2e1)
+citeturn4reddit31 [wordlim: 200] Published: 5.5 years ago; Crawled: 5.5 years ago; The Kitti dataset consists of hours of traffic scenarios recorded with a variety of sensors and it is one of the most popular within the field of autonomous driving. ... When balancing the frequency of class appearances in KITTI for object detection tasks (e.g stratification) you immediately see a boost in validation accuracy.
+--------------------------------------------------------------------------------
+Help with KITTI test results (https://www.reddit.com/r/computervision/comments/1ozogrp)
+citeturn4reddit32 [wordlim: 200] Published: 10 months ago; Crawled: 10 months ago; I am working on my first CV project.A fine tuned YOLO car detection model trained on the 2d object KITTI dataset.
+--------------------------------------------------------------------------------
+YOLOv4/5 - Object Detection for Autonomous Driving - Datasets (https://www.reddit.com/r/computervision/comments/rww6og)
+citeturn4reddit33 [wordlim: 200] Published: 4.8 years ago; Crawled: 1.7 years ago; I am currently working on my bachelor thesis in the field of object detection. ... Looking for a dataset for autonomous driving I found NuScenes and Waymo, but in Waymo I have problems converting the TFRecords files to .yaml files. ...   I used the python script from here: https://github.com/Yao-Shao/Waymo\_Kitti\_Adapter/blob/master/adapter.py. ...   In my opinion, the KITTI data sets are quite outdated.
+--------------------------------------------------------------------------------
+[R] Object-recognition dataset stumped the world’s best computer vision models (https://www.reddit.com/r/MachineLearning/comments/e8wrm1)
+citeturn4reddit34 [wordlim: 200] Published: 6.8 years ago; Crawled: 6.6 years ago; [Tuesday December 10 2019] [+40 votes] ... Object detection is the task they tested and showed a 40 % loss of accuracy at, so I'm pretty sure they did in fact use object detectors on their "ObjectNet" dataset...
+

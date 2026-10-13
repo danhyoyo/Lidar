@@ -1,0 +1,11 @@
+{
+  "accumulation_steps": 1,
+  "config_sha256": "fd941deb3cf93039688a822a2b89c36478c8df45df2b5a907ae83d308ed6b1af",
+  "epochs": 50,
+  "physical_batch_size": 16,
+  "precision": "bf16",
+  "run_name": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32",
+  "seed": 42,
+  "target_backend": "numba",
+  "variant": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32"
+}

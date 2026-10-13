@@ -106,71 +106,89 @@ def classification_heatmaps(prediction, *, groups, num_classes):
     return logits.numpy(), torch.sigmoid(logits).numpy()
 
 
+class BEVOverviewPredictor:
+    """Load/validate the checkpoint once and reuse the exact decoder across frames."""
+
+    def __init__(self, checkpoint_path, config_path=None, *, device="auto", threads=4,
+                 score=.3, nms=.1, max_detections=500):
+        import torch
+        sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
+        from common import (configure_detector_imports, build_model, validate_evaluation_checkpoint,
+                            normalize_state_dict, bev_encoding_spec, detection_spec)
+        configure_detector_imports(ROOT / "detector")
+        from core.datasets.utils_1.bev_backend import encode_hist14_chw
+        from postprocess import filter_pred
+
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
+        self.config = config = inference_config(checkpoint, config_path)
+        self.spec = spec = detection_spec(config)
+        if spec.box_mode != "bev":
+            raise ValueError("This exporter handles BEV checkpoints only; use the 3D decoder for a 3D checkpoint")
+        self.schema = schema = bev_encoding_spec(config)
+        if schema.name != "hist14":
+            raise ValueError("This inference entry point currently supports hist14 encoding")
+        device = "cuda" if device == "auto" and torch.cuda.is_available() else "cpu" if device == "auto" else device
+        if device == "cuda" and not torch.cuda.is_available():
+            raise RuntimeError("CUDA is unavailable; use --device cpu")
+        torch.set_num_threads(threads)
+        validate_evaluation_checkpoint(checkpoint, config)
+        model = build_model(config)
+        model.load_state_dict(normalize_state_dict(checkpoint), strict=True)
+        self.model = model.to(device).eval()
+        self.device, self.score, self.nms, self.max_detections = device, score, nms, max_detections
+        self.encode, self.decode = encode_hist14_chw, filter_pred
+        self.class_order = sorted(config["data"]["kitti"]["objects"],
+                                  key=config["data"]["kitti"]["objects"].get)
+        os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/lidar-kitti-overview-numba")
+        self.metadata = {"checkpoint": str(checkpoint_path), "checkpoint_sha256": sha256(checkpoint_path),
+            "config_source": str(config_path) if config_path else "embedded checkpoint config",
+            "config_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
+            "checkpoint_epoch": checkpoint.get("epoch"), "box_mode": spec.box_mode,
+            "strict_state_dict": True, "checkpoint_identity_validated": True,
+            "vertical_prediction": False, "ground_truth_used_for_inference": False,
+            "torch_version": torch.__version__, "device": device, "precision": "fp32",
+            "encoding": schema.name, "encoding_backend": schema.backend,
+            "score_threshold": score, "nms_threshold": nms, "max_detections": max_detections,
+            "use_iou": spec.use_iou,
+            "nms_alpha": config["data"]["kitti"].get("nms_alpha", .5) if spec.use_iou else 0.,
+            "checkpoint_identity": checkpoint.get("checkpoint_identity")}
+
+    def predict(self, points, *, capture_heatmaps=False):
+        import torch
+        started = time.perf_counter()
+        tensor = torch.from_numpy(self.encode(points, self.schema)).unsqueeze(0).to(self.device)
+        config, spec, heatmaps = self.config, self.spec, None
+        with torch.inference_mode():
+            prediction = self.model(tensor)
+            if capture_heatmaps:
+                if spec.cls_encoding != "gaussian":
+                    raise ValueError("Gaussian heatmap export requires cls_encoding=gaussian")
+                logits, probabilities = classification_heatmaps(prediction,
+                    groups=spec.groups if spec.head_mode == "grouped" else (),
+                    num_classes=len(self.class_order))
+                heatmaps = {"logits": logits, "probabilities": probabilities,
+                            "class_order": np.asarray(self.class_order)}
+            rows = self.decode(prediction, config["data"]["kitti"], config["data"]["out_size_factor"],
+                self.score, self.nms, task_groups=spec.groups if spec.head_mode == "grouped" else None,
+                cls_encoding=spec.cls_encoding, use_iou=spec.use_iou, max_detections=self.max_detections,
+                box_mode=spec.box_mode)
+        metadata = {**self.metadata, "input_shape": list(tensor.shape),
+                    "elapsed_encoding_forward_decode_seconds": time.perf_counter() - started}
+        return rows, metadata, heatmaps
+
+
 def infer_frame(checkpoint_path, config_path, points, *, device, threads, score, nms,
                 max_detections, heatmap_output=None):
-    import torch
-    sys.path.insert(0, str(ROOT / "tools/kitti_training_pipeline"))
-    from common import (configure_detector_imports, build_model, validate_evaluation_checkpoint,
-                        normalize_state_dict, bev_encoding_spec, detection_spec)
-    configure_detector_imports(ROOT / "detector")
-    from core.datasets.utils_1.bev_backend import encode_hist14_chw
-    from postprocess import filter_pred
-
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
-    config = inference_config(checkpoint, config_path)
-    spec = detection_spec(config)
-    if spec.box_mode != "bev":
-        raise ValueError("This exporter handles BEV checkpoints only; use the 3D decoder for a 3D checkpoint")
-    schema = bev_encoding_spec(config)
-    if schema.name != "hist14":
-        raise ValueError("This inference entry point currently supports hist14 encoding")
-    device = "cuda" if device == "auto" and torch.cuda.is_available() else "cpu" if device == "auto" else device
-    if device == "cuda" and not torch.cuda.is_available():
-        raise RuntimeError("CUDA is unavailable; use --device cpu")
-    torch.set_num_threads(threads)
-    validate_evaluation_checkpoint(checkpoint, config)
-    model = build_model(config)
-    model.load_state_dict(normalize_state_dict(checkpoint), strict=True)
-    model = model.to(device).eval()
-    os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/lidar-kitti-overview-numba")
-    started = time.perf_counter()
-    voxel = encode_hist14_chw(points, schema)
-    tensor = torch.from_numpy(voxel).unsqueeze(0).to(device)
-    with torch.inference_mode():
-        prediction = model(tensor)
-        if heatmap_output is not None:
-            if spec.cls_encoding != "gaussian":
-                raise ValueError("Gaussian heatmap export requires cls_encoding=gaussian")
-            logits, probabilities = classification_heatmaps(prediction,
-                groups=spec.groups if spec.head_mode == "grouped" else (),
-                num_classes=len(config["data"]["kitti"]["objects"]))
-            class_order = sorted(config["data"]["kitti"]["objects"],
-                                 key=config["data"]["kitti"]["objects"].get)
-            np.savez_compressed(heatmap_output, logits=logits, probabilities=probabilities,
-                                class_order=np.asarray(class_order))
-        rows = filter_pred(prediction, config["data"]["kitti"], config["data"]["out_size_factor"],
-            score, nms, task_groups=spec.groups if spec.head_mode == "grouped" else None,
-            cls_encoding=spec.cls_encoding, use_iou=spec.use_iou, max_detections=max_detections,
-            box_mode=spec.box_mode)
-    metadata = {"checkpoint": str(checkpoint_path), "checkpoint_sha256": sha256(checkpoint_path),
-        "config_source": str(config_path) if config_path else "embedded checkpoint config",
-        "config_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
-        "checkpoint_epoch": checkpoint.get("epoch"), "box_mode": spec.box_mode,
-        "strict_state_dict": True, "checkpoint_identity_validated": True,
-        "vertical_prediction": False, "ground_truth_used_for_inference": False,
-        "torch_version": torch.__version__, "device": device, "precision": "fp32",
-        "encoding": schema.name, "encoding_backend": schema.backend,
-        "input_shape": list(tensor.shape), "score_threshold": score, "nms_threshold": nms,
-        "max_detections": max_detections, "use_iou": spec.use_iou,
-        "nms_alpha": config["data"]["kitti"].get("nms_alpha", .5) if spec.use_iou else 0.,
-        "elapsed_encoding_forward_decode_seconds": time.perf_counter() - started,
-        "checkpoint_identity": checkpoint.get("checkpoint_identity")}
+    runner = BEVOverviewPredictor(checkpoint_path, config_path, device=device, threads=threads,
+                                 score=score, nms=nms, max_detections=max_detections)
+    rows, metadata, heatmaps = runner.predict(points, capture_heatmaps=heatmap_output is not None)
     if heatmap_output is not None:
+        np.savez_compressed(heatmap_output, **heatmaps)
         metadata["classification_heatmaps"] = {"path": str(Path(heatmap_output).resolve()),
-            "sha256": sha256(heatmap_output), "shape_cyx": list(probabilities.shape),
+            "sha256": sha256(heatmap_output), "shape_cyx": list(heatmaps["probabilities"].shape),
             "activation": "sigmoid", "threshold_applied": False, "nms_applied": False,
-            "iou_reranking_applied": False, "class_order": class_order}
-    return rows, config, metadata
+            "iou_reranking_applied": False, "class_order": runner.class_order}
+    return rows, runner.config, metadata
 
 
 def save_figure(fig, path, dpi):

@@ -1,0 +1,482 @@
+[
+  {
+    "run_id": "O100",
+    "paper_label": "O100",
+    "evidence_series": "matched_loss_retraining_100_epochs",
+    "name": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32",
+    "directory": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32",
+    "local_directory": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32",
+    "config": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32/config.resolved.json",
+    "checkpoint": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32/evaluation_ap_local_bev.json",
+    "selection": "ap",
+    "seed": 42,
+    "epochs_completed": 100,
+    "epochs_configured": 100,
+    "complete": true,
+    "selected_epoch": 70,
+    "loss": "oga",
+    "focal": "focal",
+    "iqa": false,
+    "detail": false,
+    "local_attention": "simam",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "head_mode": "grouped",
+    "header_width": 32,
+    "fusion_width": 32,
+    "neck": "scale_gated_fpn",
+    "scale_gated_fpn": true,
+    "params": 815744,
+    "map_moderate": 69.69011139296866,
+    "mean_ap9": 71.55724705789574,
+    "class_ap": {
+      "Car": {
+        "Easy": 89.33787265976368,
+        "Moderate": 84.87735745869949,
+        "Hard": 83.05325950565378
+      },
+      "Pedestrian": {
+        "Easy": 63.12913112302526,
+        "Moderate": 57.06065989517133,
+        "Hard": 52.35056629436999
+      },
+      "Cyclist": {
+        "Easy": 83.24044164823938,
+        "Moderate": 67.13231682503519,
+        "Hard": 63.83361811110354
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 62.14231860344079,
+          "false_positives": 20083,
+          "ground_truth": 1589,
+          "ignored_predictions": 376,
+          "iou_threshold": 0.5,
+          "max_recall": 0.788546255506608,
+          "ranked_predictions": 21712,
+          "true_positives": 1253
+        },
+        "30_50m": {
+          "ap_r40_percent": 7.097494198799506,
+          "false_positives": 15109,
+          "ground_truth": 137,
+          "ignored_predictions": 11,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5255474452554745,
+          "ranked_predictions": 15192,
+          "true_positives": 72
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.4345320763629784,
+          "false_positives": 7276,
+          "ground_truth": 13,
+          "ignored_predictions": 3,
+          "iou_threshold": 0.5,
+          "max_recall": 0.46153846153846156,
+          "ranked_predictions": 7285,
+          "true_positives": 6
+        }
+      },
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 74.72281250970582,
+          "false_positives": 8183,
+          "ground_truth": 346,
+          "ignored_predictions": 133,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8121387283236994,
+          "ranked_predictions": 8597,
+          "true_positives": 281
+        },
+        "30_50m": {
+          "ap_r40_percent": 50.85061174465986,
+          "false_positives": 11594,
+          "ground_truth": 181,
+          "ignored_predictions": 49,
+          "iou_threshold": 0.5,
+          "max_recall": 0.856353591160221,
+          "ranked_predictions": 11798,
+          "true_positives": 155
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 15.568281022995906,
+          "false_positives": 4526,
+          "ground_truth": 17,
+          "ignored_predictions": 25,
+          "iou_threshold": 0.5,
+          "max_recall": 0.47058823529411764,
+          "ranked_predictions": 4559,
+          "true_positives": 8
+        }
+      }
+    },
+    "loss_checkpoint_map": 69.69091274324948,
+    "loss_checkpoint_epoch": 45,
+    "loss_checkpoint_validation_objective": 0.9883474111557007,
+    "latency_ms": {
+      "decode_nms": 21.05460586646519,
+      "host_to_device": 6.630269104890856,
+      "input_to_detections": 47.31837584252039,
+      "model": 7.884868242792006,
+      "preprocess": 11.512118977636597
+    },
+    "model_hz": 126.82520103162857,
+    "end_to_end_hz": 21.133438800352863,
+    "runtime": {
+      "cuda": "13.0",
+      "elapsed_seconds": 207.3705117702484,
+      "gpu": "NVIDIA L4",
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "torch_peak_memory_mb": 104.90087890625
+    },
+    "source": {
+      "commit": "2fcd5217c5d14dce1e523126ff59f72266bfd0de",
+      "dirty": false
+    },
+    "detections_per_frame": 35.70549217299018,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 48.39652793348325,
+        "per_class_moderate": {
+          "Car": 72.96730705452872,
+          "Cyclist": 38.157227313664,
+          "Pedestrian": 34.065049432257034
+        }
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 63.84236309331059,
+        "per_class_moderate": {
+          "Car": 79.88016243544962,
+          "Cyclist": 57.6914995736785,
+          "Pedestrian": 53.95542727080366
+        }
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 65.6048479953375,
+        "per_class_moderate": {
+          "Car": 83.95235644949881,
+          "Cyclist": 60.60901376420493,
+          "Pedestrian": 52.25317377230877
+        }
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 69.42850453777403,
+        "per_class_moderate": {
+          "Car": 84.32215385304644,
+          "Cyclist": 65.29065269543113,
+          "Pedestrian": 58.67270706484449
+        }
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 67.2814939895262,
+        "per_class_moderate": {
+          "Car": 82.69392358096621,
+          "Cyclist": 63.092663010648664,
+          "Pedestrian": 56.057895376963685
+        }
+      },
+      {
+        "epoch": 60,
+        "map_moderate": 67.3808802030462,
+        "per_class_moderate": {
+          "Car": 84.69041388414257,
+          "Cyclist": 60.79798342669277,
+          "Pedestrian": 56.654243298303264
+        }
+      },
+      {
+        "epoch": 70,
+        "map_moderate": 69.69011139296866,
+        "per_class_moderate": {
+          "Car": 84.87735745869949,
+          "Cyclist": 67.13231682503519,
+          "Pedestrian": 57.06065989517133
+        }
+      },
+      {
+        "epoch": 80,
+        "map_moderate": 68.17457610764274,
+        "per_class_moderate": {
+          "Car": 84.7059779253667,
+          "Cyclist": 63.50969929609682,
+          "Pedestrian": 56.308051101464706
+        }
+      },
+      {
+        "epoch": 90,
+        "map_moderate": 69.2511523132468,
+        "per_class_moderate": {
+          "Car": 85.34383517788304,
+          "Cyclist": 66.09403604261995,
+          "Pedestrian": 56.31558571923746
+        }
+      },
+      {
+        "epoch": 100,
+        "map_moderate": 68.78838803546898,
+        "per_class_moderate": {
+          "Car": 85.24258770820464,
+          "Cyclist": 65.33359408871769,
+          "Pedestrian": 55.788982309484624
+        }
+      }
+    ],
+    "operating_point": {
+      "true_positives": 9089,
+      "false_positives": 118795,
+      "ground_truth": 10157,
+      "micro_recall_percent": 89.48508417839913,
+      "false_positives_per_frame": 31.5189705492173
+    }
+  },
+  {
+    "run_id": "Q100",
+    "paper_label": "Q100",
+    "evidence_series": "matched_loss_retraining_100_epochs",
+    "name": "mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32",
+    "directory": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32",
+    "local_directory": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32",
+    "config": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32/config.resolved.json",
+    "checkpoint": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/drive-download-20261013T095105Z-1-001/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_ac589a8d2d66-grouped_37f5de1899a5-s42-Final_qoga-h32/evaluation_ap_local_bev.json",
+    "selection": "ap",
+    "seed": 42,
+    "epochs_completed": 100,
+    "epochs_configured": 100,
+    "complete": true,
+    "selected_epoch": 70,
+    "loss": "q_oga",
+    "focal": "focal",
+    "iqa": false,
+    "detail": false,
+    "local_attention": "simam",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "head_mode": "grouped",
+    "header_width": 32,
+    "fusion_width": 32,
+    "neck": "scale_gated_fpn",
+    "scale_gated_fpn": true,
+    "params": 815744,
+    "map_moderate": 70.51509777926347,
+    "mean_ap9": 72.26683697180775,
+    "class_ap": {
+      "Car": {
+        "Easy": 88.18392802041068,
+        "Moderate": 84.76637696929379,
+        "Hard": 83.32113209550258
+      },
+      "Pedestrian": {
+        "Easy": 66.47600404823548,
+        "Moderate": 61.27097587158271,
+        "Hard": 55.75654035011652
+      },
+      "Cyclist": {
+        "Easy": 82.90393756285432,
+        "Moderate": 65.5079404969139,
+        "Hard": 62.21469733135976
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 65.50347427224948,
+          "false_positives": 14097,
+          "ground_truth": 1589,
+          "ignored_predictions": 363,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8074260541220893,
+          "ranked_predictions": 15743,
+          "true_positives": 1283
+        },
+        "30_50m": {
+          "ap_r40_percent": 11.470215022518488,
+          "false_positives": 8544,
+          "ground_truth": 137,
+          "ignored_predictions": 7,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5766423357664233,
+          "ranked_predictions": 8630,
+          "true_positives": 79
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.4312463323070492,
+          "false_positives": 3993,
+          "ground_truth": 13,
+          "ignored_predictions": 4,
+          "iou_threshold": 0.5,
+          "max_recall": 0.46153846153846156,
+          "ranked_predictions": 4003,
+          "true_positives": 6
+        }
+      },
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 73.62758341968278,
+          "false_positives": 3728,
+          "ground_truth": 346,
+          "ignored_predictions": 133,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8034682080924855,
+          "ranked_predictions": 4139,
+          "true_positives": 278
+        },
+        "30_50m": {
+          "ap_r40_percent": 49.396478840976066,
+          "false_positives": 4945,
+          "ground_truth": 181,
+          "ignored_predictions": 40,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8397790055248618,
+          "ranked_predictions": 5137,
+          "true_positives": 152
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 14.367445883892199,
+          "false_positives": 1316,
+          "ground_truth": 17,
+          "ignored_predictions": 17,
+          "iou_threshold": 0.5,
+          "max_recall": 0.35294117647058826,
+          "ranked_predictions": 1339,
+          "true_positives": 6
+        }
+      }
+    },
+    "loss_checkpoint_map": 69.79611571706094,
+    "loss_checkpoint_epoch": 44,
+    "loss_checkpoint_validation_objective": 0.9939899444580078,
+    "latency_ms": {
+      "decode_nms": 15.526589692720233,
+      "host_to_device": 6.6938835110046595,
+      "input_to_detections": 42.09699546076012,
+      "model": 7.929487026064407,
+      "preprocess": 11.695984082233847
+    },
+    "model_hz": 126.11156266640918,
+    "end_to_end_hz": 23.75466441380906,
+    "runtime": {
+      "cuda": "13.0",
+      "elapsed_seconds": 187.8478446006775,
+      "gpu": "NVIDIA L4",
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "torch_peak_memory_mb": 104.90087890625
+    },
+    "source": {
+      "commit": "2fcd5217c5d14dce1e523126ff59f72266bfd0de",
+      "dirty": false
+    },
+    "detections_per_frame": 24.792783231626426,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 52.41267686525887,
+        "per_class_moderate": {
+          "Car": 72.87489880303836,
+          "Cyclist": 41.268729084618926,
+          "Pedestrian": 43.094402708119304
+        }
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 60.392404222448825,
+        "per_class_moderate": {
+          "Car": 77.675513071589,
+          "Cyclist": 51.09760038242788,
+          "Pedestrian": 52.4040992133296
+        }
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 68.83963716597599,
+        "per_class_moderate": {
+          "Car": 84.18472516782191,
+          "Cyclist": 64.14321285341921,
+          "Pedestrian": 58.19097347668682
+        }
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 70.333301919179,
+        "per_class_moderate": {
+          "Car": 83.76647397905536,
+          "Cyclist": 66.55979639267338,
+          "Pedestrian": 60.673635385808254
+        }
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 68.28932675349087,
+        "per_class_moderate": {
+          "Car": 83.44980180789008,
+          "Cyclist": 62.432004650310105,
+          "Pedestrian": 58.986173802272454
+        }
+      },
+      {
+        "epoch": 60,
+        "map_moderate": 67.98472964913023,
+        "per_class_moderate": {
+          "Car": 84.2463257489716,
+          "Cyclist": 63.79120541587546,
+          "Pedestrian": 55.916657782543645
+        }
+      },
+      {
+        "epoch": 70,
+        "map_moderate": 70.51509777926347,
+        "per_class_moderate": {
+          "Car": 84.76637696929379,
+          "Cyclist": 65.5079404969139,
+          "Pedestrian": 61.27097587158271
+        }
+      },
+      {
+        "epoch": 80,
+        "map_moderate": 69.49739878230311,
+        "per_class_moderate": {
+          "Car": 84.17988192486163,
+          "Cyclist": 65.68761973770371,
+          "Pedestrian": 58.62469468434398
+        }
+      },
+      {
+        "epoch": 90,
+        "map_moderate": 69.85923292427044,
+        "per_class_moderate": {
+          "Car": 85.06357212982778,
+          "Cyclist": 66.28842142544957,
+          "Pedestrian": 58.225705217533985
+        }
+      },
+      {
+        "epoch": 100,
+        "map_moderate": 70.31998174513558,
+        "per_class_moderate": {
+          "Car": 84.80870101395995,
+          "Cyclist": 67.59950886513427,
+          "Pedestrian": 58.551735356312506
+        }
+      }
+    ],
+    "operating_point": {
+      "true_positives": 9108,
+      "false_positives": 77704,
+      "ground_truth": 10157,
+      "micro_recall_percent": 89.67214728758492,
+      "false_positives_per_frame": 20.616609180153887
+    }
+  }
+]

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="95mm" height="76.3mm" viewBox="0 0 660 530">
+<title>Compact overview of the Hist14 MobilePixorNeXt detector</title>
+<desc>LiDAR to Hist14 BEV encoding, MobilePixorNeXt with Focal Context and SG-FPN (collapsed into the detector box), grouped heatmap, metric offset, log-size, doubled-angle and IoU-quality heads. The right arrow denotes BEV detection after decoding and NMS. Five downward arrows denote OGA training supervision. Any 3D cuboids require subsequent LiDAR-based vertical lifting outside this panel.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#252525"/></marker><marker id="orange-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dd8946"/></marker></defs>
+<g font-family="Times New Roman, Liberation Serif, DejaVu Serif, serif" fill="#252525" stroke-linejoin="round" stroke-linecap="round">
+<rect x="18" y="12" width="622" height="506" rx="12" fill="none" stroke="#252525" stroke-width="2" stroke-dasharray="9 7"/>
+<rect x="53" y="32" width="172" height="124" rx="22" fill="white" stroke="#252525" stroke-width="2"/>
+<text x="139" y="70" text-anchor="middle" font-size="27" fill="#252525">Hist14</text>
+<text x="139" y="106" text-anchor="middle" font-size="27" fill="#252525">BEV Feature</text>
+<text x="139" y="142" text-anchor="middle" font-size="27" fill="#252525">Encoder</text>
+<rect x="284" y="32" width="302" height="124" rx="22" fill="#fce8da" stroke="#252525" stroke-width="2"/>
+<text x="435" y="70" text-anchor="middle" font-size="27" fill="#252525">Proposed</text>
+<text x="435" y="106" text-anchor="middle" font-size="27" fill="#252525">(MobilePixorNeXt)</text>
+<text x="435" y="142" text-anchor="middle" font-size="27" fill="#252525">Detector</text>
+<polygon points="0,88 38,88 38,81 51,95 38,109 38,102 0,102" fill="#eea05b" stroke="#252525" stroke-width="1.8"/>
+<polygon points="227,88 269,88 269,81 282,95 269,109 269,102 227,102" fill="#eea05b" stroke="#252525" stroke-width="1.8"/>
+<polygon points="442,158 442,180 449,180 435,193 421,180 428,180 428,158" fill="#eea05b" stroke="#252525" stroke-width="1.8"/>
+<rect x="28" y="194" width="598" height="248" rx="9" fill="#f8f8f8" stroke="#252525" stroke-width="2" stroke-dasharray="9 7"/>
+<path d="M 435,194 L 435,204" fill="none" stroke="#252525" stroke-width="2"/>
+<path d="M 92,213 L 92,204 L 561,204 L 561,213" fill="none" stroke="#252525" stroke-width="2"/>
+<path d="M 200,204 L 200,213" fill="none" stroke="#252525" stroke-width="2"/>
+<path d="M 300,204 L 300,213" fill="none" stroke="#252525" stroke-width="2"/>
+<path d="M 427,204 L 427,213" fill="none" stroke="#252525" stroke-width="2"/>
+<rect x="38" y="214" width="108" height="68" rx="12" fill="#ffe7a0" stroke="#252525" stroke-width="2"/>
+<text x="92" y="241" text-anchor="middle" font-size="25" fill="#252525">Gaussian</text>
+<text x="92" y="269" text-anchor="middle" font-size="25" fill="#252525">Heatmap</text>
+<rect x="154" y="214" width="92" height="68" rx="12" fill="#f5f5f5" stroke="#252525" stroke-width="2"/>
+<text x="200" y="241" text-anchor="middle" font-size="25" fill="#252525">Local</text>
+<text x="200" y="269" text-anchor="middle" font-size="25" fill="#252525">Offset</text>
+<rect x="254" y="214" width="92" height="68" rx="12" fill="#f5f5f5" stroke="#252525" stroke-width="2"/>
+<text x="300" y="241" text-anchor="middle" font-size="25" fill="#252525">Object</text>
+<text x="300" y="269" text-anchor="middle" font-size="25" fill="#252525">Size</text>
+<rect x="354" y="214" width="146" height="68" rx="12" fill="#f5f5f5" stroke="#252525" stroke-width="2"/>
+<text x="427" y="256" text-anchor="middle" font-size="25" fill="#252525">Orientation</text>
+<rect x="508" y="214" width="106" height="68" rx="12" fill="#f5f5f5" stroke="#252525" stroke-width="2"/>
+<text x="561" y="241" text-anchor="middle" font-size="25" fill="#252525">IoU</text>
+<text x="561" y="269" text-anchor="middle" font-size="25" fill="#252525">Quality</text>
+<text x="200" y="320" text-anchor="middle" font-size="25" fill="#252525">[Δx, Δy]</text>
+<text x="300" y="311" text-anchor="middle" font-size="25" fill="#252525">[log w,</text>
+<text x="300" y="342" text-anchor="middle" font-size="25" fill="#252525">log l]</text>
+<text x="427" y="311" text-anchor="middle" font-size="25" fill="#252525">[cos 2θ,</text>
+<text x="427" y="342" text-anchor="middle" font-size="25" fill="#252525">sin 2θ]</text>
+<text x="561" y="320" text-anchor="middle" font-size="25" fill="#252525">σ(i)</text>
+<path d="M 92,417 L 92,467" fill="none" stroke="#252525" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 200,333 L 200,467" fill="none" stroke="#252525" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 300,355 L 300,467" fill="none" stroke="#252525" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 427,355 L 427,467" fill="none" stroke="#252525" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 561,333 L 561,467" fill="none" stroke="#252525" stroke-width="2" marker-end="url(#arrow)"/>
+<polygon points="627,341 646,341 646,334 659,348 646,362 646,355 627,355" fill="#eea05b" stroke="#252525" stroke-width="1.8"/>
+<rect x="28" y="469" width="598" height="39" rx="9" fill="#e7f2fc" stroke="#252525" stroke-width="2"/>
+<text x="327" y="498" text-anchor="middle" font-size="29" fill="#252525">OGA Loss</text>
+</g>
+</svg>

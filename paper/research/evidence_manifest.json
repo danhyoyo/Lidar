@@ -1,0 +1,911 @@
+{
+  "raw_rows": 41,
+  "distance_rows": 114,
+  "training_rows": 1088,
+  "config_differences": 136,
+  "sheet_names": [
+    "Tong_quan",
+    "Raw_eval",
+    "So_sanh_2_run",
+    "01_Tien_trinh",
+    "02_Encoding_Heads",
+    "03_Augmentation",
+    "04_Neck_Width",
+    "05_OGA_IQA",
+    "06_Context",
+    "07_Local_Detail",
+    "08_Checkpoint",
+    "09_Efficiency",
+    "10_Khoang_cach",
+    "11_Hoc_AP",
+    "Training_log",
+    "12_FP_Recall",
+    "Audit_pairs",
+    "Diff_config",
+    "Danh_sach_runs",
+    "Ke_hoach_bo_sung"
+  ],
+  "source": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts",
+  "runs": 21,
+  "ready_runs": 19,
+  "evaluations": 41,
+  "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+  "assets_aggregate_sha256": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+  "source_equivalence_command": [
+    "git",
+    "diff",
+    "--name-only",
+    "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "54636593f6026ea2f28f50c2713b8c6c69c41f9f",
+    "--",
+    "detector",
+    "tools/kitti_training_pipeline"
+  ],
+  "source_equivalence_changed_files": [],
+  "source_files": [
+    {
+      "run_id": "B0",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_ap_local_bev.json",
+      "sha256": "a355fd7006f8f7f9afc718ef9ed38ffad5bf2b755663920dcdd2e91d0147bb3d"
+    },
+    {
+      "run_id": "B0",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+      "sha256": "a86551f681ce45fed706847fa039803752518580eb8de0af90decc4b389bb20d"
+    },
+    {
+      "run_id": "B0",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/config.resolved.json",
+      "sha256": "ff3c0a71f2c3bc0b72391d57e4c52f9dac03ee71edcbbb077754da92ed3b28df"
+    },
+    {
+      "run_id": "B0",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/run.json",
+      "sha256": "72e3bd463fda3ee17894ae2a045f678aa970358077805e0128311123bc2a25c1"
+    },
+    {
+      "run_id": "B0",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/metrics.jsonl",
+      "sha256": "74a4b05d4440f8a5445dc2d056d3ecea5d43aa069ae6b44802f91e0cf9b71122"
+    },
+    {
+      "run_id": "B0",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/selection_loss.json",
+      "sha256": "e86598bd2e22b4bce4a70b0f1d0470fc21669e064cd835ff8c85874d3abc8fc1"
+    },
+    {
+      "run_id": "O32",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_ap_local_bev.json",
+      "sha256": "7130c0aa2869083f386777df5d325cd7c45b69c77c669ed8fe3a12a1f132bbe0"
+    },
+    {
+      "run_id": "O32",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_loss_local_bev.json",
+      "sha256": "0af43fe46b30cb30eac30fb6e032456b7fe2c35fc97bca2cecadaee3d160faeb"
+    },
+    {
+      "run_id": "O32",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/config.resolved.json",
+      "sha256": "45984a2ad00266ef97040708172155ef744f89d17afc32d8e19f897fbfebdfb2"
+    },
+    {
+      "run_id": "O32",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/run.json",
+      "sha256": "50d5a90031ac0ebf62760b51dbe1c1152eb6f4e92001cd28d573b0c34414cf60"
+    },
+    {
+      "run_id": "O32",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/metrics.jsonl",
+      "sha256": "94994ece44303badd2a7ad9d56dcda8ed53f108a6f0a5f0a4694b19018d30f94"
+    },
+    {
+      "run_id": "O32",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/selection_ap.json",
+      "sha256": "4eda857706ebbe6017d2f397b87eab3b60a479133547f9af3920b1dd8923fabf"
+    },
+    {
+      "run_id": "O32",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/selection_loss.json",
+      "sha256": "a260f1f907eae23cda1967c51b898d039783c20247e0424d03a1c2049d777d76"
+    },
+    {
+      "run_id": "H32",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+      "sha256": "d481862dff33ca3999bbe30a3fbd2b887f694fa43dee45a126b7012d742ee1a1"
+    },
+    {
+      "run_id": "H32",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/evaluation_loss_local_bev.json",
+      "sha256": "753670499a8964acc3332b412b4de8e19592a6c47e6a2d5fc5a42005f615a6df"
+    },
+    {
+      "run_id": "H32",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/config.resolved.json",
+      "sha256": "6d12415e9698dd2efdf132ba97617615302e0781605e16c09677141fe6f13008"
+    },
+    {
+      "run_id": "H32",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/run.json",
+      "sha256": "9b8dbdd761f5bf8b99e8321648ad9c80da2f9438b36749c7867c55db6a1805d5"
+    },
+    {
+      "run_id": "H32",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/metrics.jsonl",
+      "sha256": "dc0c9a9ba904026d7952d882a9b01c1c0c1ca696d437195a203482cd7e796e19"
+    },
+    {
+      "run_id": "H32",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/selected/selection_ap.json",
+      "sha256": "6f54821b04828358408b9c540a722471b462cd309489201be9bcd4e63e8ad2e3"
+    },
+    {
+      "run_id": "H32",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/selected/selection_loss.json",
+      "sha256": "ba5de95af6fd4c2fb30519cb39882dd592649d7cb9eef98fe312cb6a52b1bebd"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+      "sha256": "9b2fc06e4c179a2f084c42d79490568412584c364d7bbadd9ced6b1cd9eb4f8b"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/evaluation_loss_local_bev.json",
+      "sha256": "3313d3d21ee70043e5864d8feaddb36292a1bdc1b4a5c8c120745b6cc26db0aa"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/config.resolved.json",
+      "sha256": "4dec18a933d66ef101dcadec83e321fd60ba53852b38c8ff3a60fdd890de76c3"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/run.json",
+      "sha256": "e1c16d3322061ba0d6294e286b5f0c5f904c35f11f181873d1d3f3f6ee98b106"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/metrics.jsonl",
+      "sha256": "5254c04ec8178c542710570eb17ea168f4f76f844bc1471aed50549f3ccd8ae9"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/selected/selection_ap.json",
+      "sha256": "ea2998eaee6f5b3eba735ba497ab5a4f058613eceac52b2fd3eede647b45e1e2"
+    },
+    {
+      "run_id": "RC24",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/selected/selection_loss.json",
+      "sha256": "6838154c8ce9cea2d978432d160a492aea5e46605e79f7118a7e8a661530419f"
+    },
+    {
+      "run_id": "P1",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/evaluation_ap_local_bev.json",
+      "sha256": "b0453485ba043dbb58686e262d6723f7580e92bad2843c9bd3d8d3d1b92211a4"
+    },
+    {
+      "run_id": "P1",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/evaluation_loss_local_bev.json",
+      "sha256": "8a555a73fb60cbc808cfee8f9ff38507d33bc85d85b77d84458cc69e15c21f88"
+    },
+    {
+      "run_id": "P1",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/config.resolved.json",
+      "sha256": "330d1efef10a919e314ce915856cb381d20804236fc696eef36702ad50a5d1f1"
+    },
+    {
+      "run_id": "P1",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/run.json",
+      "sha256": "f001f8b941fba577d576b3cbc622b2278a84f16b8d94b726d1452970b38f2b52"
+    },
+    {
+      "run_id": "P1",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/metrics.jsonl",
+      "sha256": "a723e4a526d7bf4aba76eff09dbcf54fc2d1c001a1f424f281a884b558ed6d03"
+    },
+    {
+      "run_id": "P1",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/selected/selection_ap.json",
+      "sha256": "969d70d40b8ccd2b2073b24108f7baec88806bb9078081ec2c7e4a99d237b51b"
+    },
+    {
+      "run_id": "P1",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_9281edd2b754-grouped_e02c0e499671-s42-P1-h32/selected/selection_loss.json",
+      "sha256": "602dd32f02bc8e486e0f114ef0630cf4af4d26e3785d7726aaa630744da1ba11"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_ap_local_bev.json",
+      "sha256": "ab73148b2c4d1a637f4af6d0e4499d858ae66480f4810f60ec04138171763371"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_loss_local_bev.json",
+      "sha256": "f8dde5fb3198a1e96bbff02d8b18b5ffdafd1db967e46986e7f5898e1e019159"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/config.resolved.json",
+      "sha256": "ba93dba8e565717f0aa094d6ba03336c25d6d4b475a6b7b200cc47ba16faa693"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/run.json",
+      "sha256": "b5cdfb0845365b720a3c8f38d255ab5afcdeb93751127762821e1c11b0ef782a"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/metrics.jsonl",
+      "sha256": "4aa671ed28a01f6ccfcf980d21f84eb3db312c0b4a7ca4d559507038044d4348"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/selection_ap.json",
+      "sha256": "09d7a3cae59a375d88a840798e5866ed6a4d26a12a04ac1f24252078d673ca12"
+    },
+    {
+      "run_id": "O24G16",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/selection_loss.json",
+      "sha256": "703071977ac5f3e4882758d5f74369b67058faa7df02268694116fa7927aa093"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_ap_local_bev.json",
+      "sha256": "3c80dd25a940d3e8b4dc1015bc8e9a5cbc89d6bdca004d7fc2fb91833fa1f0fe"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_loss_local_bev.json",
+      "sha256": "63858a2ccd6382cbc9f76788386edc027f0bd93452cfbcfa0af917ca39dc8d1b"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/config.resolved.json",
+      "sha256": "e1a046db59f4c414b93f0a6eaea474d9677d55332f45540a6f58f9746a36c8eb"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/run.json",
+      "sha256": "614309de06f91a48886f4fcfd9450b8cff19cc418c9154ccfef535c5b1d6fd3f"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/metrics.jsonl",
+      "sha256": "fb2628a0c0609c06d94f78a62034b31af393cff07ff1f83528362d177d93e52b"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/selection_ap.json",
+      "sha256": "d39bdbf06275a327dbda96d6730f31d2ce3c60c2d586f9d8240defbf7e4f3157"
+    },
+    {
+      "run_id": "O24G32",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/selection_loss.json",
+      "sha256": "88eb9a64e3acbb9786901f193271bd84c5b71de0d2007caedc28ab20b320a469"
+    },
+    {
+      "run_id": "S32",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+      "sha256": "95e01fc4b9a1dfd32fc171df399e19b0831442f0d0fc944680552a6163521701"
+    },
+    {
+      "run_id": "S32",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/evaluation_loss_local_bev.json",
+      "sha256": "fc3611a12f501e5b0e765e2f26f05a7be1cc6fb587200edb9112fb30cd971e05"
+    },
+    {
+      "run_id": "S32",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/config.resolved.json",
+      "sha256": "e422f6c996a113f6de4d8622ff4268b28d8e659bd1d7f1d7f21fe961dfc7c8d5"
+    },
+    {
+      "run_id": "S32",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/run.json",
+      "sha256": "4dac626a2cbb62fc5d1e22fb81f0a8e8ada0af13dd1c2aa843dbe000da163b3d"
+    },
+    {
+      "run_id": "S32",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/metrics.jsonl",
+      "sha256": "9c967b381a57d09bfc02f2b14dacce1c4a0ad22e05fcd3e9a3124b05c63aaf73"
+    },
+    {
+      "run_id": "S32",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/selected/selection_ap.json",
+      "sha256": "3f6ed18cdc078a82f945ef9557ed5bed22224b23aaa658f234dffa29623b56dc"
+    },
+    {
+      "run_id": "S32",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/selected/selection_loss.json",
+      "sha256": "dac02a3060fecdf5d59357bd3c601d872d8268e7dd460104a46ac9c1aca81e53"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_ap_local_bev.json",
+      "sha256": "2db66d6574359fd6525e5a877a423a88598292c5dc7737e0caa0e58b5755faa7"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_loss_local_bev.json",
+      "sha256": "faf048eab8285f059dbef495998ff5d0622f019585752149568f01e3bb5b8f49"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/config.resolved.json",
+      "sha256": "74e1aa3660e4dbb880822d2fa542583bd568f7595f6c3c72af0d34f0a898af82"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/run.json",
+      "sha256": "24edf259b7fe6cf0e25d749ff2016d8998edae62293e2a21138adf550e989174"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/metrics.jsonl",
+      "sha256": "96a11464d3c1d426f9fd2e61b1d52caa220c3d7fd8150c5dd70275b36f9d63c6"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/selection_ap.json",
+      "sha256": "ad2d7f8db9fda629f5c59851aeb1da395ae4510c8ffeda0d6018a1315a515ff6"
+    },
+    {
+      "run_id": "O32G16",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/selection_loss.json",
+      "sha256": "4e07ee7fbe44af1119efba1258af340bf28338103838fb350935968c60f08480"
+    },
+    {
+      "run_id": "P3",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/evaluation_ap_local_bev.json",
+      "sha256": "13ff29caa949c65cb0f8082083160dc7d70e314e754fab997734ce2e5410fdc8"
+    },
+    {
+      "run_id": "P3",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/evaluation_loss_local_bev.json",
+      "sha256": "c2cf49ea9ee114f75324d761c7a8bdd6892951f2e55303916d8279e4b66c6014"
+    },
+    {
+      "run_id": "P3",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/config.resolved.json",
+      "sha256": "b0caa6853520c03b726dabb2359264242cacdbf1636b611279e2a8b7240cc8cd"
+    },
+    {
+      "run_id": "P3",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/run.json",
+      "sha256": "edc5e7565b38d7006e0952fed3c75b2f39f68582f89e9ed1d05e4d07d425273b"
+    },
+    {
+      "run_id": "P3",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/metrics.jsonl",
+      "sha256": "c5e14f5722a405ef06c63f808b9a14d84692e37e38e8f2b549f3a57cb730c98a"
+    },
+    {
+      "run_id": "P3",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/selected/selection_ap.json",
+      "sha256": "ab51a485a4f1b0ad3d26bf9f36f0b7b7d0226207050831c7d5615096818ee1b6"
+    },
+    {
+      "run_id": "P3",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_527f42c729a3-grouped_e02c0e499671-s42-P3-h32/selected/selection_loss.json",
+      "sha256": "328ede22a8a6b98251037f53f6f33cbbafead4267ec1efabdf1af1eb30554cba"
+    },
+    {
+      "run_id": "P2",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/evaluation_ap_local_bev.json",
+      "sha256": "8c7116cff4ba9e33505b8a6db11818ff060727a1d2818e0bf6feec48bd4d719d"
+    },
+    {
+      "run_id": "P2",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/evaluation_loss_local_bev.json",
+      "sha256": "ab6bb6564e15f0c45c93d484d7494fa9cf1d887424525602c372c84c6f7815fe"
+    },
+    {
+      "run_id": "P2",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/config.resolved.json",
+      "sha256": "2cb62b04fc3b90cb5cc2533aebb63fbbd077ed4e4872f04debf9ca11e6e9b825"
+    },
+    {
+      "run_id": "P2",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/run.json",
+      "sha256": "3f79b3ea0589e6e595c5201be86b2689f6454102849c9eb6434769fce554f20b"
+    },
+    {
+      "run_id": "P2",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/metrics.jsonl",
+      "sha256": "a5cace411107c7bcf8bd47adbec1058f30c3baa0b2641a2e7e8ce98dfa42df16"
+    },
+    {
+      "run_id": "P2",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/selected/selection_ap.json",
+      "sha256": "0c7c50bbe3bf235b0ed11e430c0c701bd2b8afc1699aade6e2e89c154cf84eba"
+    },
+    {
+      "run_id": "P2",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_6df7105bde3f-grouped_e02c0e499671-s42-P2-h32/selected/selection_loss.json",
+      "sha256": "b53c228a32cfb2e8208748c586f4956405c316d6923e4bf77e9d4da3a003e26c"
+    },
+    {
+      "run_id": "P15",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/evaluation_ap_local_bev.json",
+      "sha256": "fae870a421433ab278a848bad31db55c960d178fc080f0fdab5eaa13c3b34c57"
+    },
+    {
+      "run_id": "P15",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/evaluation_loss_local_bev.json",
+      "sha256": "4518f55374e62a273836eba679852e4c779da6a78bd827f6cae8fce7e086c7f4"
+    },
+    {
+      "run_id": "P15",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/config.resolved.json",
+      "sha256": "0a8386e4e4de3167ab0b1faef4e995fb8ec9ae410dccaaf178de4ce248b2b1ef"
+    },
+    {
+      "run_id": "P15",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/run.json",
+      "sha256": "2af7f4f1e8490ae1d5d9fe92e27ba7768d39386caa909e60b472b22df85b8746"
+    },
+    {
+      "run_id": "P15",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/metrics.jsonl",
+      "sha256": "813b299594d3219f0a424be6f0abec74b0c33896547a167bda4087ac07c7b85b"
+    },
+    {
+      "run_id": "P15",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/selected/selection_ap.json",
+      "sha256": "54c716248cd8c2b869a773b4c2acae74b300942d6af520930f7d86ef5f131a08"
+    },
+    {
+      "run_id": "P15",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_eca_f32_detail0_82525e09e40e-grouped_e02c0e499671-s42-P15-h32/selected/selection_loss.json",
+      "sha256": "7da8f411ea3a9c7a90bc9554a245d8b9435e61cd40f67a30157e6c9278faf125"
+    },
+    {
+      "run_id": "P4",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/evaluation_ap_local_bev.json",
+      "sha256": "1f5727837c88ed44781e47ed9cc3783554bc80d3e38c003618638251de069774"
+    },
+    {
+      "run_id": "P4",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/evaluation_loss_local_bev.json",
+      "sha256": "5025a5cb2fa6cdcfbeab8113b88bd312631a4c5d9e26882e6be0c7e11840e878"
+    },
+    {
+      "run_id": "P4",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/config.resolved.json",
+      "sha256": "a1f3d53bed74b80a66ccb6c85ba2831186fd1877d1bff3050bbe745dc39371ef"
+    },
+    {
+      "run_id": "P4",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/run.json",
+      "sha256": "0b513227c3ff79e061fbdf6cbab2cd51d6a3e1b21d0d42f8d9dca1b7db9e335a"
+    },
+    {
+      "run_id": "P4",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/metrics.jsonl",
+      "sha256": "fe28eeceb94c1c5e40ef4bc431897954c002658f8f06a866f689a043b0d57f50"
+    },
+    {
+      "run_id": "P4",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/selected/selection_ap.json",
+      "sha256": "704c9df1a2484c202eff0c42581d16bdb777400389a8c25e8a5a64631a33e38f"
+    },
+    {
+      "run_id": "P4",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/selected/selection_loss.json",
+      "sha256": "542a67d2166986faa91f94eb50ea8b89febb39816df37588423fbc83f1fc2205"
+    },
+    {
+      "run_id": "P14",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/evaluation_ap_local_bev.json",
+      "sha256": "daed86fbaea987e337ab76386e9d5cf7cde50cad6eb3d274696052cce6be4490"
+    },
+    {
+      "run_id": "P14",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/evaluation_loss_local_bev.json",
+      "sha256": "3389a72ab4a2c160dab6fba474fcbc735e5f6e5771096bd2a4be26b986e1e352"
+    },
+    {
+      "run_id": "P14",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/config.resolved.json",
+      "sha256": "fd941deb3cf93039688a822a2b89c36478c8df45df2b5a907ae83d308ed6b1af"
+    },
+    {
+      "run_id": "P14",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/run.json",
+      "sha256": "44b908d9188dfe5fc0ed7f6a47c5a607caf5bc0800f20fb3d5502d25462bffe6"
+    },
+    {
+      "run_id": "P14",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/metrics.jsonl",
+      "sha256": "07b670c6e968043650fde64fc2ea5a6c7fc1d17b875fcfa4f7171c9fb3abb38d"
+    },
+    {
+      "run_id": "P14",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/selected/selection_ap.json",
+      "sha256": "90d88e49936b812ef9831afea8db764568ec46bb79ef969341c302b46fcb03aa"
+    },
+    {
+      "run_id": "P14",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail1_10d2e412ad3d-grouped_e02c0e499671-s42-P14-h32/selected/selection_loss.json",
+      "sha256": "4c5b10304388e24feff8c07195b72810064609b430b2b6fb100e45953079b942"
+    },
+    {
+      "run_id": "P16",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/evaluation_ap_local_bev.json",
+      "sha256": "62124b19f7fb666aadbad35e85767b389736637e3d8c602b195296a2938bb93a"
+    },
+    {
+      "run_id": "P16",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/evaluation_loss_local_bev.json",
+      "sha256": "1fd2e6d4a90954efb809d55228066f766043aaa70fa0658dbfbcef1d9b144dba"
+    },
+    {
+      "run_id": "P16",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/config.resolved.json",
+      "sha256": "86d7cf64c8e4f6bf75327eec203d6c03612f5fdcbcb1925408c90916875b63a5"
+    },
+    {
+      "run_id": "P16",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/run.json",
+      "sha256": "f1a7bad5c779377b61521dab3c39dc2b37e757fa3e905b62c247f55339a20b18"
+    },
+    {
+      "run_id": "P16",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/metrics.jsonl",
+      "sha256": "3cb8818c57b3647d0e3af3b9c8ca2002298bf1b571d76b1bcedc79d39876f8ea"
+    },
+    {
+      "run_id": "P16",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/selected/selection_ap.json",
+      "sha256": "e9b5a3a5adf4324d4139aa33e3442893839e92d7402d63b5393f1e19c273db2c"
+    },
+    {
+      "run_id": "P16",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/selected/selection_loss.json",
+      "sha256": "2fddbe6b1066d38d6bc0e54c96bf201f0da31d812fa8a021f0b9e64c7b1a6eae"
+    },
+    {
+      "run_id": "P5",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/evaluation_ap_local_bev.json",
+      "sha256": "b8ca4716ee85d0d605f0b2dae5f844fd533f2e458c430adc4c7a9102689f315a"
+    },
+    {
+      "run_id": "P5",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/evaluation_loss_local_bev.json",
+      "sha256": "fbab76de39d205700c6d8e3716e33bdb87b2a3395ab8784ba92d3ce38f6ee936"
+    },
+    {
+      "run_id": "P5",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/config.resolved.json",
+      "sha256": "f7122bd17d6a62137e0d2d91c54817d4a977c9e2ae395dfbcf35c9f2aac52b35"
+    },
+    {
+      "run_id": "P5",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/run.json",
+      "sha256": "32c9ad24279739f5a20d2466ffe547eabec69047c13ab40a5b860bdfd4ca2f1e"
+    },
+    {
+      "run_id": "P5",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/metrics.jsonl",
+      "sha256": "e4d40e6a9eea568e34dc0f9e132a5498a01e2cd335cadafe54abae65716553af"
+    },
+    {
+      "run_id": "P5",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/selected/selection_ap.json",
+      "sha256": "4eac70655d0022291319aa9da3ec2ff39b56d7d8a0832fc5d3e42fc9cc795bf9"
+    },
+    {
+      "run_id": "P5",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/selected/selection_loss.json",
+      "sha256": "0fa111b5c87a18159ecbfb43dcf1a2664e87df74568923ee415e8cebc19eed20"
+    },
+    {
+      "run_id": "P11",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/evaluation_ap_local_bev.json",
+      "sha256": "732388c25e4ca5623189156f8730cf6fb87e60f8fe6cd1a24d784de729a82586"
+    },
+    {
+      "run_id": "P11",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/evaluation_loss_local_bev.json",
+      "sha256": "bcdc2e8d73d51e5d6623dfae27d40956e8b9cdbd78aa5505954f4de5a3a92c8c"
+    },
+    {
+      "run_id": "P11",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/config.resolved.json",
+      "sha256": "b2c5578c9e28f01a4ac664eeb3fa19b2c2fd64f13953142b5271b1ca8bb5654f"
+    },
+    {
+      "run_id": "P11",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/run.json",
+      "sha256": "a5f8b7421877c33c1f825b4645252e8e64b956cd94886705911d9e70246f8a36"
+    },
+    {
+      "run_id": "P11",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/metrics.jsonl",
+      "sha256": "89c34b56d6bb64fc82972d8f9f2757c598912366af80656e6fbcbacff3bb3d40"
+    },
+    {
+      "run_id": "P11",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/selected/selection_ap.json",
+      "sha256": "f01ec3ae8ff76c2545cc1db8fec8054afe2b266ad9143111965d2df8f050f0eb"
+    },
+    {
+      "run_id": "P11",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-q_oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_none_f32_detail0_c0250ab668ce-grouped_37f5de1899a5-s42-P11-h32/selected/selection_loss.json",
+      "sha256": "917a34cc7b59bcadf1cb6f11608ddd9c781e7a87714840a870a5874f1a2040a3"
+    },
+    {
+      "run_id": "E14",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/evaluation_ap_local_bev.json",
+      "sha256": "d981d5b9cebfc6b6f7641308f999935127a75c9180411fa42f9df02c0b866496"
+    },
+    {
+      "run_id": "E14",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/evaluation_loss_local_bev.json",
+      "sha256": "4740a9579a1bb4ec11df9254fac7656b6abc8d3e24943a0c83f05d9cb0d5641c"
+    },
+    {
+      "run_id": "E14",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/config.resolved.json",
+      "sha256": "421ee153604173224f20df6a5c9ed4047d38082eca0ccd83bbaf7c1464b08859"
+    },
+    {
+      "run_id": "E14",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/run.json",
+      "sha256": "0adb02c20e85a2cf6c0793a6d9979bc5c99823ac6786153f2597b36527952c2a"
+    },
+    {
+      "run_id": "E14",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/metrics.jsonl",
+      "sha256": "713de195e166cd2cac7a6157a02f61f50ebdd859249c4f9eb89e69d444061fd3"
+    },
+    {
+      "run_id": "E14",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/selected/selection_ap.json",
+      "sha256": "0314f8e7d4ccddf7f0f487f1e88948e234e60f3a565b071f81f604d289854252"
+    },
+    {
+      "run_id": "E14",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/selected/selection_loss.json",
+      "sha256": "fd83b5596686aa58be2b130e9976f2131b61acb82ee962bda7b1a8d0a413d22f"
+    },
+    {
+      "run_id": "G16",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/evaluation_ap_local_bev.json",
+      "sha256": "5611ae96018dd46f997b54ae25aa29d22056060a091883222dfa9c03af334df7"
+    },
+    {
+      "run_id": "G16",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/evaluation_loss_local_bev.json",
+      "sha256": "5973072f47efdc2367336c63671ee5285d405477298f6595b1a1e7141416318d"
+    },
+    {
+      "run_id": "G16",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/config.resolved.json",
+      "sha256": "5753efb05a1afba2aed2c6a480b846147777ca3a507a02d4b0e8782e5876c874"
+    },
+    {
+      "run_id": "G16",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/run.json",
+      "sha256": "929b5f7e2c605d477836a1502ce7061b0982787f76f2a7544a94daa6cd8a39dc"
+    },
+    {
+      "run_id": "G16",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/metrics.jsonl",
+      "sha256": "33c1c73a4e39220648249a34789c28525965e7aeab08db51b7e990e9e5501f00"
+    },
+    {
+      "run_id": "G16",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/selected/selection_ap.json",
+      "sha256": "61c1f78edcbcaa048ce60266c1e7ab246a3e08380e1a24fa0ef0f9cf76ab738e"
+    },
+    {
+      "run_id": "G16",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/selected/selection_loss.json",
+      "sha256": "65b379c22de7ed8c43386f26cd23ef3e5271a50b4685eacb6a0eb211552e7cb3"
+    },
+    {
+      "run_id": "B1",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+      "sha256": "5413d553e020ed8a8711f184a4ff76e210e54154933839b5f2a41b704e676a37"
+    },
+    {
+      "run_id": "B1",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/config.resolved.json",
+      "sha256": "5a709273b5281c70cc5e0f87462a661bc8f29a58a5548889a7a4da332e60d2df"
+    },
+    {
+      "run_id": "B1",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/run.json",
+      "sha256": "bb646976bde5bda95627bb4f29c7c9ae37611bda2d93a35bf8e3996360d6aab8"
+    },
+    {
+      "run_id": "B1",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/metrics.jsonl",
+      "sha256": "757cbf66c3be70aa07dc7a2c7c854c8bc5a5bbb75f1bac0aea5bc53dd2a3cff3"
+    },
+    {
+      "run_id": "B1",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/selection_loss.json",
+      "sha256": "db87a8cb04dd701b0c0e16e25e261698597417d6280337c463823aa44a4e9f0c"
+    },
+    {
+      "run_id": "E8",
+      "kind": "ap",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/evaluation_ap_local_bev.json",
+      "sha256": "cf76df44d52547eae6f9f7d75007baa4973f6a329b069ad4e026c0c18a794b5c"
+    },
+    {
+      "run_id": "E8",
+      "kind": "loss",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/evaluation_loss_local_bev.json",
+      "sha256": "11ee2526e86e9804245ed56a14b533c5aa4213aa3736ca071c1cbcec4f3f810a"
+    },
+    {
+      "run_id": "E8",
+      "kind": "config.resolved.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/config.resolved.json",
+      "sha256": "a7df72053f69f4916a1c97df23f9386d63a255f347cc7269849ad192a00c87c7"
+    },
+    {
+      "run_id": "E8",
+      "kind": "run.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/run.json",
+      "sha256": "01cc8d6dc5ec28acb427b40ece8a9ec637dbe5530d69290acd137f1772461a2a"
+    },
+    {
+      "run_id": "E8",
+      "kind": "metrics.jsonl",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/metrics.jsonl",
+      "sha256": "3e322bb34e778d3e8fbc0f680d1e79acb6f133e390951c6cdbaf0ee42ce0d86d"
+    },
+    {
+      "run_id": "E8",
+      "kind": "selected/selection_ap.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/selected/selection_ap.json",
+      "sha256": "fa36fbbf2753c2b19ac6a29307a5f915811d1277a0f3876cb19384a152cb98dc"
+    },
+    {
+      "run_id": "E8",
+      "kind": "selected/selection_loss.json",
+      "path": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/selected/selection_loss.json",
+      "sha256": "027b1244f316f1ecd8654cfba7f6cf19452acf637f918c144839bd58de5693bc"
+    }
+  ]
+}

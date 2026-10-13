@@ -309,3 +309,210 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
   Code/tests/test_kitti_overview_prediction.py \
   Code/tests/test_kitti_3d_lifting.py -q
 ```
+
+## Video visualization theo thứ tự thời gian
+
+Script `Code/tools/visualization/export_kitti_sequence_video.py` dùng một instance
+model cho toàn bộ clip, lấy prediction và heatmap classification từ cùng forward
+của từng scan. Bố cục ba panel: LiDAR XYZ chiếu 3D orthographic, box BEV có score,
+và heatmap sigmoid gộp max qua lớp. Giữ cố định camera, ROI và thang màu; không
+sinh điểm, thêm chiều cao vào box hoặc làm mượt prediction theo thời gian.
+
+```bash
+/home/duyennh/miniconda3/envs/AI_env/bin/python \
+  Code/tools/visualization/export_kitti_sequence_video.py \
+  --device cpu \
+  --output-dir Result/artifacts/kitti_sequence_video
+```
+
+Default frame list là
+`Result/artifacts/kitti_temporal_mapping/longest_consecutive_object_ids.txt`.
+Mỗi Object ID được tra lại bằng `train_mapping[train_rand[object_id] - 1]` trong
+official KITTI devkit. Script yêu cầu raw frame liên tiếp trong cùng drive,
+reject ID trùng, đảo thứ tự, gap hoặc thiếu `.bin`; không sort theo Object ID.
+Chuỗi đã xuất gồm **174 frame**, raw **77–250**, drive
+**2011_09_26_drive_0014_sync**, **10 FPS, 17.4 giây, 1920 × 800 px, H.264 MP4**.
+Mapping chỉ cho raw frame index; timestamp tuyệt đối không có trong bản Object.
+Thời gian nguồn tương đối lấy theo tần số danh định KITTI 10 Hz. `--fps` đổi tốc
+độ phát, không tạo frame mới. ROI XY được snap ra biên ô heatmap và dùng chung
+cho các panel. Counts dưới BEV là box giao ROI hiển thị; NPZ giữ toàn bộ prediction.
+
+Checkpoint mặc định lấy từ metadata của bộ single-frame trước đó, kiểm tra SHA256
+và dùng config nhúng trong checkpoint. Có thể truyền `--checkpoint /path/to/selected`
+để dùng model khác cùng encoding hist14/BEV/Gaussian. `--frame-list` và
+`--mapping-dir` chọn chuỗi/mapping khác. Smoke nhanh bằng `--limit 4` và output-dir riêng.
+Phụ thuộc thêm: PyTorch, Numba (theo config), FFmpeg và ffprobe.
+
+Output:
+
+- `visualization.mp4`: clip ghép ba panel, số frame sau decode được kiểm tra bằng ffprobe.
+- `preview.png`, `contact_sheet.png`: một frame và montage sáu mốc của clip.
+- `frames/frame_000000.png`…: ảnh gốc trước nén video.
+- `bev_predictions.npz`: key là Object ID, row `[class,score,x,y,length,width,yaw]`.
+- `heatmaps/<object_id>.npz`: logits/probabilities đầy đủ, global class order,
+  `scene_source_indices` của các điểm thật hiển thị trong `.bin` gốc.
+- `frame_manifest.json`: thứ tự video/raw frame, đường dẫn/hashes LiDAR, số điểm,
+  counts toàn bộ/hiển thị và hash heatmap từng frame.
+- `metadata.json`, `config.inference.json`: nguồn checkpoint, config, mapping,
+  camera/ROI/FPS, thời gian, split membership và lệnh tái tạo.
+
+Ground truth không tham gia inference/render clip này. Việc phát detection theo
+thời gian không tự tạo tracking ID; box/score vẫn là inference độc lập từng frame.
+
+## Ghép ảnh camera trái/phải vào video 174 frame
+
+`Code/tools/visualization/export_kitti_camera_video.py` đọc ZIP ảnh đã tải từ Colab
+và ghép camera thật vào kết quả inference của clip trên. Mặc định dùng
+`~/Downloads/kitti_training_174frames_images.zip`, kiểm tra thứ tự trong
+`frame_ids.txt`, CRC, đủ **348 ảnh RGB 1242 × 375** và trích đúng các member
+`training/image_2/<ObjectID>.png`, `training/image_3/<ObjectID>.png` vào
+`Result/artifacts/kitti_sequence_images/`. Không dùng video index hoặc raw frame
+để tìm ảnh. Các frame validation vẫn thuộc thư mục KITTI `training`.
+
+```bash
+/home/duyennh/miniconda3/envs/AI_env/bin/python \
+  Code/tools/visualization/export_kitti_camera_video.py \
+  --images-zip /home/duyennh/Downloads/kitti_training_174frames_images.zip \
+  --output-dir Result/artifacts/kitti_sequence_video_camera
+```
+
+Video **1920 × 1080, 10 FPS, 174 frame, 17.4 giây** gồm hai camera ở hàng trên
+và LiDAR XYZ, box BEV, heatmap classification ở hàng dưới. Ảnh giữ tỷ lệ và màu
+RGB gốc. `--camera-mode left` chỉ hiển thị camera trái; `--image-dir` chọn root
+ảnh đã giải nén, có cấu trúc `training/image_2`, `training/image_3`. Dùng `--limit 1`
+và output-dir riêng để kiểm tra bố cục nhanh.
+
+RGB chỉ dùng để hiển thị đồng bộ. Model vẫn nhận LiDAR; script phát lại các
+prediction/heatmap đã lưu, không forward lại và không vẽ box suy đoán lên ảnh.
+Script đối chiếu config, official mapping, `.bin`, heatmap và chỉ số điểm bằng
+SHA256 hoặc dữ liệu gốc trước khi render; thang heatmap cố định 0–1.
+
+Output mới: `visualization.mp4`, `preview.png`, `contact_sheet.png`, `frames/`,
+`frame_manifest.json` (thêm đường dẫn/hash ảnh trái/phải) và `metadata.json`
+(ZIP nguồn, camera mode, hashes cache, checkpoint, FPS và lệnh tái tạo).
+Video ba panel và các tensor inference gốc vẫn ở output directory trước đó.
+
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+  /home/duyennh/miniconda3/envs/AI_env/bin/python -m pytest \
+  Code/tests/test_kitti_camera_video.py \
+  Code/tests/test_kitti_sequence_video.py -q
+```
+
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+  /home/duyennh/miniconda3/envs/AI_env/bin/python -m pytest \
+  Code/tests/test_kitti_sequence_video.py \
+  Code/tests/test_kitti_gaussian_heatmap.py \
+  Code/tests/test_kitti_overview_prediction.py \
+  Code/tests/test_kitti_overview_visualization.py \
+  Code/tests/test_kitti_3d_lifting.py -q
+```
+# Raw points through the actual checkpoint
+
+`export_kitti_pipeline.py` exports a complete training-data demonstration on
+one actual KITTI train frame: raw XYZI → Hybrid GT + world transforms → occupied
+XY/four-height-band cells → hist14 → backbone/neck tensors → classification
+heads → decoded detections. Its output includes individual PNG/SVG panels,
+`pipeline_overview.png`, all 14 hist14 channels, eight actual feature channels
+per captured layer, full tensors in NPZ and source/checkpoint/augmentation
+provenance in `metadata.json`.
+
+```bash
+python Code/tools/visualization/export_kitti_pipeline.py \
+  --checkpoint /path/to/selected/best.pt \
+  --kitti-root Code/Kitti_Raw --frame 005663 --seed 2 --device cpu \
+  --output-dir Demo/outputs/pipeline/005663
+```
+
+The default donor DB uses 128 real frames from `Code/splits/kitti/train.txt`,
+excluding the scene itself and all validation frames. Scans are linked, and
+object crops use the repository's existing calibrated label conversion and
+GT database builder. It is a documented preview subset, not the original full
+training database. The saved checkpoint's sampling probability is respected;
+`--force-sampling` explicitly requests a forced preview. No artificial points
+are generated. Augmented scenes are fed into `model.eval()` for reproducible
+checkpoint activations; this run does not report validation AP.
+
+hist14 is the actual 14-channel encoding name; rich8 is another encoding. Its
+encoder directly aggregates points into XY pillars and four height bands.
+The voxel picture shows those occupied groups rather than adding a separate
+sparse 3D convolution stage. Feature images show the RMS of actual channels
+and individual channels, with 99th-percentile display scales; full values are
+saved without this normalization. Classification heatmaps retain sigmoid
+probabilities in [0,1]. For a BEV checkpoint, the final cuboid view uses the
+existing measured-LiDAR Z/height postprocess; a native 3D checkpoint supplies
+its own Z/height. The 3D panels use the fixed ROI recorded in metadata.
+
+### Raw pointcloud colored by height
+
+```bash
+python Code/tools/visualization/export_kitti_height_pointcloud.py --frame 005663
+```
+
+Writes separate BEV and orthographic 3D PNG/SVG files under
+`Demo/outputs/pointcloud_height/005663`. Both use `turbo` colors from measured
+LiDAR Z in metres, with a shared height scale. Both images fill the canvas on a
+black background without axes, titles, colorbars or explanatory text. Default
+height display limits are the 1st
+and 99th Z percentiles within the ROI, recorded in `metadata.json`; extremes
+are color-clipped without changing or subsampling points. Use
+`--height-range -2.3 1.0` to set a fixed physical scale across multiple frames.
+
+### Height background with instance detections and zooms
+
+```bash
+python Code/tools/visualization/export_kitti_height_detections.py \
+  --prediction-dir Result/artifacts/kitti_overview_model \
+  --height-metadata Demo/outputs/pointcloud_height/005663/metadata.json \
+  --output-dir Demo/outputs/height_detections/005663
+```
+
+Uses the verified raw-frame checkpoint cache from `predict_kitti_overview.py`.
+Rejects mismatched scan hashes, config hashes or prediction rows. Each prediction
+has its own color and frame-local ID, retained in BEV, 3D and zoom views; these
+are not tracking IDs. Background points retain the raw render's measured-Z
+turbo scale. Box colors also identify actual above-ground foreground support
+points; the highest-score box owns any overlapping support.
+
+Outputs both scene views as PNG/SVG, a zoom pair for every visible object under
+`zooms/<ID>_<class>/`, measured context/foreground crops with source-point
+indices, `object_zooms.png`, and `class_zoom_examples.png`. Vertical geometry
+uses the existing LiDAR lifting without GT boxes or class height priors;
+unsupported predictions keep their BEV box without inventing a 3D cuboid.
+
+### Simple detection images, matching the earlier detection folders
+
+```bash
+python Code/tools/visualization/export_kitti_simple_detections.py \
+  --prediction-dir Result/artifacts/kitti_overview_model \
+  --height-metadata Demo/outputs/pointcloud_height/005663/metadata.json
+```
+
+Writes `detection_bev.png`, `detection_3d.png` and exactly one isolated 3D PNG
+per supported visible object under `Demo/outputs/detection_simple/005663/zooms/`.
+Images have a black background and shared colors by class (Car coral red,
+Pedestrian green, Cyclist yellow), applied to boxes and measured foreground
+points consistently across scenes and zooms. They show numeric scores only: no
+IDs, class labels, axes, titles, height legends or combined previews. Zoom
+points are cropped from the original scan inside that object's cuboid, with
+the same yaw-aligned view used by the earlier 3D detection exporter.
+Provenance and original scan indices are stored separately in
+`Demo/data/simple_detections/005663.json`, so the output folder contains only
+images. BEV geometry/scores and the existing LiDAR vertical estimator are reused.
+
+### Camera stitching
+
+```bash
+python Code/tools/visualization/stitch_kitti_stereo.py \
+  --left Demo/data/images/training/image_2/005663.png \
+  --right Demo/data/images/training/image_3/005663.png \
+  --output Demo/outputs/camera/005663/stitched.png \
+  --metadata Demo/data/images/005663_stitch_metadata.json
+```
+
+Aligns camera 3 into camera 2 coordinates using SIFT/RANSAC, selects a graph-cut
+seam and feathers a narrow boundary. The image uses real source pixels without
+synthetic content or captions. This stereo pair overlaps almost completely;
+the resulting field-of-view increase is small, and foreground depth parallax
+limits a single homography. The uneven outer edge is cropped to a filled rectangle.

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-13",
+  "revision": "matched_100_epoch_OGA_QOGA",
+  "bibliography_entries": 23,
+  "unique_cited_sources": 23,
+  "missing_citation_keys": [],
+  "unused_bib_entries": [],
+  "source_placeholders": [],
+  "documents": {
+    "main": {
+      "pages": 9,
+      "bytes": 964610,
+      "sha256": "2d6bf667ddfc442b1e2072bbc523bdf8acdf4333bc1c3881356549bfc0e10bb8",
+      "overfull_boxes": 0,
+      "unresolved_references": [],
+      "pdf_text_question_mark_pairs": 0,
+      "fonts_all_embedded": true,
+      "font_listing": "name                                 type              encoding         emb sub uni object ID\n------------------------------------ ----------------- ---------------- --- --- --- ---------\nIHAIZV+NimbusRomNo9L-Regu            Type 1C           Custom           yes yes yes      4  0\nBZIVMZ+NimbusRomNo9L-MediItal        Type 1C           Custom           yes yes yes      5  0\nIXFAWU+NimbusRomNo9L-Medi            Type 1C           Custom           yes yes yes      6  0\nTQTHRL+CMR10                         Type 1C           Builtin          yes yes yes     11  0\nYEUUOC+CMSY10                        Type 1C           Builtin          yes yes yes     12  0\nAKHCZK+NimbusRomNo9L-ReguItal        Type 1C           Custom           yes yes yes     13  0\nVDVGTR+CMR8                          Type 1C           Builtin          yes yes yes     38  0\nCAFSZL+CMSY8                         Type 1C           Builtin          yes yes yes     39  0\nECACOO+DejaVuSerif-Bold              CID TrueType      Identity-H       yes yes yes     19  0\nBXGEVL+DejaVuSerif                   CID TrueType      Identity-H       yes yes yes     26  0\nDDIEWW+CMMI10                        Type 1C           Builtin          yes yes yes     61  0\nFKPJSN+CMR7                          Type 1C           Builtin          yes yes yes     62  0\nPVTTLK+CMSY7                         Type 1C           Builtin          yes yes yes     63  0\nJAGKKY+CMMI7                         Type 1C           Builtin          yes yes yes     65  0\nNOMARO+CMEX10                        Type 1C           Builtin          yes yes yes     68  0\nKPXLOM+NimbusMonL-Regu               Type 1C           Custom           yes yes yes     77  0\nBMQQDV+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     93  0\nBMQQDV+DejaVuSans                    CID TrueType      Identity-H       yes yes yes    109  0\nBMQQDV+DejaVuSans                    CID TrueType      Identity-H       yes yes yes    131  0\nBMQQDV+DejaVuSans                    CID TrueType      Identity-H       yes yes yes    147  0\n",
+      "underfull_boxes": 15
+    },
+    "supplementary": {
+      "pages": 13,
+      "bytes": 5704850,
+      "sha256": "6748caf4c50f329cb939f6ac99c0212d5b33d082547a53c7249daa9ef9f2b1cb",
+      "overfull_boxes": 0,
+      "unresolved_references": [],
+      "pdf_text_question_mark_pairs": 0,
+      "fonts_all_embedded": true,
+      "font_listing": "name                                 type              encoding         emb sub uni object ID\n------------------------------------ ----------------- ---------------- --- --- --- ---------\nIHAIZV+LMRoman17-Regular             Type 1C           Custom           yes yes yes      4  0\nBZIVMZ+LMRoman12-Regular             Type 1C           Custom           yes yes yes      5  0\nIXFAWU+LMRoman12-Bold                Type 1C           Custom           yes yes yes      6  0\nTQTHRL+LMRoman10-Regular             Type 1C           Custom           yes yes yes      7  0\nYEUUOC+CMR10                         Type 1C           Builtin          yes yes yes     10  0\nAKHCZK+CMSY7                         Type 1C           Builtin          yes yes yes     11  0\nVDVGTR+CMR7                          Type 1C           Builtin          yes yes yes     12  0\nCAFSZL+CMSY10                        Type 1C           Builtin          yes yes yes     13  0\nDDIEWW+CMMI10                        Type 1C           Builtin          yes yes yes     14  0\nFKPJSN+CMMI7                         Type 1C           Builtin          yes yes yes     15  0\nPVTTLK+LMMono10-Regular              Type 1C           Custom           yes yes yes     23  0\nECACOO+DejaVuSerif-Bold              CID TrueType      Identity-H       yes yes yes     31  0\nBXGEVL+DejaVuSerif                   CID TrueType      Identity-H       yes yes yes     38  0\nJAGKKY+LMRoman9-Regular              Type 1C           Custom           yes yes yes     56  0\nNOMARO+LMRoman7-Regular              Type 1C           Custom           yes yes yes     60  0\nKPXLOM+CMR9                          Type 1C           Builtin          yes yes yes     64  0\nUTACNV+CMSY9                         Type 1C           Builtin          yes yes yes     65  0\nFZDNHS+CMMI9                         Type 1C           Builtin          yes yes yes     66  0\nBMQQDV+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     74  0\nDZGKAF+LMRoman10-Italic              Type 1C           Custom           yes yes yes    109  0\n",
+      "underfull_boxes": 0
+    }
+  },
+  "tectonic_version": "Tectonic 0.17.0",
+  "figure_files_missing": [],
+  "training_configs_match_recorded_hashes": true,
+  "detector_experiments_run_during_writing": false,
+  "BEV_runs": 23,
+  "BEV_saved_reports": 45,
+  "source_zip_files": 34,
+  "source_zip_sha256": "38391b8d786025a628bdb705f136f309bbee27ae0da3919043d08ef1d3b3a86b",
+  "visually_inspected_updated_loss_tables_and_curves": true
+}

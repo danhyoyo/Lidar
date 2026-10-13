@@ -1,0 +1,19 @@
+{
+  "raw_ablation_runs_checked": 23,
+  "saved_evaluations_read": 45,
+  "original_archived_runs": 21,
+  "original_archived_evaluations": 41,
+  "matched_loss_retraining_runs": 2,
+  "matched_loss_retraining_evaluations": 4,
+  "matched_loss_configs_differ_only_in_objective_name": true,
+  "matched_loss_retraining_delta_mAP_pp": 0.8249863862948104,
+  "completed_50_epoch_AP_selected_runs": 19,
+  "train_frames": 3712,
+  "validation_frames": 3769,
+  "frame_overlap": 0,
+  "final_3d_parameters": 797382,
+  "final_checkpoint_sha256": "1d0e0cd11c27229942e31a3424c905e896f29d52f2f209481ac8eeb60088ff55",
+  "final_3d_map_R40": 57.75462916979267,
+  "final_bev_map_R40": 71.09087983086523,
+  "new_training_or_evaluation_performed": false
+}

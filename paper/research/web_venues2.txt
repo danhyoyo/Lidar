@@ -1,0 +1,558 @@
+Installing Tectonic - The Tectonic Typesetting System (https://tectonic-typesetting.github.io/book/latest/installation/)
+citeturn2search0 [wordlim: 200] Crawled: 2 months ago; # The Tectonic Typesetting System ... You can download the latest release of Tectonic here on GitHub. ... For instance, on most Linux systems, you’ll want to download the file with the name looking like `tectonic-<VERSION>-x86_64-unknown-linux-gnu.tar.gz`.
+
+# The Tectonic Typesetting System
+
+# How To: Install Tectonic
+
+One of the big advantages that Tectonic offers compared to the traditional TeX stack is that all of Tectonic’s functionality is delivered in a single executable file — not the usual tree of thousands of interlocking data files and binary tools.
+
+You have several options for obtaining the Tectonic executable. The best choice depends on your computing environment and your needs.
+
+  * For the fastest and easiest installation, copy-paste a command into your terminal that will automatically download the right Tectonic program for your computer
+  * Direct download a Tectonic release
+  * Pre-built binary packages for your favorite operating system or package manager
+  * Compile it yourself
+
+The copy-paste method should cover most use cases, but if you want better integration with your operating system or computing environment, packaged versions might make more sense. There should be no need to compile Tectonic yourself unless you want to, or you’re hoping to run it on an unusual platform.
+
+## Direct download
+
+You can download the latest release of Tectonic here on GitHub. Each release is published with precompiled executables attached. Because Tectonic is distributed as a single executable, all you need to do is download the appropriate archive for your platform and unpack it.
+
+For instance, on most Linux systems, you’ll want to download the file with the name looking like `tectonic-<VERSION>-x86_64-unknown-linux-gnu.tar.gz`. This tarball will unpack to a single file, `tectonic`, which is the Tectonic executable.
+
+## Pre-built binary packages
+
+Tectonic may be available in precompiled packages offered by either your operating system or standalone package managers. Check out the Tectonic source repository for an up-to-date listing.
+
+In most cases, the package name will be `tectonic` and will provide a command-line tool also named `tectonic`.
+
+### Pre-built packages for (Ana)conda
+
+Tectonic is available for the Conda package manager, which has the advantages of (1) not requiring any administrator privileges and (2) supporting Windows, macOS, and Linux. 
+### Homebrew
+
+There is a `tectonic` package in Homebrew. If you already have Homebrew installed, installing Tectonic should be as simple as:
+    
+    `brew install tectonic
+    `
+
+We also have instructions about installing Tectonic’s dependencies using Homebrew if you’d like to compile Tectonic yourself on your Homebrew-based computer.
+
+### MacPorts
+
+There is a `tectonic` port in MacPorts. If you already have MacPorts installed, installing Tectonic should be as simple as:
+    
+    `sudo port install tectonic
+    `
+
+### nix or nixOS
+
+If you’re using nix, you can imperatively install `tectonic` with:
+    
+    `nix-env -f '<nixpkgs>' -iA tectonic
+    `
+
+in your shell. You can also create a temporary environment using `nix-shell`:
+    
+    `nix-shell '<nixpkgs>' -A tectonic
+    `
+
+### Void Linux
+
+Void Linux has a `tectonic` package in the void-packages repository. To install it, run:
+    
+    `sudo xbps-install -S tectonic
+    `
+
+## Compile Tectonic Yourself
+
+You can always compile Tectonic yourself. If your system has C++ and Rust compilers installed, this may be as simple as running:
+    
+    `cargo install tectonic
+    `
+
+However, Tectonic requires various C/C++ support libraries that may not be available on your system by default. There are also various build options that you can turn on and off if you have more specialized needs. For all the details, consult the How To Build Tectonic guide.--------------------------------------------------------------------------------
+IEEE Transactions on Intelligent Vehicles (T-IV) - IEEE ITSS (https://ieee-itss.org/pub/t-iv/)
+citeturn2search1 [wordlim: 200] Crawled: today;   * Intelligent Vehicle Software Security ... IEEE authors are eligible for discounts at several language editing services; visit the IEEE Author Center to learn more. ... IEEE Transactions on Intelligent Vehicles is a hybrid journal, allowing either traditional manuscript submission or Open Access (author-pays OA) manuscript submission. ... Information about the IEEE Open Journal of Intelligent Transportation System can be found at: https://www.ieee-itss.org/oj-its
+
+# IEEE Transactions on Intelligent Vehicles (T-IV)
+
+IEEE Transactions on Intelligent Vehicles (T-IV)Tom Duhamel2025-06-30T13:22:43-04:00
+
+#### IEEE Transactions on Intelligent Vehicles is a new journal for the field of ITS.​
+
+The IEEE Transactions on Intelligent Vehicles is published four times per year in IEEE Xplore.
+
+### Editor-in-Chief
+
+Edward (Eddie) Tunstel
+R&D Robotics Department, Southwest Research Institute
+San Antonio,TX
+USA
+tiv-eic@ieee.org
+
+## Scope
+
+The IEEE Transactions on Intelligent Vehicles (T-IV) publishes peer-reviewed articles that provide innovative research concepts and application results, report significant theoretical findings and application case studies, and raises awareness of pressing research and application challenges in the areas of intelligent vehicles, and in particular in automated vehicles.
+
+## Topics
+
+Prospective authors are invited to submit original contributions or survey papers for review for publication in T-IV. Topics of interest include (but are not limited to):
+
+  * Advanced Driver Assistance Systems
+  * Automated Vehicles
+  * Active and Passive Vehicle Safety
+  * Vehicle Environment Perception
+  * Driver State and Intent Recognition
+  * Eco-driving and Energy-efficient Vehicles
+  * Cooperative Vehicle Systems
+  * Collision Avoidance
+  * Pedestrian Protection
+  * Proximity Detection Technology
+
+  * Assistive Mobility Systems
+  * Proximity Awareness Technology
+  * Autonomous / Intelligent Robotic Vehicles
+  * IV related Image, Radar, Lidar Signal Processing
+  * Information Fusion
+  * Vehicle Control
+  * Human Factors and Human Machine Interaction
+  * IV technologies in Electric and Hybrid Vehicles
+  * Novel Interfaces and Displays
+  * Intelligent Vehicle Software Security
+
+## Submission Information: Information for Authors
+
+### Submission Instructions for Authors
+
+All manuscripts must be submitted through the TIV Author Portal. If needed, contact the IEEE TIV Office at tiv-eic@ieee.org with any questions or concerns.
+
+### Before Submission, Authors Must:
+
+  * Complete the format self-check by verifying and marking each item on the corresponding box of the checklist, which must be included with both new submissions and resubmissions.
+
+### IEEE TIV Checklist
+
+☐ Disclose any Conflict of Interest (COI)
+
+☐ Institutional email address of all co-authors
+(Special request to TIV office if no institutional email address)
+
+☐ No non-English characters in the author’s information
+
+☐ Detailed response letter (Resubmission Only)
+
+☐ Highlighted revised manuscript (Resubmission Only)
+
+Manuscript Layout Format:
+
+☐ Use the IEEE Template Selector to access the TIV template and correctly format your manuscript
+
+☐ Font type and size
+
+☐ Double-column layout, standard line spacing/ paragraph spacing
+
+☐ Title and subtitle format
+
+☐ Author list without email address or affiliations (Under Title)
+
+☐ Standard format of figures and tables
+
+☐ Formatted references (Justified alignment, hanging indent, consistent journal name)
+
+☐ Short biographies for all authors
+
+Authors can choose among 4 kinds of submissions, each with its suggested length in IEEE style:
+
+  * Perspectives, Letters and Communications: normally limited to 5 pages
+  * Survey Papers: 18 pages
+  * Regular Papers: 10 pages
+  * Practitioner Papers: 6 pages
+
+An author may submit manuscripts that exceed the suggested length but after the final acceptance, provided they pay an overlength charge of $175.00USD for each extra page. Corresponding authors from low-income countries are eligible for waived or reduced open access APCs.
+
+### Peer Review
+
+The articles in this journal are peer reviewed in accordance with the requirements set forth in the IEEE PSPB Operations Manual (sections 8.2.1.C & 8.2.2.A). Each published submission was reviewed by at least two independent reviewers through a single-blind peer review process. In this system, the identities of the reviewers remain confidential to the authors, while reviewers are aware of the authors’ identities. Additionally, all articles will be screened for plagiarism before initiating a formal TIV review process.
+
+Please note that TIV supports the AE’s decision to add reviewers whenever necessary. This is both the AE’s right and TIV’s policy.
+
+### Abstract Description and Specifications
+
+For an abstract to be effective when displayed in IEEE Xplore® as well as through indexing services such as Compendex, INSPEC, Medline, ProQuest, and Web of Science, it must be concisely yet comprehensively reflect the article it describes. In particular, the abstract must be:
+
+  * Contained, without abbreviations, footnotes, or references. It should be a microcosm of the full article.
+  * Between 150- 250 words.
+  * Written as one paragraph and should not contain displayed mathematical equations or tabular material.
+  * Include three or four different keywords or phrases. However, over-repetition of such phrases can result in a page being rejected by search engines.
+  * Grammatically correct.
+
+### IEEE Author Center
+
+English language editing services can help refine the language of your article and reduce the risk of rejection without review. IEEE authors are eligible for discounts at several language editing services; visit the IEEE Author Center to learn more. Please note these services are fee-based and do not guarantee acceptance.
+
+Additional Resources for Authors
+
+  *     * IEEE Authoring Tools and Templates
+    * IEEE Create the Text of Your Article
+    * IEEE Create Graphics for Your Article
+
+## Open Access Publishing option of the IEEE Transactions on Intelligent Vehicles
+
+IEEE Transactions on Intelligent Vehicles is a hybrid journal, allowing either traditional manuscript submission or Open Access (author-pays OA) manuscript submission. The OA option, if selected, enables unrestricted public access to the article via IEEE Xplore. The OA option will be offered to the author at the time the manuscript is submitted. If selected, the OA discounted fee of $2,495.00 must be paid before the article is published in the journal. If you have unusual circumstances about this, please contact the Editor-in-Chief. Any other applicable charges (such as the over-length page charge and/or charge for the use of color in the print format) will be billed separately once the manuscript formatting is complete but prior to the publication. The traditional option, if selected, enables access to all qualified subscribers and purchasers via IEEE Xplore. Corresponding authors from low-income countries are eligible for waived or reduced open access APCs.
+
+## Alternative Option for Open Access Publishing in ITS
+
+The new Open Journal of ITS: OJ-ITS
+
+The IEEE Intelligent Transportation Systems Society has established the new IEEE Open Journal of Intelligent Transportation System (OJ-TS) for Open Access publications in the field of ITS. OJ-ITS is 100% open access, which means that all content is freely available without charge to users or their institutions. All articles are published under a CC BY 4.0 license, and the author retains copyright. The rapid peer review process of OJ-ITS is targeting a publication time frame of 10 weeks for most accepted papers. OJ-ITS has no page limit. Open access is provided through the payment of an Article Processing Charge (APC) of $2,045 paid after acceptance. Discount conditions are available. Publication is on-line through IEEE Xplore. Information about the IEEE Open Journal of Intelligent Transportation System can be found at: https://www.ieee-itss.org/oj-its
+
+## Submitting Final Files: Information for authors of accepted papers
+
+Papers accepted for publication will be published both electronically on IEEE Xplore website and in the printed version of the Transactions.
+
+Authors must submit final files electronically using the submission web site requested items must be compressed in a ZIP file before uploading them on the Author Portal website.
+
+#### Requested items:
+
+  1. A PDF version of the paper and an identical source version using either LaTeX or MSWord. Paper must be formatted using IEEE style (double column, single spaced) whose template is available here.
+  2. Original versions of figures and tables (high definition) in separate files only if they aren’t embedded in the source paper file (accepted formats: PS, EPS, PDF, PNG, TIFF, DOC, PPT, XLS).
+  3. Bio-sketches (in IEEE format) and high-resolutions photos of each of the authors (not required for Short and Practitioner Papers); bio-sketches can be included in the source file or alternatively saved in separate files.
+
+Few weeks after the submission of the final files, the contact author will be contacted by the publishing office to check the proofs of the paper. Authors will have 48 hours to return eventual corrections to the proofs.
+
+Once proofs are validated, the paper will be published in the “early papers” section of IEEE Xplore web site in few days and later in the first available printed issue.
+
+If after the proofs, paper length exceeds the suggested values (see Submit a Paper section), authors will be asked to pay an extra page charge of 175 US dollar for each extra page.
+
+#### Author Names in Native Languages
+
+IEEE supports the publication of Chinese, Japanese, and Korean (CJK) author names in the native language alongside the English versions of the names in the author list of an article. For more information, please visit the IEEE Author Center.
+
+#### Color Printing
+
+If a paper includes color figures, authors can decide to publish their paper in color (additional charges) or in gray tone.
+
+Papers printed in gray tone are published electronically in color on IEEE Xplore if color illustrations are included.
+
+#### IEEE Copyright
+
+IEEE policy requires that prior to publication all authors must transfer the copyright for their paper to the IEEE via the submission web site when submitting the final files.
+
+#### Additional Resources--------------------------------------------------------------------------------
+Call for Proposals - IEEE ITSS (https://ieee-itss.org/conf/proposals/)
+citeturn2search2 [wordlim: 200] Crawled: today; IEEE ITSS periodically opens calls for proposals to invite teams around the world to host our upcoming flagship and financially sponsored conferences (such as IEEE ITSC, IEEE IV, IEEE FISTS, IEEE ICVES, and others). ... ITSS Flagship  | 2029  | Region 1-7, 9  | Open  | September 30, 2026
+
+# Call for Proposals
+
+## Overview
+
+IEEE ITSS periodically opens calls for proposals to invite teams around the world to host our upcoming flagship and financially sponsored conferences (such as IEEE ITSC, IEEE IV, IEEE FISTS, IEEE ICVES, and others). Hosting a conference is a rewarding way to showcase your institution, highlight your local ecosystem, and contribute to the global ITS community.
+
+Submitting a conference bid is a 2-step process:
+
+  1. Step 1: Express Interest to Receive Templates
+Fill out the Expression of Interest (EOI) form below. Upon submission, you will receive the official Proposal Document Templates: Presentation Deck and Excel Budget Worksheet.
+  2. Step 2: Prepare & Submit Full Proposal
+Consult the mandatory IEEE ITSS Conferences Operations Manual, complete all template files, and submit your complete bid package prior to the designated deadline using the Submit Full Proposal Bid link.
+
+## Expression of Interest (EOI)
+
+Before preparing a full bid, prospective organizers must submit an EOI. 
+[Input]
+
+Proposed City(Required)
+
+[Input]
+
+Proposed Country(Required)
+
+[Select]
+
+Proposed Dates (From)(Required)
+
+[Input: yyyy.mm.dd] ``
+
+Proposed Dates (To)(Required)
+
+[Input: yyyy.mm.dd] ``
+
+Short Description or Notes
+
+Presentation Deck(Required)
+
+[Input][Input]Accepted file types: pptx, pdf, Max. file size: 50 MB.
+
+Excel Budget Worksheet(Required)
+
+[Input][Input]Accepted file types: xlsx, Max. file size: 50 MB.
+
+[Button: Submit] [Input] [Input] [Input] [Input] [Input] [Input] [Input] [Input] [Input] [Input] [Input] [Input]
+
+## Submission Deadlines
+
+Below is a summary of current and upcoming Call for Proposals for ITSS-sponsored conferences, including the target year, region (if specified), status, and submission deadline for bids:
+
+Conference  | Target Year  | Target Region  | Bidding Status  | Submission Deadline
+--- | --- | --- | --- | ---
+IEEE ISI  | 2027  | All Regions  | Open  | September 30, 2026
+IEEE SOLI  | 2027  | All Regions  | Open  | September 30, 2026
+IEEE ICIRT  | 2027  | All Regions  | Open  | September 30, 2026
+IEEE MESA  | 2027  | All Regions  | Open  | September 30, 2026
+IEEE IV
+ITSS Flagship  | 2029  | Region 1-7, 9  | Open  | September 30, 2026
+IEEE ITSC
+ITSS Flagship  | 2029  | Region 8  | Open  | September 30, 2026
+IEEE SOLI  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE FISTS  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE ISI  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE ICVES  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE ICIRT  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE MESA  | 2028  | All Regions  | Open  | February 28, 2027
+IEEE ISI  | 2029  | All Regions  | Open  | February 28, 2028
+IEEE SOLI  | 2029  | All Regions  | Open  | February 28, 2028
+IEEE ICVES  | 2029  | All Regions  | Open  | February 28, 2028
+IEEE ICIRT  | 2029  | All Regions  | Open  | February 28, 2028
+IEEE MESA  | 2029  | All Regions  | Open  | February 28, 2028
+Updated: August 2026
+---
+
+Bidding Status: Open calls are currently accepting proposals. Closed indicates the submission deadline has passed (host selection in progress or already decided).
+
+If you missed a deadline or don’t see your desired conference/year listed yet, stay tuned – new calls are announced regularly for future years. We’re always excited to receive strong proposals from different regions!--------------------------------------------------------------------------------
+IEEE Intelligent Transportation Systems Conference (ITSC) - IEEE ITSS (https://ieee-itss.org/conf/itsc/)
+citeturn2search3 [wordlim: 200] Crawled: today; The IEEE International Conference on Intelligent Transportation Systems (ITSC) is an annual flagship conference of the IEEE Intelligent Transportation Systems Society (ITSS). ...   * 2028 IEEE International Conference on Intelligent Transportation Systems (ITSC 2028) ... 2027  | Boston, MA, US
+
+# IEEE Intelligent Transportation Systems Conference (ITSC)
+
+On This Page
+
+  * Upcoming Conference
+  * Past Conferences
+
+Financially Sponsored
+
+  * IEEE ITSC (Flagship)
+  * IEEE IV (Flagship)
+  * IEEE FISTS
+  * IEEE ICIRT
+  * IEEE ICVES
+  * IEEE ISI
+  * IEEE SOLI
+
+Financially Co-Sponsored
+
+Technically Co-Sponsored
+
+Conference Organizers
+
+Conference Attendees
+
+The IEEE International Conference on Intelligent Transportation Systems (ITSC) is an annual flagship conference of the IEEE Intelligent Transportation Systems Society (ITSS). Researchers, engineers, practitioners, and students, from industry, universities and government agencies are invited to present their latest work and to discuss research and applications for intelligent vehicles and vehicle-infrastructure cooperation. ITSC welcomes articles in the field of intelligent vehicles dealing with new developments in theory and applications, vehicle technologies and demonstrations. It also welcomes proposals for workshops and tutorial sessions to be offered the day before the symposium.
+
+Accepted papers will be submitted for possible inclusion into IEEE Xplore subject to meeting IEEE Xplore’s scope and quality requirements.
+
+## Upcoming Conference
+
+  * 2028 IEEE International Conference on Intelligent Transportation Systems (ITSC 2028)
+
+September 12, 2028 - September 15, 2028
+
+Tokyo, Japan
+
+## Past Conferences
+
+Year  | Venue
+--- | ---
+2028  | Tokyo, Japan
+2027  | Boston, MA, US
+2026  | Naples, Italy
+2025  | Gold Coast, Australia
+2024  | Edmonton, Canada
+2023  | Bilbao, Spain
+2022  | Macau, China
+2021  | Indianapolis, IN, United States
+2020  | Rhodes, Greece
+2019  | Auckland, New Zealand
+2018  | Maui, HI, United States
+2017  | Yokohama, Japan
+2016  | Rio de Janeiro, Brazil
+2015  | Las Palmas, Spain
+2014  | Qingdao, China
+2013  | The Hague, Netherlands
+2012  | Anchorage, AK, United States
+2011  | Washington, DC, United States
+2010  | Funchal, Portugal
+2009  | St. Louis, MO, United States
+2008  | Beijing, China
+2007  | Seattle, WA, United States
+2006  | Toronto, Ont., Canada
+2005  | Vienna, Austria
+2004  | Washington, DC, United States
+2003  | Shanghai, China
+2002  | Singapore, Singapore
+2001  | Oakland, CA, United States
+2000  | Dearborn, MI, United States
+1999  | Tokyo, Japan
+1997  | Boston, MA, United States
+Updated: 15 June 2026--------------------------------------------------------------------------------
+• ITSs New Initiatives: Increase the number of sponsored ITSS new initiatives to 15-20 annually. (Current: about 5-10 new initiative projects are sponsored annually.) (https://ieee-itss.org/wp-content/uploads/IEEE-ITSS-Strategic-Plan.pdf)
+citeturn2search12 [wordlim: 200] Published: 8 months ago; The goal for the Conferences area is to ensure the continued excellence, growth, and sustainability of the ITSS conference portfolio by fostering quality, inclusiveness, industry collaboration, and strategic long-term planning.Action plan (2026-2027) ... • Sustain ITSC & IV indexing/ranking (Clarivate / Scopus / CORE “A”). ... • Keep budget variance within ±3% and surplus within 15–20%, as per IEEE regulations.
+• ITSs New Initiatives: Increase the number of sponsored ITSS new initiatives to 15-20 annually. (Current: about 5-10 new initiative projects are sponsored annually.)
+
+AP2: Organize high-quality Leading Conferences (Lead: VP Conference)
+
+The goal for the Conferences area is to ensure the continued excellence, growth, and sustainability of the ITSS conference portfolio by fostering quality, inclusiveness, industry collaboration, and strategic long-term planning.
+
+Action plan (2026-2027)  
+It includes the following specific steps:
+• Release Manual v2.0, publish the portfolio planning calendar and enforce lead times.  
+• Adopt a unified Technical Program Committee (TPC) workflow (reviewer workload caps, meta-reviews, decision-time Service Level Agreements (SLAs)).  
+• Launch registration cost tables and annual city-index updates, monitor affordability vs. surplus.  
+• Stand up Technically Co-Sponsored (TCS)/Financially Co-Sponsored (FCS) program management (templates, selection criteria, Key Performance Indicator (KPIs) packs, quarterly reviews).  
+• Appointing Industry Chairs for all flagships and major sponsored events; deploy exhibitor/sponsorship playbooks.  
+• Approve one financial sponsored conference in an underrepresented region.  
+• Operate monthly KPI dashboards; escalate schedule or KPI slippage ≥2 weeks immediately.
+
+Action plan (2028-2030)  
+It includes the following specific steps:
+• Sustain ITSC & IV indexing/ranking (Clarivate / Scopus / CORE “A”).  
+• Expand multi-year sponsor frameworks; increase demo/industry showcase formats.  
+• Keep budget variance within ±3% and surplus within 15–20%, as per IEEE regulations.  
+• Complete feasibility (2028), pilot (2029), and decision (2030) for a new conference on smart cities/ITS or comparable emerging domains.
+
+Performance measures  
+• Ensure that proceedings are delivered to Xplore within 30 days and achieve financial close within 6 months from conference end, both with at least 90% compliance.  
+• Maintain conference main track acceptance rates at or below 50%, and workshop track acceptance rates at or below 60% with a minimum of 2 reviews per paper; proceedings for each should remain separate.  
+• Secure indexing or ranking for flagship conferences in Clarivate, Scopus, and obtain a CORE "A" rating by 2028.  
+• Increase industry outreach to comprise at least 15% of revenue share by 2027 and 20% by 2030; grow the number of exhibitors from 30+ to 40+.  
+• Maintain a financial surplus between 15–20%; if below 15%, provide justification and a corrective plan.  
+• Launch 100% of non-flagship events at least 12 months in advance; by 2027, ensure that at least 75% are launched 24 months ahead.  
+• Publish cost tables for registration fees by Q4-2026 and update annually.  
+• For co-sponsorships, meet all TCS impact KPIs, keep FCS surplus within target range, and deliver all required outputs on schedule.
+
+AP3: Produce Next-Generation High Impact Publications (Lead: VP Publications) Action Plan (2026-2027)--------------------------------------------------------------------------------
+GitHub - tectonic-typesetting/tectonic: A modernized, complete, self-contained TeX/LaTeX engine, powered by XeTeX and TeXLive. · GitHub (https://github.com/tectonic-typesetting/tectonic)
+citeturn2search4 [wordlim: 200] Crawled: 4 weeks ago; tectonic-typesetting / tectonic Public ... tectonic-typesetting.github.io/ ... ## Releases
+[Button: View all files]
+
+# Tectonic
+
+Tectonic is a modernized, complete, self-contained TeX/LaTeX engine, powered by XeTeX and TeXLive.
+
+## Read this first
+
+If you just want to compile TeX documents, you should probably click through to the main Tectonic website. This page is primarily aimed at folks interested in how Tectonic works "under the hood." If you want to build the `tectonic` Rust crate, check out its README.
+
+## Developer dashboard
+
+  * User website
+  * Community discussion forum
+  * Installation
+  * Build instructions
+  * API documentation
+  * Issues
+  * Changelog
+
+## Technical ecosystem
+
+If you’re interested in Tectonic as a software tool, you might also want to check out:
+In particular, the version of the reference code in the submodule is the most recent code whose semantics are guaranteed to be expressed in Tectonic, to the best of our efforts. You don’t need to clone `reference_sources` to build Tectonic (which is good because everyone is always super confused by how Git submodules work!). It just provides a convenient way for Git to track the exact reference code that we are using at any given time.
+
+Please see the tectonic-staging README for more information. (Or at least, more words on the topic.)
+
+## About
+
+A modernized, complete, self-contained TeX/LaTeX engine, powered by XeTeX and TeXLive.
+
+tectonic-typesetting.github.io/
+
+### Topics
+
+rusttextex-enginetex-typesettingtexlivetypesettingxetex
+
+### Resources
+
+Readme
+
+License
+
+### Code of conduct
+
+Code of conduct
+
+### Contributing
+
+Contributing
+
+Activity
+
+Custom properties
+
+### Stars
+
+5.1k stars
+
+### Watchers
+
+42 watching
+
+### Forks
+
+217 forks
+
+## Releases
+
+## Packages
+
+## Used by
+
+## Contributors
+
+## Languages
+
+You can’t perform that action at this time.--------------------------------------------------------------------------------
+Homebrew Formulae: tectonic (https://formulae.brew.sh/formula/tectonic.html)
+citeturn2search5 [wordlim: 200] Crawled: yesterday; https://tectonic-typesetting.github.io/ ... Linux  | ARM64  | ✅x86_64  | ✅ ... harfbuzz  | 14.6.0  | OpenType text shaping engine
+--------------------------------------------------------------------------------
+tectonic 0.17.0 - Docs.rs (https://docs.rs/crate/tectonic/latest/source/CHANGELOG.md)
+citeturn2search6 [wordlim: 200] Published: 2 months ago; Crawled: today;     - You can now cross-compile Tectonic to the `aarch64-unknown-linux-musl` target ...     [excl]: https://github.com/tectonic-typesetting/tectonic/releases/tag/tectonic_engine_xetex%400.3.0 ...       [how to do it on Linux/musl using Docker](https://github.com/tectonic-typesetting/tectonic/tree/master/dist/docker/x86_64-alpine-linux-musl)
+--------------------------------------------------------------------------------
+tectonic-typesetting/tectonic — GitHub Explorer (https://ghe.derekchia.com/repo/tectonic-typesetting/tectonic)
+citeturn2search7 [wordlim: 200] Crawled: 6 days ago; # tectonic-typesetting/tectonic ... Latest issues, pull requests and releases ... SIGBUS on any \setmainfont{} on macOS arm64 (0.16.0, 0.16.2); 0.15.0 works  * Release tectonic_engine_bibtex@0.3.3 github-actions[bot]2026-04-17 04:48
+--------------------------------------------------------------------------------
+Tectonic: XeTeX core in 24 Rust crates | Hysen Labs (https://hysenlabs.com/projects/tectonic-typesetting-tectonic)
+citeturn2search8 [wordlim: 200] Published: 2 weeks ago; Crawled: today; Image: tectonic-typesetting/tectonic avatar ...     Mainly C, according to GitHub's language statistics. ... The recent release feed shows `tectonic_pdf_io` 0.5.3 and `tectonic_xetex_layout` 0.3.4, both published on 2026-07-27, plus a release tagged `continuous` and named Continuous Deployment, published on 2026-07-31. ... Second, a 0.x number on a support crate such as pdf_io carries no stability promise, and the page does not make one. ... text Copy
+--------------------------------------------------------------------------------
+Computer Science conferences timeline (https://lucjaulmes.github.io/cfp-timeline/)
+citeturn2search9 [wordlim: 200] Crawled: yesterday; estimated notification Sat, May 1, 2027^{†}^{†}^{∎}Estimated ITSC 2027 final version Sat, May 15, 2027^{†}ITSC 2027 estimated from Wed, Sep 15, 2027 to Sat, Sep 18, 2027^{†}
+--------------------------------------------------------------------------------
+ITSC 2027 - ITSC (https://www.asminternational.org/itsc-event/itsc-2027/)
+citeturn2search10 [wordlim: 200] Crawled: 3 days ago; The International Thermal Spray Conference and Exposition (ITSC 2027) is the world’s leading international conference and exhibition for thermal spray technologists, researchers, manufacturers, and suppliers.
+--------------------------------------------------------------------------------
+Tectonic: a complete, modernized, self-contained TeX/LaTeX engine - announcements - The Rust Programming Language Forum (https://users.rust-lang.org/t/tectonic-a-complete-modernized-self-contained-tex-latex-engine/11053/)
+citeturn2search11 [wordlim: 200] Published: 9.4 years ago; Crawled: 7.9 years ago; I'd like to announce the release of version 0.1.5 of Tectonic, a complete, modernized, self-contained TeX/LaTeX engine. ... > https://tectonic-typesetting.github.io/
+--------------------------------------------------------------------------------
+How To Install The Typst Compiler Locally On PCLinuxOS (https://www.mclibre.org/descargar/docs/revistas/pclinuxos/pclinuxos-215-en-202412.pdf)
+citeturn2search13 [wordlim: 200] Published: 1.9 years ago; In my previous article, I discussed the basic features of Typst, a new typesetting system for the sciences. ... Download the file: typst-x86_64-unknown-linux-musl.tar.xz. ... Screenshot of a GitHub releases assets list with the file “typst-x86_64-unknown-linux-musl.tar.xz” highlighted in a red rectangle.
+--------------------------------------------------------------------------------
+Information Technology Steering Committee (ITSC) Meeting (https://ets.hawaii.gov/wp-content/uploads/2025/07/ITSC-07-10-25-Meeting-Agenda-and-Packet.pdf)
+citeturn2search14 [wordlim: 200] Published: 1.3 years ago; S.B. ... C.D. ... submit a report of its findings and recommendations, including ... 2027.
+--------------------------------------------------------------------------------
+mtx-context-copy (https://www.tug.org/TUGboat/tb43-2/tb134complete.pdf)
+citeturn2search15 [wordlim: 200] Published: 3.1 years ago; To aid the process of synchronizing Tectonic with TeX Live, a framework called tectonic-staging (code repository at github.com/tectonic-typesetting/tectonic-staging/) contains a pipeline that can automatically generate a readable set of C/C++ “reference sources” from the TeX Live repository.When updates from a new TeX Live release are to be incorporated into Tectonic, the pipeline is run and changes to the reference sources are manually imported into Tectonic’s codebase. ... Bundles are created using a reproducible, automated pipeline based on the TeX Live installation process (github.com/tectonic-typesetting/tectonic-texlive-bundles/).
+--------------------------------------------------------------------------------
+GeckoLinux (https://en.wikipedia.org/wiki/GeckoLinux)
+citeturn2search16 [wordlim: 200] Crawled: 5 months ago; Latest Release Version: * Static: 154.220822 / 2022-08-27 (YYYY-MM-DD) ... Repo: https://github.com/geckolinux ... Supported Platforms: x86-64Kernel Type: Monolithic (Linux)Userland: GNU
+--------------------------------------------------------------------------------
+X86-64 (https://en.wikipedia.org/wiki/X86-64)
+citeturn2search17 [wordlim: 200] Crawled: 5 months ago; The 6.0-RELEASE version cleaned up some quirks with running x86 executables under amd64, and most drivers work just as they do on the x86 architecture. ... * The Linux kernel and the GNU Compiler Collection refers to 64-bit architecture as "x86_64".
+--------------------------------------------------------------------------------
+GNU TeXmacs (https://en.wikipedia.org/wiki/GNU_TeXmacs)
+citeturn2search18 [wordlim: 200] Crawled: 6 months ago; Operating System: Linux, Windows, macOS, Unix-likePlatform: x86, x86-64 ... GNU TeXmacs, sometimes typeset as , is a scientific word processor and typesetting component of the GNU Project.
+--------------------------------------------------------------------------------
+Comparison of Linux distributions (https://en.wikipedia.org/wiki/Comparison_of_Linux_distributions)
+citeturn2search19 [wordlim: 200] Crawled: 5 months ago; TurnKey GNU/Linux | Selected ISOs ... Distribution | x86 | x86-64 | arm | ia64 | ppc | ppc64 | sparc32 | sparc64 | hppa | loongson | mips | sh | s390 | s390x | alpha | m68k | riscv
+

@@ -1,0 +1,219 @@
+Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression (https://openaccess.thecvf.com/content_CVPR_2019/papers/Rezatofighi_Generalized_Intersection_Over_Union_A_Metric_and_a_Loss_for_CVPR_2019_paper.pdf)
+citeturn5search12 [wordlim: 200] Generalized Intersection over Union: A Metric and A Loss for Bounding Box Regression ... In this paper, we address the weaknesses of IoU by introducing a generalized version as both a new loss and a new metric. ... - left: ||·||₁ = 9.07, IoU = 0.27, GIoU = 0.24
+Generalized Intersection over Union: A Metric and A Loss for Bounding Box Regression
+
+Hamid Rezatofighi¹,²   Nathan Tsoi¹   JunYoung Gwak¹   Amir Sadeghian¹,³  
+Ian Reid²   Silvio Savarese¹
+
+¹Computer Science Department, Stanford University, United states  
+²School of Computer Science, The University of Adelaide, Australia  
+³Aibee Inc, USA  
+hamidrt@stanford.edu
+
+## Abstract
+
+Intersection over Union (IoU) is the most popular evaluation metric used in the object detection benchmarks. However, there is a gap between optimizing the commonly used distance losses for regressing the parameters of a bounding box and maximizing this metric value. The optimal objective for a metric is the metric itself. In the case of axis-aligned 2D bounding boxes, it can be shown that IoU can be directly used as a regression loss. However, IoU has a plateau making it infeasible to optimize in the case of non-overlapping bounding boxes. In this paper, we address the weaknesses of IoU by introducing a generalized version as both a new loss and a new metric. By incorporating this generalized IoU (GIoU) as a loss into the state-of-the art object detection frameworks, we show a consistent improvement on their performance using both the standard, IoU based, and new, GIoU based, performance measures on popular object detection benchmarks such as PASCAL VOC and MS COCO.
+
+## 1. Introduction
+
+Bounding box regression is one of the most fundamental components in many 2D/3D computer vision tasks. Tasks such as object localization, multiple object detection, object tracking and instance level segmentation rely on accurate bounding box regression. The dominant trend for improving performance of applications utilizing deep neural networks is to propose either a better architecture backbone [15, 13] or a better strategy to extract reliable local features [6]. However, one opportunity for improvement that is widely ignored is the replacement of the surrogate regression losses such as ℓ₁ and ℓ₂-norms, with a metric loss calculated based on Intersection over Union (IoU).
+
+IoU, also known as Jaccard index, is the most commonly used metric for comparing the similarity between two arbitrary shapes. IoU encodes the shape properties of the objects under comparison, e.g., the widths, heights and locations of two bounding boxes, into the region property and then calculates a normalized measure that focuses on their
+
+<visual_element id="e1">
+Figure 1 contains two example sets of bounding boxes. In (a), three cases show black and green rectangles with dashed gray circles; labels under them read:
+- left: ||·||₂ = 8.41, IoU = 0.26, GIoU = 0.23
+- middle: ||·||₂ = 8.41, IoU = 0.49, GIoU = 0.41
+- right: ||·||₂ = 8.41, IoU = 0.65, GIoU = 0.65
+Caption marker “(a)” appears below the top row.
+In (b), three cases show black and green rectangles with labels:
+- left: ||·||₁ = 9.07, IoU = 0.27, GIoU = 0.24
+- middle: ||·||₁ = 9.07, IoU = 0.59, GIoU = 0.59
+- right: ||·||₁ = 9.07, IoU = 0.66, GIoU = 0.62
+Caption marker “(b)” appears below the bottom row.
+</visual_element>
+
+Figure 1. Two sets of examples (a) and (b) with the bounding boxes represented by (a) two corners (x₁, y₁, x₂, y₂) and (b) center and size (x_c, y_c, w, h). For all three cases in each set (a) ℓ₂-norm distance, ||·||₂, and (b) ℓ₁-norm distance, ||·||₁, between the representation of two rectangles are exactly same value, but their IoU and GIoU values are very different.
+
+658--------------------------------------------------------------------------------
+Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection (https://proceedings.neurips.cc/paper_files/paper/2020/hash/f0bda020d2470f2e74990a07a607ebd9-Abstract.html)
+citeturn5search0 [wordlim: 200] Published: 5.9 years ago; Crawled: 6 days ago; # Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection ... Advances in Neural Information Processing Systems 33 (NeurIPS 2020)
+# Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection
+
+Xiang Li, Wenhai Wang, Lijun Wu, Shuo Chen, Xiaolin Hu, Jun Li, Jinhui Tang, Jian Yang
+
+Advances in Neural Information Processing Systems 33 (NeurIPS 2020)
+
+AuthorFeedback Bibtex MetaReview Paper Review Supplemental
+
+## Abstract
+
+One-stage detector basically formulates object detection as dense classification and localization (i.e., bounding box regression). The classification is usually optimized by Focal Loss and the box location is commonly learned under Dirac delta distribution. A recent trend for one-stage detectors is to introduce an \emph{individual} prediction branch to estimate the quality of localization, where the predicted quality facilitates the classification to improve detection performance. This paper delves into the \emph{representations} of the above three fundamental elements: quality estimation, classification and localization. Two problems are discovered in existing practices, including (1) the inconsistent usage of the quality estimation and classification between training and inference, and (2) the inflexible Dirac delta distribution for localization. To address the problems, we design new representations for these elements. Specifically, we merge the quality estimation into the class prediction vector to form a joint representation, and use a vector to represent arbitrary distribution of box locations. The improved representations eliminate the inconsistency risk and accurately depict the flexible distribution in real data, but contain \emph{continuous} labels, which is beyond the scope of Focal Loss. We then propose Generalized Focal Loss (GFL) that generalizes Focal Loss from its discrete form to the \emph{continuous} version for successful optimization. On COCO {\tt test-dev}, GFL achieves 45.0\% AP using ResNet-101 backbone, surpassing state-of-the-art SAPD (43.5\%) and ATSS (43.6\%) with higher or comparable inference speed.--------------------------------------------------------------------------------
+CVPR 2019 Open Access Repository (https://openaccess.thecvf.com/content_CVPR_2019/html/Rezatofighi_Generalized_Intersection_Over_Union_A_Metric_and_a_Loss_for_CVPR_2019_paper.html)
+citeturn5search1 [wordlim: 200] Crawled: 4 months ago; These CVPR 2019 papers are the Open Access versions, provided by the Computer Vision Foundation. ... Generalized Intersection Over Union: A Metric and a Loss for Bounding Box RegressionHamid Rezatofighi, Nathan Tsoi, JunYoung Gwak, Amir Sadeghian, Ian Reid, Silvio Savarese; Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2019, pp.
+
+These CVPR 2019 papers are the Open Access versions, provided by the Computer Vision Foundation.
+Except for the watermark, they are identical to the accepted versions; the final published version of the proceedings is available on IEEE Xplore.
+
+This material is presented to ensure timely dissemination of scholarly and technical work. Copyright and all rights therein are retained by authors or by other copyright holders. All persons copying this information are expected to adhere to the terms and constraints invoked by each author's copyright.
+
+
+Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression
+
+Hamid Rezatofighi, Nathan Tsoi, JunYoung Gwak, Amir Sadeghian, Ian Reid, Silvio Savarese; Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2019, pp. 658-666
+
+Abstract
+
+Intersection over Union (IoU) is the most popular evaluation metric used in the object detection benchmarks. However, there is a gap between optimizing the commonly used distance losses for regressing the parameters of a bounding box and maximizing this metric value. The optimal objective for a metric is the metric itself. In the case of axis-aligned 2D bounding boxes, it can be shown that IoU can be directly used as a regression loss. However, IoU has a plateau making it infeasible to optimize in the case of non-overlapping bounding boxes. In this paper, we address the this weakness by introducing a generalized version of IoU as both a new loss and a new metric. By incorporating this generalized IoU ( GIoU) as a loss into the state-of-the art object detection frameworks, we show a consistent improvement on their performance using both the standard, IoU based, and new, GIoU based, performance measures on popular object detection benchmarks such as PASCAL VOC and MS COCO.
+
+Related Material
+[pdf] [supp]
+
+[bibtex]
+
+@InProceedings{Rezatofighi_2019_CVPR,
+author = {Rezatofighi, Hamid and Tsoi, Nathan and Gwak, JunYoung and Sadeghian, Amir and Reid, Ian and Savarese, Silvio},
+title = {Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression},
+booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2019}
+}--------------------------------------------------------------------------------
+Review for NeurIPS paper: Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection (https://proceedings.neurips.cc/paper_files/paper/2020/file/f0bda020d2470f2e74990a07a607ebd9-MetaReview.html)
+citeturn5search2 [wordlim: 200] Crawled: 3 weeks ago; NeurIPS 2020### Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection
+NeurIPS 2020
+
+### Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection
+
+* * *
+
+### Meta Review
+
+Expert reviewers agree that this paper has a novel contribution and lean toward accept. The reviewers like the proposed idea and find the empirical results strong. But the presentation of the paper can be significantly improved. The authors should follow the reviewers' suggestions and significantly revise the paper. In particular, the authors should improve the presentation of the paper following R4's suggestions and add the additional analysis and clarifications as discussed in the rebuttal.--------------------------------------------------------------------------------
+Review for NeurIPS paper: Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection (https://proceedings.neurips.cc/paper/2020/file/f0bda020d2470f2e74990a07a607ebd9-Review.html)
+citeturn5search3 [wordlim: 200] Published: 5.9 years ago; Crawled: today; NeurIPS 2020 ... 2) This work uses a new loss function, a generalized version of focal loss, to train the network for predicting IoUs.
+NeurIPS 2020
+
+### Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection
+
+### Review 1
+
+Summary and Contributions: This paper identifies two problems in existing detectors. First, the current loss function for classification does not take the quality of a prediction (whether it sufficiently overlaps with ground-truth) into account. Second, the current loss function for regression does not allow ambiguity and uncertainty in a complex scene because of the inflexible Dirac delta distribution assumption which assumes only one correct value. The authors propose an IoU loss function which trains the network to estimate how well a prediction overlaps with the ground-truth. They also propose a regression function which does away the Dirac delta distribution assumption, and allow the network to learn the probabilities of values around the ground-truth value. The authors design both the loss functions by extending the focal loss function.
+
+Strengths: I like the idea that trains the network to directly predict the overlaps between the bounding boxes and ground-truths. This better fit the post-processing step such as non-maximal suppression commonly found in modern state-of-the-art object detectors. The authors clearly show that how they derive the generalized version of focal loss to be used in training their network. The authors show that the proposed loss function can improve the performance of ATSS from 47.7% to 48.2% on the COCO test-dev dataset.
+
+Weaknesses: The idea of predicting IoUs between predictions and ground-truths has already been explored by other works. It seems to me the main differences between this and prior works are: 1) Prior works such as IoU-Net still have a separate branch for classification but this one does not. 2) This work uses a new loss function, a generalized version of focal loss, to train the network for predicting IoUs. The contribution of each modification to the final performance is unclear. Does the separate branch for classification hurt the performance? What if we just ignore the separate branch for classification in prior works? Is the new loss function essential to the success of the proposed approach? ### Review 3
+
+Summary and Contributions: This paper works on improving existing one-stage detectors FCOS and ATSS. Two contributions are proposed: 1. merging the centerness head and the classification head with a continuous focal loss; 2. changing the regression representation from float number to 16-bins and integral. Both contributions bring ~0.6mAP improvements on COCO under different settings, and the best performance is improved from 47.7 (ATSS) to 48.2.
+
+Strengths: + The quality focal loss idea is neat. It removed a redundant component from FCOS and ATSS for free with slight performance improvement (+0.3 mAP, 3rd and last rows of Table. 1(a)). + The overall performance (48.2 mAP on COCO) is strong and healthy. + The paper is well written and easy to follow. All figures are clear with comprehensive captions. + The reviewer appreciates that the authors included code in the submission, even though the code contains google drive links that expose one of the author's identity.
+
+Weaknesses: - While the reviewer appreciates the contribution of the quality focal loss, the contribution of distribution focal loss looks far less exciting. --------------------------------------------------------------------------------
+<visual_element id="e1"> (https://proceedings.neurips.cc/paper_files/paper/2020/file/f0bda020d2470f2e74990a07a607ebd9-Paper.pdf)
+citeturn5search13 [wordlim: 200] Published: 5.8 years ago; We successfully solve the problem by extending FL from {1,0} discrete version to its continuous variant, termed Generalized Focal Loss (GFL).
+We successfully solve the problem by extending FL from {1,0} discrete version to its continuous variant, termed Generalized Focal Loss (GFL). Different from FL, GFL considers a much general case in which the globally optimized solution is able to target at any desired continuous value, rather than the discrete ones. More specifically in this paper, GFL can be specialized into Quality Focal Loss (QFL) and Distribution Focal Loss (DFL), for optimizing the improved two representations respectively: QFL focuses on a sparse set of hard examples and simultaneously produces their continuous 0~1 quality estimations on the corresponding category; DFL makes the network to rapidly focus on learning the probabilities of values around the continuous locations of target bounding boxes, under an arbitrary and flexible distribution.
+
+We demonstrate three advantages of GFL: (1) It bridges the gap between training and test when one-stage detectors are facilitated with additional quality estimation, leading to a simpler, joint and effective representation of both classification and localization quality; (2) It well models the flexible underlying distribution for bounding boxes, which provides more informative and accurate box locations; (3) The performance of one-stage detectors can be consistently boosted without introducing additional overhead. 
+**Representation of bounding boxes.** Dirac delta distribution [7, 23, 8, 1, 18, 26, 13, 31] governs the representation of bounding boxes over past years. Recently, Gaussian assumption [10, 4] is adopted to learn the uncertainty by introducing a predicted variance. Unfortunately, existing representations are either too rigid or too simplified, which can not reflect the complex underlying distribution in real data. In this paper, we further relax the assumption and directly learn the more arbitrary, flexible General distribution of bounding boxes, whilst being more informative and accurate.
+
+## 3  Method
+
+In this section, we first review the original Focal Loss [18] (FL) for learning dense classification scores of one-stage detectors. Next, we present the details for the improved representations of localization quality estimation and bounding boxes, which are successfully optimized via the proposed Quality Focal Loss (QFL) and Distribution Focal Loss (DFL), respectively. Finally, we summarize the formulations of QFL and DFL into a unified perspective termed Generalized Focal Loss (GFL), as a flexible extension of FL, to facilitate further promotion and general understanding in the future.--------------------------------------------------------------------------------
+CVPR 2019 Open Access Repository (https://openaccess.thecvf.com/CVPR2019.py?day=2019-06-18)
+citeturn5search4 [wordlim: 200] Published: 7.3 years ago; Crawled: 4 months ago; @InProceedings{Park_2019_CVPR, ... booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, ... Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression ... Large-Scale Long-Tailed Recognition in an Open World
+    
+
+[Input] Thibaut Durand,
+
+[Input] Nazanin Mehrasa,
+
+[Input] Greg Mori
+
+    [pdf] [supp]
+
+[bibtex]
+
+@InProceedings{Durand_2019_CVPR,
+author = {Durand, Thibaut and Mehrasa, Nazanin and Mori, Greg},
+title = {Learning a Deep ConvNet for Multi-Label Classification With Partial Labels},
+booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2019}
+}
+
+Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression
+    
+
+[Input] Hamid Rezatofighi,
+
+[Input] Nathan Tsoi,
+
+[Input] JunYoung Gwak,
+
+[Input] Amir Sadeghian,
+
+[Input] Ian Reid,
+
+[Input] Silvio Savarese
+
+    [pdf] [supp]
+
+[bibtex]
+
+@InProceedings{Rezatofighi_2019_CVPR,
+author = {Rezatofighi, Hamid and Tsoi, Nathan and Gwak, JunYoung and Sadeghian, Amir and Reid, Ian and Savarese, Silvio},
+title = {Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression},
+booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2019}
+}
+
+Densely Semantically Aligned Person Re-Identification
+    
+
+[Input] Zhizheng Zhang,
+
+[Input] Cuiling Lan,
+
+--------------------------------------------------------------------------------
+Review for NeurIPS paper: Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection (https://proceedings.nips.cc/paper_files/paper/2020/file/f0bda020d2470f2e74990a07a607ebd9-Review.html)
+citeturn5search5 [wordlim: 200] Published: 5.9 years ago; Crawled: 2 weeks ago; Summary and Contributions: The paper proposes an approach for object class detection based on existing neural network architectures, but using a novel loss function (generalized focal loss) that combines classification and localization score in a particular way and furthermore represents localization uncertainty explicitly in a non-parametric distribution estimate.
+--------------------------------------------------------------------------------
+Book (https://papers.neurips.cc/paper/2020)
+citeturn5search6 [wordlim: 200] Published: 5.9 years ago; Crawled: today;   * Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection Xiang Li, Wenhai Wang, Lijun Wu, Shuo Chen, Xiaolin Hu, Jun Li, Jinhui Tang, Jian Yang
+--------------------------------------------------------------------------------
+Book (https://proceedings.neurips.cc/paper/2020)
+citeturn5search7 [wordlim: 200] Published: 5.9 years ago; Crawled: today; NeurIPS 2020 ...   * SuperLoss: A Generic Loss for Robust Curriculum Learning Thibault Castells, Philippe Weinzaepfel, Jerome Revaud ...   * Generalized Hindsight for Reinforcement Learning Alexander Li, Lerrel Pinto, Pieter Abbeel
+--------------------------------------------------------------------------------
+Generalized intersection over union: a metric and a loss for bounding box regression - Monash University (https://research.monash.edu/en/publications/generalized-intersection-over-union-a-metric-and-a-loss-for-bound/)
+citeturn5search8 [wordlim: 200] Published: 7.3 years ago; Crawled: last week; url = "http://cvpr2019.thecvf.com/, https://ieeexplore.ieee.org/xpl/conhome/8938205/proceeding", ... Rezatofighi, H, Tsoi, N, Gwak, J, Sadeghian, A, Reid, I & Savarese, S 2019, Generalized intersection over union: a metric and a loss for bounding box regression. in A Gupta, D Hoiem, G Hua & Z Tu (eds), Proceedings - 2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2019.
+--------------------------------------------------------------------------------
+Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression (2019) – 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) | Metascience Observatory Explorer (https://explore.metascienceobservatory.org/papers/W2962766617)
+citeturn5search9 [wordlim: 200] Published: 7.8 years ago; Crawled: 2 weeks ago; End-to-End Object Detection with Transformers 2020 • 8,386 citations YOLOv4: Optimal Speed and Accuracy of Object Detection 2020 • 8,218 citations YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art for Real-Time Object Detectors 2023 • 5,534 citations CSPNet: A New Backbone that can Enhance Learning Capability of CNN 2020 • 3,278 citations Distance-IoU Loss: Faster and Better Learning for Bounding Box Regression 2020 • 2,733 citations Deep Learning for Generic Object Detection: A Survey 2019 • 2,248 citations Bridging the Gap Between Anchor-Based and Anchor-Free Detection via Adaptive Training Sample Selection 2020 • 1,497 citations Object Detection in 20 Years: A Survey 2023 • 1,340 citations A Survey of Deep Learning-Based Object Detection 2019 • 1,019 citations Focal and efficient IOU loss for accurate bounding box regression 2022 • 932 citations Sparse R-CNN: End-to-End Object Detection with Learnable Proposals 2021 • 921 citations Transformer Tracking 2021 • 853 citations Siamese Box Adaptive Network for Visual Tracking 2020 • 779 citations Enhancing Geometric Factors in Model Learning and Inference for Object Detection and Instance Segmentation 2021 • 747 citations VarifocalNet: An IoU-aware Dense Object Detector 2021 • 656 citations MMDetection: Open MMLab Detection Toolbox and Benchmark.2019 • 650 citations Learning Spatio-Temporal Transformer for Visual Tracking 2021 • 642 citations R3Det: Refined Single-Stage Detector with Feature Refinement for Rotating Object 2021 • 634 citations TrackFormer: Multi-Object Tracking with Transformers 2022 • 597 citations You Only Look One-level Feature 2021 • 577 citations TOOD: Task-aligned One-stage Object Detection 2021 • 577 citations End-to-End Video Instance Segmentation with Transformers 2021 • 535 citations FCOS: A Simple and Strong Anchor-free Object Detector 2020 • 462 citations MDETR - Modulated Detection for End-to-End Multi-Modal Understanding 2021 • 439 citations Imbalance Problems in Object Detection: A Review 2020 • 435 citations Conditional DETR for Fast Training Convergence 2021 • 432 citations The Seventh Visual Object Tracking VOT2019 Challenge Results 2019 • 401 citations A Comprehensive Survey of Loss Functions in Machine Learning 2020 • 392 citations MixFormer: End-to-End Tracking with Iterative Mixed Attention 2022 • 384 citations Observation-Centric SORT: Rethinking SORT for Robust Multi-Object Tracking 2023 • 356 citations OTA: Optimal Transport Assignment for Object Detection 2021 • 340 citations IoU Loss for 2D/3D Object Detection 2019 • 332 citations TransTrack: Multiple Object Tracking with Transformer 2020 • 331 citations YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information 2024 • 329 citations MOTR: End-to-End Multiple-Object Tracking with Transformer 2022 • 322 citations Probabilistic Anchor Assignment with IoU Prediction for Object Detection 2020 • 317 citations Conditional Positional Encodings for Vision Transformers 2021 • 310 citations Rethinking Transformer-based Set Prediction for Object Detection 2021 • 267 citations Joint Feature Learning and Relation Modeling for Tracking: A One-Stream Framework 2022 • 265 citations UAV-YOLOv8: A Small-Object-Detection Model Based on Improved YOLOv8 for UAV Aerial Photography Scenarios 2023 • 264 citations Oriented RepPoints for Aerial Object Detection 2022 • 260 citations TubeTK: Adopting Tubes to Track Multi-Object in a One-Step Training Model 2020 • 255 citations A Real-Time Detection Algorithm for Kiwifruit Defects Based on YOLOv5 2021 • 250 citations Transforming Model Prediction for Tracking 2022 • 230 citations Distance-IoU Loss: Faster and Better Learning for Bounding Box Regression 2019 • 224 citations ActionFormer: Localizing Moments of Actions with Transformers 2022 • 221 citations Deep Learning-Based Object Detection Improvement for Tomato Disease 2020 • 219 citations An improved YOLOv5 model based on visual attention mechanism: Application to recognition of tomato virus disease 2022 • 215 citations PIoU Loss: Towards Accurate Oriented Object Detection in Complex Environments 2020 • 215 citations YOLO-face: a real-time face detector 2020 • 210 citations A fast accurate fine-grain object detection model based on YOLOv4 deep neural network 2022 • 209 citations ContourNet: Taking a Further Step Toward Accurate Arbitrary-Shaped Scene Text Detection 2020 • 208 citations TransVG: End-to-End Visual Grounding with Transformers 2021 • 208 citations Improved YOLOv5 network for real-time multi-scale traffic sign detection 2022 • 202 citations Grounding DINO: Marrying DINO with Grounded Pre-training for Open-Set Object Detection 2024 • 193 citations PP-YOLO: An Effective and Efficient Implementation of Object Detector 2020 • 183 citations Detection of concealed cracks from ground penetrating radar images based on deep learning algorithm 2020 • 182 citations Objects are Different: Flexible Monocular 3D Object Detection 2021 • 180 citations Twin Adversarial Contrastive Learning for Underwater Image Enhancement and Beyond 2022 • 180 citations An enhanced CNN-enabled learning method for promoting ship detection in maritime surveillance system 2021 • 178 citations Face Mask Recognition System with YOLOV5 Based on Image Recognition 2020 • 177 citations A Normalized Gaussian Wasserstein Distance for Tiny Object Detection 2021 • 175 citations DetNAS: Backbone Search for Object Detection 2019 • 170 citations End-to-End Object Detection with Fully Convolutional Network 2021 • 170 citations End-to-End Human Object Interaction Detection with HOI Transformer 2021 • 169 citations YOLO-Pose: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss 2022 • 168 citations AutoAssign: Differentiable Label Assignment for Dense Object Detection 2020 • 167 citations Delving into Localization Errors for Monocular 3D Object Detection 2021 • 167 citations AiATrack: Attention in Attention for Transformer Visual Tracking 2022 • 159 citations Deep Learning Approaches on Pedestrian Detection in Hazy Weather 2019 • 159 citations SG-Net: Spatial Granularity Network for One-Stage Video Instance Segmentation 2021 • 155 citations QPIC: Query-Based Pairwise Human-Object Interaction Detection with Image-Wide Contextual Information 2021 • 151 citations Slim-neck by GSConv: A better design paradigm of detector architectures for autonomous vehicles 2022 • 150 citations Beyond Bounding-Box: Convex-hull Feature Adaptation for Oriented and Densely Packed Object Detection 2021 • 147 citations Learning to Match Anchors for Visual Object Detection 2021 • 146 citations Northern Maize Leaf Blight Detection Under Complex Field Environment Based on Deep Learning 2020 • 145 citations Learning High-Precision Bounding Box for Rotated Object Detection via Kullback-Leibler Divergence 2021 • 143 citations CLRNet: Cross Layer Refinement Network for Lane Detection 2022 • 134 citations Real-Time Face Mask Detection Method Based on YOLOv3 2021 • 128 citations Shape-Adaptive Selection and Measurement for Oriented Object Detection 2022 • 123 citations Improved YOLOv3 model with feature map cropping for multi-scale road object detection 2023 • 122 citations Offloading Optimization in Edge Computing for Deep-Learning-Enabled Target Tracking by Internet of UAVs 2020 • 122 citations Efficient DETR: Improving End-to-End Object Detector with Dense Prior 2021 • 120 citations Detection of Collapsed Buildings in Post-Earthquake Remote Sensing Images Based on the Improved YOLOv3 2019 • 120 citations MeMOT: Multi-Object Tracking with Memory 2022 • 118 citations Applying Fully Convolutional Architectures for Semantic Segmentation of a Single Tree Species in Urban Environment on High Resolution UAV Optical Imagery 2020 • 115 citations Rethinking Rotated Object Detection with Gaussian Wasserstein Distance Loss 2021 • 114 citations Self6D: Self-supervised Monocular 6D Object Pose Estimation 2020 • 112 citations Automated structural design of shear wall residential buildings using generative adversarial networks 2021 • 112 citations Correlation-Aware Deep Tracking 2022 • 111 citations R3Det: Refined Single-Stage Detector with Feature Refinement for Rotating Object 2019 • 111 citations End-to-End Dense Video Captioning with Parallel Decoding 2021 • 111 citations Reformulating HOI Detection as Adaptive Set Prediction 2021 • 110 citations Object Detection in Remote Sensing Images Based on Improved Bounding Box Regression and Multi-Level Features Fusion 2020 • 110 citations An improved Yolov5 real-time detection method for small objects captured by UAV 2021 • 109 citations Alpha-IoU: A Family of Power Intersection over Union Losses for Bounding Box Regression 2021 • 107 citations SF-YOLOv5: A Lightweight Small Object Detection Algorithm Based on Improved Feature Fusion Mode 2022 • 107 citations SeqTrack: Sequence to Sequence Learning for Visual Object Tracking 2023 • 106 citations Application of Combining YOLO Models and 3D GPR Images in Road Detection and Maintenance 2021 • 105 citations A General Gaussian Heatmap Label Assignment for Arbitrary-Oriented Object Detection 2022 • 105 citations
+--------------------------------------------------------------------------------
+dblp: Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression. (https://dblp.org/rec/conf/cvpr/RezatofighiTGS019.html)
+citeturn5search10 [wordlim: 200] Crawled: last month; # "Generalized Intersection Over Union: A Metric and a Loss for Bounding Box ..." ... (2019) ...       * electronic edition @ thecvf.com (open access)
+--------------------------------------------------------------------------------
+dblp: Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression. (https://dblp.org/rec/conf/cvpr/RezatofighiTGS019)
+citeturn5search11 [wordlim: 200] Crawled: 5 months ago; # "Generalized Intersection Over Union: A Metric and a Loss for Bounding Box ..." ... (2019) ...       * electronic edition @ thecvf.com (open access)
+--------------------------------------------------------------------------------
+Generalized Intersection over Union: A Metric and A Loss for Bounding Box Regression (https://arxiv.org/abs/1902.09630)
+citeturn5academia14 [wordlim: 200] Published: 7.6 years ago; Title: Generalized Intersection over Union: A Metric and A Loss for Bounding Box Regression ... Date: Mon Feb 25 21:47:33 2019 ... In this paper, we address the weaknesses of $IoU$ by introducing a generalized version as both a new loss and a new metric.
+--------------------------------------------------------------------------------
+Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection (https://arxiv.org/abs/2006.04388)
+citeturn5academia15 [wordlim: 200] Published: 6.4 years ago; Title: Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection ... We then propose Generalized Focal Loss (GFL) that generalizes Focal Loss from its discrete form to the continuous version for successful optimization.
+--------------------------------------------------------------------------------
+Generalized Focal Loss V2: Learning Reliable Localization Quality Estimation for Dense Object Detection (https://arxiv.org/abs/2011.12885)
+citeturn5academia16 [wordlim: 200] Published: 5.9 years ago; Title: Generalized Focal Loss V2: Learning Reliable Localization Quality Estimation for Dense Object Detection ... Date: Wed Nov 25 17:06:37 2020
+--------------------------------------------------------------------------------
+A Novel Focal Tversky loss function with improved Attention U-Net for lesion segmentation (https://arxiv.org/abs/1810.07842)
+citeturn5academia17 [wordlim: 200] Published: 8.0 years ago; We propose a generalized focal loss function based on the Tversky index to address the issue of data imbalance in medical image segmentation.
+--------------------------------------------------------------------------------
+Marginalized Generalized IoU (MGIoU): A Unified Objective Function for Optimizing Convex Parametric Shapes | Proceedings of the AAAI Conference on Artificial Intelligence (https://ojs.aaai.org/index.php/AAAI/article/view/37505)
+citeturn5view0 [wordlim: 200] Crawled: today; Content type: text/html; Source: open({"ref_id":"https://ojs.aaai.org/index.php/AAAI/article/view/37505","lineno":null}); Total lines: 69
+--------------------------------------------------------------------------------
+The KITTI Vision Benchmark Suite (https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=bev)
+citeturn5view1 [wordlim: 200] Crawled: today; Content type: text/html; Source: open({"ref_id":"https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=bev","lineno":null}); Total lines: 1518
+--------------------------------------------------------------------------------
+IEEE Intelligent Vehicles Symposium (IV) - IEEE ITSS (https://ieee-itss.org/conf/iv/)
+citeturn5view2 [wordlim: 200] Crawled: today; Content type: text/html; Source: open({"ref_id":"https://ieee-itss.org/conf/iv/","lineno":null}); Total lines: 299
+

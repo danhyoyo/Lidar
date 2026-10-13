@@ -1,0 +1,28 @@
+\documentclass[journal]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,booktabs,array,graphicx,siunitx}
+\usepackage{cite}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+\newcommand{\mAP}{\mathrm{mAP}}
+\newcommand{\AP}{\mathrm{AP}}
+\newcommand{\sigmoid}{\operatorname{sigmoid}}
+\newcommand{\sg}{\operatorname{stopgrad}}
+\title{MobilePixorNeXt: Compact LiDAR Object Detection with Oriented Geometry and Localization Quality}
+\author{Anonymous manuscript draft}
+\begin{document}
+\maketitle
+\input{sections/abstract}
+\begin{IEEEkeywords}
+LiDAR, object detection, autonomous vehicles, bird's eye view, localization quality.
+\end{IEEEkeywords}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/methods}
+\input{sections/experimental_setup}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+\end{document}

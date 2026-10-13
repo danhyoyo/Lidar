@@ -1,0 +1,147 @@
+{
+  "verified_copied_files": 1032,
+  "copied_size_mib": 659.4,
+  "all_source_and_destination_hashes_match_manifest": true,
+  "both_videos_match_original_sha256": true,
+  "camera_pairs": 174,
+  "camera_image_count": 348,
+  "original_artifact_files_unchanged": true,
+  "visualization_tests_passed": 51,
+  "local_script_cli_checks_passed": 9,
+  "all_readme_links_exist": true,
+  "verified_total_files": 2139,
+  "total_size_mib": 720.9,
+  "pipeline": {
+    "frame": "005663",
+    "raw_points": 123465,
+    "augmented_points": 126384,
+    "inserted_real_objects": 17,
+    "donor_train_frames": 128,
+    "donors_exclude_scene_and_validation": true,
+    "native_feature_tensors": 8,
+    "input_shape_bcyx": [
+      1,
+      14,
+      800,
+      704
+    ],
+    "backbone_output_shape_bcyx": [
+      1,
+      32,
+      200,
+      176
+    ],
+    "detections": 39,
+    "supported_lidar_lifted_cuboids": 34,
+    "png_files_valid": 28,
+    "svg_files_valid": 28,
+    "hist14_reencoding_and_cell_counts_match": true,
+    "saved_heads_redecode_exactly": true,
+    "classification_heatmaps_match_saved_logits": true,
+    "checkpoint_sha256_unchanged": true
+  },
+  "extended_augmentation_test_run": {
+    "passed": 92,
+    "failed": 3,
+    "notes": [
+      "Existing standard notebook test expects --train-split; notebook now uses --train-manifest.",
+      "Two existing trainer smoke tests inherit primary=ap while requesting partial batches; trainer correctly rejects this.",
+      "Multiprocessing tests were rerun outside the sandbox after socket permission failures; worker tests passed."
+    ],
+    "related_training_notebook_test_config_files_unchanged_in_this_task": true
+  },
+  "height_pointcloud": {
+    "frame": "005663",
+    "shared_height_range_m": [
+      -2.2730000019073486,
+      0.9480000138282776
+    ],
+    "measured_z_and_roi_count_verified": true,
+    "png_files_valid": 2,
+    "svg_files_valid": 2,
+    "source_sha256_unchanged": true,
+    "visual_inspection_completed": true,
+    "full_canvas": true,
+    "no_visible_text_axes_or_legend": true,
+    "view_sizes_pixels": {
+      "bev": [
+        1600,
+        1567
+      ],
+      "3d": [
+        1800,
+        1200
+      ]
+    }
+  },
+  "height_instance_detections": {
+    "frame": "005663",
+    "detections": 20,
+    "per_class": {
+      "Car": 3,
+      "Cyclist": 5,
+      "Pedestrian": 12
+    },
+    "unique_instance_colors": 20,
+    "supported_cuboids": 20,
+    "object_zoom_pairs": 20,
+    "png_files_valid": 65,
+    "svg_files_valid": 42,
+    "bev_predictions_exactly_match_verified_cache": true,
+    "height_scale_matches_raw_views": true,
+    "all_zoom_crops_match_raw_source_indices": true,
+    "lifted_bev_fields_and_scores_unchanged": true,
+    "upstream_inputs_hashes_unchanged": true,
+    "new_artifact_inventory_hashes_verified": true,
+    "scene_and_class_examples_visually_inspected": true,
+    "focused_source_tests_passed": 17,
+    "demo_tests_passed": 51,
+    "scope": "This section verifies the newly added height/instance detection outputs; earlier sections describe prior verification snapshots."
+  },
+  "simple_detections": {
+    "frame": "005663",
+    "scene_pngs": 2,
+    "single_object_zoom_pngs": 20,
+    "output_folder_contains_images_only": true,
+    "one_view_per_zoom": true,
+    "one_box_per_zoom": true,
+    "only_numeric_scores_visible": true,
+    "no_axes_titles_ids_or_colorbars": true,
+    "upstream_input_hashes_unchanged": true,
+    "bev_predictions_unchanged": true,
+    "scene_and_class_zoom_visual_inspection": true,
+    "class_colors": {
+      "Car": "#ff6257",
+      "Cyclist": "#ffca55",
+      "Pedestrian": "#88eb93"
+    },
+    "class_colors_consistent_across_all_views_and_zooms": true,
+    "exact_class_color_pixels_verified_in_all_20_zooms": true,
+    "png_files_valid": 22
+  },
+  "camera_005663": {
+    "stereo_order_matches_horizontal_disparity": true,
+    "stereo_feature_matches": 958,
+    "output_size_pixels": [
+      2448,
+      370
+    ],
+    "original_pixels_preserved": true,
+    "annotations": false
+  },
+  "camera_005663_stitch": {
+    "output_size_pixels": [
+      1243,
+      370
+    ],
+    "real_image_alignment": true,
+    "homography_inliers": 384,
+    "median_alignment_error_px": 0.8030267357826233,
+    "both_sources_contribute_pixels": true,
+    "source_hashes_unchanged": true,
+    "unwarped_reference_region_pixel_exact": true,
+    "filled_output_rectangle": true,
+    "visual_inspection_including_seam": true,
+    "annotations": false
+  }
+}

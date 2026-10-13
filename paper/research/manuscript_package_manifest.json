@@ -1,0 +1,142 @@
+{
+  "file_count": 34,
+  "source_zip_sha256": "38391b8d786025a628bdb705f136f309bbee27ae0da3919043d08ef1d3b3a86b",
+  "files": [
+    {
+      "path": "figures/ablation_tradeoff.pdf",
+      "sha256": "d1b3c33897250858b189da2092fe1cd77b39c9ddb65b3359ac49d9312a642ea8"
+    },
+    {
+      "path": "figures/architecture_bev.pdf",
+      "sha256": "b605f0cadef56cdd285e63ef3e2cba2014d007ccca8909fdc14130ea9da98554"
+    },
+    {
+      "path": "figures/hist14_channels.png",
+      "sha256": "a04b6e295ae606680a03101af91f894d275c2663b87924b71ba5da7480a7c7aa"
+    },
+    {
+      "path": "figures/latency_range.pdf",
+      "sha256": "fc601c281e1446cf0179dfca004499d1035ea4f2026e172471ceb846df06d687"
+    },
+    {
+      "path": "figures/loss_retrain.pdf",
+      "sha256": "cdf1d7560b344f885003cad5a30e21eb1665c07c35d41a5c1ab350ad5abf2d88"
+    },
+    {
+      "path": "figures/loss_retrain_objectives.pdf",
+      "sha256": "c5ea8496c999b19406f25d2b7cf25b6c00c6fcab5f43436e34af46e7f2f41467"
+    },
+    {
+      "path": "figures/oga.pdf",
+      "sha256": "089c72727e1fdadbc8774556a5dc8f96c658f3c29d6f678b97bdd529e3a11eb3"
+    },
+    {
+      "path": "figures/sequence.png",
+      "sha256": "400e765c9819b3c2aa9165892fbca55917043624844ea7df7bdc17e3845042a5"
+    },
+    {
+      "path": "figures/training_pipeline.png",
+      "sha256": "a531d15518f9be2922038419655db17aee07bf9912ba096b246a20a77d9452ec"
+    },
+    {
+      "path": "figures/validation_bev.png",
+      "sha256": "d78e230a0be4dbf93f2ba41ac2b96eee789fa8dbe6a7fabbf1d6b5497850e1ff"
+    },
+    {
+      "path": "figures/validation_lift.png",
+      "sha256": "f0f1da2613dc84e71688602d90f29b289bfcf6892c204e87537dabeff5df906c"
+    },
+    {
+      "path": "figures/vertical_diagnostic.pdf",
+      "sha256": "5fe61eecde54e05e5d6c7326e0512e179b0ff708a38a82411686be81fc56de90"
+    },
+    {
+      "path": "main.bbl",
+      "sha256": "53c5a5cdeba1c8452be093620f416b4972e2dbb9292722265c2b0e2ab21568af"
+    },
+    {
+      "path": "main.tex",
+      "sha256": "7793f40b7d4222778c3acf4c9729236e928bd6349ae40ab0bb8628637de48e77"
+    },
+    {
+      "path": "references.bib",
+      "sha256": "2897a532573674df8a537ae413cc39340dcda6c30bfd6c5cf65849712695ec74"
+    },
+    {
+      "path": "sections/abstract.tex",
+      "sha256": "afc7981668b1b2b20888c992d4b1e364252e511bb30a40a0ce656767574c607d"
+    },
+    {
+      "path": "sections/conclusion.tex",
+      "sha256": "f49955f4d84939930d7da667ba7f1dd261bf7cab6a3d654f790741237d577b82"
+    },
+    {
+      "path": "sections/discussion.tex",
+      "sha256": "8c72cf168dae7f8d40a49752aa65c9955ebce6e3543fe7761d82b682009a0c81"
+    },
+    {
+      "path": "sections/experimental_setup.tex",
+      "sha256": "061ff3ad9250deb46f3cf8e0f2c85bb2e32f8dc806ec705c2456b1e773858479"
+    },
+    {
+      "path": "sections/introduction.tex",
+      "sha256": "1b5899af2332ae2638c9ed399ea3b9330a7f7bd963ee036d27bd5377edc3f023"
+    },
+    {
+      "path": "sections/methods.tex",
+      "sha256": "27286e12eb66c2228da364342d7698ce281b8101179eb28e04fb5413f8cf1af0"
+    },
+    {
+      "path": "sections/related_work.tex",
+      "sha256": "d4d0f2796bfec2ab3a5141954898faeccc5d7d818907f682ac56771fffbc0340"
+    },
+    {
+      "path": "sections/results.tex",
+      "sha256": "85db2c8bb1743c591391714130f7518e510675f1c00e125ba0035537fe0a9e48"
+    },
+    {
+      "path": "supplementary.bbl",
+      "sha256": "17336820753c505c5498e5b5b416617cdd7835344a8ba5e27e494f7b53d4cced"
+    },
+    {
+      "path": "supplementary.tex",
+      "sha256": "29ed8064d57383c5169e06e8698166d1292340decc4a0029422a54a6b78b201f"
+    },
+    {
+      "path": "tables/all_ap.tex",
+      "sha256": "5d9f314e2823cf31ab8899aeb8b9b92bba08dbbdea6c781b79910a1e4b3665b9"
+    },
+    {
+      "path": "tables/all_runtime.tex",
+      "sha256": "80207ee9e6fe9cfb631a4d2199b8d4efca8a6a318008a22aa69a4565504d1687"
+    },
+    {
+      "path": "tables/attention.tex",
+      "sha256": "30091b7df3c4ebcaf10360a45a56885df078a77971dc32e729c7e1db640fd2d9"
+    },
+    {
+      "path": "tables/checkpoint.tex",
+      "sha256": "5c4103021fb41ffbd611a668699626ea9137131c7e632c6748ade469d2f41c9c"
+    },
+    {
+      "path": "tables/final_reference.tex",
+      "sha256": "84829c3ba7b3790bb10fb0c693691c6d76f24066dd1411a762daab333f54f48e"
+    },
+    {
+      "path": "tables/loss_factorial.tex",
+      "sha256": "2b095c0c97b6c7125fbdfd5dc98b296fd75888c2f065fb196de55d070b85b2bf"
+    },
+    {
+      "path": "tables/loss_retrain.tex",
+      "sha256": "52230efafc9feeb104ac34ca815e7791c948d92664018c2d8a242e6e7d35ba7e"
+    },
+    {
+      "path": "tables/loss_retrain_curve.tex",
+      "sha256": "7ca73c8578423a79e12ca5b077991df3f9201c3469a4ed24ec65652f74250ed0"
+    },
+    {
+      "path": "tables/operating.tex",
+      "sha256": "bdbb322caf6e0ed95c368bb88ee3b7550674dcfa9c6ad185a57cc67d6f4a1b91"
+    }
+  ]
+}

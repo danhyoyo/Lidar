@@ -1,0 +1,32 @@
+{
+  "metadata_source": "Demo/outputs/bev/005663/metadata.json",
+  "metadata_sha256": "39c82f95d6e360d2433ffc7db48ee5721db3c15cd973d4680fa4e3ede61829f0",
+  "checkpoint_sha256": "c9ae020384f171cc52512b00deb015948429f19eed0a1cdbb3dba88114c66d36",
+  "preset_checks": {
+    "encoding": true,
+    "BEV outputs": true,
+    "IoU branch": true,
+    "backbone": true,
+    "Focal Context": true,
+    "SG-FPN": true,
+    "groups": true,
+    "classification": true
+  },
+  "box_mode": "bev",
+  "vertical_geometry": "Postprocessing: local ground and measured point heights; no learned vertical head",
+  "offset_units": "Metric residuals in meters, not fractional cell offsets",
+  "loss_source": "Code/detector/core/losses/strategies/oga.py",
+  "png_dpi": 600,
+  "width_mm": 95,
+  "height_mm": 76.3,
+  "layout": "Reference-matched compact two-block / five-output / loss-bar panel",
+  "collapsed_detector_modules": [
+    "Backbone",
+    "Focal Context",
+    "SG-FPN"
+  ],
+  "inference_arrow": "Decoded BEV boxes after IoU-aware scoring and NMS",
+  "heatmap_source": "/home/duyennh/AI_projects/research_lidar/Lidar/Demo/outputs/heatmap/005663/gaussian_heatmap.png",
+  "heatmap_sha256": "2add22edd6d5f9dd1dae141a8d00085fc82200c183fcfb657cd4a0928249e75b",
+  "heatmap_processing": "Original PNG embedded byte-for-byte; no image modification"
+}

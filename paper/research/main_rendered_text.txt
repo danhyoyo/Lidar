@@ -1,0 +1,869 @@
+1
+MobilePixorNeXt: Compact LiDAR Object
+Detection with Oriented Geometry and Localization
+Quality
+Anonymous manuscript draft
+Abstract—Compact LiDAR perception requires balancing spa￾tial representation, oriented localization, and detection confi￾dence. We present MobilePixorNeXt, a detector that combines
+a fourteen-channel bird’s eye view representation with large￾kernel depthwise residual blocks, scale-gated feature fusion,
+grouped prediction heads, and an oriented geometry objective.
+Localization quality is supervised through a detached projection￾based geometric similarity, while focal context and residual
+spatial attention provide optional feature refinement. A factorial
+study on the KITTI validation split examines how the geometry
+objective and a separate quality head interact. Under the local
+bird’s eye view evaluation protocol, the quality head improves
+mean average precision for Moderate objects by 2.93 percentage
+points with the baseline objective and by 1.61 points with the
+geometry objective, indicating overlapping benefits. The strongest
+fifty-epoch variant achieves 70.99% mean average precision
+with 852,930 detector parameters. A separately trained three￾dimensional variant shares an initial convolution within each task
+group and predicts vertical location and height. With 797,382
+parameters, it achieves 71.09% bird’s eye view and 57.75%
+three-dimensional mean average precision using the pinned
+reference evaluator. Conditional geometric diagnostics identify
+vertical location error as a major source of failed car overlaps.
+These single-seed results support compact LiDAR detection and
+motivate joint consideration of geometry, confidence, and vertical
+accuracy; local ablation scores and reference evaluation scores
+are reported under their respective protocols.
+Index Terms—LiDAR, object detection, autonomous vehicles,
+bird’s eye view, localization quality.
+I. INTRODUCTION
+L
+IDAR object detection supplies metric scene information
+for autonomous vehicles and mobile robots. The detector
+must recognize objects with different footprints and orienta￾tions from point clouds whose sampling varies with range and
+visibility. Bird’s eye view (BEV) representations make this
+problem accessible to efficient two-dimensional convolutional
+networks. PIXOR established dense, proposal-free oriented
+detection from BEV inputs [1], and PointPillars showed that
+learned pillar features can support fast detection with a two￾dimensional backbone [2]. These approaches motivate a com￾pact architecture that retains useful vertical statistics while
+allocating most learned processing to the horizontal plane.
+Reducing parameter count leaves several design questions
+unresolved. A richer representation can preserve information
+discarded by a simple occupancy grid, but its benefit depends
+on the downstream model. Multi-scale context can strengthen
+feature processing, yet the resulting detections also depend on
+the regression objective and their ranking scores. A classifica￾tion score alone does not explicitly encode localization quality.
+Conversely, a quality score learned from a footprint does
+not measure vertical overlap when the detector predicts full
+three-dimensional boxes. These relationships make component
+interactions relevant to the design of a small detector.
+IRBGHR-PIXOR combines inverted residual blocks, Gaus￾sian heatmap regression, and a modified focal objective for
+indoor pedestrian perception [3]. The present study addresses
+outdoor, three-class KITTI detection and develops a different
+architecture and geometric objective. Its Car, Pedestrian, and
+Cyclist results therefore answer a different evaluation question
+from IRBGHR-PIXOR’s JRDB pedestrian results. We retain
+the useful connection between compact convolutions and
+Gaussian center supervision, while examining how geometry,
+quality estimation, and contextual refinement work together.
+We introduce MobilePixorNeXt with a deterministic
+fourteen-channel representation, a convolutional hierarchy us￾ing 7 × 7 depthwise spatial mixing, scale-gated top-down fu￾sion, and task groups for Car and Pedestrian/Cyclist. Oriented
+geometric alignment (OGA) combines a multi-axis projection
+objective with a footprint-scale-normalized corner distance and
+adaptive task weighting. A separate quality head, referred to
+as IQA in the implementation, predicts a detached geometric
+similarity and participates in detection scoring. We investigate
+these choices through an explicit 2×2 OGA–IQA comparison,
+context and attention comparisons, checkpoint sensitivity, and
+runtime decomposition.
+The study also evaluates a trained three-dimensional exten￾sion with shared head convolutions and a vertical regression
+branch. This extension provides a reference-evaluator result in
+addition to the local BEV ablation study. A conditional anal￾ysis of fixed BEV matches examines why adequate footprints
+can fail three-dimensional overlap thresholds. The principal
+contributions are the compact detector implementation, the
+observed interaction between geometric training and explicit
+quality prediction, and an evidence-based account of vertical
+localization limits. All reported runs use one random seed, and
+the numerical comparisons are confined to the protocols and
+training budgets under which they were obtained.
+II. RELATED WORK
+A. Efficient LiDAR representations and detectors
+PIXOR uses a fixed BEV representation and dense oriented
+box prediction [1]. PointPillars learns point features within
+vertical columns before applying a two-dimensional detection
+network [2]. CenterPoint represents objects by their centers
+2
+MobilePixorNeXt + SimAM · BEV to grouped detection heads
+Backbone
+hist14 BEV
+14 × 800 × 704
+Conv3×3, 14→32, s=2
+BN + SiLU
+Conv3×3, 32→32, s=1
+BN + SiLU
+Stem /2
+32 × 400 × 352
+Downsample 2
+Conv3×3, 32→48, s=2
+BN + SiLU
+NeXt block 1
+48→120→48
+NeXt block 2
+48→120→48
+NeXt block 3
+48→120→48
+Residual SimAM
+48 × 200 × 176
+λ=0.0001; β₀=0.001
+Stage 2 / C3 + SimAM
+48 × 200 × 176 /4 Downsample 3 Conv3×3, 48→96, s=2 BN + SiLU NeXt block 1 96→240→96
+NeXt block 2
+96→240→96
+NeXt block 3
+96→240→96
+NeXt block 4
+96→240→96
+Focal Context
+D=64; dilation 1,2,3
+γ₀=0.001
+Stage 3 / C4
+96 × 100 × 88 /8
+Downsample 4
+Conv3×3, 96→128, s=2
+BN + SiLU
+NeXt block 1
+128→320→128
+NeXt block 2
+128→320→128
+Stage 4 / C5
+128 × 50 × 44 /16
+L3: Conv1×1
+48→32
+G
+P3
+L4: Conv1×1
+96→48
+G
+P4
+L5: Conv1×1
+128→48
+Bilinear ↑2
+DWConv3×3, 48→48
+BN + SiLU
+Bilinear ↑2
+Conv3×3, 48→32
+BN + SiLU
+Output Conv3×3, 32→32
+BN + SiLU
+Shared backbone features: 32 × 200 × 176
+Group 1: Car
+K=1 · five independent prediction branches
+Conv Heatmap
+1 × 200 × 176
+Conv Offset
+2 × 200 × 176
+Conv Size
+2 × 200 × 176
+Conv Yaw
+2 × 200 × 176
+Conv
+IoU quality
+1 × 200 × 176
+Per branch: Conv3×3 → Conv3×3 → Conv1×1
+Group 2: Pedestrian / Cyclist
+K=2 · five independent prediction branches
+Conv Heatmap
+2 × 200 × 176
+Conv Offset
+2 × 200 × 176
+Conv Size
+2 × 200 × 176
+Conv Yaw
+2 × 200 × 176
+Conv
+IoU quality
+1 × 200 × 176
+Per branch: Conv3×3 → Conv3×3 → Conv1×1
+(A) NeXt block
+C = 48 / 96 / 128 · expansion 2.5
+X
+DW7×7
+C→C BN PW1×1
+C→2.5C SiLU PW1×1
+2.5C→C BN γ +
+Y
+Identity shortcut
+Y = X + γ ⊙ F(X) · γ₀ = 10⁻⁵
+(B) Residual SimAM
+λ = 0.0001 · β₀ = 0.001
+Squared deviation d; spatial variance v
+per batch / channel, FP32
+e = d / [4(v + λ)] + 0.5
+SimAM(X) = X ⊙ sigmoid(e)
+Y = X + β [SimAM(X) − X]
+G: P = U + 2σ(DWConv(L + U)) ⊙ L
+Shapes: C × H × W (batch omitted). G: scale-gated fusion. Cuboids are schematic; head outputs are raw predictions.
+Fig. 1. MobilePixorNeXt architecture used by the P16 BEV ablation. The fourteen-channel input produces a 32 × 200 × 176 feature map through three
+convolutional stages, residual SimAM at stride four, focal context at stride eight, and scale-gated fusion. Car and Pedestrian/Cyclist have separate task groups
+with independent prediction branches. The trained Final3D extension shares the first head convolution within each group and adds a two-channel vertical
+branch; it is described in Section III-D. Dimensions omit the batch axis.
+and regresses the remaining attributes [4]. PillarNeXt revisits
+pillar detector network design [5], while FastPillars explicitly
+investigates deployment through pillar encoding and a back￾bone that avoids sparse convolution dependencies [6]. Recent
+lightweight backbone work also studies parameter and latency
+reductions in LiDAR detectors [7]. MobilePixorNeXt adopts
+fixed cell statistics and ordinary dense convolutions. These
+works provide architectural context; their published scores
+are not used as interchangeable numerical baselines for our
+validation protocols.
+B. Convolutional context and feature fusion
+Inverted residual structures [8] and modern large-kernel
+ConvNets [9] motivate efficient separation of spatial mixing
+and channel transformation. Our blocks use a depthwise
+convolution followed by channel expansion, SiLU, projection,
+batch normalization, and a scaled residual. They constitute
+a specific LiDAR configuration rather than an unchanged
+MobileNetV2 or ConvNeXt block. Feature pyramid networks
+provide the basis for top-down fusion [10]. We use bilinear
+upsampling and a depthwise gate on each lateral feature. Focal
+modulation motivates hierarchical context aggregation and el￾ementwise query modulation [11]; our context module instead
+uses batch normalization, dilated depthwise levels, softmax
+gates, and a narrow projection. ECA [12] and SimAM [13]
+supply alternative local refinements whose effects are mea￾sured individually.
+C. Geometry objectives and localization quality
+Focal loss addresses the dominance of easy background
+examples in dense detection [14]. Gaussian center supervision,
+used in Objects as Points [15], provides the classification
+target in this detector. Generalized IoU supplies geometric
+supervision beyond coordinate errors [16]. MGIoU extends
+this idea by comparing projections of convex shapes along
+their normals [17]. The implemented OGA objective uses
+a BEV rectangle specialization of this projection principle
+and a normalized corner term. Projection-based geometry is
+attributed to MGIoU rather than claimed as a new overlap
+formulation.
+Generalized Focal Loss couples localization quality with
+classification [18], while uncertainty-based multi-task learning
+illustrates the relevance of loss balancing [19]. Our main IQA
+configuration retains a separate quality branch. Its target is
+a clamped mean projection GIoU, not exact polygon IoU or
+three-dimensional IoU. The implemented adaptive weights are
+bounded softmax task weights with running scale normaliza￾tion; they do not estimate the homoscedastic uncertainties of
+Kendall et al. We evaluate the complete OGA training package
+and the quality branch through matched configurations, with￾out attributing the observed gains to individual loss terms.
+3
+III. METHOD
+A. Deterministic BEV representation
+The input is a LiDAR scan of coordinates (x, y, z) and
+reflectance. We retain finite points inside x ∈ [0, 70.4] m,
+y ∈ [−40, 40] m, and z ∈ [−2.5, 1.0] m, with a small
+boundary exclusion used by the encoder. Horizontal cells
+measure 0.1 × 0.1 m, giving a channel-first tensor of size
+14 × 800 × 704. The fourteen-channel representation, termed
+Hist14, comprises four height-bin counts; maximum, mean,
+span, and standard deviation of height; maximum and mean
+reflectance; total density; occupancy; and two mean horizontal
+offsets from the cell center. Empty cells are zero. Height
+statistics use u = (z + 2.5)/3.5, and the four histogram
+bins divide this normalized interval equally. Each count n is
+mapped to min{1, log(1+n)/ log(33)}. Reflectance is clipped
+to [0, 1], and the offsets are divided by cell width and clipped to
+[−0.5, 0.5]. This fixed encoding preserves vertical summaries
+without a learned point encoder. Supplementary Note S1 gives
+the channel definitions and supplied channel visualization.
+B. Backbone and scale-gated fusion
+The stem applies two 3 × 3 convolutions with 32 channels,
+the first with stride two. Three stages then produce C3, C4, and
+C5 at strides 4, 8, and 16, with 48, 96, and 128 channels and
+depths 3, 4, and 2. A stage block applies a 7 × 7 depthwise
+convolution, batch normalization, pointwise expansion by a
+factor of 2.5, SiLU activation, pointwise projection, and batch
+normalization. Its output is X +γ ⊙F(X), where the channel
+scale γ is initialized to 10−5
+. This combines large spatial
+kernels with narrow learned channel transformations [9]. The
+evaluated main configurations do not use structural reparame￾terization.
+The top-down neck projects C5 and C4 to 48 channels and
+C3 to 32 channels. A refined, bilinearly upsampled feature Uj
+is fused with a lateral feature Lj through
+Pj = Uj + Gj ⊙ Lj ,
+Gj = 2 sigmoid(DWConv3×3(Lj + Uj )).
+(1)
+Zero gate initialization gives Gj = 1. The first refinement
+is depthwise; the next projection maps 48 channels to 32. A
+final 3×3 convolution produces the 32×200×176 prediction
+feature. Historical comparisons also use fusion width 24 and
+prediction width 16, as specified in the supplement.
+C. Context and residual attention
+The optional focal context module at C4 follows the
+modulation principle of FocalNet [11]. A normalized input
+is projected into a 64-channel query, a 64-channel context
+seed, and four gates. Three sequential depthwise 3 × 3 layers
+with dilations 1, 2, and 3 generate local context levels; their
+final level also provides a global spatial mean. A softmax
+over the four gates weights the three local levels and global
+context. A pointwise context transform modulates the query
+elementwise, and a projection returns 96 channels through a
+residual scale initialized to 10−3
+. The softmax and geometry￾sensitive arithmetic use FP32.
+P16 additionally applies SimAM [13] at C3. For each
+channel, let µ be its spatial mean, d = (X − µ)
+2
+, and
+v =
+∑d/(HW − 1). The attention transform and its residual
+application are
+T(X) = X ⊙ sigmoid(
+d
+4(v + λ)
++
+1
+2
+)
+,
+X′ = X + β[T(X) − X],
+(2)
+with λ = 10−4
+and a learned scalar β initialized to 10−3
+.
+SimAM’s gate itself has no learned parameters; this residual
+wrapper adds one. ECA and a stride-two detail path are
+evaluated as separate alternatives.
+D. Grouped BEV and three-dimensional heads
+Two task groups predict Car and Pedestrian/Cyclist. Each
+group has classification, center offset, log-size, doubled-yaw,
+and optional quality branches. Geometric outputs have two
+channels per branch and are shared across classes within
+a group. The yaw representation (cos 2θ,sin 2θ) decodes as
+θ =
+1
+2
+atan2(s, c), representing orientation modulo π. Centers
+are decoded from metric offsets relative to output cell centers,
+and width and length are exponentiated from log-size predic￾tions. Gaussian heatmaps provide center supervision [15]; the
+radius uses overlap 0.1 and a minimum of four output cells.
+Regression targets use nearest-center assignment.
+The archived BEV models use independent branches, each
+with two 3 × 3 convolutions and a pointwise output layer.
+In Final3D, each group shares the first 3 × 3 convolution
+while retaining a private second convolution and output layer
+per branch. An additional branch predicts LiDAR bottom
+height zb and log h. Its masked Smooth-L1 objective, with
+coefficient one, is added outside the adaptive BEV task pool.
+The two group losses receive equal weights of 0.5. Calibrated
+bottom-center transformation and corner projection produce
+the camera-coordinate boxes required by the reference evalu￾ator. The model predicts upright yaw-only cuboids and does
+not resolve front versus back; orientation similarity is therefore
+omitted.
+E. Oriented geometric alignment
+The baseline combines Gaussian focal classification with
+masked coordinate losses. OGA replaces the coordinate L1
+terms with Smooth-L1 and adds a projection objective and
+a normalized corner term. For a predicted footprint Bp and
+target Bt, we project their corners onto the length and width
+axes of both rectangles, following the multi-axis construction
+of MGIoU [17]. For axis k, let Ik, Uk, and Ck denote
+projected intersection, union, and enclosing interval lengths.
+We compute
+gk =
+Ik
+Uk
+−
+Ck − Uk
+Ck
+, g¯ =
+1
+4
+∑
+4
+k=1
+gk, Lproj =
+1 − g¯
+2
+.
+(3)
+Denominators use a small numerical floor. The corner ob￾jective takes the smaller mean L1 corner distance under
+canonical and π-equivalent corner ordering, divided by the
+target footprint diagonal. Its coefficient is one. The geometry
+4
+package therefore measures both projected alignment and nor￾malized corner displacement, while preserving the orientation
+symmetry of the head.
+For M BEV tasks, OGA uses bounded adaptive task weights
+bi = 3 tanh(si/3), wi = M
+exp(bi/2)
+∑
+j
+exp(bj/2). (4)
+An exponential moving average µi of each detached task
+loss uses momentum 0.99 and a floor of 10−4
+. The group
+objective is µ¯
+∑
+i wiLi/µi
+, where µ¯ is the mean running
+scale. This bounded weighting and scale normalization are
+an implemented training heuristic; they do not imply equal
+gradient magnitudes or a probabilistic uncertainty model. Our
+ablation evaluates the package as a whole.
+F. Localization quality and inference
+IQA predicts a scalar quality q per cell. Its positive-location
+binary cross-entropy target is q
+∗ = stopgrad[clip(¯g, 0, 1)],
+with coefficient one. Since g¯ averages projection GIoUs, this
+target is a geometric surrogate rather than exact rotated IoU.
+The score used for candidate ranking is
+s = p
+1−α
+cls q
+α
+, α = 0.5. (5)
+Configurations without IQA use classification scores. Per-class
+peak extraction, a score threshold of 0.05, classwise rotated
+BEV suppression at overlap 0.1, and a global maximum of 500
+detections form the evaluated decoding policy. The vertical
+branch does not change the quality target or suppression
+domain. Q-OGA, a comparison inspired by quality focal
+learning [18], couples classification to the same geometric sur￾rogate, uses softened corner assignment and range weighting,
+and has no separate IQA branch. Its full settings appear in
+Supplementary Note S2.
+IV. EXPERIMENTAL SETUP
+A. Dataset and training
+We use the KITTI object detection data [20], with 3,712
+training and 3,769 validation frames. The stored frame lists
+are disjoint. Experiments cover Car, Pedestrian, and Cyclist.
+Validation supplies both checkpoint selection and the reported
+measurements; no hidden KITTI test result is claimed. The
+main BEV comparisons complete 50 epochs using seed 42,
+batch size 16, BF16 training, AdamW [21], learning rate
+7 × 10−4
+, weight decay 10−3
+, four warmup epochs, and a
+cosine schedule to 10−6
+. AP is measured every ten epochs,
+and the highest Moderate macro-average determines the pri￾mary checkpoint. Final3D completes 100 epochs with eight
+warmup epochs and is selected by reference 3D AP. Two older
+backbone runs have different budgets and loss-based selection;
+their scores are retained only as historical context.
+The main configurations use ground-truth object sampling
+with probability 0.5, source-relative placement, range scaling
+from 0.9 to 1.1, and azimuth jitter of ±5
+◦
+. Whole-scene quotas
+are 15 Cars, 10 Pedestrians, and 10 Cyclists; these are target
+counts, rather than a fixed number of insertions. Density adap￾tation, ground checks, static collision rejection, and visibility
+protection are enabled. Subsequent transformations apply a
+random flip, rotation in [−π/4, π/4], scale in [0.95, 1.05], and
+probabilistic translation with standard deviations (0.2, 0.2, 0.1)
+m. The configured object database is derived from training
+data. Saved configurations and their training-time hashes ac￾company the manuscript.
+B. Evaluation protocols
+The BEV ablations use a local loader-aligned implemen￾tation of KITTI-style rotated AP with 40 recall positions
+(R40). It evaluates the loader’s strictly cropped horizontal
+center domain, difficulty filters, and configured neighboring￾class ignores. Car uses IoU 0.7 and Pedestrian/Cyclist use 0.5.
+Moderate mAP is the unweighted mean of the three class AP
+values, reported as a percentage. This local evaluation supports
+internal comparisons, but it does not establish equivalence to
+a full-frame reference result.
+Final3D uses the unchanged KITTI evaluation and rotated￾overlap code from a pinned OpenPCDet revision [22]. It eval￾uates full-frame original annotations, with calibrated, image￾clipped projections of predicted cuboids. BEV and 3D AP
+use the same thresholds and R40 convention. The input
+crop remains the detector’s sensing domain, while ground
+truth follows the reference evaluator’s full-frame domain. We
+report these scores separately from the local BEV study. The
+evaluator revision, source hashes, split digest, and checkpoint
+digest are supplied in Supplementary Note S3.
+C. Efficiency and conditional diagnostics
+Saved BEV runtime measurements use PyTorch FP32
+on an NVIDIA L4. Model forward time and the of￾fline input-to-detections time are reported separately, in￾cluding loading/encoding, host-to-device transfer, and decod￾ing/suppression. Measurements exclude ten warmup frames
+and cover 3,759 timed frames. Parameter counts include the
+detector and exclude train-only adaptive criterion parameters.
+The Final3D evaluation does not contain stage-level latency
+measurements, so the BEV timings are not assigned to it.
+Existing CPU diagnostics for the selected Final3D check￾point form one-to-one, same-class associations in descending
+BEV IoU, using Moderate ground-truth filters and projected
+detection height of at least 25 pixels. At fixed associations,
+footprints, scores, and original image boxes, an oracle replaces
+the camera-coordinate vertical bottom location and/or height.
+The diagnostic counts 3D IoU threshold crossings. It does
+not reproduce neighboring-class ignores, DontCare handling,
+or AP matching, and therefore does not measure oracle AP.
+Its CPU detections also differ slightly from the saved GPU
+reference detections.
+V. RESULTS
+A. Interaction between geometry and quality
+Table I shows the OGA–IQA comparison with the same
+Hist14 backbone, focal context, grouped heads, augmentation,
+training budget, and decoding thresholds. Without IQA, OGA
+raises Moderate mAP from 67.38% to 68.97%, a gain of
+1.59 percentage points (pp). With IQA, its gain is 0.27 pp.
+5
+TABLE I
+LOCAL BEV R40 AP (%) FOR MODERATE OBJECTS. P1–P4 FORM THE
+OGA–IQA FACTORIAL COMPARISON. P11 IS A SEPARATE Q-OGA
+CONFIGURATION. ALL USE FOCAL CONTEXT AND COMPLETE 50 EPOCHS
+WITH SEED 42.
+Run Objective / quality Car Ped. Cyc. mAP
+P1 Baseline 82.97 56.99 62.17 67.38
+P2 OGA 84.09 57.93 64.88 68.97
+P3 Baseline + IQA 84.13 59.45 67.34 70.31
+P4 OGA + IQA 84.87 59.63 67.24 70.58
+P11 Q-OGA 84.89 57.15 65.56 69.20
+TABLE II
+LOCAL REFINEMENT OF P4. AP VALUES ARE LOCAL BEV R40
+PERCENTAGES FOR MODERATE OBJECTS; LATENCY IS SAVED FP32
+MODEL FORWARD TIME ON AN L4. SIMAM ADDS ONE RESIDUAL-SCALE
+PARAMETER TO P4’S 852,929 PARAMETERS.
+Run Local module Ped. AP mAP Model ms
+P4 None 59.63 70.58 8.186
+P14 Detail path 59.70 70.01 8.243
+P15 ECA 59.77 69.90 8.510
+P16 SimAM 60.66 70.99 8.554
+Conversely, IQA adds 2.93 pp to the baseline objective and
+1.61 pp to OGA. The difference in these gains is −1.32 pp,
+consistent with overlapping benefits in this seed (Fig. 2a). The
+combination has the highest mean among these four runs,
+although Cyclist AP is slightly lower than for baseline plus
+IQA. This comparison does not isolate OGA’s projection,
+corner, and weighting components.
+Q-OGA achieves 69.20% mAP at its AP-selected epoch 40.
+It exceeds OGA without IQA by 0.23 pp, while remaining 1.38
+pp below OGA plus IQA. Its epoch-50 score is 68.53%, so
+the selected-checkpoint result does not establish a consistent
+advantage throughout training. At the low score threshold of
+0.05, Q-OGA records 23.40 false positives per frame and
+89.26% micro recall, compared with 37.24 and 89.41% for P4.
+These operating points show different candidate outputs; they
+do not constitute an equal-recall comparison or a calibration
+assessment.
+B. Context, attention, and earlier design choices
+Removing focal context from OGA plus IQA lowers mAP
+from 70.58% (P4) to 68.72% (P5). However, adding it to the
+baseline configuration lowers the score from 68.46% (S32) to
+67.38% (P1). Context therefore has a conditional effect within
+the available configurations. Among local refinement variants
+(Table II), SimAM yields the highest mAP, 70.99%. Its 0.41
+pp gain over P4 includes a 1.03 pp Pedestrian improvement
+and a small Car reduction. The detail path and ECA produce
+lower macro-averages despite small Pedestrian increases.
+The earlier runs provide supporting design evidence rather
+than a fully controlled sequence. Hist14 scores 50.14% com￾pared with 47.37% for Rich8, and grouped heads score
+51.30%, but these runs also differ in code or configuration
+details. A more closely aligned width comparison raises mAP
+from 66.56% to 67.28% when prediction width increases from
+16 to 32 at fusion width 24, adding 114,832 parameters.
+Changing fusion width from 24 to 32 at prediction width 16
+lowers mAP by 0.31 pp. The apparent 7.91 pp sampling gain
+between O32 and H32 accompanies simultaneous changes to
+sampling probability, quotas, placement attempts, and valida￾tion batching. Supplementary Tables S2–S5 retain all runs and
+identify these comparison limits.
+C. Range performance and runtime
+P16’s Pedestrian AP in the 30–50 m bin rises from P4’s
+4.54% to 9.77%, with 71 rather than 66 true positives among
+137 valid objects (Fig. 3b). The absolute score remains low.
+The 50–70.4 m bin contains only 13 Pedestrians, limiting
+interpretation of its score. These bins expose remaining range
+sensitivity rather than establish robust distant-object detection.
+P16 uses 852,930 detector parameters and averages 8.55
+ms per model forward pass, equivalent to 116.90 forwards/s.
+The offline input-to-detections pipeline averages 56.83 ms,
+or 17.60 frames/s, with a 95th percentile of 97.37 ms. Its
+loading/encoding, transfer, model, and decoding means are
+11.74, 6.75, 8.55, and 29.51 ms. Decoding is the largest
+recorded stage (Fig. 3a). P3 has a higher model time than P4
+but a shorter total pipeline time, illustrating the effect of the
+number and distribution of decoded candidates. No embedded￾device throughput is established by these L4 measurements.
+D. Reference evaluation of the trained 3D extension
+Final3D achieves 71.09% BEV and 57.75% 3D Moderate
+mAP under the pinned reference evaluator (Table III). The
+detector has 797,382 parameters: 666,769 in the backbone
+including the neck, and 130,613 in the grouped heads. This
+total is 55,548 parameters below the archived independent￾head P16 BEV model, despite the added vertical outputs. The
+models differ in head topology, training duration, checkpoint
+criterion, and evaluation protocol, so their AP difference is
+not a controlled shared-head ablation. Final3D is selected at
+epoch 70; its epoch-100 3D score is 56.47% (Fig. 4a). The
+loss-selected epoch-24 checkpoint scores 46.73%, reinforcing
+the practical relevance of the declared selection policy.
+E. Vertical localization and qualitative evidence
+Among 7,130 fixed BEV-matched Cars in the CPU diag￾nostic, 5,743 pass the 3D IoU threshold of 0.7. Replacing
+vertical bottom location raises the count to 6,791, whereas
+replacing height alone gives 5,873. Joint replacement makes
+all 7,130 fixed pairs pass (Fig. 4b). Vertical location correction
+recovers 1,048 of the 1,387 failing Car pairs, or 75.6%. Car
+bottom-height mean absolute error is 8.66 cm, while signed
+bias is only −0.82 cm. The error is thus substantially object￾dependent. Car pass rates decrease from 91.46% within 20
+m to 53.29% beyond 40 m among the matched pairs. These
+conditional counts identify a vertical localization bottleneck
+without predicting the AP gain of an oracle system.
+The validation visualization in Fig. 5 shows P4 footprints
+and class predictions in frame 004338. Additional images
+display Hist14 channels, center heatmaps, augmentation, and
+6
+Baseline loss OGA
+67
+68
+69
+70
+71
+Local BEV mAP Moderate (%)
+67.38
+68.97
+70.31
+70.58
+(a) OGA and quality interaction
+IQA off
+IQA on
+6.75 7.00 7.25 7.50 7.75 8.00 8.25 8.50 8.75
+Model forward latency (ms)
+67
+68
+69
+70
+71
+Local BEV mAP Moderate (%)
+S32
+P1
+P2
+P3
+P4
+P11
+P14 P15
+P16
+(b) Saved L4 / FP32 measurements
+Fig. 2. Local BEV ablations on the validation split. (a) OGA and IQA yield non-additive observed gains. (b) Moderate mAP versus saved FP32 model
+forward latency on an L4. Run definitions are given in Tables I and II and Supplementary Table S2. The chart reports one seed and excludes decoding from
+the horizontal axis; no error bars or significance tests are available.
+0 10 20 30 40 50
+Stage latency (ms)
+P3
+P4
+P16
+(a) Offline pipeline components
+Load / encode
+Transfer
+Model
+Decode / NMS
+0–30 m
+(n=1589)
+30–50 m
+(n=137)
+50–70.4 m
+(n=13)
+0
+10
+20
+30
+40
+50
+60
+Pedestrian AP Moderate (%)
+(b) Range-stratified local BEV AP
+P4
+P16
+Fig. 3. Saved local BEV measurements. (a) Mean offline pipeline stage times for P3, P4, and P16; total time includes stage-boundary overhead and can
+differ slightly from the stage sum. (b) Range-stratified Pedestrian R40 Moderate AP, with valid ground-truth counts shown below each bin. Values in sparsely
+populated bins require caution.
+a consecutive sequence in Supplementary Note S5. P4 cuboid
+demonstrations estimate vertical extent from LiDAR points
+and are distinguished from trained Final3D outputs. Camera
+images serve as visualization backgrounds rather than model
+inputs. The examples illustrate the processing pipeline; quan￾titative conclusions follow the evaluated frame sets.
+VI. DISCUSSION
+The strongest internal evidence is the geometry–quality
+interaction. Both OGA and IQA improve the baseline when
+used individually, while the combined gain is smaller than their
+sum. This pattern is consistent with partial overlap between
+improved geometric learning and localization-aware ranking.
+Because IQA’s target is derived from the same projection
+similarity used in OGA, a shared geometric signal is a
+plausible explanation. The experiment does not establish that
+explanation causally, and replication across seeds is required
+to assess the stability of the observed interaction.
+Compactness also involves choices beyond the backbone.
+The trained shared-head model remains below 0.8 million
+detector parameters while adding vertical regression, but the
+saved efficiency evidence covers the independent-head BEV
+models. Their runtime decomposition indicates that decoding
+and candidate volume can outweigh feature-processing costs.
+A deployment study should therefore measure loading, trans￾fer, suppression, and output delivery under a fixed hardware
+and precision setting, rather than infer complete-system speed
+from model forward frequency.
+The 3D results expose a mismatch between footprint-based
+confidence and cuboid accuracy. IQA supervises horizontal
+geometry, and inference suppresses detections in BEV. Neither
+mechanism explicitly rewards vertical overlap. The conditional
+diagnostic suggests that object-dependent vertical location
+errors are a useful target for future development, especially
+for distant Cars. A three-dimensional quality target, vertical-
+7
+TABLE III
+FINAL3D VALIDATION AP R40 (%) FROM THE PINNED REFERENCE EVALUATOR. E, M, AND H DENOTE EASY, MODERATE, AND HARD. BOTH MODES
+EVALUATE THE SAME EPOCH-70 CHECKPOINT TRAINED FOR 100 EPOCHS; THE GROUND-TRUTH COUNT COLUMN IS FOR MODERATE. THESE ARE
+FULL-FRAME REFERENCE RESULTS AND ARE SEPARATE FROM THE LOCAL BEV ABLATIONS.
+Class GT Mod. BEV E BEV M BEV H 3D E 3D M 3D H
+Car 7874 88.77 84.02 82.47 71.29 61.02 57.57
+Pedestrian 1739 67.93 61.36 56.99 59.21 52.52 47.48
+Cyclist 544 85.47 67.89 65.17 76.06 59.72 56.49
+Macro mean – 80.72 71.09 68.21 68.85 57.75 53.85
+20 40 60 80 100
+Training epoch
+30
+35
+40
+45
+50
+55
+Reference 3D mAP Moderate (%)
+(a) Shared head 3D training
+Car Pedestrian Cyclist
+0
+20
+40
+60
+80
+100
+3D IoU passes / fixed BEV matches (%)
+(b) Conditional geometric diagnostic
+Predicted z and h
+Oracle vertical location
+Oracle location + height
+Fig. 4. Final3D evidence. (a) Saved reference 3D Moderate mAP over the 100-epoch training schedule; the selected checkpoint is epoch 70. (b) Conditional
+3D IoU threshold passes among fixed CPU BEV matches: 7,130 Cars, 1,342 Pedestrians, and 448 Cyclists. The oracle replaces camera-coordinate vertical
+bottom location and/or height while preserving scores and associations. This is a geometric diagnostic, not an AP evaluation.
+Fig. 5. P4 BEV demonstration on validation frame 004338 at visualization
+score threshold 0.3. The point-cloud view and overhead view show the same
+planar footprint predictions. The display contains 4 Car, 5 Cyclist, and 7
+Pedestrian predictions; these counts are not verified true-positive counts.
+aware training, or a ground-conditioned representation should
+be evaluated through fresh matched experiments; the current
+oracle counts are not estimates of their attainable AP.
+Several limitations bound the conclusions. The study uses
+one dataset, one random seed, and a validation set also used
+for checkpoint and variant selection. It lacks a hidden-test
+result, independent contemporary baselines under the refer￾ence evaluator, and a matched shared-versus-independent 3D
+study. Some historical comparisons change multiple variables.
+The local and reference protocols have different ground￾truth domains, and the CPU diagnostic differs from both AP
+implementations. The work consequently establishes a com￾pact implementation and useful within-project measurements,
+while leaving claims of superiority over modern detectors and
+embedded deployment performance to further evaluation.
+VII. CONCLUSION
+MobilePixorNeXt combines deterministic vertical statistics,
+a compact convolutional hierarchy, gated scale fusion, grouped
+heads, and oriented geometric training. Local KITTI BEV
+ablations show that geometry and separate quality prediction
+provide overlapping gains, and that residual SimAM improves
+the strongest tested configuration to 70.99% Moderate mAP
+with 852,930 detector parameters. A separately trained shared￾head 3D extension has 797,382 parameters and achieves
+71.09% BEV and 57.75% 3D Moderate mAP under the pinned
+reference evaluator. Conditional diagnostics identify vertical
+location as a substantial source of failed Car cuboid overlaps.
+These results provide a reproducible basis for broader baseline
+comparisons, repeated training runs, and vertical-aware quality
+estimation.
+8
+REFERENCES
+[1] B. Yang, W. Luo, and R. Urtasun, “PIXOR: Real-time 3D
+object detection from point clouds,” in IEEE Conference on
+Computer Vision and Pattern Recognition, 2018, pp. 7652–7660.
+[Online]. Available: https://openaccess.thecvf.com/content_cvpr_2018/
+html/Yang_PIXOR_Real-Time_3D_CVPR_2018_paper.html
+[2] A. H. Lang, S. Vora, H. Caesar, L. Zhou, J. Yang, and O. Beijbom,
+“PointPillars: Fast encoders for object detection from point clouds,” in
+IEEE/CVF Conference on Computer Vision and Pattern Recognition,
+2019, pp. 12 697–12 705. [Online]. Available: https://openaccess.thecvf.
+com/content_CVPR_2019/html/Lang_PointPillars_Fast_Encoders_for_
+Object_Detection_From_Point_Clouds_CVPR_2019_paper.html
+[3] D. A. Nguyen, K. N. Hoang, N. T. Nguyen, D. A. Nguyen, and H. N.
+Tran, “Enhancing indoor robot pedestrian detection using improved
+PIXOR backbone and gaussian heatmap regression in 3D LiDAR
+point clouds,” IEEE Access, vol. 12, pp. 9162–9176, 2024. [Online].
+Available: https://ieeexplore.ieee.org/abstract/document/10385189
+[4] T. Yin, X. Zhou, and P. Kr"ahenb"uhl, “Center-based 3D object detection
+and tracking,” in IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, 2021, pp. 11 784–11 793. [Online]. Available: https:
+//openaccess.thecvf.com/content/CVPR2021/html/Yin_Center-Based_
+3D_Object_Detection_and_Tracking_CVPR_2021_paper.html
+[5] J. Li, C. Luo, and X. Yang, “PillarNeXt: Rethinking network designs
+for 3D object detection in LiDAR point clouds,” in IEEE/CVF
+Conference on Computer Vision and Pattern Recognition, 2023,
+pp. 17 567–17 576. [Online]. Available: https://openaccess.thecvf.com/
+content/CVPR2023/html/Li_PillarNeXt_Rethinking_Network_Designs_
+for_3D_Object_Detection_in_LiDAR_CVPR_2023_paper.html
+[6] S. Zhou, Z. Tian, X. Chu, X. Zhang, B. Zhang, X. Lu, C. Feng,
+Z. Jie, P. Y. Chiang, and L. Ma, “FastPillars: A deployment-friendly
+pillar-based 3D detector,” arXiv:2302.02367, 2023. [Online]. Available:
+https://arxiv.org/abs/2302.02367
+[7] A. Chandorkar, H. Tercan, and T. Meisen, “Rethinking
+backbone design for lightweight 3D object detection in
+LiDAR,” in IEEE/CVF International Conference on Computer
+Vision Workshops, 2025, pp. 1709–1717. [Online]. Available:
+https://openaccess.thecvf.com/content/ICCV2025W/EVW/html/
+Chandorkar_Rethinking_Backbone_Design_for_Lightweight_3D_
+Object_Detection_in_LiDAR_ICCVW_2025_paper.html
+[8] M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, and
+L.-C. Chen, “MobileNetV2: Inverted residuals and linear
+bottlenecks,” in IEEE Conference on Computer Vision and
+Pattern Recognition, 2018, pp. 4510–4520. [Online]. Avail￾able: https://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_
+MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+[9] Z. Liu, H. Mao, C.-Y. Wu, C. Feichtenhofer, T. Darrell, and S. Xie,
+“A ConvNet for the 2020s,” in IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, 2022, pp. 11 976–11 986. [Online].
+Available: https://openaccess.thecvf.com/content/CVPR2022/html/Liu_
+A_ConvNet_for_the_2020s_CVPR_2022_paper.html
+[10] T.-Y. Lin, P. Dollár, R. Girshick, K. He, B. Hariharan, and S. Belongie,
+“Feature pyramid networks for object detection,” in IEEE Conference
+on Computer Vision and Pattern Recognition, 2017, pp. 2117–2125.
+[Online]. Available: https://openaccess.thecvf.com/content_cvpr_2017/
+papers/Lin_Feature_Pyramid_Networks_CVPR_2017_paper.pdf
+[11] J. Yang, C. Li, X. Dai, and J. Gao, “Focal
+modulation networks,” in Advances in Neural Information
+Processing Systems, vol. 35, 2022, pp. 4203–4217. [Online].
+Available: https://proceedings.neurips.cc/paper_files/paper/2022/hash/
+1b08f585b0171b74d1401a5195e986f1-Abstract-Conference.html
+[12] Q. Wang, B. Wu, P. Zhu, P. Li, W. Zuo, and Q. Hu,
+“ECA-Net: Efficient channel attention for deep convolutional
+neural networks,” in IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, 2020, pp. 11 534–11 542.
+[Online]. Available: https://openaccess.thecvf.com/content_CVPR_
+2020/html/Wang_ECA-Net_Efficient_Channel_Attention_for_Deep_
+Convolutional_Neural_Networks_CVPR_2020_paper.html
+[13] L. Yang, R.-Y. Zhang, L. Li, and X. Xie, “SimAM: A simple,
+parameter-free attention module for convolutional neural networks,”
+in Proceedings of the 38th International Conference on Machine
+Learning, ser. Proceedings of Machine Learning Research, vol. 139,
+2021, pp. 11 863–11 874. [Online]. Available: https://proceedings.mlr.
+press/v139/yang21o.html
+[14] T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Dollár,
+“Focal loss for dense object detection,” in IEEE International
+Conference on Computer Vision, 2017, pp. 2980–2988. [Online].
+Available: https://openaccess.thecvf.com/content_iccv_2017/html/Lin_
+Focal_Loss_for_ICCV_2017_paper.html
+[15] X. Zhou, D. Wang, and P. Kr"ahenb"uhl, “Objects as points,”
+arXiv:1904.07850, 2019. [Online]. Available: https://arxiv.org/abs/1904.
+07850
+[16] H. Rezatofighi, N. Tsoi, J. Gwak, A. Sadeghian, I. Reid, and
+S. Savarese, “Generalized intersection over union: A metric and
+a loss for bounding box regression,” in IEEE/CVF Conference on
+Computer Vision and Pattern Recognition, 2019, pp. 658–666. [Online].
+Available: https://openaccess.thecvf.com/content_CVPR_2019/html/
+Rezatofighi_Generalized_Intersection_Over_Union_A_Metric_and_a_
+Loss_for_CVPR_2019_paper.html
+[17] D.-T. Le, T. Pham, J. Cai, and H. Rezatofighi, “Marginalized
+generalized IoU (MGIoU): A unified objective function for optimizing
+convex parametric shapes,” Proceedings of the AAAI Conference on
+Artificial Intelligence, vol. 40, no. 7, pp. 5836–5844, 2026. [Online].
+Available: https://ojs.aaai.org/index.php/AAAI/article/view/37505
+[18] X. Li, W. Wang, L. Wu, S. Chen, X. Hu, J. Li, J. Tang,
+and J. Yang, “Generalized focal loss: Learning qualified and
+distributed bounding boxes for dense object detection,” in Advances
+in Neural Information Processing Systems, vol. 33, 2020, pp. 21 002–
+21 012. [Online]. Available: https://proceedings.neurips.cc/paper_files/
+paper/2020/hash/f0bda020d2470f2e74990a07a607ebd9-Abstract.html
+[19] A. Kendall, Y. Gal, and R. Cipolla, “Multi-task learning
+using uncertainty to weigh losses for scene geometry and
+semantics,” in IEEE Conference on Computer Vision and
+Pattern Recognition, 2018, pp. 7482–7491. [Online]. Avail￾able: https://openaccess.thecvf.com/content_cvpr_2018/html/Kendall_
+Multi-Task_Learning_Using_CVPR_2018_paper.html
+[20] A. Geiger, P. Lenz, and R. Urtasun, “Are we ready for autonomous
+driving? the KITTI vision benchmark suite,” in IEEE Conference
+on Computer Vision and Pattern Recognition, 2012, pp. 3354–3361.
+[Online]. Available: https://www.cvlibs.net/datasets/kitti/
+[21] I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,” in
+International Conference on Learning Representations, 2019. [Online].
+Available: https://arxiv.org/abs/1711.05101
+[22] OpenPCDet Development Team, “OpenPCDet: KITTI
+object evaluation reference,” Software repository, revision
+233f849829b6ac19afb8af8837a0246890908755, 2020, accessed
+October 13, 2026. [Online]. Available: https://github.com/open-mmlab/
+OpenPCDet/tree/233f849829b6ac19afb8af8837a0246890908755/pcdet/
+datasets/kitti/kitti_object_eval_python
