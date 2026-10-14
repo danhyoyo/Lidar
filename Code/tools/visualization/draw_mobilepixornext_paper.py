@@ -39,6 +39,9 @@ def inspect_config(path, *, allow_simam=False):
     cfg = config["model"]
     if cfg["backbone"].lower() != "mobilepixornext":
         raise ValueError("The figure requires MobilePixorNeXt")
+    from core.backbone_config import resolve_backbone_features
+    if not resolve_backbone_features(cfg).has_legacy_placement:
+        raise ValueError("This curated layout requires legacy Focal C4/local C3 placement; use export_backbone_diagram.py for selectable stages")
     if (cfg.get("cls_encoding", "gaussian") != "gaussian" or
             config["data"].get("box_mode", "bev") != "bev" or
             not cfg.get("header_use_bn", True) or cfg.get("header_act", "silu") != "silu"):

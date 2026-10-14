@@ -368,8 +368,15 @@ def generate_run_name(
             identity = checkpoint_identity(config)
             identity.pop("training")
         digest = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:12]
-        extras.append(f"ctx_{features.c4_context}_local_{features.local_attention}_"
-                      f"f{features.neck_fusion_channels}_detail{int(features.detail_path)}_{digest}")
+        if features.has_legacy_placement:
+            tag = f"ctx_{features.c4_context}_local_{features.local_attention}"
+        else:
+            context = features.c4_context + (f"_at{features.focal_stage}" if features.focal_stage else "")
+            local = features.local_attention + (f"_at{features.local_attention_stage}" if features.local_attention_stage else "")
+            tag = f"ctx_{context}_local_{local}"
+            if features.attention_order:
+                tag += "_order" + ("fs" if features.attention_order == "focal_then_local" else "sf")
+        extras.append(f"{tag}_f{features.neck_fusion_channels}_detail{int(features.detail_path)}_{digest}")
     if str(model_cfg.get("head_mode", "legacy_single")).lower() == "grouped":
         detection = detection_spec(config)
         identity = {"groups": [g.to_dict() for g in detection.groups],

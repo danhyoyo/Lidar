@@ -12,6 +12,37 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from tools.visualization.export_backbone_diagram import build_diagram, export_diagram
+from attention_stage_test_utils import CASES, configured
+
+
+@pytest.mark.parametrize('case', CASES)
+def test_graph_routes_actual_refined_nodes_and_attention_widths(case):
+    cfg,_ = configured(case)
+    result = build_diagram(cfg)
+    graph = result['views']['overview']
+    by_id = nodes(graph)
+    focal,local,order = case
+    for stage, raw in [('c3','stage2'),('c4','stage3'),('c5','stage4')]:
+        sequence = []
+        if focal == stage:
+            sequence.append('context')
+        if local == stage:
+            sequence.append('local')
+        if order == 'local_then_focal':
+            sequence.reverse()
+        previous = raw
+        for module in sequence:
+            assert any(e['source']==previous and e['target']==module for e in graph['edges'])
+            previous = module
+        target = {'c3':'l3','c4':'l4','c5':'l5'}[stage]
+        assert any(e['source']==previous and e['target']==target for e in graph['edges'])
+        if stage != 'c5':
+            target = 'stage3' if stage == 'c3' else 'stage4'
+            assert any(e['source']==previous and e['target']==target for e in graph['edges'])
+    if focal:
+        assert nodes(result['views']['context'])['input']['shape'][0] == {'c3':48,'c4':96,'c5':128}[focal]
+    if local:
+        assert nodes(result['views']['local'])['input']['shape'][0] == {'c3':48,'c4':96,'c5':128}[local]
 
 
 def config():

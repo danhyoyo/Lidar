@@ -26,8 +26,14 @@ def test_manifest_bev_recipe_is_complete_rebuildable_and_matches_actual_counts(v
     path = ROOT / variant["planned_config"]
     assert path.is_file(), f"Complete recipe missing: {path}"
     saved = read_json(path)
-    resolved = notebook.resolve_under1m_recipe(ROOT, variant["id"])
-    assert saved == resolved
+    # Archived materialized recipes retain their original train/evaluation base.
+    # Rebuild that snapshot, then compare canonical active defaults (new stage
+    # fields are explicit in resolved configs but absent from historical files).
+    resolved = notebook.resolve_under1m_recipe(ROOT, variant["id"], base_config=saved)
+    canonical_saved = copy.deepcopy(saved)
+    notebook.validate_notebook_config(canonical_saved)
+    assert canonical_saved == resolved
+    assert checkpoint_identity(saved) == checkpoint_identity(resolved)
     assert checkpoint_identity(saved) == checkpoint_identity(json.loads(json.dumps(saved)))
     schema = bev_encoding_spec(saved)
     assert schema.channels == 14 and schema.backend == "numba"
@@ -40,9 +46,11 @@ def test_manifest_bev_recipe_is_complete_rebuildable_and_matches_actual_counts(v
     assert detection.groups[1].global_ids == (1, 2)
     assert saved["augmentation"] == read_json(ROOT / MANIFEST["augmentation_config"])["augmentation"]
     base = read_json(ROOT / MANIFEST["base_config"])
+    current = notebook.resolve_under1m_recipe(ROOT, variant["id"])
     for section in ("train", "val"):
-        assert saved[section] == base[section]
-    assert saved["seed"] == base["seed"]
+        assert current[section] == base[section]
+    assert current["seed"] == base["seed"]
+    assert current.get("evaluation") == base.get("evaluation")
     assert saved["model"]["stage_depths"] == [3, 4, 2]
     assert saved["model"]["backbone_out_dim"] == 32
     assert saved["model"]["c4_attention"] == "none" and saved["model"]["c4_attention_scales"] == []
@@ -59,7 +67,11 @@ def test_single_reference_has_fresh_flat_contract_and_no_group_only_fields():
     path = ROOT / "configs/experiments/under1m/hist14_local3_single_oga_iqa.json"
     assert path.is_file()
     saved = read_json(path)
-    assert saved == notebook.resolve_under1m_recipe(ROOT, "reference_single_oga_iqa")
+    canonical_saved = copy.deepcopy(saved)
+    notebook.validate_notebook_config(canonical_saved)
+    resolved = notebook.resolve_under1m_recipe(ROOT, "reference_single_oga_iqa", base_config=saved)
+    assert canonical_saved == resolved
+    assert checkpoint_identity(saved) == checkpoint_identity(resolved)
     assert detection_spec(saved).head_mode == "legacy_single"
     assert "head_groups" not in saved["data"] and "group_weights" not in saved["loss"]
     assert saved["model"]["c4_context"] == saved["model"]["local_attention"] == "none"

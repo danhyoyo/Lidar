@@ -17,6 +17,31 @@ def test_notebook_runs_commands_directly_without_a_python_process_wrapper():
     assert "freeze_protocol" not in code
 
 
+def test_standard_gt_database_cell_calls_supported_parser_with_current_splits(tmp_path, monkeypatch):
+    import shlex
+    from IPython.core.interactiveshell import InteractiveShell
+    from notebook_test_utils import execute_shell_cell
+    from tools.kitti_training_pipeline.build_gt_database import parser
+    notebook = json.loads(NOTEBOOK.read_text())
+    source = next(''.join(c['source']) for c in notebook['cells']
+                  if c['cell_type']=='code' and 'build_gt_database.py' in ''.join(c['source']))
+    source = source[source.index('REBUILD_GT_DATABASE = False'):]
+    calls = []
+    def system(command):
+        args = shlex.split(InteractiveShell.instance().var_expand(command))
+        assert args[:2] == [sys.executable,'-u']
+        calls.append(parser().parse_args(args[3:]))
+        return 0
+    monkeypatch.setattr(InteractiveShell.instance(),'system',system)
+    namespace = {'sys':sys,'q':shlex.quote,'PROCESSED_DATASET_DIR':tmp_path/'processed',
+        'CONFIG':tmp_path/'config.json','RAW_KITTI_ROOT':tmp_path/'raw','_exit_code':0,
+        'config_dict':{'train':{'data':str(tmp_path/'train.txt')},'val':{'data':str(tmp_path/'val.txt')}}}
+    execute_shell_cell(source,namespace)
+    assert calls[0].processed_root == namespace['PROCESSED_DATASET_DIR']
+    assert calls[0].train_split == tmp_path/'train.txt'
+    assert calls[0].val_split == tmp_path/'val.txt'
+
+
 def test_train_losses_are_logged_before_ap_and_ap_results_name_each_class(tmp_path, capsys):
     import train
     from test_ap_training import setup

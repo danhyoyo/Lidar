@@ -282,6 +282,83 @@ def write_under1m_3d_presets(repo_dir):
     return paths
 
 
+def attention_placement_overrides(model, *, focal_stage="c4", local_attention_stage="c3",
+                                  attention_order="focal_then_local"):
+    """Validate active controls and emit only meaningful placement fields."""
+    raw = dict(model)
+    context, local = raw.get("c4_context", "none"), raw.get("local_attention", "none")
+    focal_active = isinstance(context, str) and context.lower() == "focal"
+    local_active = isinstance(local, str) and local.lower() != "none"
+    if focal_active:
+        raw["focal_stage"] = focal_stage
+    if local_active:
+        raw["local_attention_stage"] = local_attention_stage
+    if (focal_active and local_active and isinstance(focal_stage, str) and
+            isinstance(local_attention_stage, str) and focal_stage.lower() == local_attention_stage.lower()):
+        raw["attention_order"] = attention_order
+    features = backbone_feature_spec(raw)
+    return {key:value for key,value in features.to_dict().items()
+            if key in {"focal_stage", "local_attention_stage", "attention_order"}}
+
+
+def attention_placement_summary(config):
+    """Explain actual execution sites without relying on historical state prefixes."""
+    model = config["model"]
+    if str(model.get("backbone", "")).lower() != "mobilepixornext":
+        return "Attention placement: unavailable for this backbone"
+    features = backbone_feature_spec(model)
+    placement = features.effective_placement()
+    lines = []
+    entries = [("focal", "Focal"), ("local_attention", features.local_attention.upper())]
+    if features.attention_order == "local_then_focal":
+        entries.reverse()
+    entries.sort(key=lambda item: placement[item[0]]["stride"] if placement[item[0]] else float("inf"))
+    for kind, title in entries:
+        entry = placement[kind]
+        if entry is not None:
+            stage = entry["stage"]
+            lines.append(f"{title}: {stage.upper()} (Stage {int(stage[1:])-1}, "
+                         f"stride {entry['stride']}, {entry['channels']} channels)")
+    if not lines:
+        lines.append("Focal / local attention: off")
+    if features.attention_order:
+        order = ["Focal", features.local_attention.upper()]
+        if features.attention_order == "local_then_focal":
+            order.reverse()
+        lines.append("Shared-stage order: " + " -> ".join(order))
+    lines.append("Feature semantic hash: " + features.semantic_hash)
+    return "\n".join(lines)
+
+
+def _merge_custom_model(base_model, patch):
+    """Remove inherited inactive fields, while preserving explicit validation errors."""
+    merged = create_experiment_config(base_model, patch)
+    context = merged.get("c4_context", "none")
+    local = merged.get("local_attention", "none")
+    context = context.lower() if isinstance(context, str) else context
+    local = local.lower() if isinstance(local, str) else local
+    inactive = set()
+    if context == "none":
+        inactive.update(k for k in merged if k.startswith("c4_context_"))
+        inactive.add("focal_stage")
+    if local == "none":
+        inactive.update(k for k in merged if k.startswith("local_attention_"))
+    elif local == "simam":
+        inactive.add("local_attention_eca_kernel_size")
+    elif local == "eca":
+        inactive.add("local_attention_simam_lambda")
+    focal_stage = merged.get("focal_stage", "c4")
+    local_stage = merged.get("local_attention_stage", "c3")
+    colocated = (context == "focal" and local in ("eca", "simam") and
+                 isinstance(focal_stage, str) and isinstance(local_stage, str) and
+                 focal_stage.lower() == local_stage.lower())
+    if not colocated:
+        inactive.add("attention_order")
+    for key in inactive - set(patch):
+        merged.pop(key, None)
+    return merged
+
+
 def resolve_notebook_config(
     repo_dir, *, base_path="configs/config.json", preset="custom",
     custom_overrides=None, augmentation="standard", file_override=None,
@@ -291,7 +368,9 @@ def resolve_notebook_config(
     root = Path(repo_dir)
     config = read_json(root / base_path)
     if preset == "custom":
+        base_model = config["model"]
         config = create_experiment_config(config, custom_overrides)
+        config["model"] = _merge_custom_model(base_model, (custom_overrides or {}).get("model", {}))
     elif preset in UNDER1M_PRESETS:
         config = resolve_under1m_recipe(root, UNDER1M_PRESETS[preset], base_config=config)
     elif preset != "config":
@@ -425,7 +504,7 @@ def save_notebook_config(run_dir, config):
         raise ValueError("Invalid run directory")
     path = run_dir / "config.json"
     trained = (run_dir / "run.json").is_file() or any((run_dir / "checkpoints").glob("*.pt"))
-    if path.is_file() and trained and read_json(path) != config:
+    if path.is_file() and trained:
         saved, requested = read_json(path), copy.deepcopy(config)
         for candidate in (saved, requested):
             model = candidate.get("model", {})
@@ -433,6 +512,12 @@ def save_notebook_config(run_dir, config):
                 model.pop("rc_gate_mode", None)
             if model.get("header_architecture", "independent") == "independent":
                 model.pop("header_architecture", None)
+            if str(model.get("backbone", "")).lower() == "mobilepixornext":
+                features = backbone_feature_spec(model)
+                for key in ("focal_stage", "local_attention_stage", "attention_order"):
+                    model.pop(key, None)
+                model.update({key:value for key,value in features.to_dict().items()
+                              if key in {"focal_stage", "local_attention_stage", "attention_order"}})
         if saved == requested:
             # Keep the original snapshot/hash when a new notebook only makes
             # a historical architecture/gating default explicit.

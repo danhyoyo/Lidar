@@ -2,8 +2,20 @@
 import numpy as np
 import pytest
 import torch
+from attention_stage_test_utils import configured
 
 from tools.visualization import export_kitti_pipeline as pipeline
+
+
+def test_capture_taps_show_final_colocated_stage_outputs_and_metadata():
+    from common import build_model
+    cfg,_ = configured(('c5','c5','local_then_focal'))
+    model = build_model(cfg).eval()
+    modules = pipeline.backbone_capture_modules(model)
+    assert 'backbone.attention_c5_output' in modules
+    prediction, captured = pipeline.capture_forward(model, torch.randn(1,14,32,48), modules=modules)
+    assert captured['backbone.attention_c5_output'].shape == (1,128,2,3)
+    assert pipeline.backbone_placement(model)['attention_order'] == 'local_then_focal'
 
 
 def test_occupied_cells_reconstruct_hist14_height_counts_and_boundaries():

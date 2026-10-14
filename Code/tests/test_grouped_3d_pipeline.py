@@ -30,12 +30,17 @@ def test_complete_3d_recipe_matches_manifest_budget_hybrid_schedule_and_vertical
     config = read_json(path)
     original = copy.deepcopy(config)
     assert hasattr(notebook_config,"resolve_under1m_3d_recipe"), "Explicit 3D recipe resolver is missing"
-    assert config == notebook_config.resolve_under1m_3d_recipe(ROOT,variant["id"])
+    canonical = copy.deepcopy(config)
+    notebook_config.validate_notebook_config(canonical)
+    rebuilt = notebook_config.resolve_under1m_3d_recipe(ROOT,variant["id"],base_config=config)
+    assert canonical == rebuilt
+    assert checkpoint_identity(config) == checkpoint_identity(rebuilt)
     spec = detection_spec(config)
     assert spec.box_mode == "3d" and spec.vertical_loss_weight == 1.
     assert spec.head_mode == "grouped" and spec.use_iou
     base = read_json(ROOT/MANIFEST["base_config"])
-    assert all(config[key] == base[key] for key in ("seed","train","val"))
+    current = notebook_config.resolve_under1m_3d_recipe(ROOT,variant["id"])
+    assert all(current[key] == base[key] for key in ("seed","train","val"))
     assert config["augmentation"] == read_json(ROOT/MANIFEST["augmentation_config"])["augmentation"]
     assert config["model"]["local_attention"] == ("none" if variant["id"] == "main_focal_3d" else "eca")
     assert config["model"]["backbone_out_dim"] == 32 and config["model"]["c4_attention"] == "none"

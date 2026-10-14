@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from detector.core.backbone_config import finite_scalar, positive_integer, resolve_backbone_features
+from detector.core.backbone_config import ATTENTION_STAGES, finite_scalar, positive_integer, resolve_backbone_features
 from detector.core.bev_encoding import resolve_bev_encoding
 
 VIEWER = ROOT / "tools/visualization/nn_svg"
@@ -118,17 +118,19 @@ def _gate_view(channels, h, w, enabled, level):
 
 
 def _context_view(features, h, w):
+    spec = ATTENTION_STAGES[features.focal_stage]
+    channels = spec.channels
     d = features.c4_context_bottleneck
     dilations = features.c4_context_dilations
     levels = len(dilations)
-    shape, small = (96, h, w), (d, h, w)
-    g = Graph("FocalContext · stride 8",
+    shape, small = (channels, h, w), (d, h, w)
+    g = Graph(f"FocalContext · {spec.name.upper()} · stride {spec.stride}",
               "Sequential dilated local levels plus FP32 global mean; per-pixel softmax gates. "
               "Q is a modulation feature, not a dot-product attention query.")
     g.node("input", "X", shape, 0, kind="input")
     g.node("norm", "Pre BatchNorm", shape, 1, kind="norm")
     g.node("project", "PW 1×1 · split Q / S / G", (2*d + levels + 1, h, w), 2,
-           formula=f"96 → {2*d + levels + 1}; split ({d}, {d}, {levels+1})")
+           formula=f"{channels} → {2*d + levels + 1}; split ({d}, {d}, {levels+1})")
     g.chain("input", "norm", "project")
     g.node("query", "Q · modulation", small, 3, 0, kind="feature")
     g.node("seed", "S · context seed", small, 3, 1, kind="feature")
@@ -153,7 +155,7 @@ def _context_view(features, h, w):
     g.edge("gates", "weighted", "weights", route_row=2.5)
     g.node("context_proj", "PW 1×1 · D → D", small, col+2)
     g.node("multiply", "FP32 Q ⊙ context", small, col+3, kind="multiply")
-    g.node("out_proj", "PW 1×1 · D → 96 + BN", shape, col+4)
+    g.node("out_proj", f"PW 1×1 · D → {channels} + BN", shape, col+4)
     g.node("scale", "LayerScale γ", shape, col+5, kind="scale",
            initial_value=features.c4_context_layer_scale_init)
     g.node("output", "X + γ ⊙ F(X)", shape, col+6, kind="add")
@@ -164,24 +166,26 @@ def _context_view(features, h, w):
 
 
 def _local_view(features, h, w):
-    g = Graph(f"Residual {features.local_attention.upper()} · stride 4",
+    spec = ATTENTION_STAGES[features.local_attention_stage]
+    channels = spec.channels
+    g = Graph(f"Residual {features.local_attention.upper()} · {spec.name.upper()} · stride {spec.stride}",
               "X + β × (T(X) − X); FP32 statistics; β is a learned scalar.")
-    shape = (48, h, w)
+    shape = (channels, h, w)
     g.node("input", "X", shape, 0, kind="input")
     if features.local_attention == "eca":
-        g.node("statistics", "FP32 spatial mean", (48, 1, 1), 1, kind="pool")
-        g.node("conv", "Conv1d across channels", (48, 1, 1), 2,
+        g.node("statistics", "FP32 spatial mean", (channels, 1, 1), 1, kind="pool")
+        g.node("conv", "Conv1d across channels", (channels, 1, 1), 2,
                kernel=features.local_attention_eca_kernel_size, initial_value=0,
                formula="Conv1d(1 → 1) on B × 1 × C")
         previous = "conv"
         g.chain("input", "statistics", "conv")
     else:
-        g.node("statistics", "FP32 mean / variance", (48, 1, 1), 1, kind="norm")
+        g.node("statistics", "FP32 mean / variance", (channels, 1, 1), 1, kind="norm")
         g.node("energy", "Spatial energy", shape, 2, kind="feature",
                formula=f"(X − μ)² / [4(var + {features.local_attention_simam_lambda:g})] + 0.5")
         g.chain("input", "statistics", "energy")
         previous = "energy"
-    gate_shape = (48, 1, 1) if features.local_attention == "eca" else shape
+    gate_shape = (channels, 1, 1) if features.local_attention == "eca" else shape
     g.node("sigmoid", "Sigmoid gates", gate_shape, 3, kind="activation")
     g.node("attended", "T(X) = X ⊙ gates", shape, 4, kind="multiply")
     g.node("delta", "T(X) − X", shape, 5, kind="feature")
@@ -234,13 +238,14 @@ def build_diagram(config, *, source="configuration"):
               "stage3": (96, h//8, w//8), "stage4": (128, h//16, w//16)}
     g = Graph("MobilePixorNeXt · backbone + Scale-Gated FPN",
               "Bottom-up encoder → top-down FPN → stride-4 feature for the detection header. "
-              "C2 is consumed by lat_c3; C4 is stride 8. Tensor labels are C × H × W (batch omitted).")
+              "Refined C3/C4/C5 feed laterals and the next stage. Tensor labels are C × H × W (batch omitted).")
     g.node("input", f"BEV · {bev.name}", (bev.channels, h, w), 0, kind="input",
            source="core.bev_encoding", channel_names=list(bev.channel_names))
     g.node("stem", "Stem · stride 2", shapes["stem"], 1, detail_view="stem", source="stem")
     g.edge("input", "stem")
     views = {}
     previous = "stem"
+    refined_outputs = {}
     for stage, channels, col, in_channels in ((2, 48, 2, 32), (3, 96, 4, 48), (4, 128, 6, 96)):
         id_ = f"stage{stage}"
         shape = shapes[id_]
@@ -267,22 +272,26 @@ def build_diagram(config, *, source="configuration"):
         views[id_] = stage_graph.data
         views[f"block{stage}"] = _block_view(channels, shape[1], shape[2], expansion, reparam, deploy, stage)
         previous = id_
-        if stage == 2 and features.local_attention != "none":
-            g.node("local", f"Residual {features.local_attention.upper()}", shape, 3, kind="attention",
-                   source="c3_light_attention", detail_view="local")
-            g.edge(previous, "local")
-            previous = "local"
-            views["local"] = _local_view(features, shape[1], shape[2])
-        if stage == 3 and features.c4_context != "none":
-            g.node("context", "FocalContext · C4", shape, 5, kind="attention",
-                   source="c4_context", detail_view="context")
-            g.edge(previous, "context")
-            previous = "context"
-            views["context"] = _context_view(features, shape[1], shape[2])
-    c2 = "local" if features.local_attention != "none" else "stage2"
-    c4 = "context" if features.c4_context != "none" else "stage3"
+        level = f"c{stage+1}"
+        operations = []
+        if features.focal_stage == level:
+            operations.append(("context", "FocalContext", "c4_context", _context_view))
+        if features.local_attention_stage == level:
+            operations.append(("local", "Residual " + features.local_attention.upper(), "c3_light_attention", _local_view))
+        if features.attention_order == "local_then_focal":
+            operations.reverse()
+        for index, (attention_id, label, source_module, view_builder) in enumerate(operations):
+            attention_col = col+1 if len(operations) == 1 else col+.65*(index+1)
+            g.node(attention_id, f"{label} · {level.upper()}", shape, attention_col, kind="attention",
+                   source=source_module, detail_view=attention_id)
+            g.edge(previous, attention_id)
+            previous = attention_id
+            views[attention_id] = view_builder(features, shape[1], shape[2])
+        refined_outputs[id_] = previous
+    c2 = refined_outputs["stage2"]
+    c4 = refined_outputs["stage3"]
     for id_, label, shape, col, row, src in (
-            ("l5", "L5 · lateral 1×1", (48, h//16, w//16), 6, 3, "stage4"),
+            ("l5", "L5 · lateral 1×1", (48, h//16, w//16), 6, 3, refined_outputs["stage4"]),
             ("l4", "L4 · lateral 1×1", (48, h//8, w//8), 4, 2, c4),
             ("l3", "L3 · lateral 1×1", (fusion, h//4, w//4), 2, 2, c2)):
         g.node(id_, label, shape, col, row, source=f"lat_c{id_[-1]}", kernel=1)
@@ -356,6 +365,7 @@ def build_diagram(config, *, source="configuration"):
     return dict(schema_version=1, name="MobilePixorNeXt", source=source,
                 shape_mode="inferred from repository architecture and shared configuration contracts",
                 source_files=list(SOURCE_FILES), input_encoding=bev.name,
+                effective_attention_placement=features.effective_placement(),
                 options=dict(stage_depths=list(depths), expansion=expansion, use_reparam=reparam,
                              deploy=deploy, scale_gated_fpn=gated, backbone_out_dim=out, **features.to_dict()),
                 views={"overview": g.data, **views})
@@ -378,12 +388,25 @@ def verify_model(config, diagram):
                         bev_encoding=config["data"].get("bev_encoding"))
     expected = {node["id"]: node["shape"] for node in diagram["views"]["overview"]["nodes"]}
     measured = {}
+    handles = []
     with torch.device("meta"):
         model = build_backbone("mobilepixornext", model_config, input_channels=expected["input"][0]).eval()
         for name in ("stem", "stage2", "stage3", "stage4"):
-            getattr(model, name).register_forward_hook(
-                lambda module, args, output, name=name: measured.update({name: list(output.shape[1:])}))
-        output = model(torch.empty(1, *expected["input"]))
+            handles.append(getattr(model, name).register_forward_hook(
+                lambda module, args, output, name=name: measured.update({name: list(output.shape[1:])})))
+        for node, module_name in (("context", "c4_context"), ("local", "c3_light_attention")):
+            if node in expected:
+                handles.append(getattr(model, module_name).register_forward_hook(
+                    lambda module, args, output, node=node: measured.update({node:list(output.shape[1:])})))
+        for level, target in (("c3","l3"),("c4","l4"),("c5","l5")):
+            refined = next(e["source"] for e in diagram["views"]["overview"]["edges"] if e["target"] == target)
+            handles.append(getattr(model, f"attention_{level}_output").register_forward_hook(
+                lambda module,args,output,refined=refined: measured.update({refined:list(output.shape[1:])})))
+        try:
+            output = model(torch.empty(1, *expected["input"]))
+        finally:
+            for handle in handles:
+                handle.remove()
     measured["output"] = list(output.shape[1:])
     for name, shape in measured.items():
         if shape != expected[name]:

@@ -3,8 +3,7 @@
 Architectural highlights:
 - 7x7 Depthwise Conv Inverted Bottleneck blocks; metric footprint depends on stage stride.
 - Smooth SiLU activations replacing legacy ReLU.
-- Optional Focal Context at C4 and local ECA/SimAM attention at C3.
-- Pure-convolution C5 stage to prevent cascading attention interference.
+- Optional Focal Context and ECA/SimAM at C3, C4 or C5, with configurable order.
 - Bilinear Scale-Gated FPN Neck replacing ConvTranspose2d to eliminate checkerboard artifacts.
 """
 
@@ -13,13 +12,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from core.backbone_config import resolve_backbone_features, resolve_rc_gate_mode
+from core.backbone_config import ATTENTION_STAGES, resolve_backbone_features, resolve_rc_gate_mode
 
 from core.models.backbones.mobilepixornext_blocks import (
     MobilePixorNeXtBlock,
     DownsampleBlock,
 )
 from core.models.backbones.rc_sgfpn import RangeConditionedSGFPN
+
+_UNSET = object()
 
 
 class MobilePixorNeXtBackbone(nn.Module):
@@ -42,6 +43,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         neck_fusion_channels: Standard SG-FPN final fusion width; 24 legacy or 32 explicit.
         rc_gate_mode: RC range conditioning ('mul' legacy default or 'add').
     """
+
+    __constants__ = ["_focal_home", "_local_home", "_local_first"]
 
     def __init__(
         self,
@@ -70,6 +73,9 @@ class MobilePixorNeXtBackbone(nn.Module):
         local_attention_simam_lambda=None,
         local_attention_layer_scale_init=None,
         rc_gate_mode: str = "mul",
+        focal_stage=_UNSET,
+        local_attention_stage=_UNSET,
+        attention_order=_UNSET,
     ):
         super().__init__()
         if (not isinstance(stage_depths, (list, tuple)) or len(stage_depths) != 3 or
@@ -101,7 +107,19 @@ class MobilePixorNeXtBackbone(nn.Module):
                             ("local_attention_layer_scale_init", local_attention_layer_scale_init)):
             if value is not None:
                 options[name] = value
+        for name, value in (("focal_stage", focal_stage),
+                            ("local_attention_stage", local_attention_stage),
+                            ("attention_order", attention_order)):
+            if value is not _UNSET:
+                options[name] = value
         feature_options = resolve_backbone_features(options, geometry=geometry)
+        self.feature_options = feature_options
+        self.focal_stage = feature_options.focal_stage
+        self.local_attention_stage = feature_options.local_attention_stage
+        self.attention_order = feature_options.attention_order
+        self._focal_home = feature_options.focal_stage or "c4"
+        self._local_home = feature_options.local_attention_stage or "c3"
+        self._local_first = feature_options.attention_order == "local_then_focal"
         self.neck_fusion_channels = feature_options.neck_fusion_channels
         self.detail_path = feature_options.detail_path
         if self.neck_fusion_channels != 24 and self.neck_type != "scale_gated_fpn":
@@ -162,7 +180,7 @@ class MobilePixorNeXtBackbone(nn.Module):
 
         # -------------------------------------------------------------
         # 4. Stage 4 (100x88 -> 50x44, stride 16, 128 channels)
-        # Pure convolution stage (no attention) to avoid cascading interference
+        # Attention, if selected here, runs after all Stage 4 blocks.
         # -------------------------------------------------------------
         self.down4 = DownsampleBlock(96, 128, stride=2)
         self.stage4 = nn.Sequential(
@@ -235,20 +253,47 @@ class MobilePixorNeXtBackbone(nn.Module):
         if feature_options.c4_context == "focal":
             from core.models.backbones.focal_context import FocalContext
             self.c4_context = FocalContext(
-                channels=96, bottleneck=feature_options.c4_context_bottleneck,
+                channels=ATTENTION_STAGES[self.focal_stage].channels,
+                bottleneck=feature_options.c4_context_bottleneck,
                 dilations=feature_options.c4_context_dilations,
                 layer_scale_init=feature_options.c4_context_layer_scale_init,
                 version=feature_options.c4_context_version)
+
+        # State-free taps expose refined stage tensors without adding weights,
+        # buffers or random initialization. Historical attention prefixes stay.
+        self.attention_c3_output = nn.Identity()
+        self.attention_c4_output = nn.Identity()
+        self.attention_c5_output = nn.Identity()
+
+    def _apply_stage_attention(self, feature: Tensor, stage: str) -> Tensor:
+        # Inactive Identities keep their historical call sites for capture hooks.
+        # Explicit calls also preserve legacy TorchScript; dynamic module lists
+        # and formatted getattr cannot be compiled by that exporter.
+        if self._local_first:
+            if stage == self._local_home:
+                feature = self.c3_light_attention(feature)
+            if stage == self._focal_home:
+                feature = self.c4_context(feature)
+        else:
+            if stage == self._focal_home:
+                feature = self.c4_context(feature)
+            if stage == self._local_home:
+                feature = self.c3_light_attention(feature)
+        if stage == "c3":
+            return self.attention_c3_output(feature)
+        if stage == "c4":
+            return self.attention_c4_output(feature)
+        return self.attention_c5_output(feature)
 
     def forward(self, x: Tensor) -> Tensor:
         if self.requires_aligned_grid and (x.shape[-2] % 16 != 0 or x.shape[-1] % 16 != 0):
             raise ValueError("candidate input grid height and width must be divisible by 16")
         # Bottom-up feature hierarchy
         c1 = self.stem(x)              # (B, 32, 400, 352)
-        c2 = self.c3_light_attention(self.stage2(self.down2(c1)))
+        c2 = self._apply_stage_attention(self.stage2(self.down2(c1)), "c3")
         c3 = self.stage3(self.down3(c2))  # (B, 96, 100, 88)
-        c4 = self.c4_context(self.c4_attention(c3))
-        c5 = self.stage4(self.down4(c4))  # (B, 128, 50, 44)
+        c4 = self._apply_stage_attention(self.c4_attention(c3), "c4")
+        c5 = self._apply_stage_attention(self.stage4(self.down4(c4)), "c5")
 
         if self.rc_neck is not None:
             return self.rc_neck(c2, c4, c5)

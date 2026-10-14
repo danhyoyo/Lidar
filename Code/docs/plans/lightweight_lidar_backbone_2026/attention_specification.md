@@ -1,5 +1,33 @@
 # Focal context and lightweight attention specification
 
+## Stage-selection extension (2026-10-14)
+
+The current runtime allows `focal_stage` and `local_attention_stage` in
+`c3|c4|c5`, after complete Stage 2/3/4 outputs. Defaults are Focal C4 and local C3.
+If two active modules share a stage, `attention_order` is
+`focal_then_local|local_then_focal`. Placement fields are inactive when their
+module is off; order is inactive when placements differ. Explicit inactive raw
+fields are rejected; notebook custom controls emit only meaningful fields.
+
+Historical module prefixes remain unchanged. Legacy-equivalent placements retain
+resolver metadata version 1 and its existing hash. Nonlegacy placements use
+version 2 with actual stage/stride/channels/order; shape-equivalent SimAM moves
+and shared-stage reorders are detected by checkpoint identity validation.
+
+Focal channels follow the stage: 48/96/128. D=64 and dilation=[1,2,3] are unchanged
+unless explicitly configured; learned Focal parameter counts are
+15,472 / 25,120 / 31,552. SimAM's wrapper still adds one learned scalar.
+
+Notebook stage controls are supported without creating new presets/config files.
+See [the current spec](../../superpowers/specs/2026-10-14-stage-selectable-attention-design.md)
+and [implementation plan](../2026-10-14-stage-selectable-attention-implementation-plan.md).
+The original fixed-stage design below records historical decisions; references
+to LiteMLA do not enable that retired option in the current runtime. Existing AP
+results apply to the configurations under which those models were trained, not
+to all new placements.
+
+## Original design record
+
 Updated: 2026-10-07. Status: tasks 10–21 implement feature-option resolution, focal/ECA/SimAM backbone hooks, optional SG-FPN fusion32/detail path and actual full-resolution parameter audits. CPU numerical checks and the current full regression suite pass. Grouped heads, dedicated GPU validation and accuracy evidence remain pending. See [execution log](execution_progress.md).
 
 This document extends [specification.md](specification.md). Implementation order and verification commands are in [implementation_plan.md](implementation_plan.md). The main candidate uses **focal context at stride 8**. **ECA at stride 4 is optional**, with SimAM as a separate comparison option. Implementing these options does not require training every variant.

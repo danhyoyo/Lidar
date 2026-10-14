@@ -190,7 +190,7 @@ importlib.reload(common)
 from common import (create_experiment_config, generate_run_name, input_shape,
                     build_model, model_parameter_report, read_json, write_json)
 from notebook_config import resolve_notebook_config, save_notebook_config
-from tools.kitti_training_pipeline.notebook_workflow import validate_modes
+from tools.kitti_training_pipeline.notebook_workflow import validate_modes, reference_images_required
 
 # --- 1. RUN & COMPUTE CONTROLS ---
 SEED = 42
@@ -210,11 +210,12 @@ PRESET = "custom"             # "custom" | "config" | "UNDER1M_FOCAL_OGA_IQA" | 
 BACKBONE = "mobilepixornext"
 BACKBONE_OUT_DIM = 32         # 32 (Focal main) hoặc 16 (legacy)
 BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "rich8" | "binary_slices"
-BEV_BACKEND = "numpy"         # "numpy" | "numba"
+BEV_BACKEND = "numba"         # "numpy" | "numba"
 STAGE_DEPTHS = [3, 4, 2]
 
 # Head & Task Grouping
 HEAD_MODE = "grouped"         # "grouped" (Car riêng, Ped/Cyc riêng) | "legacy_single"
+HEADER_ARCHITECTURE = "independent"  # independent: head cũ | shared: proposed, Conv3x3 chung riêng mỗi group
 HEAD_GROUPS = [
     {"name": "car", "classes": ["Car"]},
     {"name": "ped_cyc", "classes": ["Pedestrian", "Cyclist"]}
@@ -239,6 +240,9 @@ C4_CONTEXT = "focal"          # "focal" (main under-1m) | "none"
 C4_CONTEXT_BOTTLENECK = 64
 C4_CONTEXT_DILATIONS = [1, 2, 3]
 C4_CONTEXT_LAYER_SCALE_INIT = 0.001
+FOCAL_STAGE = "c4"                 # c3 | c4 | c5 (Stage 2 | 3 | 4)
+LOCAL_ATTENTION_STAGE = "c3"
+ATTENTION_ORDER = "focal_then_local"  # focal_then_local | local_then_focal; same stage only
 LOCAL_ATTENTION = "none"      # "none" | "eca" | "simam"
 LOCAL_ATTENTION_ECA_KERNEL_SIZE = 3
 LOCAL_ATTENTION_SIMAM_LAMBDA = 0.0001
@@ -274,6 +278,7 @@ HYBRID_OPTIONS = {
 CHECKPOINT_SELECTION = "ap"   # "ap" (lưu theo max val AP) | "loss" (lưu theo min val loss)
 AP_EVERY = 1                  # Tính AP mỗi N epoch
 AP_METRIC_MODE = "auto"
+RUN_REFERENCE_EVALUATION = True  # AP dùng kitti_image_sizes.json nếu có; không cần PNG/RGB.
 EVALUATION_MODES = ["local_bev"] if BOX_MODE == "bev" else ["3d", "bev"]
 SCORE_THRESHOLD = 0.05
 NMS_THRESHOLD = 0.10
@@ -332,6 +337,11 @@ if BACKBONE == "mobilepixornext":
         if LOCAL_ATTENTION == "eca": cm["local_attention_eca_kernel_size"] = LOCAL_ATTENTION_ECA_KERNEL_SIZE
         if LOCAL_ATTENTION == "simam": cm["local_attention_simam_lambda"] = LOCAL_ATTENTION_SIMAM_LAMBDA
 
+if BACKBONE == "mobilepixornext" and PRESET == "custom":
+    from notebook_config import attention_placement_overrides
+    cm.update(attention_placement_overrides(cm, focal_stage=FOCAL_STAGE,
+        local_attention_stage=LOCAL_ATTENTION_STAGE, attention_order=ATTENTION_ORDER))
+
 if BEV_ENCODING == "hist14":
     custom_overrides["data"]["bev_encoding"].update(version=1, backend=BEV_BACKEND)
 
@@ -358,6 +368,7 @@ config_dict = resolve_notebook_config(
         },
         "model": {
             "header_use_bn": bool(HEADER_USE_BN),
+            "header_architecture": HEADER_ARCHITECTURE,
             "header_act": resolved_header_act,
         },
         "loss": runtime_loss,
@@ -392,9 +403,12 @@ print(f"🎯 EXPERIMENT RUN: {RUN_NAME}")
 print(f"Config Snapshot : {CONFIG}")
 print(f"BEV Encoding    : {config_dict['data']['bev_encoding']['name']} ({BEV_BACKEND}) | Input shape: {input_shape(config_dict)}")
 print(f"Box Mode        : {BOX_MODE} | Loss: {LOSS_NAME} | Augmentation: {AUGMENTATION}")
-print(f"Head Config     : BatchNorm={'ON' if HEADER_USE_BN else 'OFF'} | Activation={resolved_header_act}")
+print(f"Head Config     : Architecture={config_dict['model'].get('header_architecture', 'independent')} | BatchNorm={'ON' if HEADER_USE_BN else 'OFF'} | Activation={resolved_header_act}")
 print(f"Precision       : {PRECISION} | Batch Size: {PHYSICAL_BATCH_SIZE} x {ACCUMULATION_STEPS} | Epochs: {EPOCHS}")
 print("=" * 80)
+
+from notebook_config import attention_placement_summary
+print(attention_placement_summary(config_dict))
 
 # Model Parameter Budget Audit
 model_inst = build_model(config_dict)

@@ -71,6 +71,21 @@ def height_count_channels(indices, counts, schema):
     return channels
 
 
+def backbone_capture_modules(model):
+    """Capture raw stages and refined taps; old backbones retain legacy captures."""
+    available = dict(model.named_modules())
+    taps = tuple(f'backbone.attention_{stage}_output' for stage in ('c3','c4','c5'))
+    optional = taps if all(name in available for name in taps) else ('backbone.c4_context',)
+    names = ('backbone.stem','backbone.stage2','backbone.stage3','backbone.stage4',
+             *optional,'backbone.refine_u4','backbone.proj_u3','backbone')
+    return [name for name in names if name in available]
+
+
+def backbone_placement(model):
+    features = getattr(model.backbone, 'feature_options', None)
+    return features.effective_placement() if features is not None else None
+
+
 def capture_forward(model, tensor, *, modules):
     """Capture real BCHW outputs in one eval forward, with unconditional cleanup."""
     import torch
@@ -399,10 +414,7 @@ def main(argv=None):
         points, boxes, config, donor_root, train_ids, seed=args.seed, force_sampling=args.force_sampling)
     print(f'Raw {len(points)} -> augmented {len(augmented)} points; inserted {sample_meta["num_inserted"]} objects', flush=True)
     tensor = torch.from_numpy(encode_hist14_chw(augmented, schema)).unsqueeze(0).to(device)
-    available = dict(model.named_modules())
-    modules = [name for name in ('backbone.stem', 'backbone.stage2', 'backbone.stage3',
-               'backbone.c4_context', 'backbone.stage4', 'backbone.refine_u4',
-               'backbone.proj_u3', 'backbone') if name in available]
+    modules = backbone_capture_modules(model)
     print('Capturing actual checkpoint input, backbone features and heads...', flush=True)
     prediction, features = capture_forward(model, tensor, modules=modules)
     rows = filter_pred(prediction, config['data']['kitti'], config['data']['out_size_factor'],
@@ -542,6 +554,7 @@ def main(argv=None):
                          'encoder_valid': int(valid.sum()), 'raw_display_roi': len(raw_visible),
                          'augmented_display_roi': len(aug_visible)},
         'occupied_cells': cell_report, 'encoding': schema.semantic_metadata(),
+        'effective_attention_placement': backbone_placement(model),
         'input_shape_bcyx': list(tensor.shape), 'hist14_display_ranges': hist_ranges,
         'feature_shapes_bcyx': {name: list(value.shape) for name, value in features.items()},
         'feature_visualization': {'reduction': 'sqrt(mean(channel**2))',

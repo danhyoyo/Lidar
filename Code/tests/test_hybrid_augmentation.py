@@ -371,6 +371,8 @@ def test_hybrid_pipeline_model_backward_and_trainer_smoke(tmp_path):
     from core.datasets.dataset import Dataset
     configure_detector_imports(ROOT / "detector")
     root, manifest, val, cfg = training_scene(tmp_path)
+    # This deliberately batch-limited synthetic smoke does not run full-split AP.
+    cfg['train']['checkpoint_selection'] = {'primary':'loss'}
     dataset = Dataset(str(manifest), cfg["data"], cfg["augmentation"], "gaussian", target_backend="numba")
     np.random.seed(42)
     sample = dataset[0]

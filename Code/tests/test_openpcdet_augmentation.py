@@ -407,6 +407,8 @@ def test_gt_profile_completes_trainer_smoke_and_writes_checkpoint(tmp_path):
     config["train"].update(data=str(manifest), epochs=1, warmup_epochs=0, precision="fp32",
                            physical_batch_size=2, accumulation_steps=1, num_workers=0)
     config["val"].update(data=str(val), physical_batch_size=1)
+    # Explicit loss selection is required for a partial synthetic trainer smoke.
+    config["train"]["checkpoint_selection"] = {"primary":"loss"}
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps(config))
     output_root = tmp_path / "runs"

@@ -21,6 +21,66 @@ def resolve(config=None, **kwargs):
 FOCAL = {"c4_attention": "none", "c4_context": "focal"}
 
 
+@pytest.mark.parametrize('focal,local,order', [
+    ('c3','c3','focal_then_local'), ('c4','c4','local_then_focal'),
+    ('c5','c3',None), ('c3','c5',None), ('c4','c3',None),
+])
+def test_selectable_attention_placement_resolves_and_serializes(focal, local, order):
+    cfg = {**FOCAL, 'local_attention':'simam', 'focal_stage':focal.upper(),
+           'local_attention_stage':local.upper()}
+    if order is not None:
+        cfg['attention_order'] = order
+    before = copy.deepcopy(cfg)
+    result = resolve(cfg)
+    assert cfg == before
+    assert result.focal_stage == focal and result.local_attention_stage == local
+    assert result.attention_order == order
+    placement = result.effective_placement()
+    assert placement['focal']['channels'] == {'c3':48,'c4':96,'c5':128}[focal]
+    assert placement['local_attention']['stride'] == {'c3':4,'c4':8,'c5':16}[local]
+    assert result.to_dict()['focal_stage'] == focal
+
+
+def test_placement_defaults_and_legacy_identity_canonicalize():
+    base = resolve({**FOCAL, 'local_attention':'simam'})
+    explicit = resolve({**FOCAL, 'local_attention':'simam', 'focal_stage':'c4',
+                        'local_attention_stage':'c3'})
+    assert base.focal_stage == 'c4' and base.local_attention_stage == 'c3'
+    assert base.semantic_metadata() == explicit.semantic_metadata()
+    assert base.semantic_metadata()['resolver_version'] == 1
+    shared = {**FOCAL, 'local_attention':'simam', 'local_attention_stage':'c4'}
+    default = resolve(shared)
+    assert default.attention_order == 'focal_then_local'
+    assert default.semantic_metadata()['resolver_version'] == 2
+    assert default.semantic_hash == resolve({**shared, 'attention_order':'focal_then_local'}).semantic_hash
+    assert default.semantic_hash != resolve({**shared, 'attention_order':'local_then_focal'}).semantic_hash
+    assert resolve({}).effective_placement() == {'focal':None, 'local_attention':None, 'attention_order':None}
+
+
+@pytest.mark.parametrize('patch', [
+    {'focal_stage':None}, {'focal_stage':True}, {'focal_stage':3}, {'focal_stage':['c3']},
+    {'focal_stage':'stem'}, {'focal_stage_typo':'c3'}, {'attention_orde':'focal_then_local'},
+    {'local_attention_stage':'c4'}, {'attention_order':'focal_then_local'},
+    {'c4_context':'none', 'focal_stage':'c4'},
+    {'local_attention':'simam','attention_order':'focal_then_local'},
+    {'local_attention':'simam','local_attention_stage':'c4','attention_order':None},
+    {'local_attention':'simam','local_attention_stage':'c4','attention_order':'parallel'},
+    {'local_attention':'simam','local_attention_stage':False},
+])
+def test_invalid_placement_options_are_never_ignored(patch):
+    with pytest.raises(ValueError):
+        resolve({**FOCAL, **patch})
+
+
+@pytest.mark.parametrize('kind', ['eca','simam'])
+def test_local_adapter_stage_is_active_only_and_other_backbones_reject_it(kind):
+    result = resolve({'local_attention':kind, 'local_attention_stage':'c5'})
+    assert result.local_attention_stage == 'c5' and result.focal_stage is None
+    assert 'focal_stage' not in result.to_dict()
+    with pytest.raises(ValueError):
+        resolve({'backbone':'mobilepixor', 'focal_stage':'c4'})
+
+
 def test_resolver_exists_without_importing_numeric_frameworks():
     assert (ROOT / "detector/core/backbone_config.py").exists()
     subprocess.run([sys.executable, "-c", "from detector.core.backbone_config import "

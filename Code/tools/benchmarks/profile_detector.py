@@ -135,6 +135,7 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
         "resolved_config": config, "config_sha256": hashlib.sha256(serialized.encode()).hexdigest(),
         "encoding_semantic_hash": schema.semantic_hash, "encoding_backend": schema.backend,
         "feature_metadata": features.semantic_metadata(), "feature_semantic_hash": features.semantic_hash,
+        "effective_attention_placement": features.effective_placement(),
         "feature_parameter_counts": feature_counts,
         "parameter_counts": counts, "backbone_parts": parts,
         "budget": {"scope": "backbone including neck", "strict_upper_limit": max_backbone_parameters,

@@ -83,6 +83,58 @@ decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
 
+### Select Focal / SimAM stage in the notebook
+
+In the Standard or Robust notebook config cell, select custom mode and edit:
+
+```python
+PRESET = "custom"
+C4_CONTEXT = "focal"
+FOCAL_STAGE = "c4"
+LOCAL_ATTENTION = "simam"
+LOCAL_ATTENTION_STAGE = "c3"
+ATTENTION_ORDER = "focal_then_local"
+```
+
+`c3/c4/c5` mean Stage 2/3/4, at strides 4/8/16 with 48/96/128 channels. Each
+module runs after all blocks of its selected stage. To put both at C5, set both
+stage controls to `c5`. Choose `local_then_focal` to execute SimAM before Focal
+at a shared stage; `focal_then_local` executes Focal first. With separate stages,
+backbone depth determines execution order and the order field is omitted.
+Set `C4_CONTEXT="none"` and/or `LOCAL_ATTENTION="none"` to disable modules.
+ECA remains supported through `LOCAL_ATTENTION="eca"` and the same local-stage control.
+
+Rerun the config cell and inspect the placement summary and saved run snapshot.
+Custom controls are ignored in preset/config mode. This feature creates no new
+experiment JSONs or presets; the notebook still saves the current run's config.
+Module hyperparameters, training schedule, encoding, heads and losses remain your
+existing selections. Focal's historical `c4_context` name selects its kind, while
+`focal_stage` determines where it executes.
+
+Changing placement/order gives a different architecture identity/run name.
+Use a new run when retraining. A mismatched checkpoint cannot silently resume,
+even if SimAM's tensor shapes or a shared-stage reorder look compatible.
+Historical omitted placement defaults preserve old checkpoint identities and
+existing trained snapshots are retained byte-for-byte when defaults are explicit.
+
+On Colab, synchronize the notebook and the Python source files together. Updating
+only the notebook against an older checkout causes a missing
+`attention_placement_overrides` import. The config cell imports placement helpers
+from the same `notebook_config` module it reloads, so a cached package alias from
+before a Drive sync is not reused. Restart the runtime after replacing model code.
+
+To visualize an actual trained topology after training, from `Code/` run:
+
+```bash
+python3 tools/visualization/compare_attention_placements.py \
+  --mode checkpoint --checkpoint /path/to/selected/best_ap.pt \
+  --frame 000134 --output-dir /tmp/lidar-trained-attention-view
+```
+
+This captures the saved model without inserting modules or changing weights.
+The default `--mode intervention` remains an untrained placement experiment on
+a native Focal-C4/SimAM-C3 checkpoint, and must not be interpreted as trained AP.
+
 ### Select independent or shared detection heads
 
 Set `model.header_architecture` to `independent` (historical default) or `shared`.
