@@ -122,6 +122,10 @@ only the notebook against an older checkout causes a missing
 `attention_placement_overrides` import. The config cell imports placement helpers
 from the same `notebook_config` module it reloads, so a cached package alias from
 before a Drive sync is not reused. Restart the runtime after replacing model code.
+Robust setup checks the placement helpers, resolver fields and backbone constructor
+before using an existing checkout. On Colab, an outdated checkout is preserved and
+fresh source is cloned into `/content`; Drive datasets and artifacts keep their
+configured locations. Setup also clears cached project modules when selecting source.
 
 To visualize an actual trained topology after training, from `Code/` run:
 

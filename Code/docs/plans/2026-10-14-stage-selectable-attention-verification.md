@@ -156,6 +156,16 @@ module đã reload. Regression tái hiện đúng ImportError ở cả hai noteb
 sửa; sau sửa bộ notebook/import/setup có **123 passed**. Đồng bộ notebook phải
 đi cùng source Python mới; sửa import không bổ sung helper vào file cũ trên Drive.
 
+Follow-up setup Robust: source checkout được kiểm tra bằng AST trước import
+(helpers, resolver fields, constructor arguments). Checkout cũ trên Drive hoặc
+`/content/Lidar` được giữ nguyên; Colab clone source mới vào thư mục runtime
+trống và kiểm tra lại. Setup ưu tiên source đã chọn trên `sys.path` và dọn cache
+pipeline/detector để rerun không dùng module từ checkout trước. Regression bao
+phủ source thiếu từng thành phần, layout `Code/Code`, clone chưa đủ source và
+kernel đã nạp module cũ. Các thư mục dataset/artifact vẫn giữ cấu hình hiện có.
+Bộ kiểm tra notebook/setup/import/resolver/routing/checkpoint sau bản sửa này:
+**214 passed**, 4.11 giây; chỉ cell setup Robust và template tương ứng thay đổi.
+
 Một lỗi có sẵn trong Standard được sửa khi kiểm tra workflow: cell tạo GT
 database truyền CLI flags không tồn tại. Nay truyền `--processed-root`,
 `--train-split`, `--val-split` đúng parser hiện tại; thuật toán sampling giữ nguyên.

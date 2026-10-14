@@ -58,6 +58,7 @@ import shutil
 import hashlib
 import tempfile
 import subprocess
+import ast
 from pathlib import Path
 import torch
 
@@ -79,6 +80,25 @@ def find_code_root(candidate):
     return None
 
 
+def has_stage_attention_source(root):
+    # Inspect source before importing anything from an existing Drive checkout.
+    try:
+        helpers = ast.parse((root / "tools/kitti_training_pipeline/notebook_config.py").read_text())
+        resolver = ast.parse((root / "detector/core/backbone_config.py").read_text())
+        backbone = ast.parse((root / "detector/core/models/backbones/mobilepixornext.py").read_text())
+    except (OSError, SyntaxError, UnicodeError):
+        return False
+    helper_names = {node.name for node in helpers.body if isinstance(node, ast.FunctionDef)}
+    fields = {node.target.id for node in ast.walk(resolver)
+              if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)}
+    constructors = [{arg.arg for arg in node.args.args + node.args.kwonlyargs}
+                    for node in ast.walk(backbone)
+                    if isinstance(node, ast.FunctionDef) and node.name == "__init__"]
+    placement = {"focal_stage", "local_attention_stage", "attention_order"}
+    return ({"attention_placement_overrides", "attention_placement_summary"} <= helper_names
+            and placement <= fields and any(placement <= args for args in constructors))
+
+
 if IN_COLAB:
     print("Detected Google Colab environment. Mounting Google Drive...")
     from google.colab import drive
@@ -87,16 +107,21 @@ if IN_COLAB:
     DRIVE_BASE = Path("/content/drive/MyDrive/lidar_project").resolve()
 
     candidates = [DEFAULT_CHECKOUT_DIR, Path.cwd(), Path("/content/drive/MyDrive/Lidar")]
-    DEFAULT_REPO_DIR = next((root for candidate in candidates
-                             if (root := find_code_root(candidate)) is not None), None)
+    code_roots = [root for candidate in candidates
+                  if (root := find_code_root(candidate)) is not None]
+    DEFAULT_REPO_DIR = next((root for root in code_roots if has_stage_attention_source(root)), None)
     if DEFAULT_REPO_DIR is None:
         if DEFAULT_CHECKOUT_DIR.exists() and any(DEFAULT_CHECKOUT_DIR.iterdir()):
-            raise FileNotFoundError(
-                f"Existing checkout is incomplete: {DEFAULT_CHECKOUT_DIR}. Expected "
-                "Code/configs/config.json, Code/detector and Code/tools/kitti_training_pipeline "
-                "(or the historical flat layout). Inspect/update this checkout before retrying; "
-                "existing files have been preserved.")
-        print(f"Repository not found at {DEFAULT_CHECKOUT_DIR}. Cloning branch '{GIT_BRANCH}' from GitHub...")
+            if not code_roots:
+                raise FileNotFoundError(
+                    f"Existing checkout is incomplete: {DEFAULT_CHECKOUT_DIR}. Expected "
+                    "Code/configs/config.json, Code/detector and Code/tools/kitti_training_pipeline "
+                    "(or the historical flat layout). Inspect/update this checkout before retrying; "
+                    "existing files have been preserved.")
+            DEFAULT_CHECKOUT_DIR = Path(tempfile.mkdtemp(prefix="Lidar-stage-attention-", dir="/content"))
+        if code_roots:
+            print(f"Existing source lacks stage attention; preserving it and cloning into {DEFAULT_CHECKOUT_DIR}")
+        print(f"Cloning branch '{GIT_BRANCH}' from GitHub into {DEFAULT_CHECKOUT_DIR}...")
         subprocess.run(["git", "clone", "-b", GIT_BRANCH, GIT_REPO_URL,
                         str(DEFAULT_CHECKOUT_DIR)], check=True)
         DEFAULT_REPO_DIR = find_code_root(DEFAULT_CHECKOUT_DIR)
@@ -104,6 +129,8 @@ if IN_COLAB:
             raise FileNotFoundError(
                 f"Clone completed, but no valid code directory was found in {DEFAULT_CHECKOUT_DIR}. "
                 "Expected Code/configs/config.json or configs/config.json.")
+        if not has_stage_attention_source(DEFAULT_REPO_DIR):
+            raise RuntimeError(f"Cloned source lacks stage attention support: {DEFAULT_REPO_DIR}. Check GIT_BRANCH.")
         print(f"✓ Cloned branch '{GIT_BRANCH}' successfully into {DEFAULT_CHECKOUT_DIR}")
     print(f"Using project code directory: {DEFAULT_REPO_DIR}")
 
@@ -143,10 +170,15 @@ PROCESSED_DATASET_DIR.mkdir(parents=True, exist_ok=True)
 # 3. Path & Module Configuration
 os.chdir(REPO_DIR)
 pipeline_dir = REPO_DIR / "tools/kitti_training_pipeline"
-if str(REPO_DIR) not in sys.path:
-    sys.path.insert(0, str(REPO_DIR))
-if str(pipeline_dir) not in sys.path:
-    sys.path.insert(0, str(pipeline_dir))
+source_paths = [str(pipeline_dir), str(REPO_DIR / "detector/core/datasets"),
+                str(REPO_DIR / "detector"), str(REPO_DIR)]
+sys.path[:] = source_paths + [path for path in sys.path if path not in source_paths]
+# Rerunning setup may switch away from a previously imported Drive checkout.
+project_modules = ("common", "notebook_config", "core", "detector.core",
+                   "tools.kitti_training_pipeline", "utils_1")
+for name in list(sys.modules):
+    if any(name == prefix or name.startswith(prefix + ".") for prefix in project_modules):
+        del sys.modules[name]
 os.environ["PYTHONUNBUFFERED"] = "1"
 
 from common import configure_detector_imports
