@@ -26,7 +26,7 @@ class MobilePixorNeXtBlock(nn.Module):
 
     Structure:
         x -> DW-Conv 7x7 (or RepConv7x7) -> BN -> 1x1 PW (C -> e*C) -> SiLU
-          -> 1x1 PW (e*C -> C) -> BN -> LayerScale -> (+) -> Output
+          -> 1x1 PW (e*C -> C) -> BN -> optional SimAM -> LayerScale -> (+) -> Output
     """
 
     def __init__(
@@ -36,6 +36,7 @@ class MobilePixorNeXtBlock(nn.Module):
         layer_scale_init: float = 1e-5,
         use_reparam: bool = False,
         deploy: bool = False,
+        simam_lambda: float | None = None,
     ):
         super().__init__()
         if channels < 1:
@@ -76,6 +77,13 @@ class MobilePixorNeXtBlock(nn.Module):
         # 4. LayerScale for stable training dynamics
         self.layer_scale = _layer_scale(channels, layer_scale_init)
 
+        # Refine only the residual branch. The existing LayerScale controls its
+        # contribution; no second beta or additional learned parameters are needed.
+        self.simam = nn.Identity()
+        if simam_lambda is not None:
+            from core.models.backbones.light_attention import SimAMCore
+            self.simam = SimAMCore(simam_lambda)
+
     def forward(self, x: Tensor) -> Tensor:
         residual = x
         if self.use_reparam:
@@ -86,6 +94,7 @@ class MobilePixorNeXtBlock(nn.Module):
         feat = self.act(feat)
         feat = self.pw_project(feat)
         feat = self.norm2(feat)
+        feat = self.simam(feat)
         return residual + self.layer_scale.to(feat.dtype) * feat
 
     def switch_to_deploy(self):

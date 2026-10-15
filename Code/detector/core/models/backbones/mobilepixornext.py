@@ -4,6 +4,7 @@ Architectural highlights:
 - 7x7 Depthwise Conv Inverted Bottleneck blocks; metric footprint depends on stage stride.
 - Smooth SiLU activations replacing legacy ReLU.
 - Optional Focal Context and ECA/SimAM at C3, C4 or C5, with configurable order.
+- Optional parameter-free SimAM inside all blocks of selected C3/C4/C5 stages.
 - Bilinear Scale-Gated FPN Neck replacing ConvTranspose2d to eliminate checkerboard artifacts.
 """
 
@@ -42,6 +43,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         stage_depths: Positive block counts at strides 4/8/16; legacy default (2,4,2).
         neck_fusion_channels: Standard SG-FPN final fusion width; 24 legacy or 32 explicit.
         rc_gate_mode: RC range conditioning ('mul' legacy default or 'add').
+        block_simam_stages: Stages whose blocks apply SimAM after projection BN; [] disables it.
+        block_simam_lambda: Positive variance regularizer for enabled block SimAM cores.
     """
 
     __constants__ = ["_focal_home", "_local_home", "_local_first"]
@@ -76,6 +79,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         focal_stage=_UNSET,
         local_attention_stage=_UNSET,
         attention_order=_UNSET,
+        block_simam_stages=_UNSET,
+        block_simam_lambda=_UNSET,
     ):
         super().__init__()
         if (not isinstance(stage_depths, (list, tuple)) or len(stage_depths) != 3 or
@@ -109,7 +114,9 @@ class MobilePixorNeXtBackbone(nn.Module):
                 options[name] = value
         for name, value in (("focal_stage", focal_stage),
                             ("local_attention_stage", local_attention_stage),
-                            ("attention_order", attention_order)):
+                            ("attention_order", attention_order),
+                            ("block_simam_stages", block_simam_stages),
+                            ("block_simam_lambda", block_simam_lambda)):
             if value is not _UNSET:
                 options[name] = value
         feature_options = resolve_backbone_features(options, geometry=geometry)
@@ -117,6 +124,7 @@ class MobilePixorNeXtBackbone(nn.Module):
         self.focal_stage = feature_options.focal_stage
         self.local_attention_stage = feature_options.local_attention_stage
         self.attention_order = feature_options.attention_order
+        self.block_simam_stages = feature_options.block_simam_stages
         self._focal_home = feature_options.focal_stage or "c4"
         self._local_home = feature_options.local_attention_stage or "c3"
         self._local_first = feature_options.attention_order == "local_then_focal"
@@ -126,7 +134,7 @@ class MobilePixorNeXtBackbone(nn.Module):
             raise ValueError("neck_fusion_channels=32 requires standard SG-FPN (scale_gated_fpn)")
         if self.detail_path and self.neck_type != "scale_gated_fpn":
             raise ValueError("detail_path requires standard SG-FPN")
-        self.requires_aligned_grid = (feature_options.c4_context != "none" or
+        self.requires_aligned_grid = (bool(feature_options.block_simam_stages) or feature_options.c4_context != "none" or
                                       feature_options.local_attention != "none" or self.detail_path or
                                       self.neck_fusion_channels != 24 or self.stage_depths != (2, 4, 2))
 
@@ -161,7 +169,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down2 = DownsampleBlock(32, 48, stride=2)
         self.stage2 = nn.Sequential(
-            *(MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy)
+            *(MobilePixorNeXtBlock(48, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy,
+                  simam_lambda=feature_options.block_simam_lambda if "c3" in self.block_simam_stages else None)
               for _ in range(self.stage_depths[0])),
         )
 
@@ -171,7 +180,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down3 = DownsampleBlock(48, 96, stride=2)
         self.stage3 = nn.Sequential(
-            *(MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy)
+            *(MobilePixorNeXtBlock(96, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy,
+                  simam_lambda=feature_options.block_simam_lambda if "c4" in self.block_simam_stages else None)
               for _ in range(self.stage_depths[1])),
         )
 
@@ -184,7 +194,8 @@ class MobilePixorNeXtBackbone(nn.Module):
         # -------------------------------------------------------------
         self.down4 = DownsampleBlock(96, 128, stride=2)
         self.stage4 = nn.Sequential(
-            *(MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy)
+            *(MobilePixorNeXtBlock(128, expansion=expansion, use_reparam=self.use_reparam, deploy=self.deploy,
+                  simam_lambda=feature_options.block_simam_lambda if "c5" in self.block_simam_stages else None)
               for _ in range(self.stage_depths[2])),
         )
 

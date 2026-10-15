@@ -84,15 +84,19 @@ class BackboneFeatureConfig:
     focal_stage: str | None = None
     local_attention_stage: str | None = None
     attention_order: str | None = None
+    block_simam_stages: tuple[str, ...] = ()
+    block_simam_lambda: float | None = None
 
     def to_dict(self):
         """Save active settings and explicit common defaults as JSON values."""
         return {k: list(v) if isinstance(v, tuple) else v
-                for k, v in asdict(self).items() if v is not None}
+                for k, v in asdict(self).items() if v is not None
+                and (k != "block_simam_stages" or v)}
 
     @property
     def has_legacy_placement(self):
-        return ((self.c4_context == "none" or self.focal_stage == "c4") and
+        return (not self.block_simam_stages and
+                (self.c4_context == "none" or self.focal_stage == "c4") and
                 (self.local_attention == "none" or self.local_attention_stage == "c3"))
 
     def effective_placement(self):
@@ -101,14 +105,19 @@ class BackboneFeatureConfig:
                 return None
             spec = ATTENTION_STAGES[stage]
             return {"stage": stage, "stride": spec.stride, "channels": spec.channels}
-        return {"focal": entry(self.focal_stage),
-                "local_attention": entry(self.local_attention_stage),
-                "attention_order": self.attention_order}
+        placement = {"focal": entry(self.focal_stage),
+                     "local_attention": entry(self.local_attention_stage),
+                     "attention_order": self.attention_order}
+        if self.block_simam_stages:
+            placement["block_simam"] = [entry(stage) for stage in self.block_simam_stages]
+            placement["block_simam_position"] = "projection_bn_before_layer_scale"
+        return placement
 
     def semantic_metadata(self):
         config = self.to_dict()
         if not self.has_legacy_placement:
-            return {"resolver_version": 2, "placement": self.effective_placement(),
+            return {"resolver_version": 3 if self.block_simam_stages else 2,
+                    "placement": self.effective_placement(),
                     "config": config}
         for key in _PLACEMENT_FIELDS:
             config.pop(key, None)
@@ -126,7 +135,8 @@ class BackboneFeatureConfig:
 _FIELDS = frozenset(BackboneFeatureConfig.__dataclass_fields__)
 _FOCAL_FIELDS = frozenset(k for k in _FIELDS if k.startswith("c4_context_")) | {"focal_stage"}
 _LOCAL_FIELDS = frozenset(k for k in _FIELDS if k.startswith("local_attention_"))
-_NEW_FIELDS = _FOCAL_FIELDS | _LOCAL_FIELDS | {
+_BLOCK_SIMAM_FIELDS = frozenset({"block_simam_stages", "block_simam_lambda"})
+_NEW_FIELDS = _FOCAL_FIELDS | _LOCAL_FIELDS | _BLOCK_SIMAM_FIELDS | {
     "c4_context", "local_attention", "neck_fusion_channels", "detail_path", "attention_order",
 }
 
@@ -151,7 +161,7 @@ def _reject_present(config, fields, reason):
 
 def _candidate_requested(cfg, context, local):
     encoding = cfg.get("bev_encoding") or {}
-    return (context != "none" or local != "none" or
+    return (context != "none" or local != "none" or cfg.get("block_simam_stages") or
             cfg.get("neck_fusion_channels", 24) != 24 or cfg.get("detail_path", False) or
             (isinstance(encoding, Mapping) and encoding.get("name") == "hist14") or
             cfg.get("stage_depths", (2, 4, 2)) not in ((2, 4, 2), [2, 4, 2]))
@@ -194,7 +204,7 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
     if not isinstance(cfg, Mapping):
         raise ValueError("model_config must be a mapping")
     unknown = [k for k in cfg if isinstance(k, str) and
-               k.startswith(("c4_attention", "c4_context", "local_attention", "neck_fusion", "detail_path", "focal_", "attention_"))
+               k.startswith(("c4_attention", "c4_context", "local_attention", "block_simam", "neck_fusion", "detail_path", "focal_", "attention_"))
                and k not in _FIELDS]
     if unknown:
         raise ValueError(f"unsupported feature options: {sorted(unknown)}")
@@ -256,6 +266,20 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
         values["attention_order"] = _choice(cfg, "attention_order", "focal_then_local", ATTENTION_ORDERS)
     else:
         _reject_present(cfg, {"attention_order"}, "attention_order requires two active modules at the same stage")
+    block_stages = cfg.get("block_simam_stages", ())
+    if (not isinstance(block_stages, (list, tuple)) or
+            any(not isinstance(stage, str) or stage.lower() not in ATTENTION_STAGES
+                for stage in block_stages)):
+        raise ValueError("block_simam_stages must be a list of c3/c4/c5 stages; [] disables it")
+    block_stages = tuple(stage.lower() for stage in block_stages)
+    if len(set(block_stages)) != len(block_stages):
+        raise ValueError("block_simam_stages must not contain duplicate stages")
+    if block_stages:
+        values["block_simam_stages"] = tuple(stage for stage in ATTENTION_STAGES if stage in block_stages)
+        values["block_simam_lambda"] = finite_scalar(
+            cfg.get("block_simam_lambda", .0001), "block_simam_lambda", positive=True)
+    else:
+        _reject_present(cfg, {"block_simam_lambda"}, "block_simam_stages must be nonempty")
     fusion = cfg.get("neck_fusion_channels", 24)
     if type(fusion) is not int or fusion not in (24, 32):
         raise ValueError("neck_fusion_channels must be integer 24 or 32")

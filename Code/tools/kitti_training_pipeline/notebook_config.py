@@ -283,9 +283,16 @@ def write_under1m_3d_presets(repo_dir):
 
 
 def attention_placement_overrides(model, *, focal_stage="c4", local_attention_stage="c3",
-                                  attention_order="focal_then_local"):
+                                  attention_order="focal_then_local", block_simam=False,
+                                  block_simam_stages=("c4", "c5"), block_simam_lambda=.0001):
     """Validate active controls and emit only meaningful placement fields."""
     raw = dict(model)
+    if type(block_simam) is not bool:
+        raise ValueError("BLOCK_SIMAM must be a boolean")
+    raw["block_simam_stages"] = block_simam_stages if block_simam else []
+    raw.pop("block_simam_lambda", None)
+    if block_simam and block_simam_stages:
+        raw["block_simam_lambda"] = block_simam_lambda
     context, local = raw.get("c4_context", "none"), raw.get("local_attention", "none")
     focal_active = isinstance(context, str) and context.lower() == "focal"
     local_active = isinstance(local, str) and local.lower() != "none"
@@ -297,8 +304,13 @@ def attention_placement_overrides(model, *, focal_stage="c4", local_attention_st
             isinstance(local_attention_stage, str) and focal_stage.lower() == local_attention_stage.lower()):
         raw["attention_order"] = attention_order
     features = backbone_feature_spec(raw)
-    return {key:value for key,value in features.to_dict().items()
-            if key in {"focal_stage", "local_attention_stage", "attention_order"}}
+    overrides = {key:value for key,value in features.to_dict().items()
+                 if key in {"focal_stage", "local_attention_stage", "attention_order",
+                            "block_simam_stages", "block_simam_lambda"}}
+    # An explicit empty list also disables block attention inherited from a base
+    # config. Validation removes the inactive field before saving the snapshot.
+    overrides.setdefault("block_simam_stages", [])
+    return overrides
 
 
 def attention_placement_summary(config):
@@ -321,6 +333,12 @@ def attention_placement_summary(config):
                          f"stride {entry['stride']}, {entry['channels']} channels)")
     if not lines:
         lines.append("Focal / local attention: off")
+    depths = model.get("stage_depths", (2, 4, 2))
+    for entry in placement.get("block_simam", []):
+        stage = entry["stage"]
+        lines.append(f"Block SimAM: {stage.upper()} (Stage {int(stage[1:])-1}, "
+                     f"stride {entry['stride']}, {entry['channels']} channels, "
+                     f"{depths[int(stage[1:])-3]} blocks; after projection BN)")
     if features.attention_order:
         order = ["Focal", features.local_attention.upper()]
         if features.attention_order == "local_then_focal":
@@ -338,6 +356,8 @@ def _merge_custom_model(base_model, patch):
     context = context.lower() if isinstance(context, str) else context
     local = local.lower() if isinstance(local, str) else local
     inactive = set()
+    if not merged.get("block_simam_stages"):
+        inactive.add("block_simam_lambda")
     if context == "none":
         inactive.update(k for k in merged if k.startswith("c4_context_"))
         inactive.add("focal_stage")
@@ -457,6 +477,8 @@ def validate_notebook_config(config):
     # Validate before legacy preset sanitation can erase conflicting fields.
     features = backbone_feature_spec(model, geometry=config["data"]["kitti"]["geometry"])
     if model.get("backbone") == "mobilepixornext":
+        model.pop("block_simam_stages", None)
+        model.pop("block_simam_lambda", None)
         model.update(features.to_dict())
     backbone = model.get("backbone")
     if backbone not in ("mobilepixornext", "mobilepixor", "mobilepixor_coordatt"):
@@ -514,10 +536,12 @@ def save_notebook_config(run_dir, config):
                 model.pop("header_architecture", None)
             if str(model.get("backbone", "")).lower() == "mobilepixornext":
                 features = backbone_feature_spec(model)
-                for key in ("focal_stage", "local_attention_stage", "attention_order"):
+                placement_fields = {"focal_stage", "local_attention_stage", "attention_order",
+                                    "block_simam_stages", "block_simam_lambda"}
+                for key in placement_fields:
                     model.pop(key, None)
                 model.update({key:value for key,value in features.to_dict().items()
-                              if key in {"focal_stage", "local_attention_stage", "attention_order"}})
+                              if key in placement_fields})
         if saved == requested:
             # Keep the original snapshot/hash when a new notebook only makes
             # a historical architecture/gating default explicit.

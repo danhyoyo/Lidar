@@ -355,6 +355,7 @@ def generate_run_name(
     if backbone == "mobilepixornext" and (
             model_cfg.get("c4_context", "none") != "none" or
             model_cfg.get("local_attention", "none") != "none" or
+            model_cfg.get("block_simam_stages") or
             model_cfg.get("detail_path", False) or model_cfg.get("neck_fusion_channels", 24) != 24 or
             tuple(model_cfg.get("stage_depths", (2, 4, 2))) != (2, 4, 2)):
         features = backbone_feature_spec(model_cfg)
@@ -376,6 +377,8 @@ def generate_run_name(
             tag = f"ctx_{context}_local_{local}"
             if features.attention_order:
                 tag += "_order" + ("fs" if features.attention_order == "focal_then_local" else "sf")
+        if features.block_simam_stages:
+            tag += "_blocksimam_" + "".join(features.block_simam_stages)
         extras.append(f"{tag}_f{features.neck_fusion_channels}_detail{int(features.detail_path)}_{digest}")
     if str(model_cfg.get("head_mode", "legacy_single")).lower() == "grouped":
         detection = detection_spec(config)

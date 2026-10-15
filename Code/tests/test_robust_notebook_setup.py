@@ -32,7 +32,8 @@ def checkout(path, layout, *, stage_support=True):
     if stage_support:
         for relative in ('tools/kitti_training_pipeline/notebook_config.py',
                          'detector/core/backbone_config.py',
-                         'detector/core/models/backbones/mobilepixornext.py'):
+                         'detector/core/models/backbones/mobilepixornext.py',
+                         'detector/core/models/backbones/mobilepixornext_blocks.py'):
             target = code / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
@@ -101,7 +102,8 @@ def test_fresh_colab_clone_recognizes_reorganized_code_directory(tmp_path, monke
 
 @pytest.mark.parametrize('location', ['Lidar', 'drive/MyDrive/Lidar/Code'])
 @pytest.mark.parametrize('stale_file', ['tools/kitti_training_pipeline/notebook_config.py',
-    'detector/core/backbone_config.py', 'detector/core/models/backbones/mobilepixornext.py'])
+    'detector/core/backbone_config.py', 'detector/core/models/backbones/mobilepixornext.py',
+    'detector/core/models/backbones/mobilepixornext_blocks.py'])
 def test_stale_colab_source_is_preserved_and_replaced_by_fresh_runtime_checkout(tmp_path, monkeypatch, location, stale_file):
     path = tmp_path / 'content' / location
     stale = checkout(path, 'nested')

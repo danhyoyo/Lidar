@@ -86,6 +86,7 @@ def has_stage_attention_source(root):
         helpers = ast.parse((root / "tools/kitti_training_pipeline/notebook_config.py").read_text())
         resolver = ast.parse((root / "detector/core/backbone_config.py").read_text())
         backbone = ast.parse((root / "detector/core/models/backbones/mobilepixornext.py").read_text())
+        blocks = ast.parse((root / "detector/core/models/backbones/mobilepixornext_blocks.py").read_text())
     except (OSError, SyntaxError, UnicodeError):
         return False
     helper_names = {node.name for node in helpers.body if isinstance(node, ast.FunctionDef)}
@@ -94,8 +95,19 @@ def has_stage_attention_source(root):
     constructors = [{arg.arg for arg in node.args.args + node.args.kwonlyargs}
                     for node in ast.walk(backbone)
                     if isinstance(node, ast.FunctionDef) and node.name == "__init__"]
-    placement = {"focal_stage", "local_attention_stage", "attention_order"}
+    placement = {"focal_stage", "local_attention_stage", "attention_order",
+                 "block_simam_stages", "block_simam_lambda"}
+    helper_args = next(({arg.arg for arg in node.args.kwonlyargs}
+                        for node in helpers.body if isinstance(node, ast.FunctionDef)
+                        and node.name == "attention_placement_overrides"), set())
+    block_constructor = next(({arg.arg for arg in method.args.args + method.args.kwonlyargs}
+                              for node in blocks.body if isinstance(node, ast.ClassDef)
+                              and node.name == "MobilePixorNeXtBlock"
+                              for method in node.body if isinstance(method, ast.FunctionDef)
+                              and method.name == "__init__"), set())
     return ({"attention_placement_overrides", "attention_placement_summary"} <= helper_names
+            and {"block_simam", "block_simam_stages", "block_simam_lambda"} <= helper_args
+            and "simam_lambda" in block_constructor
             and placement <= fields and any(placement <= args for args in constructors))
 
 
@@ -279,6 +291,9 @@ LOCAL_ATTENTION = "none"      # "none" | "eca" | "simam"
 LOCAL_ATTENTION_ECA_KERNEL_SIZE = 3
 LOCAL_ATTENTION_SIMAM_LAMBDA = 0.0001
 LOCAL_ATTENTION_LAYER_SCALE_INIT = 0.001
+BLOCK_SIMAM = True                  # True: SimAM inside every block of selected stages
+BLOCK_SIMAM_STAGES = ["c4", "c5"]   # choose any of c3/c4/c5; [] disables it
+BLOCK_SIMAM_LAMBDA = 0.0001
 
 # --- 3. LOSS & CRITERION ---
 LOSS_NAME = "oga"             # "oga" (Oriented Geometry-Aware) | "q_oga" | "baseline"
@@ -372,7 +387,9 @@ if BACKBONE == "mobilepixornext":
 if BACKBONE == "mobilepixornext" and PRESET == "custom":
     from notebook_config import attention_placement_overrides
     cm.update(attention_placement_overrides(cm, focal_stage=FOCAL_STAGE,
-        local_attention_stage=LOCAL_ATTENTION_STAGE, attention_order=ATTENTION_ORDER))
+        local_attention_stage=LOCAL_ATTENTION_STAGE, attention_order=ATTENTION_ORDER,
+        block_simam=BLOCK_SIMAM, block_simam_stages=BLOCK_SIMAM_STAGES,
+        block_simam_lambda=BLOCK_SIMAM_LAMBDA))
 
 if BEV_ENCODING == "hist14":
     custom_overrides["data"]["bev_encoding"].update(version=1, backend=BEV_BACKEND)

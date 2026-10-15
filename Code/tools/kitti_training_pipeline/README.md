@@ -117,6 +117,46 @@ even if SimAM's tensor shapes or a shared-stage reorder look compatible.
 Historical omitted placement defaults preserve old checkpoint identities and
 existing trained snapshots are retained byte-for-byte when defaults are explicit.
 
+### Select SimAM inside each block
+
+In the Standard or Robust config cell, enable block SimAM and select any subset
+of C3/C4/C5. The notebook currently enables C4+C5 by default, with the separate
+after-stage adapter disabled (`LOCAL_ATTENTION="none"`):
+
+```python
+PRESET = "custom"
+BLOCK_SIMAM = True
+BLOCK_SIMAM_STAGES = ["c4", "c5"]  # ["c5"], ["c3", "c4", "c5"], etc.
+BLOCK_SIMAM_LAMBDA = 0.0001
+LOCAL_ATTENTION = "none"          # disable the separate after-stage adapter
+C4_CONTEXT = "none"               # isolate block SimAM for this ablation
+HEADER_ARCHITECTURE = "shared"     # keep the same head across compared runs
+```
+
+Set `BLOCK_SIMAM=False` or select `BLOCK_SIMAM_STAGES=[]` to disable it. Custom
+controls are ignored in preset/config mode. Each selected stage applies
+`SimAMCore` in **every block after projection BN, before LayerScale and shortcut
+addition**. With `STAGE_DEPTHS=[3,4,2]`, C4+C5 enables six cores; C5 alone enables
+two; all stages enable nine. The cores add no learned parameters or extra beta.
+This is an insertion choice for MobilePixorNeXt, distinct from a single adapter
+after a stage. Focal and the existing after-stage ECA/SimAM remain independent
+options; enabling both intentionally runs both.
+
+For JSON/CLI configurations the corresponding model fields are:
+
+```json
+{"block_simam_stages": ["c4", "c5"], "block_simam_lambda": 0.0001}
+```
+
+The lambda defaults to `0.0001` when stages are enabled. With an empty stage list,
+omit lambda. Config validation rejects invalid/duplicate stages and unsupported
+backbones. Notebook summaries print the selected stages and block counts; run
+names include `blocksimam_c4c5`. Placement or lambda changes require a fresh run,
+even though this parameter-free feature leaves state keys/shapes unchanged.
+Disabled options preserve existing checkpoint identities. These controls do not
+establish mAP, GPU speed or VRAM costs; compare newly trained runs under the same
+training and benchmarking protocol.
+
 On Colab, synchronize the notebook and the Python source files together. Updating
 only the notebook against an older checkout causes a missing
 `attention_placement_overrides` import. The config cell imports placement helpers
