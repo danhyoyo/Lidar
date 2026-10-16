@@ -11,9 +11,9 @@ import math
 from pathlib import Path
 
 try:
-    from .common import backbone_feature_spec, create_experiment_config, detection_spec, input_shape, minimum_bev_channels, read_json, write_json
+    from .common import backbone_feature_spec, bev_encoding_spec, create_experiment_config, detection_spec, input_shape, read_json, write_json
 except ImportError:
-    from common import backbone_feature_spec, create_experiment_config, detection_spec, input_shape, minimum_bev_channels, read_json, write_json
+    from common import backbone_feature_spec, bev_encoding_spec, create_experiment_config, detection_spec, input_shape, read_json, write_json
 
 
 MODEL_DEFAULTS = {
@@ -224,11 +224,8 @@ def resolve_under1m_recipe(repo_dir, recipe_id, *, base_config=None):
         raise ValueError(f"Unknown or deferred under1m recipe: {recipe_id!r}")
     root = Path(repo_dir)
     base = read_json(root / "configs/config.json") if base_config is None else base_config
-    base = copy.deepcopy(base)
-    if base["data"].get("bev_encoding", {}).get("name") != "hist14":
-        base["data"].setdefault("bev_encoding", {}).pop("out_channels", None)
-    config = create_experiment_config(base, UNDER1M_COMMON)
-    config = create_experiment_config(config, UNDER1M_OVERRIDES[recipe_id])
+    config = merge_notebook_overrides(base, UNDER1M_COMMON)
+    config = merge_notebook_overrides(config, UNDER1M_OVERRIDES[recipe_id])
     config["augmentation"] = copy.deepcopy(AUGMENTATION_PROFILES["hybrid_gt"])
     if config["model"]["head_mode"] == "legacy_single":
         # The single-head reference intentionally removes the common group contract.
@@ -379,6 +376,30 @@ def _merge_custom_model(base_model, patch):
     return merged
 
 
+def merge_notebook_overrides(base, overrides):
+    """Start a fresh encoding recipe when its name changes at any notebook layer.
+
+    Same-name patches still merge and all explicitly supplied options remain for
+    strict schema validation, including invalid widths, backends and unknown keys.
+    """
+    fresh = copy.deepcopy(base)
+    encoding = (overrides or {}).get("data", {}).get("bev_encoding", {})
+    old = fresh.get("data", {}).get("bev_encoding", {})
+    if "name" in encoding and encoding["name"] != old.get("name"):
+        fresh.setdefault("data", {})["bev_encoding"] = {}
+    return create_experiment_config(fresh, overrides)
+
+
+def bev_encoding_summary(config):
+    """Report resolved schema/backend rather than potentially stale controls."""
+    schema = bev_encoding_spec(config)
+    text = (f"BEV: {schema.name} / {schema.channels} channels / backend={schema.backend}; "
+            f"schema hash: {schema.semantic_hash}")
+    if schema.name == "hist22":
+        text += "; XY windows: 11x11 cells (1.1x1.1 m), 21x21 cells (2.1x2.1 m), clipped at ROI"
+    return text
+
+
 def resolve_notebook_config(
     repo_dir, *, base_path="configs/config.json", preset="custom",
     custom_overrides=None, augmentation="standard", file_override=None,
@@ -389,7 +410,7 @@ def resolve_notebook_config(
     config = read_json(root / base_path)
     if preset == "custom":
         base_model = config["model"]
-        config = create_experiment_config(config, custom_overrides)
+        config = merge_notebook_overrides(config, custom_overrides)
         config["model"] = _merge_custom_model(base_model, (custom_overrides or {}).get("model", {}))
     elif preset in UNDER1M_PRESETS:
         config = resolve_under1m_recipe(root, UNDER1M_PRESETS[preset], base_config=config)
@@ -399,12 +420,7 @@ def resolve_notebook_config(
                              f"{list(PRESET_CONFIGS) + list(UNDER1M_PRESETS)}")
         defaults = {"model": MODEL_DEFAULTS, "loss": {"name": "baseline", "use_iou": False}}
         recipe = create_experiment_config(defaults, PRESET_CONFIGS[preset])
-        config = create_experiment_config(config, recipe)
-        encoding = config["data"]["bev_encoding"]
-        encoding.pop("out_channels", None)
-        channels = minimum_bev_channels(encoding["name"])
-        if channels is not None:
-            encoding["out_channels"] = channels
+        config = merge_notebook_overrides(config, recipe)
 
     if augmentation in ("standard", "compose", "none"):
         # Replace the whole recipe so an OpenPCDet queue cannot survive a mode switch.
@@ -431,14 +447,11 @@ def resolve_notebook_config(
         aug = overrides.get("augmentation")
         if aug is not None and aug.get("mode", config["augmentation"].get("mode")) != config["augmentation"].get("mode"):
             config["augmentation"] = {}
-        bev = overrides.get("data", {}).get("bev_encoding", {})
-        if "name" in bev and bev["name"] != config["data"]["bev_encoding"].get("name"):
-            config["data"]["bev_encoding"].pop("out_channels", None)
-        config = create_experiment_config(config, overrides)
+        config = merge_notebook_overrides(config, overrides)
         # Changing only the IQA flag also changes its loss supervision.
         if "header_use_iou" in overrides.get("model", {}) and "use_iou" not in overrides.get("loss", {}):
             config["loss"]["use_iou"] = config["model"]["header_use_iou"]
-    config = create_experiment_config(config, runtime_overrides)
+    config = merge_notebook_overrides(config, runtime_overrides)
     encoding = config["data"].get("bev_encoding", {})
     if encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
         # Older notebook width lookups produce None for newly added encoders.

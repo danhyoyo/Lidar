@@ -506,3 +506,54 @@ Report Moderate mAP and each class's AP/recall, alongside end-to-end latency.
 Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
 `deploy_engine.py` for deployment experiments. TensorRT engines are tied to
 the local CUDA/TensorRT/GPU environment and should not be committed.
+
+### Hist22 runtime and one paired encoder ablation
+
+Use the checkout containing `hist22_ablation.py` and the Hist22 runtime (currently
+`feature/canupo-inspired-bev22`). The notebooks' historical remote branch may not
+contain these changes: use an existing/uploaded checkout, or publish and select
+the intended feature branch yourself. No repository is pushed by this workflow.
+Both notebooks keep Hist14 as the default. Set `BEV_ENCODING="hist22"` and choose
+`BEV_BACKEND="numba"` or `"numpy"` explicitly. The config cell reports resolved
+channels, backend, semantic hash and fixed 11×11 / 21×21 windows (actual widths
+1.1 / 2.1 m at the required 0.1 m XY resolution). Model, loss, attention and
+augmentation controls remain independent. The standard notebook gets missing
+runtime controls from the master JSON in a fresh kernel; supplied globals remain
+authoritative on rerun.
+
+First save the current resolved **fresh Hist14 / MobilePixorNeXt** notebook config.
+Do not use a trained run's resolved config with initialization provenance, a
+warm-start source or resume metadata. Preparation refuses those sources and
+existing output directories. From `Code/`:
+
+```bash
+python tools/kitti_training_pipeline/hist22_ablation.py prepare \
+  --baseline '/absolute/path/current notebook baseline.json' \
+  --output-root '/absolute/path/new ablation pair' \
+  --repo-root "$PWD" --device cuda
+```
+
+Preparation writes exactly A Hist14 and B Hist22 with the same seed, backend,
+density/intensity options, model/loss/attention, augmentation, split, optimizer,
+budget, precision, box mode and checkpoint selector. Both receive the same
+`hist14_hist22_paired_random` v1 policy; training computes the random source-state
+hash, copies shared weights/first 14 input slices, and zeros the eight new input
+slices. It never transfers trained weights. The source file remains unchanged;
+`baseline.source.json` and its SHA-256 are retained. Config fingerprints distinguish
+run directories, and `manifest.json` records the exact allowed differing leaves:
+encoding name, encoding width and experiment name.
+
+No training is launched. Inspect `manifest.json`, then run the concrete, shell
+quoted commands in `commands.sh` explicitly. Epoch and warmup budgets come from
+the source snapshot (current master defaults 50/4); no historical 100/8 recipe is
+imposed. Audit KITTI assets, train-only GT database, split and CUDA/precision
+readiness before launching long training. A prepared pair is not a data audit.
+
+The generated evaluation command invokes `hist22_ablation.py evaluate` with that
+run's directory. It verifies the configured AP/loss selected winner against its
+complete history and retained checkpoint, and uses the saved resolved training
+config, split and BEV/3D selector metric. There is no `last.pt` fallback. The AP
+report template stays `pending_full_training` with null values until both full
+detector runs and selected-checkpoint evaluations complete. Probe/Point AP and
+smoke runs cannot fill that report. Hist22 ONNX/TensorRT preprocessing remains
+unsupported and is rejected by the deployment guard.

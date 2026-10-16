@@ -183,6 +183,9 @@ def checkpoint_identity(config):
                          "physical_batch_size": train.get("batch_size", 2),
                          "accumulation_steps": 1, "grad_clip_norm": 10.0}.items():
         training[key] = train.get(key, default)
+    policy = _paired_initialization().paired_policy(config)
+    if policy is not None:
+        training["initialization"] = policy
     objects = config["data"]["kitti"]["objects"]
     identity = {"version": 1, "encoding": {"metadata": encoding.semantic_metadata(),
                                                "sha256": encoding.semantic_hash},
@@ -215,16 +218,30 @@ def checkpoint_backends(config):
             "targets": config.get("train", {}).get("target_backend", "python")}
 
 
+def _paired_initialization():
+    return importlib.import_module((__package__ + "." if __package__ else "") + "paired_initialization")
+
+
+def requires_checkpoint_metadata(config):
+    return (bev_encoding_spec(config).name == "hist22" or
+            _paired_initialization().paired_policy(config) is not None)
+
+
 def validate_evaluation_checkpoint(checkpoint, config):
     """Check architecture/objective semantics without requiring resume state."""
     identity = checkpoint.get("checkpoint_identity") if isinstance(checkpoint, dict) else None
     if identity is None:
-        if detection_spec(config).head_mode == "grouped":
-            raise ValueError("Grouped evaluation requires checkpoint identity metadata")
+        if detection_spec(config).head_mode == "grouped" or requires_checkpoint_metadata(config):
+            raise ValueError("This evaluation requires checkpoint identity metadata")
         return
     if not isinstance(identity, dict):
         raise ValueError("Invalid checkpoint identity metadata")
     current = checkpoint_identity(config)
+    # Paired policy is required even for inference: it establishes the source
+    # experiment, though other optimizer/training settings may vary at eval.
+    if identity.get("training", {}).get("initialization") != current["training"].get("initialization"):
+        raise ValueError("Evaluation initialization identity does not match checkpoint")
+    _paired_initialization().validate_paired_provenance(checkpoint, config)
     saved = copy.deepcopy(identity)
     # Epochs/optimizer/precision used to train are provenance, not model-only
     # inference settings. All architecture and objective fields still match.
@@ -239,6 +256,8 @@ def validate_evaluation_checkpoint(checkpoint, config):
 def validate_deployment_config(config, consumer):
     """Reject contracts the current four-output deployment consumers cannot honor."""
     schema = bev_encoding_spec(config)
+    if schema.name == "hist22":
+        raise ValueError(f"{consumer}: Hist22 preprocessing deployment is deferred; use PyTorch evaluation")
     if schema.is_packed:
         raise ValueError(f"{consumer}: {schema.name} packed-point deployment is not supported; use PyTorch evaluation")
     detection = detection_spec(config)
@@ -332,7 +351,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate"}:
+    if bev_name in {"rich8", "hist14", "hist22", "pillar32", "pillar_rich", "pillar_rich_gate"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -399,6 +418,9 @@ def generate_run_name(
             identity["header_architecture"] = detection.header_architecture
         digest = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:12]
         extras.append(f"grouped_{digest}")
+    policy = _paired_initialization().paired_policy(config)
+    if policy is not None:
+        extras.append(f"paired_v{policy['version']}_s{policy['seed']}")
     experiment_name = config.get("experiment", {}).get("name")
     if experiment_name:
         if not isinstance(experiment_name, str) or any(

@@ -18,6 +18,12 @@ _HIST14_CHANNELS = (
     "z_max", "z_mean", "z_span", "z_std", "intensity_max", "intensity_mean",
     "log_density", "occupancy", "point_offset_x", "point_offset_y",
 )
+_HIST22_CHANNELS = _HIST14_CHANNELS + (
+    "neighbor_log_count_1m", "geometry_valid_1m",
+    "neighbor_log_count_2m", "geometry_valid_2m",
+    "dimensionality_1d_1m", "dimensionality_2d_1m",
+    "dimensionality_1d_2m", "dimensionality_2d_2m",
+)
 _RICH_CHANNELS = (
     "height_occupancy_b0", "height_occupancy_b1", "height_occupancy_b2",
     "z_max", "z_mean", "intensity_max", "intensity_mean", "log_density",
@@ -31,8 +37,8 @@ def minimum_channels(name: str) -> int | None:
     """Return fixed/minimum width, or None for geometry-dependent binary slices."""
     if name == "binary_slices":
         return None
-    if name == "hist14":
-        return 14
+    if name in {"hist14", "hist22"}:
+        return 14 if name == "hist14" else 22
     if name in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
         return 32
     if name in _RICH_MINIMUM:
@@ -91,16 +97,17 @@ def _options(encoding):
         density = (_positive_float(encoding.get("density_norm", 32), "density_norm", 1)
                    if name in {"pillar_rich", "pillar_rich_gate"} else None)
         return name, version, 32, density, intensity, "torch"
-    elif name == "hist14":
+    elif name in {"hist14", "hist22"}:
+        width = 14 if name == "hist14" else 22
         unsupported = set(encoding) - _HIST14_OPTIONS
         if unsupported:
-            raise ValueError(f"unsupported hist14 options: {sorted(unsupported, key=str)}")
-        if "out_channels" in encoding and (type(configured) is not int or configured != 14):
-            raise ValueError("hist14 v1 out_channels must be exactly integer 14")
+            raise ValueError(f"unsupported {name} options: {sorted(unsupported, key=str)}")
+        if "out_channels" in encoding and (type(configured) is not int or configured != width):
+            raise ValueError(f"{name} v1 out_channels must be exactly integer {width}")
         backend = encoding.get("backend", "numpy")
         if backend not in ("numpy", "numba"):
-            raise ValueError("hist14 backend must be numpy or numba")
-        channels = 14
+            raise ValueError(f"{name} backend must be numpy or numba")
+        channels = width
     elif minimum is not None:
         # Preserve int coercion, minimum clamping and zero padding of rich paths.
         try:
@@ -216,7 +223,7 @@ class BEVEncodingSpec:
                                  "fusion": "max * gate", "rich8_passthrough": True},
                     })
             return result
-        histogram = self.name == "hist14"
+        histogram = self.name in {"hist14", "hist22"}
         binary = self.name == "binary_slices"
         result = {
             "name": self.name, "version": self.version, "channels": self.channels,
@@ -234,6 +241,26 @@ class BEVEncodingSpec:
                 "output": "float32",
             },
         }
+        if self.name == "hist22":
+            result["layout"] = {"encoding": "CYX", "public_compatibility": "YXC", "model": "BCYX"}
+            result["xy_indexing"] = "float64_floor"
+            result["base_hist14"] = resolve_bev_encoding({
+                "name": "hist14", "density_norm": self.density_norm,
+                "intensity_scale": self.intensity_scale,
+            }, dict(self.geometry)).semantic_metadata()
+            result["geometry_features"] = {
+                "window_cells": [11, 21], "window_radius_cells": [5, 10],
+                "nominal_scale_m": [1., 2.], "actual_width_m": [1.1, 2.1],
+                "neighborhood": "xy_columns_full_roi_height_clipped_at_roi",
+                "moments": ["N", "sum_x", "sum_y", "sum_z", "sum_xx", "sum_xy", "sum_xz", "sum_yy", "sum_yz", "sum_zz"],
+                "coordinates": "float64_centered_at_roi_midpoint",
+                "covariance": "population", "min_neighbors": 6, "trace_epsilon": 1e-12,
+                "eigenvalues": "descending_clip_negative_to_zero_nonfinite_is_error",
+                "dimensionality": {"a": "(lambda1-lambda2)/trace", "b": "2*(lambda2-lambda3)/trace", "clip": [0, 1]},
+                "support": "raw_log1p_count_no_normalization_or_clip",
+                "empty_cell": "all_channels_zero", "invalid_geometry": "valid_a_b_zero_keep_log_count",
+                "compute_at": "hist14_occupied_cells_only",
+            }
         return result
 
     @property
@@ -255,8 +282,10 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
         channels = grid[2]
         names = tuple(f"height_slice_{index}" for index in range(channels))
         edges = tuple(geom["z_min"] + index * geom["z_res"] for index in range(channels + 1))
-    elif name == "hist14":
-        names = _HIST14_CHANNELS
+    elif name in {"hist14", "hist22"}:
+        if name == "hist22" and (geom["x_res"] != .1 or geom["y_res"] != .1):
+            raise ValueError("hist22 v1 requires x_res=y_res=0.1 m")
+        names = _HIST14_CHANNELS if name == "hist14" else _HIST22_CHANNELS
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 4
                       for index in range(5))
     elif name == "pillar32":

@@ -20,9 +20,10 @@ sys.path[:0] = [str(ROOT / "detector"), str(ROOT / "detector/core/datasets")]
 from core.bev_encoding import resolve_bev_encoding
 from utils_1.preprocess import encode_bev
 from utils_1.bev_backend import HIST14_IMPLEMENTATION_VERSION, encode_hist14_chw
+from utils_1.hist22_backend import HIST22_IMPLEMENTATION_VERSION, encode_hist22_chw
 
 ENCODINGS = ("binary_slices", "rich8",
-             "hist14_numpy", "hist14_numba")
+             "hist14_numpy", "hist14_numba", "hist22_numpy", "hist22_numba")
 
 
 def benchmark_encodings(points, geometry, *, encodings=ENCODINGS, warmup=3, iterations=20, layout="hwc"):
@@ -41,7 +42,7 @@ def benchmark_encodings(points, geometry, *, encodings=ENCODINGS, warmup=3, iter
         "input": {"point_count": len(points), "dtype": str(points.dtype), "geometry": geometry},
         "results": {},
     }
-    if "hist14_numba" in encodings:
+    if any(label.endswith("_numba") for label in encodings):
         try:
             report["environment"]["numba"] = importlib.metadata.version("numba")
         except importlib.metadata.PackageNotFoundError:
@@ -49,9 +50,11 @@ def benchmark_encodings(points, geometry, *, encodings=ENCODINGS, warmup=3, iter
     for label in encodings:
         if label not in ENCODINGS:
             raise ValueError(f"unknown encoding benchmark: {label!r}")
-        options = {"name": "hist14", "backend": label.split("_")[1]} if label.startswith("hist14_") else {"name": label}
+        options = dict(zip(("name", "backend"), label.split("_"))) if label.startswith(("hist14_", "hist22_")) else {"name": label}
         schema = resolve_bev_encoding(options, geometry)
         def encode():
+            if layout == "chw" and schema.name == "hist22":
+                return encode_hist22_chw(points, schema)
             if layout == "chw" and schema.name == "hist14":
                 return encode_hist14_chw(points, schema)
             value = encode_bev(points, geometry, options)
@@ -71,7 +74,7 @@ def benchmark_encodings(points, geometry, *, encodings=ENCODINGS, warmup=3, iter
         report["results"][label] = {
             "name": schema.name, "version": schema.version, "backend": schema.backend,
             "semantic_hash": schema.semantic_hash, "schema": schema.semantic_metadata(),
-            "implementation_version": HIST14_IMPLEMENTATION_VERSION if schema.name == "hist14" else "legacy",
+            "implementation_version": HIST14_IMPLEMENTATION_VERSION if schema.name == "hist14" else (HIST22_IMPLEMENTATION_VERSION if schema.name == "hist22" else "legacy"),
             "shape_yxc": list(schema.output_shape), "result_shape": shape,
             "output_layout": layout, "output_contiguous": contiguous,
             "output_dtype": "float32", "payload_bytes": payload,
@@ -96,7 +99,7 @@ def main(argv=None):
     parser.add_argument("--iterations", type=int, default=20)
     parser.add_argument("--encodings", nargs="+", choices=ENCODINGS, default=list(ENCODINGS))
     parser.add_argument("--layout", choices=("hwc", "chw"), default="hwc",
-                        help="chw includes contiguous model input preparation; hist14 writes CHW directly")
+                        help="chw includes contiguous model input preparation; Hist14/Hist22 write CHW directly")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     if args.points < 0 or args.warmup < 0 or args.iterations < 1:

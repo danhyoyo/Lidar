@@ -221,7 +221,7 @@ class Dataset(Dataset):
 
         # calculate output shape
         geom = self.config[self.data_type_list[0]]["geometry"]
-        if self.bev_encoding.get("name") == "hist14":
+        if self.bev_encoding.get("name") in {"hist14", "hist22"}:
             schema = resolve_bev_encoding(self.bev_encoding, geom)
             self.output_shape = [size // self.out_size_factor for size in schema.grid_shape[:2]]
         else:
@@ -290,6 +290,10 @@ class Dataset(Dataset):
 
 
     def encode_input(self, points, geometry):
+        if self.bev_encoding.get("name") == "hist22":
+            from .utils_1.hist22_backend import encode_hist22_chw
+            schema = resolve_bev_encoding(self.bev_encoding, geometry)
+            return torch.from_numpy(encode_hist22_chw(points, schema))
         if self.bev_encoding.get("name") == "hist14":
             from .utils_1.bev_backend import encode_hist14_chw
             schema = resolve_bev_encoding(self.bev_encoding, geometry)

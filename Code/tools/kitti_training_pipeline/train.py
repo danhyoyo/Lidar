@@ -33,6 +33,7 @@ from common import (
     model_input_batch_size,
     normalize_state_dict,
     read_json,
+    requires_checkpoint_metadata,
     sha256,
     warm_start_backbone,
     write_json,
@@ -41,6 +42,7 @@ from checkpoint_selection import (selection_settings, ap_due, ap_measurement,
                                   advance_ap_state, save_selections)
 from image_metadata import load_image_sizes
 from prepare_kitti import read_ids
+from paired_initialization import build_initialized_model, paired_policy, validate_paired_provenance
 
 
 def seed_everything(seed: int) -> None:
@@ -239,6 +241,11 @@ def checkpoint_payload(
     }
     if ap_selection is not None:
         payload['ap_selection'] = ap_selection
+    if paired_policy(config) is not None:
+        provenance = getattr(checkpoint_model, "_paired_initialization", None)
+        if provenance is None or config.get("initialization_provenance") != provenance:
+            raise ValueError("paired initialization provenance must be recorded before checkpointing")
+        payload["initialization_provenance"] = copy.deepcopy(provenance)
     return payload
 
 
@@ -358,6 +365,8 @@ def restore_checkpoint(checkpoint, config, model, criterion, optimizer, schedule
                      "scaler_state_dict", "rng_state", "checkpoint_identity"}
     full_resume = isinstance(checkpoint, dict) and bool(training_keys & set(checkpoint))
     if not full_resume:
+        if requires_checkpoint_metadata(config):
+            raise ValueError("Hist22/paired initialization resume requires checkpoint identity metadata")
         if detection_spec(config).head_mode != "legacy_single":
             raise ValueError("Grouped resume requires checkpoint identity; legacy weights need legacy config")
         if isinstance(checkpoint.get("config"), dict):
@@ -375,6 +384,7 @@ def restore_checkpoint(checkpoint, config, model, criterion, optimizer, schedule
     if (checkpoint["checkpoint_identity"] != current_identity or
             checkpoint_identity(checkpoint["config"]) != checkpoint["checkpoint_identity"]):
         raise ValueError("Checkpoint architecture/objective/training identity does not match config")
+    validate_paired_provenance(checkpoint, config, original_model)
     current_backends = checkpoint_backends(config)
     if checkpoint["backends"] != checkpoint_backends(checkpoint["config"]):
         raise ValueError("Incomplete or inconsistent checkpoint backend metadata")
@@ -687,6 +697,13 @@ def main(argv=None) -> None:
         raise ValueError("epochs must be positive")
     if args.physical_batch_size is not None and args.physical_batch_size < 1:
         raise ValueError("physical_batch_size must be positive")
+    # Validate the original pair seed before CLI overrides can hide a conflict.
+    policy = paired_policy(config)
+    if policy is not None:
+        if args.seed is not None and args.seed != policy["seed"]:
+            raise ValueError("--seed conflicts with paired initialization seed")
+        if args.warm_start:
+            raise ValueError("paired initialization cannot be combined with --warm-start")
     seed = int(args.seed if args.seed is not None else config.get("seed", 42))
     config["seed"] = seed
     seed_everything(seed)
@@ -795,11 +812,16 @@ def main(argv=None) -> None:
     )
     if validation_batch_size < 1:
         raise ValueError("validation physical_batch_size must be positive")
+    validation_rng = {"generator": torch.Generator().manual_seed(seed)} if policy is not None else {}
     val_loader = DataLoader(
-        val_dataset, batch_size=validation_batch_size, shuffle=False, **common_loader
+        val_dataset, batch_size=validation_batch_size, shuffle=False,
+        **validation_rng, **common_loader
     )
 
-    model = build_model(config).to(device)
+    model, provenance = build_initialized_model(config) if policy is not None else (build_model(config), None)
+    model = model.to(device)
+    if provenance is not None:
+        config["initialization_provenance"] = provenance
     criterion = build_training_criterion(config, device)
     optimizer = build_optimizer(model, criterion, config)
     scheduler = build_scheduler(optimizer, config, epochs)
@@ -864,6 +886,11 @@ def main(argv=None) -> None:
         # Compiler discovery/warmup may consume RNG. Start the next epoch from
         # the saved boundary after setup is finished.
         restore_rng_state(resume["rng_state"], generator)
+    elif policy is not None:
+        # Setup, source construction and compile warmup never shift the paired
+        # sampler or augmentation stream at the first training epoch.
+        seed_everything(seed)
+        generator.manual_seed(seed)
 
     log_path = run_dir / "metrics.jsonl"
     log_line(f"Run directory: {run_dir}")

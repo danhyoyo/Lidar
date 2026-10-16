@@ -18,18 +18,21 @@ def _grid_shape(geometry):
 
 
 def encode_bev(points, geometry, bev_encoding=None):
-    """Encode KITTI points as binary slices, legacy RichBEV or hist14 v1."""
+    """Encode KITTI points as binary slices, legacy RichBEV or histogram v1."""
     encoding = bev_encoding or {"name": "binary_slices"}
     name = encoding.get("name", "binary_slices")
     if name == "binary_slices":
         return voxelize(points, geometry)
-    if name == "hist14":
+    if name in {"hist14", "hist22"}:
         try:
             from core.bev_encoding import resolve_bev_encoding
         except ImportError:
             from detector.core.bev_encoding import resolve_bev_encoding
         from .bev_backend import encode_hist14
 
+        if name == "hist22":
+            from .hist22_backend import encode_hist22
+            return encode_hist22(points, resolve_bev_encoding(encoding, geometry))
         return encode_hist14(points, resolve_bev_encoding(encoding, geometry))
     valid_names = {"rich8"}
     if name not in valid_names:

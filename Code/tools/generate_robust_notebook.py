@@ -43,7 +43,9 @@ Pipeline nghiên cứu và huấn luyện mô hình phát hiện vật thể 3D 
 6. **Trực quan hóa GT Sampling**: Xem trực quan 3 giai đoạn chèn vật thể vào đám mây điểm trước khi train.
 7. **Sanity Smoke Train**: Chạy thử 1-2 batch để kiểm tra forward, backward, loss và optimizer trong <30 giây.
 8. **Huấn luyện chính thức & Auto-Resume**: Stream log thời gian thực, tích hợp TensorBoard, lưu trữ song song 2 checkpoint: `best_ap` và `best_loss`.
-9. **Đánh giá toàn diện Checkpoint Kép**: Đánh giá độc lập cả 2 model chiến thắng (`best_ap` và `best_loss`) theo chuẩn BEV & 3D, xuất bảng so sánh chi tiết."""))
+9. **Đánh giá toàn diện Checkpoint Kép**: Đánh giá độc lập cả 2 model chiến thắng (`best_ap` và `best_loss`) theo chuẩn BEV & 3D, xuất bảng so sánh chi tiết.
+Reference AP3D/APBEV ưu tiên `configs/datasets/kitti_image_sizes.json` (7.481 frame training), tự copy vào raw training root; không cần giải nén ảnh PNG khi có JSON.
+"""))
 
     # Cell 1: Environment Setup
     cells.append(make_code_cell("""# ==============================================================================
@@ -253,7 +255,7 @@ COMPILE_MODEL = False         # torch.compile (tùy chọn)
 PRESET = "custom"             # "custom" | "config" | "UNDER1M_FOCAL_OGA_IQA" | "UNDER1M_FOCAL_ECA_OGA_IQA"
 BACKBONE = "mobilepixornext"
 BACKBONE_OUT_DIM = 32         # 32 (Focal main) hoặc 16 (legacy)
-BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "rich8" | "binary_slices"
+BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "hist22" (22 kênh v1) | "rich8" | "binary_slices"
 BEV_BACKEND = "numba"         # "numpy" | "numba"
 STAGE_DEPTHS = [3, 4, 2]
 
@@ -367,7 +369,7 @@ custom_overrides = {
     "data": {
         "bev_encoding": {
             "name": BEV_ENCODING, "density_norm": 32, "intensity_scale": 1,
-            "out_channels": {"rich8": 8, "hist14": 14}.get(BEV_ENCODING),
+            "out_channels": {"rich8": 8, "hist14": 14, "hist22": 22, "pillar32": 32, "pillar_rich": 32, "pillar_rich_gate": 32}.get(BEV_ENCODING),
         }
     },
 }
@@ -391,8 +393,10 @@ if BACKBONE == "mobilepixornext" and PRESET == "custom":
         block_simam=BLOCK_SIMAM, block_simam_stages=BLOCK_SIMAM_STAGES,
         block_simam_lambda=BLOCK_SIMAM_LAMBDA))
 
-if BEV_ENCODING == "hist14":
+if BEV_ENCODING in ("hist14", "hist22"):
     custom_overrides["data"]["bev_encoding"].update(version=1, backend=BEV_BACKEND)
+if BEV_ENCODING in ("pillar32", "pillar_rich", "pillar_rich_gate"):
+    custom_overrides["data"]["bev_encoding"].update(version=1, backend="torch")
 
 if HEAD_MODE == "grouped":
     custom_overrides["data"]["head_groups"] = HEAD_GROUPS
@@ -450,7 +454,9 @@ CONFIG = save_notebook_config(RUN_DIR, config_dict)
 print("=" * 80)
 print(f"🎯 EXPERIMENT RUN: {RUN_NAME}")
 print(f"Config Snapshot : {CONFIG}")
-print(f"BEV Encoding    : {config_dict['data']['bev_encoding']['name']} ({BEV_BACKEND}) | Input shape: {input_shape(config_dict)}")
+from notebook_config import bev_encoding_summary
+print(bev_encoding_summary(config_dict))
+print(f"Input shape     : {input_shape(config_dict)}")
 print(f"Box Mode        : {BOX_MODE} | Loss: {LOSS_NAME} | Augmentation: {AUGMENTATION}")
 print(f"Head Config     : Architecture={config_dict['model'].get('header_architecture', 'independent')} | BatchNorm={'ON' if HEADER_USE_BN else 'OFF'} | Activation={resolved_header_act}")
 print(f"Precision       : {PRECISION} | Batch Size: {PHYSICAL_BATCH_SIZE} x {ACCUMULATION_STEPS} | Epochs: {EPOCHS}")
@@ -486,7 +492,13 @@ print("=" * 80)"""))
 - Tự động quét file `.rar`/`.zip` trong thư mục: `DRIVE_DATASET_PATH` (mặc định: `/content/drive/MyDrive/KITTI_DATASET_ZIP`).
 - Giải nén siêu tốc vào `RAW_KITTI_ROOT` (`/content/kitti_raw/training`) trên SSD nội bộ Colab.
 - Tự động nhận diện và sắp xếp cấu trúc thư mục chuẩn `training/velodyne`, `training/label_2`, `training/calib`.
-- Bỏ qua tự động nếu thư mục cục bộ đã có đủ 7,481 files."""))
+- Bỏ qua tự động nếu thư mục cục bộ đã có đủ 7,481 files.
+AP3D/APBEV cần kích thước ảnh trái của từng frame để clip bbox chiếu; model vẫn nhận LiDAR. Cell 3 ưu tiên `configs/datasets/kitti_image_sizes.json` (7.481 frame training), tự copy vào raw training root và bỏ qua giải nén PNG. Có thể upload JSON vào `/content/kitti_image_sizes.json` hoặc đặt `evaluation.image_sizes_json` thành đường dẫn riêng.
+
+Giữ `CHECKPOINT_SELECTION="ap"` và `RUN_REFERENCE_EVALUATION=True` để chọn best AP và đánh giá reference. Nếu không có JSON, Cell 3 tìm `kitti_images.zip` trên MyDrive rồi chỉ trích ảnh `training/image_2`; có thể chọn ZIP bằng `DRIVE_IMAGES_ZIP`.
+
+Nếu chỉ muốn train mà không tính reference AP, đặt `CHECKPOINT_SELECTION="loss"` và `RUN_REFERENCE_EVALUATION=False`. Giữ `BOX_MODE="3d"` khi huấn luyện head 3D.
+"""))
 
     # Cell 5: Code Download & Extract
     cells.append(make_code_cell(r"""# ==============================================================================
@@ -1022,7 +1034,7 @@ from IPython.display import display
 from tools.kitti_training_pipeline import checkpoint_selection, notebook_workflow
 from tools.kitti_training_pipeline.notebook_workflow import selected_runs, evaluation_rows
 
-RUN_EVALUATION = True
+RUN_EVALUATION = RUN_REFERENCE_EVALUATION
 
 if RUN_EVALUATION:
     print(f"Evaluating best winners for run: {RUN_NAME}...")
