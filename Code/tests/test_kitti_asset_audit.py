@@ -87,6 +87,19 @@ def test_local_bev_audit_does_not_require_reference_images(tmp_path):
     assert audit_module().audit_assets(path,kitti_root=raw)['status']=='passed'
 
 
+def test_evaluation_hash_progress_preserves_full_input_hashes(tmp_path):
+    from tools.kitti_training_pipeline.common import evaluation_asset_hashes
+    config, _, _, raw = asset_fixture(tmp_path)
+    expected = evaluation_asset_hashes(config, ['000002'], raw)
+    calls = []
+    actual = evaluation_asset_hashes(config, ['000002'], raw,
+        progress_callback=lambda done,total,path: calls.append((done,total,path)))
+    assert actual == expected
+    assert [done for done,_,_ in calls] == [0,1,2,3]
+    assert all(total == len(expected) for _,total,_ in calls)
+    assert {str(path.resolve()) for done,_,path in calls if done} == set(expected)
+
+
 @pytest.mark.parametrize('mode', ['bev', '3d'])
 def test_reference_audit_and_input_hashes_use_json_without_any_pngs(tmp_path, mode):
     from tools.kitti_training_pipeline.common import evaluation_asset_hashes, sha256

@@ -55,7 +55,7 @@ def detection_spec(config):
     return module.resolve_detection_config(config)
 
 
-def evaluation_asset_hashes(config, frame_ids, kitti_root, *, reference=False):
+def evaluation_asset_hashes(config, frame_ids, kitti_root, *, reference=False, progress_callback=None):
     """Record actual per-frame inputs used by local or reference evaluation."""
     processed = Path(config["data"]["kitti"]["location"]).resolve()
     raw = Path(kitti_root).resolve()
@@ -78,7 +78,14 @@ def evaluation_asset_hashes(config, frame_ids, kitti_root, *, reference=False):
         _, projection_assets = load_image_sizes(raw, frame_ids,
             metadata_path=config.get('evaluation', {}).get('image_sizes_json'))
         paths.extend(projection_assets)
-    return {str(path.resolve()): sha256(path) for path in paths}
+    hashes = {}
+    if progress_callback is not None:
+        progress_callback(0, len(paths), paths[0] if paths else None)
+    for index, path in enumerate(paths, start=1):
+        hashes[str(path.resolve())] = sha256(path)
+        if progress_callback is not None:
+            progress_callback(index, len(paths), path)
+    return hashes
 
 
 def verify_retained_checkpoint(selected_path, retained_path, *, selected_state=None):

@@ -485,7 +485,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                    deploy: bool = False,
                    save_deploy: Path | None = None,
                    nms_alpha: float | None = None,
-                   peak_mode: str | None = None) -> Dict[str, Any]:
+                   peak_mode: str | None = None,
+                   log_callback=None) -> Dict[str, Any]:
     started = time.time()
     if backend not in {"pytorch", "tensorrt"}:
         raise ValueError(f"Unsupported backend: {backend!r}")
@@ -523,7 +524,18 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     frame_ids = all_ids[:max_frames] if max_frames is not None else all_ids
     if not frame_ids:
         raise ValueError("Evaluation split is empty")
-    input_asset_sha256 = evaluation_asset_hashes(config, frame_ids, kitti_root)
+    emit = log_callback or (lambda message: print(message, flush=True))
+    hashing_started = time.perf_counter()
+    def hash_progress(done, total, path):
+        if progress_every and (done <= 1 or done == total or done % (progress_every * 3) == 0):
+            emit(f"[{name}] input hashes {done}/{total}; "
+                 f"elapsed={time.perf_counter() - hashing_started:.1f}s; file={path}")
+    if progress_every:
+        emit(f"[{name}] Hashing evaluation inputs for {len(frame_ids)} frames")
+    input_asset_sha256 = evaluation_asset_hashes(config, frame_ids, kitti_root,
+        progress_callback=hash_progress if progress_every else None)
+    if progress_every:
+        emit(f"[{name}] Loading evaluation model and dataset; device={device}")
     dataset = Dataset(str(split_path), config["data"], config["augmentation"],
                       config["model"]["cls_encoding"], task="test")
     runner = (PyTorchRunner(model_path, config, device, deploy=deploy, save_deploy=save_deploy) if backend == "pytorch"
@@ -556,7 +568,10 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         )
         pred_config["nms_alpha"] = 0.5 if uses_iou else 0.0
 
+    inference_started = time.perf_counter()
     for index, frame_id in enumerate(frame_ids):
+        if progress_every and index == 0:
+            emit(f"[{name}] frame 1/{len(frame_ids)}: preprocessing ({frame_id})")
         total_start = time.perf_counter()
         part_start = time.perf_counter()
         sample = dataset[index]
@@ -565,7 +580,11 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         input_sizes.append(sum(v.numel() * v.element_size() for v in value.values() if torch.is_tensor(v))
                            if isinstance(value, Mapping) else value.numel() * value.element_size())
         input_tensor, transfer_ms = runner.transfer(sample["voxel"])
+        if progress_every and index == 0:
+            emit(f"[{name}] frame 1/{len(frame_ids)}: model inference")
         output, model_ms = runner.infer(input_tensor)
+        if progress_every and index == 0:
+            emit(f"[{name}] frame 1/{len(frame_ids)}: decode/NMS")
         part_start = time.perf_counter()
         boxes = filter_pred(output, pred_config,
                             config["data"]["out_size_factor"],
@@ -592,10 +611,13 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                 ("model", model_ms), ("decode_nms", decode_ms),
                 ("input_to_detections", total_ms)):
                 timings[key].append(value)
-        if progress_every and ((index + 1) % progress_every == 0
+        if progress_every and (index == 0 or (index + 1) % progress_every == 0
                                or index + 1 == len(frame_ids)):
-            print(f"[{name}] {index + 1}/{len(frame_ids)}, "
-                  f"detections={detection_count}", flush=True)
+            elapsed = time.perf_counter() - inference_started
+            eta = elapsed / (index + 1) * (len(frame_ids) - index - 1)
+            emit(f"[{name}] {index + 1}/{len(frame_ids)}, detections={detection_count}; "
+                 f"elapsed={elapsed:.1f}s, ETA={eta:.1f}s; "
+                 f"last preprocess={preprocess_ms:.1f}ms, model={model_ms:.1f}ms, decode/NMS={decode_ms:.1f}ms")
 
     runtime = {
         "python": platform.python_version(),
@@ -610,6 +632,8 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
     }
 
     class_ids = config["data"]["kitti"]["objects"]
+    if progress_every:
+        emit(f"[{name}] Computing local BEV AP on {len(frame_ids)} frames")
     accuracy = evaluate_accuracy(predictions, labels, include_distance_bands=True, class_ids=class_ids)
     resolved_config = json.dumps(config, sort_keys=True, separators=(",", ":"), allow_nan=False)
     actual_iqa = (all(head.get("iou") is not None for head in output["groups"].values())

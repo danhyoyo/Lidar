@@ -167,6 +167,15 @@ before using an existing checkout. On Colab, an outdated checkout is preserved a
 fresh source is cloned into `/content`; Drive datasets and artifacts keep their
 configured locations. Setup also clears cached project modules when selecting source.
 
+An epoch with AP selection includes a separate full-validation inference/AP pass
+after train/validation loss. `AP validation: ...` marks that phase; the completed
+epoch checkpoint is written after AP. Local BEV evaluation logs candidate saving,
+input hashing, model loading, first-frame preprocessing/inference/decoding, frame
+progress/ETA and AP computation into the notebook and `train.log`. CPU rotated
+NMS now rejects disjoint bounds before exact polygon IoU, keeping score order,
+thresholds and results. To evaluate less frequently, edit `AP_EVERY` consistently
+across compared runs; changing a saved config requires a fresh run name.
+
 To visualize an actual trained topology after training, from `Code/` run:
 
 ```bash

@@ -242,10 +242,11 @@ def checkpoint_payload(
     return payload
 
 
-def evaluate_training_ap(payload, config_path, detector_root, device, loader_generator, run_dir):
+def evaluate_training_ap(payload, config_path, detector_root, device, loader_generator, run_dir, *, log_callback=None):
     """Use the existing full-split FP32 evaluator without advancing training RNG."""
     rng = capture_rng_state(loader_generator)
     started = time.perf_counter()
+    emit = log_callback or (lambda message: print(message, flush=True))
     try:
         from evaluate_kitti_bev import read_ids
         config = payload['config']; settings = selection_settings(config)
@@ -261,14 +262,16 @@ def evaluate_training_ap(payload, config_path, detector_root, device, loader_gen
             raise ValueError('AP validation requires a nonempty unique full validation split')
         if settings['metric_mode'] == 'local_bev':
             from evaluate_kitti_bev import run_evaluation
-            options = {}
+            options = {'log_callback': emit}
         else:
             from evaluate_kitti_3d import run_evaluation
             raw = raw / 'training'
             options = {'metric_mode': settings['metric_mode']}
         with tempfile.TemporaryDirectory(prefix='ap-validation-', dir=run_dir) as temporary:
             candidate = Path(temporary) / 'candidate.pt'
+            emit(f"Saving AP candidate checkpoint: {candidate}")
             atomic_torch_save(payload, candidate)
+            emit(f"Evaluating AP candidate: mode={settings['metric_mode']}; frames={len(ids)}")
             report = run_evaluation(name='validation_ap', backend='pytorch', model_path=candidate,
                 config_path=config_path, detector_root=detector_root, kitti_root=raw,
                 split_path=split, device=str(device), warmup_frames=0, progress_every=50,
@@ -996,7 +999,7 @@ def main(argv=None) -> None:
         if ap_due(epoch, epochs, selection):
             log_line(f"AP validation: epoch {epoch}/{epochs}; full validation split; {selection['metric_mode']} R40 Moderate")
             ap_validation, ap_seconds = evaluate_training_ap(payload, run_dir / 'config.resolved.json',
-                args.detector_root, device, generator, run_dir)
+                args.detector_root, device, generator, run_dir, log_callback=log_line)
             ap_state, retained_ap = advance_ap_state(ap_state, ap_validation, epoch, selection)
             class_scores = " | ".join(
                 f"{name}: {score:.2f}%"

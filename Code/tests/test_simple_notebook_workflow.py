@@ -69,6 +69,22 @@ def test_train_losses_are_logged_before_ap_and_ap_results_name_each_class(tmp_pa
         pass
 
 
+def test_ap_logs_preparation_first_frame_and_metric_phases_before_result(tmp_path, capsys):
+    import train
+    from test_ap_training import setup
+    _, _, _, run, args = setup(tmp_path, epochs=1, interval=1)
+    train.main(args)
+    output = capsys.readouterr().out
+    markers = ['Saving AP candidate checkpoint', 'Hashing evaluation inputs',
+               'Loading evaluation model', 'frame 1/1: preprocessing',
+               'frame 1/1: model inference', 'frame 1/1: decode/NMS',
+               'Computing local BEV AP', 'Validation AP:']
+    positions = [output.index(marker) for marker in markers]
+    assert positions == sorted(positions)
+    log = (run / 'train.log').read_text()
+    assert all(marker in log for marker in markers)
+
+
 def test_omitted_runtime_flags_do_not_overwrite_saved_notebook_settings():
     import train
 

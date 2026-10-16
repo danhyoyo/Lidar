@@ -47,6 +47,8 @@ def non_max_suppression(boxes, scores, threshold):
         boxes = boxes.astype(np.float32)
 
     polygons = convert_format(boxes)
+    lower = boxes.min(axis=1)
+    upper = boxes.max(axis=1)
 
     # Get indicies of boxes sorted by scores (highest first)
     ixs = scores.argsort()[::-1]
@@ -57,7 +59,16 @@ def non_max_suppression(boxes, scores, threshold):
         i = ixs[0]
         pick.append(i)
         # Compute IoU of the picked box with the rest
-        iou = compute_iou(polygons[i], polygons[ixs[1:]])
+        remaining = ixs[1:]
+        # Disjoint axis-aligned bounds imply zero rotated intersection. Keep
+        # the original GEOS calculation for every pair that can overlap.
+        possible = ((upper[i, 0] > lower[remaining, 0]) &
+                    (upper[remaining, 0] > lower[i, 0]) &
+                    (upper[i, 1] > lower[remaining, 1]) &
+                    (upper[remaining, 1] > lower[i, 1]))
+        iou = np.zeros(len(remaining), dtype=np.float32)
+        if possible.any():
+            iou[possible] = compute_iou(polygons[i], polygons[remaining[possible]])
         # Identify boxes with IoU over the threshold. This
         # returns indices into ixs[1:], so add 1 to get
         # indices into ixs.
