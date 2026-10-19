@@ -1,0 +1,39 @@
+\subsection{Dataset and reporting protocol}
+
+The study considers the Car, Pedestrian, and Cyclist classes in KITTI~\cite{geiger2012kitti}. The repository split manifests contain 3,712 training and 3,769 validation frames. The final run must be linked to these exact manifests before the split is treated as its verified training record. All primary detection tables in this draft concern BEV footprints; the model does not regress vertical position or height.
+
+We use the class-specific overlap thresholds $\tau_{\mathrm{IoU},c}=0.70$ for Car and $0.50$ for Pedestrian and Cyclist. At a fixed difficulty, Moderate macro mAP is the unweighted mean across the three classes. The secondary quantity mAP9 averages the nine class--difficulty combinations:
+\begin{align}
+    \mathrm{mAP}_{\mathrm M} &= \frac{1}{3}\sum_{c\in\mathcal C}\mathrm{AP}_{c,\mathrm M},\nonumber\\
+    \mathrm{mAP}_{9} &= \frac{1}{9}\sum_{c\in\mathcal C}
+    \sum_{d\in\{\mathrm E,\mathrm M,\mathrm H\}}\mathrm{AP}_{c,d}.
+    \label{eq:map_definitions}
+\end{align}
+The symbols E, M, and H denote Easy, Moderate, and Hard. AP and both aggregates are expressed as percentages. mAP9 is not AP at IoU 0.9.
+
+Historical local BEV evaluation and reference KITTI evaluation have different ground-truth domains and matching rules. Consequently, the ablation summary and detector-comparison summary are maintained as distinct experiment sets. The intended AP sampling is R40, but the evaluator version, split, sampling and filtering rules must be recovered for each final comparison record before it is presented as a matched benchmark.
+
+\input{tables/setup}
+
+\subsection{Model and training configuration}
+
+The selected configuration uses Strata-BEV14, nine block-level SimAM operators, F32 scale-gated fusion, grouped shared H32 heads, OGA, and a separate IQA branch. The final-width decision was made after the earlier F24 run; reusing the shorthand R37 does not imply that the two configurations share a checkpoint. The current architecture contains 753,569 detector parameters and twelve additional training-only task-balancing logits. The parameter count is obtained directly from model construction and excludes optimizer state and running buffers.
+
+Hybrid ground-truth sampling is selected in the current experiment summary. The final optimizer, schedule, physical batch size, accumulation, augmentation probabilities, checkpoint-selection rule and precision are reserved for the resolved training record. Earlier configurations contain plausible defaults, but those defaults are not substituted for the final run's provenance. Table~\ref{tab:setup} records the remaining fields explicitly.
+
+\subsection{Comparison design}
+
+The evaluation is organized around three questions. First, a sequence of configuration comparisons examines the backbone, BEV representation, grouped prediction, sampling strategy, fusion width, and neck. This sequence describes the development of a complete recipe; a transition supports a single-factor interpretation only when its other settings are matched. Second, a factorial comparison separates baseline/OGA supervision from the presence of IQA. Q-OGA is treated as an additional objective rather than another cell of the same factorial design. Third, attention comparisons distinguish stage-level SimAM from SimAM within each residual block, while recording fusion width and head sharing.
+
+For the OGA--IQA experiment, an interaction in mAP can be summarized as
+\begin{equation}
+    \Delta_{\mathrm{int}}=m_{11}-m_{10}-m_{01}+m_{00},
+    \label{eq:interaction}
+\end{equation}
+where the first index denotes OGA and the second denotes IQA. This quantity is meaningful only for matched runs with a consistent baseline; it is not computed from the conflicting baseline records in the current workbook.
+
+\subsection{Complexity and timing}
+
+Forward timing starts with prepared inputs already on the device. End-to-end latency covers the measured input-to-detections pipeline, whose inclusion of file loading, encoding, transfers, decoding, and NMS must be specified by the benchmark record. For sequential batch-one processing, reciprocal-mean throughput is $1000/\bar t$ FPS when mean latency $\bar t$ is in milliseconds. This is distinct from averaging per-frame reciprocal latency.
+
+Forward latency, end-to-end latency and their percentiles are reported separately. Stage percentiles are not summed to obtain a pipeline percentile. A matched runtime comparison requires the same hardware, precision, batch size, warmup, timed frames and timing boundaries. The revised summary contains no verified FLOP/MAC or memory measurements, so those quantities remain unreported rather than inferred from parameter count. Repeated training seeds and timing sessions are also needed before reporting uncertainty or statistical significance.

@@ -1,9 +1,0 @@
-.build_cache/
-*.aux
-*.blg
-*.log
-*.out
-*.toc
-*.fls
-*.fdb_latexmk
-*.xdv

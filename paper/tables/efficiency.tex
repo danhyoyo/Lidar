@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering\small
+\caption{Draft runtime-comparison records, separate from ablation timings. Latency is in milliseconds.}
+\label{tab:efficiency}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Method & Params (M) & Model ms & E2E ms & Model FPS & E2E FPS & E2E p95 \\
+\midrule
+PIXOR & 2.135 & 70.79 & 144.00 & 14.13 & 6.94 & 159.38 \\
+MobilePIXOR & 0.598 & -- & 85.92 & 90.50 & 11.64 & 112.52 \\
+PointPillars & 4.835 & 32.13 & 63.84 & -- & 15.66 & 95.88 \\
+SECOND & 5.326 & 62.64 & 93.70 & 15.96 & 10.67 & 107.42 \\
+PointRCNN & 4.039 & 169.36 & 194.50 & 5.90 & 5.14 & 213.48 \\
+Part-A$^2$-Anchor & 63.815 & 102.57 & 133.75 & 9.75 & 7.48 & 150.49 \\
+PV-RCNN & 13.116 & 160.79 & 188.60 & 6.22 & 5.30 & 202.62 \\
+MobilePIXORNeXt & 0.754 & 17.88 & 60.96 & 55.94 & 16.41 & 80.85 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: workbook rows 55--62. Hardware, precision, batch size and timing boundaries remain to be attached. A dash marks a missing value or a metric stored as a date; no decimal value is guessed from a date.\end{minipage}
+\end{table*}

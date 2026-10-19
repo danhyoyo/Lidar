@@ -1,90 +1,53 @@
-\section{Results}
-\label{sec:results}
-\subsection{Interaction between geometry and quality}
-Table~\ref{tab:factorial} shows the 50-epoch OGA--IQA comparison with the same Hist14 backbone, focal context, grouped heads, augmentation, and decoding thresholds. Without IQA, OGA raises Moderate mAP from 67.38\% to 68.97\%, a gain of 1.59 percentage points (pp). With IQA, its gain is 0.27 pp. Conversely, IQA adds 2.93 pp to the baseline objective and 1.61 pp to OGA. The difference in these gains is $-1.32$ pp, consistent with overlapping benefits in this seed (Fig.~\ref{fig:tradeoff}a). The combination has the highest mean among these four runs, although Cyclist AP is slightly lower than for baseline plus IQA. This comparison does not isolate OGA's projection, corner, and weighting components.
+\draftnote{The following tables are an editorial draft transcribed from the updated workbook. The ablation and comparison sets are deliberately separate. Missing run identities, conflicting cells and benchmark conditions are tracked in the accompanying evidence record. No table is a claim of a fully reconciled, matched reproduction.}
 
-\begin{table}[t]
-\centering
-\caption{Local BEV R40 AP (\%) for Moderate objects in the OGA--IQA factorial comparison. P1--P4 use focal context without local attention and complete 50 epochs with seed 42.}
-\label{tab:factorial}
-\setlength{\tabcolsep}{3pt}
-\small\input{tables/loss_factorial}
-\end{table}
+\subsection{Detection quality and model size}
 
-\begin{figure*}[t]
-\centering\includegraphics[width=.96\textwidth]{ablation_tradeoff.pdf}
-\caption{Local BEV ablations completing 50 epochs on the validation split. (a) OGA and IQA yield non-additive observed gains. (b) Moderate mAP versus saved FP32 model forward latency on an L4. Run definitions are given in Tables~\ref{tab:factorial} and \ref{tab:attention} and Supplementary Table~S2. The chart reports seed 42 and excludes decoding from the horizontal axis; no error bars or significance tests are available.}
-\label{fig:tradeoff}
-\end{figure*}
+Table~\ref{tab:comparison} summarizes the detector-comparison block. Its MobilePIXORNeXt row reports 71.46\% Moderate mAP and 73.42\% mAP9, with class Moderate APs of 86.90\%, 60.75\%, and 66.73\% for Car, Pedestrian, and Cyclist. The architecture-derived count of 0.754 million parameters provides the size context for these measurements. These entries are kept separate from the ablation set, whose final row reports 71.50\% and 73.45\%. A checkpoint/evaluator mapping is needed to determine the source of that difference.
 
-\subsection{Matched OGA--Q-OGA retraining}
-With the same 100-epoch SimAM configuration and no separate IQA branch, Q-OGA raises Moderate mAP from OGA's 69.69\% to 70.52\% (Table~\ref{tab:loss_retrain}). Both runs have 815,744 detector parameters and select epoch 70 using the same scheduled AP criterion. Their supplied configurations differ only in the objective name. The 0.82 pp macro-average gain comprises a 4.21 pp Pedestrian increase, a 0.11 pp Car reduction, and a 1.62 pp Cyclist reduction. Thus, the improvement is concentrated in Pedestrian detection rather than shared across all three classes.
+\input{tables/comparison}
 
-\begin{table}[t]
-\centering
-\caption{Matched OGA--Q-OGA comparison: local BEV R40 Moderate AP (\%). Both runs complete 100 epochs with seed 42, Hist14, focal context, residual SimAM, independent grouped heads, and no separate IQA. Each has 815,744 detector parameters and is AP-selected at epoch 70. Differences use unrounded AP.}
-\label{tab:loss_retrain}
-\setlength{\tabcolsep}{3pt}
-\small\input{tables/loss_retrain}
-\end{table}
+The comparison block includes larger detectors with higher aggregate accuracy and smaller models with lower aggregate accuracy. It therefore motivates examining size, class-specific behavior and runtime together. The current summary alone does not establish a controlled ranking across implementations, training budgets or evaluation protocols. The full nine-cell accuracy grid is retained in the workbook and can be added as a supplementary table after the records are reconciled.
 
-Q-OGA scores higher at nine of the ten scheduled AP evaluations, with the exception at epoch 20 (Fig.~\ref{fig:loss_retrain}). At epoch 100, it scores 70.32\% versus OGA's 68.79\%, a 1.53 pp difference. The separately loss-selected checkpoints yield 69.80\% and 69.69\%, respectively, reducing the advantage to 0.11 pp. The reported primary comparison therefore depends on the declared checkpoint criterion. These two runs extend the training budget but retain seed 42; they do not supply independent-seed replication.
+\subsection{Inference cost}
 
-\begin{figure}[t]
-\centering\includegraphics[width=\columnwidth]{loss_retrain.pdf}
-\caption{Saved local BEV R40 Moderate mAP during matched 100-epoch OGA and Q-OGA training. AP is measured every ten epochs on the same 3,769 validation frames; both primary checkpoints are selected at epoch 70. Lines connect the saved measurements and do not imply intermediate AP evaluations. Both runs use seed 42.}
-\label{fig:loss_retrain}
-\end{figure}
+Table~\ref{tab:efficiency} reports the separate runtime-comparison block. Its MobilePIXORNeXt entry records 17.88~ms model-forward latency and 60.96~ms end-to-end latency, corresponding to 55.94 and 16.41~FPS. The difference between those timings includes the pipeline stages outside the model and illustrates why forward FPS is insufficient to describe complete-system throughput.
 
-At score threshold 0.05, Q-OGA produces 20.62 false positives per frame versus OGA's 31.52, while micro recall is 89.67\% versus 89.49\%. Total false positives fall from 118,795 to 77,704 (34.59\%). These fixed-threshold operating points do not establish equal-recall superiority or calibrated probabilities. Model forward latency is similar, 7.93 versus 7.88 ms, while the saved offline pipeline time decreases from 47.32 to 42.10 ms. The largest stage reduction is decoding/suppression, from 21.05 to 15.53 ms, consistent with the reduced candidate output. This is an observed pipeline difference for the same detector architecture.
+\input{tables/efficiency}
 
-\subsection{Context, attention, and earlier design choices}
-Removing focal context from OGA plus IQA lowers mAP from 70.58\% (P4) to 68.72\% (P5). However, adding it to the baseline configuration lowers the score from 68.46\% (S32) to 67.38\% (P1). Context therefore has a conditional effect within the available configurations. Among local refinement variants (Table~\ref{tab:attention}), SimAM yields the highest mAP, 70.99\%. Its 0.41 pp gain over P4 includes a 1.03 pp Pedestrian improvement and a small Car reduction. The detail path and ECA produce lower macro-averages despite small Pedestrian increases.
+The final ablation row instead records 8.67~ms model-forward and 42.16~ms end-to-end latency. These are two benchmark records, not repeated measurements known to share the same conditions. They are not averaged, and the faster record is not combined with the comparison table's accuracy to construct a new operating point. Hardware, precision, preprocessing and postprocessing implementations, and timing boundaries remain to be attached to each record.
 
-\begin{table}[t]
-\centering
-\caption{Local refinement of P4. AP values are local BEV R40 percentages for Moderate objects; latency is saved FP32 model forward time on an L4. SimAM adds one residual-scale parameter to P4's 852,929 parameters.}
-\label{tab:attention}
-\setlength{\tabcolsep}{4pt}
-\small\input{tables/attention}
-\end{table}
+\subsection{Configuration comparisons}
 
-The earlier runs provide supporting design evidence rather than a fully controlled sequence. Hist14 scores 50.14\% compared with 47.37\% for Rich8, and grouped heads score 51.30\%, but these runs also differ in code or configuration details. A more closely aligned width comparison raises mAP from 66.56\% to 67.28\% when prediction width increases from 16 to 32 at fusion width 24, adding 114,832 parameters. Changing fusion width from 24 to 32 at prediction width 16 lowers mAP by 0.31 pp. The apparent 7.91 pp sampling gain between O32 and H32 accompanies simultaneous changes to sampling probability, quotas, placement attempts, and validation batching. Supplementary Tables~S2--S5 retain all runs and identify these comparison limits.
+Table~\ref{tab:components} separates complete configurations in panel (a) from their results and source records in panel (b). The backbone is MobilePIXOR in M0. All remaining configurations use the NeXt backbone. In particular, M3 combines MobilePIXORNeXt, Strata-BEV14, a Single H16 head, standard sampling and F24 SumFPN. The M/E labels are editorial aliases, not a definition of inherited settings. Strata-BEV14, grouped prediction and hybrid sampling are recorded as separate transitions, followed by fusion and attention changes. Several rows lack persistent run identifiers or explicit head-sharing metadata. The table is therefore presented as a recipe comparison rather than proof that each listed change caused the entire observed difference.
 
-\subsection{Range performance and runtime}
-P16's Pedestrian AP in the 30--50 m bin rises from P4's 4.54\% to 9.77\%, with 71 rather than 66 true positives among 137 valid objects (Fig.~\ref{fig:latency}b). The absolute score remains low. The 50--70.4 m bin contains only 13 Pedestrians, limiting interpretation of its score. These bins expose remaining range sensitivity rather than establish robust distant-object detection.
+\input{tables/components}
 
-P16 uses 852,930 detector parameters and averages 8.55 ms per model forward pass, equivalent to 116.90 forwards/s. The offline input-to-detections pipeline averages 56.83 ms, or 17.60 frames/s, with a 95th percentile of 97.37 ms. Its loading/encoding, transfer, model, and decoding means are 11.74, 6.75, 8.55, and 29.51 ms. Decoding is the largest recorded stage (Fig.~\ref{fig:latency}a). P3 has a higher model time than P4 but a shorter total pipeline time, illustrating the effect of the number and distribution of decoded candidates. No embedded-device throughput is established by these L4 measurements.
+The SG-FPN control has an unresolved inconsistency: its displayed aggregate metrics disagree with its class APs. Its aggregate results are withheld in Table~\ref{tab:components}, rather than selecting one version. The same control is needed by the loss study, so resolving it is necessary before attributing improvements to OGA and IQA.
+
+\subsection{Geometry, quality prediction, and attention placement}
+
+Table~\ref{tab:loss} separates OGA, IQA, and their combination. The listed OGA+IQA result is slightly higher than the IQA-only result in this experiment set. This does not establish additive benefits: the factorial baseline is unresolved and a single summary supplies no estimate of seed-to-seed variability. Two different Q-OGA results are also present, so that row is reserved until its configuration is identified.
+
+\input{tables/loss}
+\input{tables/attention}
+
+Table~\ref{tab:attention} distinguishes after-stage refinement from block-level attention. The latter reweights the residual update before LayerScale at each enabled block. The selected F32 block-attention row has the highest listed aggregate AP in this subset. However, fusion-width and run-identity discrepancies remain for the stage-level comparisons, so the table does not isolate attention placement as the sole source of the difference.
+
+\subsection{Qualitative evidence and limitations}
+
+Figure~\ref{fig:qualitative} reserves space for matched examples with frame IDs, a color legend, and both ground truth and predictions. Figure~\ref{fig:pr} reserves precision--recall curves computed from saved detections under one fixed protocol. The available slides contain illustrative scenes and heatmaps, but do not yet provide the labels and checkpoint provenance required for an error analysis.
 
 \begin{figure*}[t]
-\centering\includegraphics[width=.96\textwidth]{latency_range.pdf}
-\caption{Saved local BEV measurements. (a) Mean offline pipeline stage times for P3, P4, and P16; total time includes stage-boundary overhead and can differ slightly from the stage sum. (b) Range-stratified Pedestrian R40 Moderate AP, with valid ground-truth counts shown below each bin. Values in sparsely populated bins require caution.}
-\label{fig:latency}
+    \centering
+    \paperfigure{qualitative_comparison.pdf}{40mm}{Retrieval: re-render identical validation frames using the baseline and final F32 checkpoints, with ground truth and class/error legends.\\ Slide PDF pages 21--22 are candidate scenes only; page 23 contains heatmaps. Recover frame IDs and checkpoint provenance before reuse.}
+    \caption{Reserved qualitative comparison of BEV detections on identical scans. Examples should include both successful detections and failures; vertical cuboids used for visualization do not establish learned 3D detection.}
+    \label{fig:qualitative}
 \end{figure*}
-
-\subsection{Reference evaluation of the trained 3D extension}
-Final3D achieves 71.09\% BEV and 57.75\% 3D Moderate mAP under the pinned reference evaluator (Table~\ref{tab:reference}). The detector has 797,382 parameters: 666,769 in the backbone including the neck, and 130,613 in the grouped heads. This total is 55,548 parameters below the archived independent-head P16 BEV model, despite the added vertical outputs. The models differ in head topology, training duration, checkpoint criterion, and evaluation protocol, so their AP difference is not a controlled shared-head ablation. Final3D is selected at epoch 70; its epoch-100 3D score is 56.47\% (Fig.~\ref{fig:vertical}a). The loss-selected epoch-24 checkpoint scores 46.73\%, reinforcing the practical relevance of the declared selection policy.
-
-\begin{table*}[t]
-\centering
-\caption{Final3D validation AP R40 (\%) from the pinned reference evaluator. E, M, and H denote Easy, Moderate, and Hard. Both modes evaluate the same epoch-70 checkpoint trained for 100 epochs; the ground-truth count column is for Moderate. These are full-frame reference results and are separate from the local BEV ablations.}
-\label{tab:reference}
-\small\input{tables/final_reference}
-\end{table*}
-
-\subsection{Vertical localization and qualitative evidence}
-Among 7,130 fixed BEV-matched Cars in the CPU diagnostic, 5,743 pass the 3D IoU threshold of 0.7. Replacing vertical bottom location raises the count to 6,791, whereas replacing height alone gives 5,873. Joint replacement makes all 7,130 fixed pairs pass (Fig.~\ref{fig:vertical}b). Vertical location correction recovers 1,048 of the 1,387 failing Car pairs, or 75.6\%. Car bottom-height mean absolute error is 8.66 cm, while signed bias is only $-0.82$ cm. The error is thus substantially object-dependent. Car pass rates decrease from 91.46\% within 20 m to 53.29\% beyond 40 m among the matched pairs. These conditional counts identify a vertical localization bottleneck without predicting the AP gain of an oracle system.
-
 \begin{figure*}[t]
-\centering\includegraphics[width=.96\textwidth]{vertical_diagnostic.pdf}
-\caption{Final3D evidence. (a) Saved reference 3D Moderate mAP over the 100-epoch training schedule; the selected checkpoint is epoch 70. (b) Conditional 3D IoU threshold passes among fixed CPU BEV matches: 7,130 Cars, 1,342 Pedestrians, and 448 Cyclists. The oracle replaces camera-coordinate vertical bottom location and/or height while preserving scores and associations. This is a geometric diagnostic, not an AP evaluation.}
-\label{fig:vertical}
+    \centering
+    \paperfigure{precision_recall.pdf}{40mm}{Not supplied by the slides. Retrieve score-ranked predictions and ground truth from matched validation evaluations; export cumulative TP/FP precision--recall arrays and plot them.\\ Car / Pedestrian / Cyclist; Moderate difficulty; fixed class-specific IoU thresholds. Do not reconstruct curves from AP summaries.}
+    \caption{Reserved precision--recall curves for the baseline and final detector. Curves must be exported from detections and matches; aggregate AP values do not determine their shapes.}
+    \label{fig:pr}
 \end{figure*}
 
-The validation visualization in Fig.~\ref{fig:demo} shows P4 footprints and class predictions in frame 004338. Additional images display Hist14 channels, center heatmaps, augmentation, and a consecutive sequence in Supplementary Note~S5. P4 cuboid demonstrations estimate vertical extent from LiDAR points and are distinguished from trained Final3D outputs. Camera images serve as visualization backgrounds rather than model inputs. The examples illustrate the processing pipeline; quantitative conclusions follow the evaluated frame sets.
-
-\begin{figure}[t]
-\centering\includegraphics[width=\columnwidth]{validation_bev.png}
-\caption{P4 BEV demonstration on validation frame 004338 at visualization score threshold 0.3. The point-cloud view and overhead view show the same planar footprint predictions. The display contains 4 Car, 5 Cyclist, and 7 Pedestrian predictions; these counts are not verified true-positive counts.}
-\label{fig:demo}
-\end{figure}
+The present evidence concerns oriented BEV footprints. It does not support conclusions about vertical localization, embedded-system latency, or performance at IoU 0.9. A threshold sweep, range-stratified analysis and multiple-seed study remain useful follow-up experiments, but are not implied by the current mAP9 summary. Finalization requires the selected F32 checkpoint, raw metrics, matched comparison protocols and correction of spreadsheet cells that were converted to dates.

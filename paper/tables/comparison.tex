@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering\small
+\caption{Draft detector-comparison records. AP is reported at Moderate difficulty; Car uses IoU 0.7 and Pedestrian/Cyclist use 0.5. Protocol matching is pending.}
+\label{tab:comparison}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Method & Params (M) & Car & Ped. & Cyc. & mAP M & mAP9 \\
+\midrule
+PIXOR & 2.135 & 72.02 & -- & -- & -- & -- \\
+MobilePIXOR & 0.598 & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
+PointPillars & 4.835 & 88.02 & 56.01 & 66.34 & 70.13 & 72.25 \\
+SECOND & 5.326 & 88.56 & 56.56 & 71.16 & 72.09 & 73.79 \\
+PointRCNN & 4.039 & 88.42 & 57.84 & 73.87 & 73.38 & 75.31 \\
+Part-A$^2$-Anchor & 63.815 & 90.05 & 64.20 & 74.60 & 76.28 & 78.04 \\
+PV-RCNN & 13.116 & 90.29 & 58.48 & 74.54 & 74.44 & 76.49 \\
+MobilePIXORNeXt & 0.754 & 86.90 & 60.75 & 66.73 & 71.46 & 73.42 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: workbook comparison block, rows 44--51. Missing entries are unavailable, not zero. Parameter counts for comparators are workbook values; the proposed count was also checked by model construction. No best-value highlighting is applied before protocol reconciliation.\end{minipage}
+\end{table*}

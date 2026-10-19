@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering\small
+\caption{Verified model settings and remaining run-specific fields.}
+\label{tab:setup}
+\begin{tabular}{@{}p{.38\columnwidth}p{.55\columnwidth}@{}}
+\toprule
+Setting & Value \\
+\midrule
+Input & Strata-BEV14; $14\times800\times704$ \\
+ROI (m) & $x:[0,70.4]$; $y:[-40,40]$; $z:[-2.5,1]$ \\
+XY cell / output stride & 0.1 m / 4 \\
+Stage widths / depths & 48, 96, 128 / 3, 4, 2 \\
+Final fusion / head width & 32 / 32 \\
+Prediction groups & Car; Pedestrian + Cyclist \\
+Training objective & OGA + projection-target IQA \\
+Sampling recipe & Hybrid GT (summary selection) \\
+Final run / checkpoint & Pending resolved config and hash \\
+Training schedule / seeds & Pending final run record \\
+AP protocol / split hashes & Pending per experiment set \\
+Hardware / timing setup & Pending per benchmark record \\
+\bottomrule
+\end{tabular}
+\end{table}

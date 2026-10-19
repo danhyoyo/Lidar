@@ -1,6 +1,0 @@
-{
-  "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-baseline_iou-sgfpn-ctx_focal_local_simam_f32_detail0_cf6746b25ae6-grouped_e02c0e499671-s42-Final_oga-h32/best_checkpoints/45epoch.pt",
-  "criterion": "minimum mean validation loss",
-  "epoch": 45,
-  "validation_objective": 0.9883474111557007
-}

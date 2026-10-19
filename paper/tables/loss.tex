@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering\small
+\caption{Draft objective and quality-head comparison at Moderate difficulty.}
+\label{tab:loss}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Objective & IQA & Car & Ped. & Cyc. & mAP M \\
+\midrule
+Baseline & No & -- & -- & -- & -- \\
+OGA & No & 84.09 & 57.93 & 64.88 & 68.97 \\
+Baseline & Yes & 84.13 & 59.45 & 67.34 & 70.31 \\
+OGA & Yes & 84.87 & 59.63 & 67.24 & 70.58 \\
+Q-OGA & No & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: latest summary rows 10--14 and loss block rows 24--28. Baseline and Q-OGA values are withheld pending conflicting-record reconciliation. The factorial interaction is not reported. Shared architecture, training and selection settings must be verified before causal interpretation.\end{minipage}
+\end{table*}

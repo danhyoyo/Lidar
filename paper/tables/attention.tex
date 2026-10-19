@@ -1,10 +1,17 @@
-\begin{tabular}{llrrr}
+\begin{table*}[t]
+\centering\small
+\caption{Draft attention-placement comparison with OGA and IQA enabled.}
+\label{tab:attention}
+\begin{tabular}{@{}llrrr@{}}
 \toprule
-Run & Local module & Ped. AP & mAP & Model ms \\
+SimAM placement & Fusion & mAP M & mAP9 & Model ms \\
 \midrule
-P4 & None & 59.63 & 70.58 & 8.186 \\
-P14 & Detail path & 59.70 & 70.01 & 8.243 \\
-P15 & ECA & 59.77 & 69.90 & 8.510 \\
-P16 & SimAM & 60.66 & 70.99 & 8.554 \\
+None & F32 & 70.58 & 72.66 & 8.19 \\
+Stage at stride 4 & F32 & 69.44 & 71.49 & 7.30 \\
+Stage at stride 8 & Pending & 69.80 & 71.98 & 6.94 \\
+Stage at stride 16 & F32 & 69.36 & 71.34 & 7.44 \\
+Block at strides 4/8/16 & F32 & 71.50 & 73.45 & 8.67 \\
 \bottomrule
 \end{tabular}
+\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: latest summary rows 14--18. The stride-8 stage row is labeled F32 in one sheet and F24 in its copy and the historical inventory. Block placements and within-group head sharing must be confirmed per run. Stride labels avoid the inconsistent C2/C3/C4 versus C3/C4/C5 naming in slide drafts.\end{minipage}
+\end{table*}
