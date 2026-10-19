@@ -21,9 +21,8 @@ def source_preflight(repo_root):
     root = Path(repo_root)
     required = ['configs/config.json', 'tools/kitti_training_pipeline/notebook_config.py',
         'tools/kitti_training_pipeline/checkpoint_selection.py',
-        'tools/kitti_training_pipeline/notebook_workflow.py', 'tools/benchmarks/audit_kitti_assets.py',
-        'tools/benchmarks/benchmark_evidence.py', 'tools/benchmarks/benchmark_protocol.py',
-        'tools/benchmarks/smoke_detector.py', 'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
+        'tools/kitti_training_pipeline/notebook_workflow.py',
+        'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
         'tools/kitti_training_pipeline/image_metadata.py',
         'detector/core/models/heads/grouped.py', 'detector/core/models/backbones/light_attention.py']
     missing = [p for p in required if not (root / p).is_file()]
