@@ -84,7 +84,7 @@ class TestRunNameAndLogging(unittest.TestCase):
     def test_run_name_format_baseline_a4(self):
         cfg = create_experiment_config(self.base_cfg, {
             "model": {
-                "backbone": "mobilepixor_coordatt",
+                "backbone": "pixor",
                 "scale_gated_fpn": True,
                 "c4_attention": "none",
                 "c4_attention_scales": [],
@@ -98,7 +98,7 @@ class TestRunNameAndLogging(unittest.TestCase):
         run_name = generate_run_name(cfg, seed=42)
         self.assertEqual(
             run_name,
-            "mobilepixor_coordatt-standard_aug-uwag_loss-rich8-baseline_iou-sgfpn-s42",
+            "pixor-standard_aug-uwag_loss-rich8-baseline_iou-sgfpn-s42",
         )
 
     def test_run_name_format_mobilepixor_ablation(self):

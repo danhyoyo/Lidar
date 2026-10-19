@@ -138,7 +138,7 @@ def resolve_detection_config(config):
     if "bev_encoding" in data:
         normalized["bev_encoding"] = copy.deepcopy(data["bev_encoding"])
     # Preserve registered custom builders; their own options are validated by them.
-    builtins = {"mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
+    builtins = {"mobilepixornext", "mobilepixor", "pixor"}
     if str(normalized["backbone"]).lower() in builtins:
         features = resolve_backbone_features(normalized, geometry=kitti.get("geometry"))
     else:

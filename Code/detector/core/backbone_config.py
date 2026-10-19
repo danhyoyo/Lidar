@@ -184,7 +184,7 @@ def resolve_backbone_features(model_config=None, *, geometry=None, grid_shape=No
     if unknown:
         raise ValueError(f"unsupported feature options: {sorted(unknown)}")
     backbone = _choice(cfg, "backbone", "mobilepixornext",
-                       {"mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"})
+                       {"mobilepixornext", "mobilepixor", "pixor"})
     if backbone != "mobilepixornext":
         _reject_present(cfg, _NEW_FIELDS, "feature options require MobilePixorNeXt")
     neck = _choice(cfg, "neck_type", "scale_gated_fpn",

@@ -23,7 +23,7 @@ from tools.kitti_training_pipeline.common import validate_backbone
 class TestBackboneRegistry(unittest.TestCase):
     def test_default_backbones_registered(self):
         available = get_available_backbones()
-        for name in ("mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"):
+        for name in ("mobilepixornext", "mobilepixor", "pixor"):
             self.assertIn(name, available)
 
     def test_unsupported_backbone_raises_value_error(self):

@@ -372,7 +372,7 @@ def validate_notebook_config(config):
         model.pop("block_simam_lambda", None)
         model.update(features.to_dict())
     backbone = model.get("backbone")
-    if backbone not in ("mobilepixornext", "mobilepixor", "mobilepixor_coordatt"):
+    if backbone not in ("mobilepixornext", "mobilepixor"):
         raise ValueError(f"Unsupported notebook BACKBONE: {backbone!r}")
     if model.get("neck_type") not in (None, "scale_gated_fpn", "sgfpn", "rc_sgfpn", "rc_bisgfpn"):
         raise ValueError("Unsupported NECK_TYPE")
