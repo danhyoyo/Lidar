@@ -32,7 +32,7 @@ UNDER1M_PRESETS = {'UNDER1M_SINGLE_OGA_IQA': 'reference_single_oga_iqa',
  'UNDER1M_SIMAM_OGA_IQA': 'optional_simam',
  'UNDER1M_FUSION32_OGA_IQA': 'optional_fusion32',
  'UNDER1M_DETAIL_OGA_IQA': 'optional_detail'}
-UNDER1M_MANIFEST = "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json"
+UNDER1M_MANIFEST = "configs/experiments/under1m/experiment_manifest.json"
 
 # Built-in notebook recipes; configs/config.json is the only source JSON required.
 UNDER1M_COMMON = {'data': {'bev_encoding': {'name': 'hist14',

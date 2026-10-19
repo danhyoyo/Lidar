@@ -15,7 +15,7 @@ from common import (bev_encoding_spec, checkpoint_identity, create_experiment_co
 import notebook_config as notebook
 from tools.benchmarks.profile_detector import profile_detector
 
-MANIFEST = read_json(ROOT / "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json")
+MANIFEST = read_json(ROOT / notebook.UNDER1M_MANIFEST)
 BEV_VARIANTS = [variant for variant in MANIFEST["variants"]
                 if variant["overrides"].get("data", {}).get("box_mode", "bev") == "bev"
                 and variant["overrides"].get("model", {}).get("head_mode") != "legacy_single"]
@@ -82,7 +82,7 @@ def test_single_reference_has_fresh_flat_contract_and_no_group_only_fields():
 
 def test_recipe_generation_is_deterministic_and_does_not_mutate_inputs(tmp_path):
     for relative in [MANIFEST["base_config"],
-                     "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json"]:
+                     notebook.UNDER1M_MANIFEST]:
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes((ROOT / relative).read_bytes())

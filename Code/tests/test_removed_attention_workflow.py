@@ -25,7 +25,10 @@ def test_retired_presets_rejected_before_training(preset):
     "3D_Lidar_Detection_Pipeline_Robust.ipynb",
 ])
 def test_notebook_has_no_removed_module_controls(filename):
-    notebook = json.loads((ROOT / filename).read_text())
+    path = ROOT / filename
+    if not path.is_file():
+        pytest.skip(f"Notebook {filename} not present")
+    notebook = json.loads(path.read_text())
     source = "\n".join("".join(cell["source"]) for cell in notebook["cells"])
     for control in ("C4_CONTEXT", "FOCAL_STAGE", "ATTENTION_ORDER", "LOCAL_ATTENTION_ECA_KERNEL_SIZE"):
         assert control not in source

@@ -19,7 +19,7 @@ import notebook_config
 from tools.benchmarks.profile_detector import profile_detector
 from test_vertical_head import config_3d
 
-MANIFEST = read_json(ROOT / "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json")
+MANIFEST = read_json(ROOT / notebook_config.UNDER1M_MANIFEST)
 VARIANTS = [v for v in MANIFEST["variants"] if v["overrides"].get("data",{}).get("box_mode") == "3d"]
 
 
