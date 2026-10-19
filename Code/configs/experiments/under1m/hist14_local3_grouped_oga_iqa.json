@@ -136,6 +136,12 @@
   },
   "date": "reproducible",
   "device": "cuda",
+  "evaluation": {
+    "kitti_root": "data/kitti/raw",
+    "max_detections": 500,
+    "nms_threshold": 0.1,
+    "score_threshold": 0.05
+  },
   "experiment": {
     "name": "reference_oga_iqa"
   },
@@ -154,7 +160,6 @@
     "c4_attention": "none",
     "c4_attention_qk_norm": "none",
     "c4_attention_scales": [],
-    "c4_context": "none",
     "cls_encoding": "gaussian",
     "deploy": false,
     "detail_path": false,
@@ -178,6 +183,11 @@
   "seed": 42,
   "train": {
     "accumulation_steps": 1,
+    "checkpoint_selection": {
+      "ap_every": 1,
+      "metric_mode": "auto",
+      "primary": "ap"
+    },
     "compile_model": false,
     "data": "splits/kitti/train.txt",
     "epochs": 50,

@@ -8,25 +8,24 @@ import torch
 
 from core.backbone_config import resolve_backbone_features
 from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
-from common import checkpoint_identity, generate_run_name
 
 GOLDEN = json.loads((Path(__file__).parent / 'fixtures/attention_placement_legacy_v1.json').read_text())
 
 
-def test_legacy_feature_metadata_is_unchanged():
-    for record in GOLDEN['feature_cases']:
-        features = resolve_backbone_features(record['input'])
-        assert features.semantic_metadata() == record['metadata']
-        assert features.semantic_hash == record['sha256']
+def test_schema_version_changes_identity_explicitly():
+    # Historical records remain frozen evidence; retired topologies are not loadable.
+    for record in GOLDEN["feature_cases"]:
+        if record["input"].get("c4_context") == "focal":
+            with pytest.raises(ValueError, match="removed"):
+                resolve_backbone_features(record["input"])
+        else:
+            features = resolve_backbone_features(record["input"])
+            assert features.semantic_metadata()["resolver_version"] == 4
+            assert features.semantic_hash != record["sha256"]
 
 
-def test_legacy_full_checkpoint_identity_and_run_name_are_unchanged():
-    config = GOLDEN['full_config']
-    assert checkpoint_identity(config) == GOLDEN['checkpoint_identity']
-    assert generate_run_name(config) == GOLDEN['run_name']
-
-
-@pytest.mark.parametrize('record', GOLDEN['feature_cases'])
+@pytest.mark.parametrize('record', [case for case in GOLDEN['feature_cases']
+                                    if case['input'].get('c4_context', 'none') == 'none'])
 def test_legacy_initialization_state_and_outputs(record):
     if torch.__version__ != GOLDEN['torch_version']:
         pytest.skip('Initialization golden uses the recorded PyTorch version')

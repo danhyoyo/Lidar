@@ -33,8 +33,6 @@ def minimum_channels(name: str) -> int | None:
         return None
     if name == "hist14":
         return 14
-    if name in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
-        return 32
     if name in _RICH_MINIMUM:
         return _RICH_MINIMUM[name]
     raise ValueError(f"unsupported BEV encoding: {name!r}")
@@ -50,14 +48,6 @@ def _positive_float(value, name, lower_bound):
     return result
 
 
-def _pillar_pooling_options(encoding):
-    name = encoding.get("name")
-    pooling = encoding.get("pooling", "max")
-    if not isinstance(pooling, str) or pooling != "max":
-        raise ValueError(f"{name} pooling must be max")
-    return pooling
-
-
 def _options(encoding):
     if encoding is None:
         encoding = {}
@@ -71,27 +61,7 @@ def _options(encoding):
     if type(version) is not int or version != 1:
         raise ValueError(f"unsupported {name} version: {version!r}; expected integer 1")
     configured = encoding.get("out_channels")
-    if name in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
-        supported = {"name", "version", "out_channels", "backend", "intensity_scale", "density_norm"}
-        if name in {"pillar_rich", "pillar_rich_gate"}:
-            supported.add("pooling")
-            _pillar_pooling_options(encoding)
-        unsupported = set(encoding) - supported
-        if unsupported:
-            raise ValueError(f"unsupported {name} options: {sorted(unsupported, key=str)}")
-        if "out_channels" in encoding and (type(configured) is not int or configured != 32):
-            raise ValueError(f"{name} out_channels must be exactly integer 32")
-        if encoding.get("backend", "torch") != "torch":
-            raise ValueError(f"{name} backend must be torch")
-        # Legacy rich recipes may retain density_norm when deep-merged.
-        # pillar32 ignores it; rich pillar variants use it for rich8 statistics.
-        if "density_norm" in encoding:
-            _positive_float(encoding["density_norm"], "density_norm", 1)
-        intensity = _positive_float(encoding.get("intensity_scale", 1), "intensity_scale", 0)
-        density = (_positive_float(encoding.get("density_norm", 32), "density_norm", 1)
-                   if name in {"pillar_rich", "pillar_rich_gate"} else None)
-        return name, version, 32, density, intensity, "torch"
-    elif name == "hist14":
+    if name == "hist14":
         unsupported = set(encoding) - _HIST14_OPTIONS
         if unsupported:
             raise ValueError(f"unsupported hist14 options: {sorted(unsupported, key=str)}")
@@ -156,15 +126,6 @@ class BEVEncodingSpec:
     density_norm: float | None
     intensity_scale: float | None
     backend: str
-    pooling: str = "max"
-
-    @property
-    def is_packed(self) -> bool:
-        return self.name in {"pillar32", "pillar_rich", "pillar_rich_gate"}
-
-    @property
-    def is_rich_pillar(self) -> bool:
-        return self.name in {"pillar_rich", "pillar_rich_gate"}
 
     @property
     def output_shape(self) -> tuple[int, int, int]:
@@ -176,46 +137,6 @@ class BEVEncodingSpec:
 
     def semantic_metadata(self) -> dict:
         """Return a fresh JSON-serializable identity, never mutable internal state."""
-        if self.is_packed:
-            result = {
-                "name": self.name, "version": self.version, "channels": self.channels,
-                "channel_names": list(self.channel_names), "geometry": dict(self.geometry),
-                "grid_shape_xyz": list(self.grid_shape), "bin_edges": list(self.bin_edges),
-                "density_norm": self.density_norm, "intensity_scale": self.intensity_scale,
-                "layout": {"encoding": "packed_points", "model": "packed_pillars", "bev": "BCYX"},
-                "boundary": {"interval": "open", "epsilon": .001},
-                "finite_filter": "first_four_columns",
-                "xy_indexing": "legacy_float32_floor_divide",
-                "precision": {"features": "float32", "indices": "int64"},
-                "learned_encoder": {
-                    "point_features": 10,
-                    "feature_names": ["x", "y", "z", "intensity", "cluster_dx", "cluster_dy",
-                                      "cluster_dz", "center_dx", "center_dy", "center_dz"],
-                    "architecture": "linear_bn_relu", "pooling": "max",
-                    "pillar_center_z": "roi_midpoint", "point_limit": None, "pillar_limit": None,
-                    "singleton_bn": "running_statistics", "empty_bev": "zero",
-                },
-            }
-            if self.is_rich_pillar:
-                result["learned_encoder"]["out_channels"] = 24
-                result["handcrafted_encoder"] = resolve_bev_encoding({
-                    "name": "rich8", "density_norm": self.density_norm,
-                    "intensity_scale": self.intensity_scale,
-                }, dict(self.geometry)).semantic_metadata()
-                result["fusion"] = {"operation": "concat_before_scatter", "rich8_channels": [0, 8],
-                                    "learned_channels": [8, 32], "rich8_cast": "pooled_dtype"}
-                if self.name == "pillar_rich_gate":
-                    result["learned_encoder"].update({
-                        "gate": {"type": "rich_conditioned_channel_gate",
-                                 "descriptor": "concat(learned_max24, rich8)",
-                                 "architecture": "linear_relu_linear", "input_channels": 32,
-                                 "hidden_channels": 4, "output_channels": 24, "bias": True,
-                                 "scope": "per_occupied_pillar", "activation": "2 * sigmoid",
-                                 "precision": {"mlp": "model_autocast", "gate_and_scaling": "float32"},
-                                 "initial_scale": 1, "last_linear_init": "zero",
-                                 "fusion": "max * gate", "rich8_passthrough": True},
-                    })
-            return result
         histogram = self.name == "hist14"
         binary = self.name == "binary_slices"
         result = {
@@ -259,22 +180,13 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
         names = _HIST14_CHANNELS
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 4
                       for index in range(5))
-    elif name == "pillar32":
-        names = tuple(f"learned_feature_{index}" for index in range(32))
-        edges = (geom["z_min"], geom["z_max"])
-    elif name in {"pillar_rich", "pillar_rich_gate"}:
-        names = _RICH_CHANNELS[:8] + tuple(f"learned_feature_{index}" for index in range(24))
-        edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
-                      for index in range(4))
     else:
         names = tuple(_RICH_CHANNELS[index] if index < len(_RICH_CHANNELS) else f"reserved_zero_{index}"
                       for index in range(channels))
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 3
                       for index in range(4))
-    pooling = (_pillar_pooling_options(encoding)
-               if name in {"pillar_rich", "pillar_rich_gate"} else "max")
     return BEVEncodingSpec(name, version, channels, names, normalized, grid, edges,
-                           density, intensity, backend, pooling)
+                           density, intensity, backend)
 
 
 def resolve_input_channels(encoding=None, geometry=None, *, default_channels=35) -> int:

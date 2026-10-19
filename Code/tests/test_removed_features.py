@@ -38,6 +38,7 @@ def test_removed_c4_attention_settings_rejected(config):
         resolve_backbone_features(config)
 
 
-def test_default_backbone_uses_convolution_and_allows_focal_context():
+def test_default_backbone_uses_convolution_and_rejects_removed_context():
     assert resolve_backbone_features().c4_attention == "none"
-    assert resolve_backbone_features({"c4_context": "focal"}).c4_context == "focal"
+    with pytest.raises(ValueError, match="removed"):
+        resolve_backbone_features({"c4_context": "focal"})

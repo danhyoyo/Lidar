@@ -19,8 +19,8 @@ def module():
 
 
 def config(local="none", strategy="oga", iqa=True, classification="gaussian"):
-    filename = ("hist14_local3_focal_grouped_oga_iqa.json" if local == "none" else
-                f"hist14_local3_focal_{local}_grouped_oga_iqa.json")
+    filename = ("hist14_local3_grouped_oga_iqa.json" if local == "none" else
+                f"hist14_local3_{local}_grouped_oga_iqa.json")
     value = json.loads((ROOT / "configs/experiments/under1m" / filename).read_text())
     value["model"].update(header_use_iou=iqa, cls_encoding=classification)
     value["loss"] = {"name": "q_oga" if strategy == "exact_q_oga" else strategy, "use_iou": iqa,
@@ -30,7 +30,7 @@ def config(local="none", strategy="oga", iqa=True, classification="gaussian"):
     return value
 
 
-@pytest.mark.parametrize("local", ["none", "eca", "simam"])
+@pytest.mark.parametrize("local", ["none", "simam"])
 @pytest.mark.parametrize("classification,strategy,iqa", [
     ("gaussian", "baseline", True), ("gaussian", "oga", True), ("gaussian", "uwag", False),
     ("gaussian", "q_oga", False), ("gaussian", "exact_q_oga", False),
@@ -47,7 +47,7 @@ def test_cuda_fp32_all_adapters_supported_objectives_and_empty_targets(local, cl
     assert run["peak_cuda_memory_bytes"] > 0 and run["loss_dtype"] == "torch.float32"
 
 
-@pytest.mark.parametrize("local", ["none", "eca", "simam"])
+@pytest.mark.parametrize("local", ["none", "simam"])
 @pytest.mark.parametrize("precision", ["fp16", "bf16"])
 def test_cuda_amp_main_objective_preserves_fp32_boundaries_and_updates(local, precision):
     if precision == "bf16" and not torch.cuda.is_bf16_supported():
@@ -57,13 +57,13 @@ def test_cuda_amp_main_objective_preserves_fp32_boundaries_and_updates(local, pr
     assert report["status"] == "passed"
     run = report["precisions"][precision]
     assert run["optimizer_updates"] == 2 and run["head_weight_changed"]
-    assert run["loss_dtype"] == run["focal_modulation_input_dtype"] == "torch.float32"
+    assert run["loss_dtype"] == "torch.float32"
     assert run["head_output_dtype"] == ("torch.float16" if precision == "fp16" else "torch.bfloat16")
     if local != "none":
         assert run["local_gate_dtype"] == "torch.float32"
 
 
-@pytest.mark.parametrize("local", ["none", "eca", "simam"])
+@pytest.mark.parametrize("local", ["none", "simam"])
 def test_cuda_actual_configured_worker_count_and_full_resolution_inference(local):
     value = config(local)
     report = module().run_smoke(value, device="cuda", precisions=["fp32"], steps=1,

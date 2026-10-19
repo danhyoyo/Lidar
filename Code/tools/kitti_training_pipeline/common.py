@@ -137,6 +137,7 @@ def checkpoint_identity(config):
         model["header_architecture"] = detection.header_architecture
     model.pop("bev_encoding", None)
     model.pop("geometry", None)
+    model.pop("c4_context", None)
     if detection.backbone_features is not None:
         features = detection.backbone_features.semantic_metadata()
         for key in detection.backbone_features.__dataclass_fields__:
@@ -231,9 +232,7 @@ def validate_evaluation_checkpoint(checkpoint, config):
 
 def validate_deployment_config(config, consumer):
     """Reject contracts the current four-output deployment consumers cannot honor."""
-    schema = bev_encoding_spec(config)
-    if schema.is_packed:
-        raise ValueError(f"{consumer}: {schema.name} packed-point deployment is not supported; use PyTorch evaluation")
+    bev_encoding_spec(config)
     detection = detection_spec(config)
     if detection.box_mode == "3d":
         raise ValueError(f"{consumer}: 3D export/deployment is deferred; vertical output must not be dropped")
@@ -258,10 +257,7 @@ def model_parameter_report(model, criterion=None):
               "total_detector": sum(p.numel() for p in model.parameters()),
               "criterion_train_only": (sum(p.numel() for p in criterion.parameters())
                                        if criterion is not None else None)}
-    encoder = getattr(model, "point_encoder", None)
-    if encoder is not None:
-        counts["point_encoder"] = sum(p.numel() for p in encoder.parameters())
-    if hasattr(model.backbone, "c4_context"):
+    if hasattr(model.backbone, "feature_options"):
         neck_names = {"rc_neck", "lat_c5", "lat_c4", "lat_c3", "refine_u4", "proj_u3",
                       "gate_c4", "gate_c3", "out_conv", "detail_branch"}
         neck = sum(p.numel() for name, module in model.backbone.named_children()
@@ -325,7 +321,7 @@ def generate_run_name(
     # BEV encoder
     bev_cfg = config.get("data", {}).get("bev_encoding", {})
     bev_name = bev_cfg.get("name")
-    if bev_name in {"rich8", "hist14", "pillar32", "pillar_rich", "pillar_rich_gate"}:
+    if bev_name in {"rich8", "hist14"}:
         bev_encoder = str(bev_name)
     else:
         bev_encoder = "legacy35"
@@ -353,7 +349,6 @@ def generate_run_name(
     if model_cfg.get("use_reparam", False):
         extras.append("reparam")
     if backbone == "mobilepixornext" and (
-            model_cfg.get("c4_context", "none") != "none" or
             model_cfg.get("local_attention", "none") != "none" or
             model_cfg.get("block_simam_stages") or
             model_cfg.get("detail_path", False) or model_cfg.get("neck_fusion_channels", 24) != 24 or
@@ -369,14 +364,10 @@ def generate_run_name(
             identity = checkpoint_identity(config)
             identity.pop("training")
         digest = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:12]
-        if features.has_legacy_placement:
-            tag = f"ctx_{features.c4_context}_local_{features.local_attention}"
-        else:
-            context = features.c4_context + (f"_at{features.focal_stage}" if features.focal_stage else "")
-            local = features.local_attention + (f"_at{features.local_attention_stage}" if features.local_attention_stage else "")
-            tag = f"ctx_{context}_local_{local}"
-            if features.attention_order:
-                tag += "_order" + ("fs" if features.attention_order == "focal_then_local" else "sf")
+        local = features.local_attention
+        if features.local_attention_stage:
+            local += f"_at{features.local_attention_stage}"
+        tag = f"local_{local}"
         if features.block_simam_stages:
             tag += "_blocksimam_" + "".join(features.block_simam_stages)
         extras.append(f"{tag}_f{features.neck_fusion_channels}_detail{int(features.detail_path)}_{digest}")
@@ -497,30 +488,8 @@ def build_model(config: Dict[str, Any]):
 
 
 def input_shape(config: Dict[str, Any], dataset_name: str = "kitti") -> Tuple[int, ...]:
-    """Return the dense BEV backbone shape (packed encoders have separate inputs)."""
+    """Return the dense BEV model input shape."""
     return bev_encoding_spec(config, dataset_name).input_shape
-
-
-def model_input_batch_size(value):
-    """Count frames in either a dense BEV tensor or packed pillar input."""
-    return value["batch_size"] if isinstance(value, dict) else int(value.shape[0])
-
-
-def dummy_model_input(config, batch_size, device):
-    """Build a nonempty compile/profile input that includes learned encoding."""
-    import torch
-    schema = bev_encoding_spec(config)
-    if not schema.is_packed:
-        return torch.zeros((batch_size, *schema.input_shape[1:]), device=device)
-    features = torch.zeros((batch_size * 2, 10), device=device)
-    features[1::2] = .1
-    coords = torch.zeros((batch_size, 3), dtype=torch.int64, device=device)
-    coords[:, 0] = torch.arange(batch_size, device=device)
-    result = {"features": features, "coords": coords, "batch_size": batch_size,
-              "pillar_indices": torch.arange(batch_size, device=device).repeat_interleave(2)}
-    if schema.is_rich_pillar:
-        result["rich_features"] = torch.zeros((batch_size, 8), device=device)
-    return result
 
 
 def normalize_state_dict(checkpoint: Any) -> Dict[str, Any]:

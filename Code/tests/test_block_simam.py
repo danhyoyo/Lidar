@@ -131,10 +131,9 @@ def test_real_grouped_loss_backward_checkpoint_roundtrip_and_mismatch_rejection(
         assert_state_equal(target_parts[0], before)
 
 
-def test_block_simam_coexists_with_focal_stage_attention_and_repconv_deploy():
+def test_block_simam_coexists_with_stage_attention_and_repconv_deploy():
     model = build_backbone("mobilepixornext", {
         **BASE, "block_simam_stages": ["c4", "c5"], "use_reparam": True,
-        "c4_context": "focal", "focal_stage": "c4",
         "local_attention": "simam", "local_attention_stage": "c5",
     }, 14).eval()
     assert sum(isinstance(module, SimAMCore) for module in model.modules()) == 7
@@ -142,7 +141,6 @@ def test_block_simam_coexists_with_focal_stage_attention_and_repconv_deploy():
     before = model(x)
     before.square().mean().backward()
     assert torch.isfinite(x.grad).all()
-    assert model.c4_context.gamma.grad is not None
     assert model.c3_light_attention.beta.grad is not None
     for stage in (model.stage2, model.stage3, model.stage4):
         for block in stage:

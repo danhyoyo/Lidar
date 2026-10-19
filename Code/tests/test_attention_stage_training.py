@@ -24,7 +24,7 @@ def test_all_placements_backpropagate_actual_grouped_loss_once_per_parameter(cas
     loss = criterion(model(target['voxel']), target)['loss']
     assert torch.isfinite(loss)
     loss.backward()
-    for module in (model.backbone.c4_context, model.backbone.c3_light_attention):
+    for module in (model.backbone.c3_light_attention,):
         for parameter in module.parameters():
             assert parameter.grad is not None and torch.isfinite(parameter.grad).all()
     assert model.backbone.stem[0].weight.grad is not None
@@ -39,23 +39,21 @@ def test_full_kitti_shapes_and_parameter_counts_on_meta(case):
         prediction = model(torch.zeros(1,14,800,704))
     for group in prediction['groups'].values():
         assert all(value.shape[-2:] == (200,176) for value in group.values())
-    focal_count = sum(p.numel() for p in model.backbone.c4_context.parameters())
-    assert focal_count == {None:0,'c3':15472,'c4':25120,'c5':31552}[case[0]]
     assert sum(p.numel() for p in model.backbone.c3_light_attention.parameters()) == int(case[1] is not None)
     assert not any('attention_c' in key for key in model.state_dict())
 
 
 @pytest.mark.parametrize('stage', ['c4','c5'])
-def test_eca_can_move_without_changing_core_parameter_count(stage):
-    config,_ = configured(('c3',stage,None), local_kind='eca')
+def test_simam_can_move_without_changing_core_parameter_count(stage):
+    config,_ = configured((None,stage,None), local_kind='simam')
     model = build_model(config).eval()
-    assert sum(p.numel() for p in model.backbone.c3_light_attention.parameters()) == 4
+    assert sum(p.numel() for p in model.backbone.c3_light_attention.parameters()) == 1
     with torch.inference_mode():
         assert model(torch.randn(1,14,32,48))['groups']['car']['cls'].shape[-2:] == (8,12)
 
 
 def test_shared_3d_header_contract_is_preserved_with_colocated_attention():
-    config,_ = configured(('c5','c5','local_then_focal'))
+    config,_ = configured((None,'c5',None))
     config['data']['box_mode'] = '3d'
     config['model']['header_architecture'] = 'shared'
     config['loss']['vertical_loss_weight'] = 1.
@@ -64,13 +62,12 @@ def test_shared_3d_header_contract_is_preserved_with_colocated_attention():
     assert all(group['vertical'].shape == (2,2,8,12) for group in prediction['groups'].values())
     loss = sum(value.square().mean() for group in prediction['groups'].values() for value in group.values())
     loss.backward()
-    assert model.backbone.c4_context.gamma.grad is not None
+    assert model.backbone.c3_light_attention.beta.grad is not None
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA unavailable; CPU checks do not establish AMP parity')
 @pytest.mark.parametrize('dtype', [torch.float16,torch.bfloat16])
-@pytest.mark.parametrize('case', [('c3','c3','focal_then_local'),('c4','c4','local_then_focal'),
-                                  ('c5','c5','focal_then_local'),('c4','c3',None)])
+@pytest.mark.parametrize('case', CASES)
 def test_cuda_amp_forward_backward_is_finite(case, dtype):
     if dtype == torch.bfloat16 and not torch.cuda.is_bf16_supported():
         pytest.skip('CUDA BF16 unsupported')

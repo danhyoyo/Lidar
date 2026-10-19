@@ -24,7 +24,7 @@ def test_notebook_block_toggle_stage_selection_and_disabling(filename, tmp_path,
                  "NUM_WORKERS": 0, "PHYSICAL_BATCH_SIZE": 2, "ACCUMULATION_STEPS": 1,
                  "PRECISION": "fp32", "TARGET_BACKEND": "python", "COMPILE_MODEL": False,
                  "VAL_BATCH_SIZE": 3}
-    edits = {"PRESET": "custom", "C4_CONTEXT": "none", "LOCAL_ATTENTION": "none",
+    edits = {"PRESET": "custom", "LOCAL_ATTENTION": "none",
              "AUGMENTATION": "none"}
     active = controls.execute_cell(tmp_path, edits, namespace)
     assert active["BLOCK_SIMAM"] is True

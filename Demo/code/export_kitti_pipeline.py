@@ -75,7 +75,7 @@ def backbone_capture_modules(model):
     """Capture raw stages and refined taps; old backbones retain legacy captures."""
     available = dict(model.named_modules())
     taps = tuple(f'backbone.attention_{stage}_output' for stage in ('c3','c4','c5'))
-    optional = taps if all(name in available for name in taps) else ('backbone.c4_context',)
+    optional = taps if all(name in available for name in taps) else ('backbone.stage3',)
     names = ('backbone.stem','backbone.stage2','backbone.stage3','backbone.stage4',
              *optional,'backbone.refine_u4','backbone.proj_u3','backbone')
     return [name for name in names if name in available]

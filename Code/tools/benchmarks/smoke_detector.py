@@ -151,9 +151,6 @@ def precision_run(source, device, precision, steps, workers, full_resolution):
         vertical_gradients = {name: False for name in vertical_initial}
         vertical_losses = []
         overflow_diagnostics = []
-        modulation_dtypes = set()
-        handle = model.backbone.c4_context.out_projection.register_forward_pre_hook(
-            lambda module, inputs: modulation_dtypes.add(str(inputs[0].dtype)))
         if device.type == "cuda":
             torch.cuda.reset_peak_memory_stats(device)
         iterator = iter(loader)
@@ -162,71 +159,68 @@ def precision_run(source, device, precision, steps, workers, full_resolution):
         retry_batch = False
         negative_group, empty_scene = False, False
         loss_values = []
-        try:
-            while updates < steps:
-                if attempts >= steps + (32 if detection.box_mode == "3d" else 16):
-                    raise FloatingPointError(f"AMP did not produce enough finite optimizer updates: precision={precision}, diagnostics={overflow_diagnostics}")
-                if not retry_batch:
-                    try:
-                        batch = next(iterator)
-                    except StopIteration:
-                        iterator = iter(loader)
-                        next_sample_index = 0
-                        batch = next(iterator)
-                    decoded_sample_index = next_sample_index
-                    next_sample_index += batch["voxel"].shape[0]
-                    batch = train.move_tensor_batch(batch, device)
-                retry_batch = False
-                if attempts == 0:
-                    input_dimensions = list(batch["voxel"].shape)
-                empty_scene |= bool((~batch["voxel"].flatten(1).bool().any(dim=1)).any())
-                negative_group |= any(bool((~group["reg_mask"].flatten(1).bool().any(dim=1)).any())
-                                      for group in batch["groups"].values())
-                train.set_loss_epoch(criterion, updates)
-                optimizer.zero_grad(set_to_none=True)
-                with train.autocast_context(device, precision):
-                    prediction = model(batch["voxel"])
-                    objective = criterion(prediction, batch)
-                    loss = objective["loss"]
-                if detection.box_mode == "3d":
-                    assert objective["vertical"].dtype == torch.float32
-                if not torch.isfinite(loss) or loss.dtype != torch.float32:
-                    raise FloatingPointError("Smoke objective must be finite FP32")
-                scaler.scale(loss).backward()
-                if scaler.is_enabled():
-                    scaler.unscale_(optimizer)
-                gradients = [p.grad for p in parameters if p.grad is not None]
-                finite = gradients and all(bool(torch.isfinite(gradient).all()) for gradient in gradients)
-                attempts += 1
-                if not finite:
-                    if not scaler.is_enabled():
-                        raise FloatingPointError("Non-finite FP32/BF16 gradients")
-                    overflow_diagnostics.append({"scale": scaler.get_scale(), "loss": float(loss.detach()),
-                        "nonfinite_parameters": [name for name, p in model.named_parameters()
-                            if p.grad is not None and not torch.isfinite(p.grad).all()]})
-                    scaler.step(optimizer)
-                    scaler.update()
-                    skipped += 1
-                    # Retry the same synthetic supervised 3D scene: otherwise
-                    # negative-only successes can exhaust this very short gate
-                    # before any vertical branch sees a finite gradient.
-                    retry_batch = detection.box_mode == "3d"
-                    continue
-                torch.nn.utils.clip_grad_norm_(parameters, config["train"].get("grad_clip_norm", 10.))
-                for name in vertical_gradients:
-                    gradients_for_head = [p.grad for p in model.grouped_header.heads[name].vertical.parameters()]
-                    vertical_gradients[name] |= any(g is not None and bool(g.ne(0).any()) for g in gradients_for_head)
-                if detection.box_mode == "3d":
-                    vertical_losses.append(float(objective["vertical"].detach()))
+        while updates < steps:
+            if attempts >= steps + (32 if detection.box_mode == "3d" else 16):
+                raise FloatingPointError(f"AMP did not produce enough finite optimizer updates: precision={precision}, diagnostics={overflow_diagnostics}")
+            if not retry_batch:
+                try:
+                    batch = next(iterator)
+                except StopIteration:
+                    iterator = iter(loader)
+                    next_sample_index = 0
+                    batch = next(iterator)
+                decoded_sample_index = next_sample_index
+                next_sample_index += batch["voxel"].shape[0]
+                batch = train.move_tensor_batch(batch, device)
+            retry_batch = False
+            if attempts == 0:
+                input_dimensions = list(batch["voxel"].shape)
+            empty_scene |= bool((~batch["voxel"].flatten(1).bool().any(dim=1)).any())
+            negative_group |= any(bool((~group["reg_mask"].flatten(1).bool().any(dim=1)).any())
+                                  for group in batch["groups"].values())
+            train.set_loss_epoch(criterion, updates)
+            optimizer.zero_grad(set_to_none=True)
+            with train.autocast_context(device, precision):
+                prediction = model(batch["voxel"])
+                objective = criterion(prediction, batch)
+                loss = objective["loss"]
+            if detection.box_mode == "3d":
+                assert objective["vertical"].dtype == torch.float32
+            if not torch.isfinite(loss) or loss.dtype != torch.float32:
+                raise FloatingPointError("Smoke objective must be finite FP32")
+            scaler.scale(loss).backward()
+            if scaler.is_enabled():
+                scaler.unscale_(optimizer)
+            gradients = [p.grad for p in parameters if p.grad is not None]
+            finite = gradients and all(bool(torch.isfinite(gradient).all()) for gradient in gradients)
+            attempts += 1
+            if not finite:
+                if not scaler.is_enabled():
+                    raise FloatingPointError("Non-finite FP32/BF16 gradients")
+                overflow_diagnostics.append({"scale": scaler.get_scale(), "loss": float(loss.detach()),
+                    "nonfinite_parameters": [name for name, p in model.named_parameters()
+                        if p.grad is not None and not torch.isfinite(p.grad).all()]})
                 scaler.step(optimizer)
                 scaler.update()
-                loss_values.append(float(loss.detach()))
-                updates += 1
-                scheduler.step()
-                if not all(bool(torch.isfinite(p).all()) for p in parameters):
-                    raise FloatingPointError("Non-finite parameters after optimizer step")
-        finally:
-            handle.remove()
+                skipped += 1
+                # Retry the same synthetic supervised 3D scene: otherwise
+                # negative-only successes can exhaust this very short gate
+                # before any vertical branch sees a finite gradient.
+                retry_batch = detection.box_mode == "3d"
+                continue
+            torch.nn.utils.clip_grad_norm_(parameters, config["train"].get("grad_clip_norm", 10.))
+            for name in vertical_gradients:
+                gradients_for_head = [p.grad for p in model.grouped_header.heads[name].vertical.parameters()]
+                vertical_gradients[name] |= any(g is not None and bool(g.ne(0).any()) for g in gradients_for_head)
+            if detection.box_mode == "3d":
+                vertical_losses.append(float(objective["vertical"].detach()))
+            scaler.step(optimizer)
+            scaler.update()
+            loss_values.append(float(loss.detach()))
+            updates += 1
+            scheduler.step()
+            if not all(bool(torch.isfinite(p).all()) for p in parameters):
+                raise FloatingPointError("Non-finite parameters after optimizer step")
         state = {key: tensor.detach().clone() for key, tensor in criterion.state_dict().items()}
         validation = train.validate(model, criterion, [batch], device, precision)
         assert all(torch.equal(state[key], tensor) for key, tensor in criterion.state_dict().items())
@@ -257,8 +251,7 @@ def precision_run(source, device, precision, steps, workers, full_resolution):
             local_dtype = None
             if hasattr(local, "core"):
                 values = torch.randn(2, 48, 4, 6, device=device, dtype=next(iter(actual["groups"].values()))["cls"].dtype)
-                weights = (local.core.channel_weights(values) if hasattr(local.core, "channel_weights")
-                           else local.core.spatial_weights(values))
+                weights = local.core.spatial_weights(values)
                 assert weights.dtype == torch.float32 and torch.isfinite(weights).all()
                 local_dtype = str(weights.dtype)
         one_frame = {"groups": {name: {key: value[:1] for key, value in heads.items()}
@@ -269,11 +262,10 @@ def precision_run(source, device, precision, steps, workers, full_resolution):
                             use_iou=detection.use_iou, max_detections=7)
         assert boxes.shape[1] == (9 if detection.box_mode == "3d" else 7)
         assert boxes.dtype == np.float32 and np.isfinite(boxes).all()
-        assert modulation_dtypes == {"torch.float32"}
         result = {"status": "passed", "optimizer_updates": updates, "amp_skipped_updates": skipped,
             "losses": loss_values, "finite_loss": True, "finite_gradients": True,
             "loss_dtype": str(loss.dtype), "head_output_dtype": str(next(iter(actual["groups"].values()))["cls"].dtype),
-            "focal_modulation_input_dtype": next(iter(modulation_dtypes)), "local_gate_dtype": local_dtype,
+            "local_gate_dtype": local_dtype,
             "head_weight_changed": not torch.equal(initial, head), "optimizer_membership_exact": True,
             "model_and_criterion_on_device": True, "checkpoint_restore_verified": True,
             "criterion_state_unchanged_in_validation": True, "input_shape": input_dimensions,
@@ -327,8 +319,8 @@ def run_smoke(config, *, device="cuda", precisions=("fp32", "fp16", "bf16"), ste
     if requested.type not in {"cpu", "cuda"}:
         raise ValueError("Smoke supports only CPU or CUDA")
     detection = detection_spec(config)
-    if detection.head_mode != "grouped" or config["model"].get("c4_context") != "focal":
-        raise ValueError("Smoke requires a grouped focal config")
+    if detection.head_mode != "grouped":
+        raise ValueError("Smoke requires a grouped config")
     if requested.type == "cuda":
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA unavailable; CPU/meta is not a substitute for GPU readiness")

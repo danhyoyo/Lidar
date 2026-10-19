@@ -6,7 +6,7 @@ import math
 
 import numpy as np
 
-HIST14_IMPLEMENTATION_VERSION = 2
+HIST14_IMPLEMENTATION_VERSION = 3
 _numba_kernel = None
 
 
@@ -149,14 +149,19 @@ def _accumulate_and_normalize(
         density_table[count] = min(1.0, math.log1p(count) / density_log)
     for index in range(points.shape[0]):
         x = np.float64(points[index, 0])
-        y = np.float64(points[index, 1])
-        z = np.float64(points[index, 2])
-        intensity = np.float64(points[index, 3])
-        if not (math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and math.isfinite(intensity)):
+        # Open finite ROI bounds reject NaN/Inf as well. Reject each axis before
+        # reading the next feature, especially the rear/out-of-range KITTI points.
+        # Keep division/statistic expressions below unchanged for bitwise parity.
+        if not (x > x_min + .001 and x < x_max - .001):
             continue
-        if not (x > x_min + .001 and x < x_max - .001 and
-                y > y_min + .001 and y < y_max - .001 and
-                z > z_min + .001 and z < z_max - .001):
+        y = np.float64(points[index, 1])
+        if not (y > y_min + .001 and y < y_max - .001):
+            continue
+        z = np.float64(points[index, 2])
+        if not (z > z_min + .001 and z < z_max - .001):
+            continue
+        intensity = np.float64(points[index, 3])
+        if not math.isfinite(intensity):
             continue
         ix = int(math.floor((x - x_min) / x_res))
         iy = int(math.floor((y - y_min) / y_res))

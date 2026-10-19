@@ -214,7 +214,7 @@ def test_shared_real_training_loss_backward_and_optimizer_step(classification, s
     assert all(not torch.equal(weight, original) for weight, original in zip(shared_weights, before))
 
 
-@pytest.mark.parametrize("preset", ["custom", "UNDER1M_FOCAL_OGA_IQA"])
+@pytest.mark.parametrize("preset", ["custom", "UNDER1M_GROUPED_OGA_IQA"])
 def test_standard_notebook_architecture_control_reaches_saved_config(tmp_path, preset):
     from test_under1m_notebook_controls import execute_cell
     namespace = execute_cell(tmp_path, {"PRESET": preset, "HEADER_ARCHITECTURE": "shared"})

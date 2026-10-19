@@ -1,5 +1,74 @@
 # Hist14 input preparation performance
 
+## Revision 3: matched comparison with Binary35 (2026-10-18)
+
+Revision 3 rejects each out-of-ROI axis before reading the next point feature.
+The open, finite ROI comparisons already reject NaN/Inf coordinates; intensity
+still has its own finite check after the ROI tests. Float64 statistics, operation
+order, float32 output, all 14 channels and semantic version/hash stay unchanged.
+The measured channel-first scatter and padded-accumulator alternatives did not
+show a consistent benefit and were discarded.
+
+On 12 evenly spaced KITTI validation frames, with five warmups and 30 timed
+iterations per frame/method, method order was randomized within every iteration.
+CPU: AMD Ryzen 5 7640HS; Python 3.14.4, NumPy 2.4.6, Numba 0.67.0. The Numba
+kernel is serial. OMP/MKL/Numba thread settings were all 1.
+
+| CPU measurement boundary | Binary35, current NumPy implementation | Hist14 revision 3, Numba |
+| --- | ---: | ---: |
+| Native rasterization | 6.662 ms | 2.693 ms |
+| Rasterization + contiguous float32 CHW model input | 102.296 ms | 3.013 ms |
+
+Hist14 rasterization was **2.47x** faster in this matched local measurement.
+The larger CHW difference also includes Binary35's dense axis-reordering copy:
+its original X/Y/Z storage is permuted into Z/Y/X and materialized as contiguous
+model input. Hist14 writes CHW directly. Payloads are 78,848,000 and 31,539,200
+bytes respectively. The CHW copy can occur inside the archived evaluator's H2D
+stage, so this CHW boundary must not be substituted for its preprocess column.
+
+The starting Hist14 implementation was already revision 2, verified byte-for-byte
+against Git HEAD (`89ac8b999dbeddf8c49da1347d84606c4834e64c4b1e10a9c1ede7caac6b7542`).
+Its matched CHW mean was 3.085 ms; revision 3 measured 3.013 ms, a **2.34%**
+latency reduction. Attribute only this incremental reduction to this revision.
+The absolute timings and small incremental gain depend on CPU/cache/allocation
+state; no claim of a universal maximum or of all possible Binary encoders follows.
+
+An independent audit compared revision 2 and revision 3 on 100 evenly spaced
+real validation frames plus eight numeric/ROI edge cases, both HWC and CHW:
+**zero uint32 bit mismatches**, including signed zero. The focused encoding,
+benchmark, schema, integration and checkpoint suite passed **177 tests**.
+This audit establishes input parity on those samples; it does not measure AP.
+
+File I/O, augmentation, H2D, forward, decode/NMS and AP are excluded from these
+CPU timings. Existing T4/L4 benchmark sheets retain their original measurements.
+The existing `backend: "numba"` checkpoint/config uses revision 3 automatically
+when evaluated with the updated source; retraining is unnecessary for this
+implementation change. Warm the encoder before collecting steady-state speed.
+
+Reproduce on a chosen set of real frames from the `Code` directory:
+
+```bash
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMBA_NUM_THREADS=1 \
+  python3 tools/benchmarks/benchmark_hist14_vs_binary.py \
+  --pointcloud Kitti_Raw/velodyne/training/velodyne/000001.bin \
+               Kitti_Raw/velodyne/training/velodyne/007480.bin \
+  --warmup 5 --iterations 30 --output artifacts/hist14_vs_binary.json
+```
+
+The report records per-frame hashes, raw latency samples, actual output shapes,
+contiguity/payloads, first-call initialization, randomized order, source hashes,
+and environment. An optional `--baseline-backend /path/to/original/bev_backend.py`
+adds the original CHW method and fails if any output bit differs. Inputs for this
+option are trusted Python source snapshots.
+
+Raw 12-frame results, parity audit, source snapshots and a Vietnamese report are
+published in `../Result/hist14_speed_20261018/` from the Code directory.
+Exploratory candidate measurements remain in ignored `artifacts/hist14_speed_v3/`
+at the repository root. The following sections preserve the earlier revision-2
+measurements and their different boundaries.
+
+## Revision 2 history
+
 Hist14 implementation revision 2 reduces CPU rasterization and prepares contiguous
 CHW input directly for `Dataset.encode_input`. Hist14 semantic version remains 1;
 channel order, float64 geometry/statistics, float32 features, ROI/bin boundaries,

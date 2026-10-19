@@ -47,7 +47,7 @@ def asset_fixture(directory, *, box_mode='bev'):
     train, val = directory/'train.txt', directory/'val.txt'
     train.write_text('000000;kitti\n000001;kitti\n'); val.write_text('000002;kitti\n')
     build_database(processed, train, processed/'gt_database', val_manifest=val)
-    source = ROOT/'configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json'
+    source = ROOT/'configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json'
     config = copy.deepcopy(json.loads(source.read_text()))
     config['data']['box_mode'] = box_mode
     config['data']['kitti'].update(location=str(processed), geometry={'x_min':0.,'x_max':24.,'x_res':.5,
@@ -75,9 +75,6 @@ def evaluation_fixture(directory, *, metric_mode='local_bev', iqa=True):
     config,path,processed,raw=asset_fixture(directory,box_mode='bev' if metric_mode=='local_bev' else '3d')
     config['model']['header_use_iou']=iqa
     config['loss']['use_iou']=iqa
-    config['model']['c4_context']='none'
-    for key in list(config['model']):
-        if key.startswith('c4_context_'):del config['model'][key]
     path.write_text(json.dumps(config))
     model=build_model(config);criterion=train.build_training_criterion(config,torch.device('cpu'))
     optimizer=train.build_optimizer(model,criterion,config);scheduler=train.build_scheduler(optimizer,config,2)

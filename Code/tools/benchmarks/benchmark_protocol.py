@@ -100,8 +100,8 @@ def freeze_protocol(config_path, repo_root=ROOT, *, metric_mode="3d", comparator
             "quality_semantics": "BEV IQA; changing to 3D IoU is a separate feature"},
         "training": {"seed": config["seed"], "schedule": copy.deepcopy(config["train"]),
             "augmentation": copy.deepcopy(config["augmentation"]),
-            "main_attention": (f"{config['model'].get('c4_context', 'none')}, "
-                               f"local {config['model'].get('local_attention', 'none')}; optional comparisons named separately"),
+            "main_attention": (f"local {config['model'].get('local_attention', 'none')}; "
+                               f"block SimAM stages {config['model'].get('block_simam_stages', [])}"),
             "required_3d_extension": "owned z_bottom/log_height branches with explicit vertical weight1; final 3D config pending task58"},
         "pending_gates": ["reference_evaluator_revision", "reference_R11_R40_parity",
             "configured_data_and_train_only_gt_database_audit", "comparator_protocols_and_reproduced_baseline"],

@@ -117,10 +117,10 @@ def test_grouped_worker_loader_after_parent_preview_and_pickle_roundtrip(tmp_pat
                 torch.testing.assert_close(tensor[0], expected["groups"][name][key], rtol=0, atol=0)
 
 
-@pytest.mark.parametrize("local", ["none", "eca", "simam"])
+@pytest.mark.parametrize("local", ["none", "simam"])
 @pytest.mark.parametrize("backend", ["python", "numba"])
 @pytest.mark.parametrize("scene", ["empty", "car_only", "same_cell"])
-def test_assembled_hybrid_hist14_focal_training_resume_and_decode(tmp_path, local, backend, scene):
+def test_assembled_hybrid_hist14_training_resume_and_decode(tmp_path, local, backend, scene):
     from test_hybrid_augmentation import database, recipe
     from test_grouped_checkpoint import components, payload, restore
     from test_grouped_loss_state import snapshot, assert_state_equal
@@ -139,8 +139,8 @@ def test_assembled_hybrid_hist14_focal_training_resume_and_decode(tmp_path, loca
     manifest = tmp_path / "host.txt"
     manifest.write_text("000000;kitti\n000001;kitti\n")
     recipe_path = Path(__file__).resolve().parents[1] / "configs/experiments/under1m"
-    filename = ("hist14_local3_focal_grouped_oga_iqa.json" if local == "none" else
-                f"hist14_local3_focal_{local}_grouped_oga_iqa.json")
+    filename = ("hist14_local3_grouped_oga_iqa.json" if local == "none" else
+                f"hist14_local3_{local}_grouped_oga_iqa.json")
     config = read_json(recipe_path / filename)
     geometry = dict(x_min=0., x_max=32., x_res=.5, y_min=-8., y_max=8., y_res=.5,
                     z_min=-2.5, z_max=1., z_res=.1)

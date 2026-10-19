@@ -83,39 +83,25 @@ decay 1e-3, 50 epochs / 4 warmup epochs, batch 16, BF16 and seed 42.
 Use a run's `config.resolved.json` to reproduce its actual architecture/recipe.
 Resume a matching run with `--resume /path/to/checkpoint.pt`.
 
-### Select Focal / SimAM stage in the notebook
+### Select stage-level SimAM in the notebook
 
-In the Standard or Robust notebook config cell, select custom mode and edit:
+In the Standard or Robust notebook config cell:
 
 ```python
 PRESET = "custom"
-C4_CONTEXT = "focal"
-FOCAL_STAGE = "c4"
 LOCAL_ATTENTION = "simam"
 LOCAL_ATTENTION_STAGE = "c3"
-ATTENTION_ORDER = "focal_then_local"
 ```
 
-`c3/c4/c5` mean Stage 2/3/4, at strides 4/8/16 with 48/96/128 channels. Each
-module runs after all blocks of its selected stage. To put both at C5, set both
-stage controls to `c5`. Choose `local_then_focal` to execute SimAM before Focal
-at a shared stage; `focal_then_local` executes Focal first. With separate stages,
-backbone depth determines execution order and the order field is omitted.
-Set `C4_CONTEXT="none"` and/or `LOCAL_ATTENTION="none"` to disable modules.
-ECA remains supported through `LOCAL_ATTENTION="eca"` and the same local-stage control.
+`c3/c4/c5` mean Stage 2/3/4, at strides 4/8/16 with 48/96/128 channels.
+The adapter runs after all blocks at the selected stage. Set
+`LOCAL_ATTENTION="none"` to disable it. Rerun the configuration cell to inspect
+placement and the saved snapshot. Custom controls are ignored in preset/config
+mode. Changing placement or SimAM settings creates a distinct architecture
+identity; train a new run for the new topology.
 
-Rerun the config cell and inspect the placement summary and saved run snapshot.
-Custom controls are ignored in preset/config mode. This feature creates no new
-experiment JSONs or presets; the notebook still saves the current run's config.
-Module hyperparameters, training schedule, encoding, heads and losses remain your
-existing selections. Focal's historical `c4_context` name selects its kind, while
-`focal_stage` determines where it executes.
-
-Changing placement/order gives a different architecture identity/run name.
-Use a new run when retraining. A mismatched checkpoint cannot silently resume,
-even if SimAM's tensor shapes or a shared-stage reorder look compatible.
-Historical omitted placement defaults preserve old checkpoint identities and
-existing trained snapshots are retained byte-for-byte when defaults are explicit.
+Feature metadata now uses resolver version 4. Checkpoints retain their original
+resolved configs; automatic full resume requires matching metadata.
 
 ### Select SimAM inside each block
 
@@ -129,7 +115,6 @@ BLOCK_SIMAM = True
 BLOCK_SIMAM_STAGES = ["c4", "c5"]  # ["c5"], ["c3", "c4", "c5"], etc.
 BLOCK_SIMAM_LAMBDA = 0.0001
 LOCAL_ATTENTION = "none"          # disable the separate after-stage adapter
-C4_CONTEXT = "none"               # isolate block SimAM for this ablation
 HEADER_ARCHITECTURE = "shared"     # keep the same head across compared runs
 ```
 
@@ -139,8 +124,8 @@ controls are ignored in preset/config mode. Each selected stage applies
 addition**. With `STAGE_DEPTHS=[3,4,2]`, C4+C5 enables six cores; C5 alone enables
 two; all stages enable nine. The cores add no learned parameters or extra beta.
 This is an insertion choice for MobilePixorNeXt, distinct from a single adapter
-after a stage. Focal and the existing after-stage ECA/SimAM remain independent
-options; enabling both intentionally runs both.
+after a stage. Block-level and stage-level SimAM remain independent options;
+enabling both intentionally runs both.
 
 For JSON/CLI configurations the corresponding model fields are:
 
@@ -153,7 +138,7 @@ omit lambda. Config validation rejects invalid/duplicate stages and unsupported
 backbones. Notebook summaries print the selected stages and block counts; run
 names include `blocksimam_c4c5`. Placement or lambda changes require a fresh run,
 even though this parameter-free feature leaves state keys/shapes unchanged.
-Disabled options preserve existing checkpoint identities. These controls do not
+Disabled SimAM options resolve to the same current architecture identity. These controls do not
 establish mAP, GPU speed or VRAM costs; compare newly trained runs under the same
 training and benchmarking protocol.
 
@@ -166,18 +151,6 @@ Robust setup checks the placement helpers, resolver fields and backbone construc
 before using an existing checkout. On Colab, an outdated checkout is preserved and
 fresh source is cloned into `/content`; Drive datasets and artifacts keep their
 configured locations. Setup also clears cached project modules when selecting source.
-
-To visualize an actual trained topology after training, from `Code/` run:
-
-```bash
-python3 tools/visualization/compare_attention_placements.py \
-  --mode checkpoint --checkpoint /path/to/selected/best_ap.pt \
-  --frame 000134 --output-dir /tmp/lidar-trained-attention-view
-```
-
-This captures the saved model without inserting modules or changing weights.
-The default `--mode intervention` remains an untrained placement experiment on
-a native Focal-C4/SimAM-C3 checkpoint, and must not be interpreted as trained AP.
 
 ### Select independent or shared detection heads
 
@@ -201,8 +174,9 @@ Both notebooks expose `HEADER_ARCHITECTURE="independent"`; set it to `"shared"`
 to enable the proposed head. It applies to custom and preset selections. For CLI
 training on an existing complete config, add
 `--override-json '{"model":{"header_architecture":"shared"}}'`.
-A full Hist14/Focal/SimAM/FPN-width-32 example is
-[`hist14_local3_focal_simam_fusion32_shared_grouped_oga_iqa.json`](../../configs/experiments/under1m/hist14_local3_focal_simam_fusion32_shared_grouped_oga_iqa.json).
+For a Hist14/SimAM example, use
+[`hist14_local3_simam_grouped_oga_iqa.json`](../../configs/experiments/under1m/hist14_local3_simam_grouped_oga_iqa.json),
+then explicitly set fusion width 32 and the shared head when desired.
 
 Omitting the key or selecting `independent` preserves historical state-dict keys,
 seeded initialization, checkpoint identities and automatic run names. Shared runs
@@ -216,27 +190,9 @@ parameters vs 186,161 independent parameters (12 vs 20 Conv3×3 layers). Shapes
 and mathematical convolution cost are verified; AP and actual latency require
 training/measurement. See the [architecture comparison](../../diagrams/mobilepixornext/head_current_vs_proposed/README.md).
 
-For matched rich8 vs learned point encoder experiments, use
-`configs/experiments/encoders/{rich8,pillar32,pillar_rich}.json`. The added `pillar32`
-learns a shared 10-to-32 point MLP and pools occupied pillars before the existing
-BEV backbone. `pillar_rich` concatenates exact rich8 statistics with 24 learned
-features into the same 32-channel BEV. Select `BEV_ENCODING="pillar_rich"` with
-`PRESET="custom"` in existing notebooks, or `PRESET="ENCODER_PILLAR_RICH"` for
-the matched comparator. See [learned encoder comparison](../../docs/learned_pillar_encoder.md)
-for paired commands, notebook presets, parameter counts and memory conditions.
-For rich-conditioned per-pillar channel gating, use
-`configs/experiments/encoders/pillar_rich_gate.json` or
-`PRESET="ENCODER_PILLAR_RICH_GATE"`. The encoder name is `pillar_rich_gate`;
-`pillar_rich` remains max-only. The fixed Linear(32,4)-ReLU-Linear(4,24) gate
-consumes learned max24 plus existing rich8, and multiplies max24 by 2*sigmoid.
-It retains 32 BEV channels and adds 252 parameters. The final Linear is
-zero-initialized for unit gates; constructor RNG is preserved for matched
-backbone/head initialization. The old ECA encoder/presets are retired;
-start a new run rather than resuming a max-only or ECA checkpoint into gate.
-`tools/benchmarks/benchmark_pillar_encoders.py` compares rich8, max-only and
-rich-conditioned gate at matched precision with separate preparation/transfer/model
-timings. Its random-weight benchmark excludes decode/NMS and AP; measure
-actual checkpoint end-to-end latency with the evaluator before claiming speed.
+For the rich8 experiment recipe, use `configs/experiments/encoders/rich8.json`
+or `PRESET="ENCODER_RICH8"` in the notebook. For a custom model and loss, select
+`PRESET="custom"` and `BEV_ENCODING="rich8"`.
 Omitted `--num-workers`, `--target-backend` and `--compile-model` flags use the
 saved training config (historical fallbacks: 2 workers, Python backend, no compile).
 Explicit flags override the config; `--no-compile-model` disables compilation.

@@ -1,7 +1,6 @@
 import numpy as np
 from torch.utils.data import Dataset
 import torch
-from torch.utils.data import default_collate
 import os
 import math
 from collections.abc import Mapping
@@ -17,38 +16,6 @@ from core.bev_encoding import resolve_bev_encoding
 from core.detection_config import resolve_box_mode
 from core.task_groups import resolve_task_groups, validate_resolved_groups
 
-
-def collate_detector_batch(samples):
-    """Collate dense legacy samples or concatenate variable-length pillar data."""
-    if not isinstance(samples[0]["voxel"], Mapping):
-        return default_collate(samples)
-    features, indices, coords = [], [], []
-    rich_features = []
-    has_rich = "rich_features" in samples[0]["voxel"]
-    pillar_offset = 0
-    for batch_index, sample in enumerate(samples):
-        packed = sample["voxel"]
-        if ("rich_features" in packed) != has_rich:
-            raise ValueError("cannot mix pillar32 and rich pillar inputs in one batch")
-        if has_rich:
-            rich_features.append(packed["rich_features"])
-        features.append(packed["features"])
-        indices.append(packed["pillar_indices"] + pillar_offset)
-        frame_coords = packed["coords"].clone()
-        frame_coords[:, 0] = batch_index
-        coords.append(frame_coords)
-        pillar_offset += len(frame_coords)
-    metadata_keys = {"points", "boxes", "cls_list", "dtype"}
-    targets = [{key: value for key, value in sample.items()
-                if key != "voxel" and key not in metadata_keys} for sample in samples]
-    result = default_collate(targets)
-    result["voxel"] = {"features": torch.cat(features), "pillar_indices": torch.cat(indices),
-                       "coords": torch.cat(coords), "batch_size": len(samples)}
-    if has_rich:
-        result["voxel"]["rich_features"] = torch.cat(rich_features)
-    for key in metadata_keys & samples[0].keys():
-        result[key] = [sample[key] for sample in samples]
-    return result
 
 def trasform_label2metric(label, geometry, ratio=4):
     '''
@@ -294,11 +261,6 @@ class Dataset(Dataset):
             from .utils_1.bev_backend import encode_hist14_chw
             schema = resolve_bev_encoding(self.bev_encoding, geometry)
             return torch.from_numpy(encode_hist14_chw(points, schema))
-        if self.bev_encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
-            from .utils_1.pillar_backend import prepare_pillars
-            packed = prepare_pillars(points, geometry, self.bev_encoding)
-            return {key: torch.from_numpy(value) if isinstance(value, np.ndarray) else value
-                    for key, value in packed.items()}
         return torch.from_numpy(self.voxelize(points, geometry)).permute(2, 0, 1)
 
 

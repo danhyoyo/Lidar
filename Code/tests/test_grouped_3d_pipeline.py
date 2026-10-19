@@ -41,8 +41,8 @@ def test_complete_3d_recipe_matches_manifest_budget_hybrid_schedule_and_vertical
     base = read_json(ROOT/MANIFEST["base_config"])
     current = notebook_config.resolve_under1m_3d_recipe(ROOT,variant["id"])
     assert all(current[key] == base[key] for key in ("seed","train","val"))
-    assert config["augmentation"] == read_json(ROOT/MANIFEST["augmentation_config"])["augmentation"]
-    assert config["model"]["local_attention"] == ("none" if variant["id"] == "main_focal_3d" else "eca")
+    assert config["augmentation"] == notebook_config.AUGMENTATION_PROFILES["hybrid_gt"]
+    assert config["model"]["local_attention"] == "none"
     assert config["model"]["backbone_out_dim"] == 32 and config["model"]["c4_attention"] == "none"
     report = profile_detector(config)
     assert config == original
@@ -60,14 +60,14 @@ def test_complete_3d_recipe_matches_manifest_budget_hybrid_schedule_and_vertical
 
 def test_explicit_3d_generator_is_deterministic_and_preserves_all_bev_presets(tmp_path):
     assert hasattr(notebook_config,"write_under1m_3d_presets"), "Explicit 3D recipe generator is missing"
-    for relative in [MANIFEST["base_config"],MANIFEST["augmentation_config"],notebook_config.UNDER1M_MANIFEST]:
+    for relative in [MANIFEST["base_config"],notebook_config.UNDER1M_MANIFEST]:
         target = tmp_path/relative;target.parent.mkdir(parents=True,exist_ok=True)
         target.write_bytes((ROOT/relative).read_bytes())
     bev = notebook_config.write_under1m_presets(tmp_path)
     saved = {p:p.read_bytes() for p in bev}
     first = notebook_config.write_under1m_3d_presets(tmp_path)
     snapshots = {p:p.read_bytes() for p in first}
-    assert len(first) == 2 and first == notebook_config.write_under1m_3d_presets(tmp_path)
+    assert len(first) == 1 and first == notebook_config.write_under1m_3d_presets(tmp_path)
     assert snapshots == {p:p.read_bytes() for p in first}
     assert saved == {p:p.read_bytes() for p in bev}
     assert set(notebook_config.UNDER1M_PRESETS.values()).isdisjoint({v["id"] for v in VARIANTS})
@@ -86,10 +86,10 @@ def test_colab_existing_file_override_selects_3d_and_preserves_runtime_data_path
     assert detection_spec(config).box_mode=="3d" and config["loss"]["vertical_loss_weight"]==1.
     assert config["data"]["kitti"]["location"]==str(tmp_path/"processed")
     assert config["model"]["backbone_out_dim"]==32
-    assert config["augmentation"]==read_json(ROOT/MANIFEST["augmentation_config"])["augmentation"]
+    assert config["augmentation"]==notebook_config.AUGMENTATION_PROFILES["hybrid_gt"]
 
 
-@pytest.mark.parametrize("local", ["none","eca"])
+@pytest.mark.parametrize("local", ["none","simam"])
 @pytest.mark.parametrize("backend", ["python","numba"])
 def test_actual_hybrid_paste_and_global_scale_supervise_scaled_bottom_z_and_height(tmp_path,local,backend):
     from test_hybrid_augmentation import database, recipe
@@ -153,7 +153,7 @@ def test_cpu_3d_pipeline_preserves_owned_vertical_training_resume_and_decode(str
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(),reason="Actual CUDA required; skips do not establish readiness")
-@pytest.mark.parametrize("local", ["none","eca"])
+@pytest.mark.parametrize("local", ["none","simam"])
 @pytest.mark.parametrize("strategy,classification,iqa", [
     ("baseline","gaussian",True),("oga","gaussian",True),
     ("baseline","binary",True),("oga","binary",True),
@@ -171,7 +171,7 @@ def test_cuda_3d_advertised_objectives_have_vertical_gradients_and_strict_resume
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(),reason="Actual CUDA required; skips do not establish readiness")
-@pytest.mark.parametrize("local", ["none","eca"])
+@pytest.mark.parametrize("local", ["none","simam"])
 def test_cuda_3d_main_amp_and_full_resolution_outputs(local):
     if not torch.cuda.is_bf16_supported():pytest.skip("Actual BF16 hardware required")
     smoke = importlib.import_module("tools.benchmarks.smoke_detector")

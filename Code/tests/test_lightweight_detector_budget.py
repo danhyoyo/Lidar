@@ -90,10 +90,9 @@ def test_profile_cli_is_standalone_and_saves_resolved_configuration(tmp_path):
 
 
 @pytest.mark.parametrize('variant,backbone,neck,local', [
-    ('reference',635408,30544,0), ('focal',660528,30544,0),
-    ('focal_eca',660532,30544,4), ('focal_simam',660529,30544,1),
-    ('focal_fusion32',666768,36784,0), ('focal_detail',661720,31736,0),
-    ('focal_fusion32_detail_eca',668244,38256,4),
+    ('reference',635408,30544,0), ('simam',635409,30544,1),
+    ('fusion32',641648,36784,0), ('detail',636600,31736,0),
+    ('fusion32_detail_simam',643121,38256,1),
 ])
 def test_integrated_variants_full_shape_budget_and_feature_accounting(variant, backbone, neck, local):
     module=profiler()
@@ -108,32 +107,27 @@ def test_integrated_variants_full_shape_budget_and_feature_accounting(variant, b
     assert counts['criterion_train_only']==6
     assert report['backbone_output_shape']==[1,32,200,176]
     features=report['feature_parameter_counts']
-    assert features['context']['total']==(0 if variant=='reference' else 25120)
     assert features['local']['total']==local
-    assert features['local']['residual_scale']==(1 if local else 0)
-    assert features['local']['core']==(3 if 'eca' in variant else 0)
+    assert features['local']['residual_scale']==local
+    assert features['local']['core']==0
     assert features['detail']['total']==(1472 if 'fusion32_detail' in variant else 1192 if 'detail' in variant else 0)
     assert report['feature_semantic_hash'] and report['head_mode']=='legacy_single'
-    if variant!='reference':
-        assert report['resolved_config']['model']['c4_context_bottleneck']==64
-        assert features['context']['residual_scale']==96
-    assert 'Conv1d channel correlation' in report['conv2d_mac_estimate']['excluded_operations']
 
 
-def test_integrated_focal_budget_rejects_equality_and_cpu_output_is_finite():
+def test_integrated_simam_budget_rejects_equality_and_cpu_output_is_finite():
     module=profiler()
-    cfg=module.variant_config('focal_eca')
-    with pytest.raises(ValueError,match='660532.*strictly less'):
-        module.profile_detector(cfg,max_backbone_parameters=660532)
+    cfg=module.variant_config('simam')
+    with pytest.raises(ValueError,match='635409.*strictly less'):
+        module.profile_detector(cfg,max_backbone_parameters=635409)
     report=module.profile_detector(cfg,device='cpu',shape=(1,14,32,48))
     assert report['backbone_output_shape']==[1,32,8,12]
-    assert report['feature_parameter_counts']['local']['total']==4
+    assert report['feature_parameter_counts']['local']['total']==1
 
 
-def test_profile_cli_selects_focal_variant(tmp_path):
-    output=tmp_path/'focal.json'
+def test_profile_cli_selects_simam_variant(tmp_path):
+    output=tmp_path/'simam.json'
     subprocess.run([sys.executable,str(ROOT/'tools/benchmarks/profile_detector.py'),
-                    '--variant','focal','--output',str(output)],cwd=tmp_path,
+                    '--variant','simam','--output',str(output)],cwd=tmp_path,
                    check=True,capture_output=True,text=True)
     report=json.loads(output.read_text())
-    assert report['parameter_counts']['backbone_including_neck']==660528
+    assert report['parameter_counts']['backbone_including_neck']==635409

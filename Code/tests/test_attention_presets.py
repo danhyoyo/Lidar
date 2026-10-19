@@ -44,7 +44,7 @@ def test_manifest_bev_recipe_is_complete_rebuildable_and_matches_actual_counts(v
     assert detection.head_mode == "grouped"
     assert detection.group_weights == (("car", .5), ("ped_cyc", .5))
     assert detection.groups[1].global_ids == (1, 2)
-    assert saved["augmentation"] == read_json(ROOT / MANIFEST["augmentation_config"])["augmentation"]
+    assert saved["augmentation"] == notebook.AUGMENTATION_PROFILES[MANIFEST["augmentation_profile"]]
     base = read_json(ROOT / MANIFEST["base_config"])
     current = notebook.resolve_under1m_recipe(ROOT, variant["id"])
     for section in ("train", "val"):
@@ -74,14 +74,14 @@ def test_single_reference_has_fresh_flat_contract_and_no_group_only_fields():
     assert checkpoint_identity(saved) == checkpoint_identity(resolved)
     assert detection_spec(saved).head_mode == "legacy_single"
     assert "head_groups" not in saved["data"] and "group_weights" not in saved["loss"]
-    assert saved["model"]["c4_context"] == saved["model"]["local_attention"] == "none"
+    assert saved["model"]["local_attention"] == "none"
     report = profile_detector(saved, shape=(1, 14, 32, 48))
     assert report["parameter_counts"]["backbone_including_neck"] == 635408
     assert "groups" not in report["output_shapes"]
 
 
 def test_recipe_generation_is_deterministic_and_does_not_mutate_inputs(tmp_path):
-    for relative in [MANIFEST["base_config"], MANIFEST["augmentation_config"],
+    for relative in [MANIFEST["base_config"],
                      "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json"]:
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -89,12 +89,12 @@ def test_recipe_generation_is_deterministic_and_does_not_mutate_inputs(tmp_path)
     first = notebook.write_under1m_presets(tmp_path)
     snapshots = {path: path.read_bytes() for path in first}
     second = notebook.write_under1m_presets(tmp_path)
-    assert first == second and len(first) == 9
+    assert first == second and len(first) == 6
     assert snapshots == {path: path.read_bytes() for path in second}
     assert not list((tmp_path / "configs/experiments/under1m").glob("*3d*"))
     base = read_json(ROOT / MANIFEST["base_config"])
     original = copy.deepcopy(base)
-    notebook.resolve_under1m_recipe(ROOT, "main_focal_oga_iqa", base_config=base)
+    notebook.resolve_under1m_recipe(ROOT, "reference_oga_iqa", base_config=base)
     assert base == original
 
 
@@ -110,24 +110,22 @@ def test_runtime_presets_have_distinct_complete_semantic_and_readable_run_identi
     assert len(set(names)) == len(names)
     for config, name in zip(configs, names):
         model = config["model"]
-        assert f"ctx_{model['c4_context']}" in name
         assert f"local_{model['local_attention']}" in name
         assert f"f{model['neck_fusion_channels']}" in name
         assert f"detail{int(model['detail_path'])}" in name
         assert "grouped_" in name and "hybrid_gt_aug" in name
-    main = next(c for c in configs if c["experiment"]["name"] == "main_focal_oga_iqa")
+    main = next(c for c in configs if c["experiment"]["name"] == "reference_oga_iqa")
     assert main["model"]["local_attention"] == "none"
-    for change in [{"c4_context_bottleneck": 32}, {"c4_context_dilations": [1, 3]},
-                   {"local_attention": "eca"}, {"detail_path": True}, {"neck_fusion_channels": 32}]:
+    for change in [{"local_attention": "simam"}, {"stage_depths": [2, 4, 2]}, {"detail_path": True}, {"neck_fusion_channels": 32}]:
         assert generate_run_name(create_experiment_config(main, {"model": change})) != generate_run_name(main)
 
 
 def test_candidate_run_name_exposes_context_local_fusion_and_detail():
     config = create_experiment_config(read_json(ROOT / MANIFEST["base_config"]), MANIFEST["common_overrides"])
-    variant = next(v for v in BEV_VARIANTS if v["id"] == "main_focal_oga_iqa")
+    variant = next(v for v in BEV_VARIANTS if v["id"] == "reference_oga_iqa")
     config = create_experiment_config(config, variant["overrides"])
     name = generate_run_name(config)
-    assert "ctx_focal_local_none_f24_detail0_" in name
+    assert "local_none_f24_detail0_" in name
 
 
 @pytest.mark.parametrize("overrides", [
@@ -137,14 +135,14 @@ def test_candidate_run_name_exposes_context_local_fusion_and_detail():
     {"model": {"header_act": "relu"}},
 ])
 def test_new_candidate_run_identity_covers_encoding_and_objective_semantics(overrides):
-    config = read_json(ROOT / "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json")
+    config = read_json(ROOT / "configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json")
     changed = create_experiment_config(config, overrides)
     assert checkpoint_identity(changed) != checkpoint_identity(config)
     assert generate_run_name(changed) != generate_run_name(config)
 
 
 def test_new_candidate_run_identity_normalizes_defaults_and_excludes_backend_or_schedule():
-    config = read_json(ROOT / "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json")
+    config = read_json(ROOT / "configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json")
     changed = create_experiment_config(config, {"train": {"epochs": 99},
         "data": {"bev_encoding": {"backend": "numba"}}, "loss": {"iou_loss_weight": 1.0}})
     assert generate_run_name(changed) == generate_run_name(config)

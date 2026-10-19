@@ -33,7 +33,7 @@ def test_augmentation_needs_only_master_json_and_matches_existing_recipe(tmp_pat
     (tmp_path / 'configs').mkdir()
     shutil.copyfile(ROOT / 'configs/config.json', tmp_path / 'configs/config.json')
     actual = notebook_config.resolve_notebook_config(tmp_path, preset='custom', augmentation=profile)
-    expected = json.loads((ROOT / f'configs/augmentation/{profile}.json').read_text())['augmentation']
+    expected = notebook_config.AUGMENTATION_PROFILES[profile]
     assert actual['augmentation'] == expected
 
 
@@ -48,7 +48,7 @@ def test_selected_run_uses_own_resolved_config_and_minimum_loss_checkpoint(tmp_p
     result = module.selected_run(tmp_path)
     assert result['config_path'] == tmp_path / 'config.resolved.json'
     assert result['checkpoint'] == tmp_path / 'selected/best.pt'
-    assert result['config']['model']['c4_context'] == 'none'
+    assert 'c4_context' not in result['config']['model']
     assert result['completed_epochs'] == 2
 
 
@@ -341,7 +341,7 @@ def test_configurable_decode_is_shared_by_protocol_and_notebook(tmp_path):
 @pytest.mark.parametrize('settings', [{'score_threshold':float('nan')},{'nms_threshold':2.},
     {'max_detections':0},{'max_detections':True}])
 def test_invalid_notebook_decode_settings_fail_before_training(settings):
-    config=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_FOCAL_OGA_IQA',augmentation='config')
+    config=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
     config['evaluation']=settings
     with pytest.raises(ValueError):notebook_config.validate_notebook_config(config)
 
@@ -349,31 +349,22 @@ def test_invalid_notebook_decode_settings_fail_before_training(settings):
 @pytest.mark.parametrize('field,value',[('nms_alpha',2.),('nms_alpha',float('nan')),
     ('nms_alpha',True),('peak_mode','invalid')])
 def test_notebook_quality_and_peak_controls_fail_before_training(field,value):
-    config=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_FOCAL_OGA_IQA',augmentation='config')
+    config=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
     config['data']['kitti'][field]=value
     with pytest.raises(ValueError):notebook_config.validate_notebook_config(config)
 
 
-@pytest.mark.parametrize('problem',['seed','schedule','augmentation','loss','encoding','heads','local_attention'])
-def test_focal_ablation_rejects_changes_to_other_controlled_conditions(problem):
+def test_removed_comparison_kind_is_rejected():
     module=workflow()
-    assert hasattr(module,'validate_comparator'), 'Controlled focal ablation validation is missing'
-    candidate=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_FOCAL_OGA_IQA',augmentation='config')
-    baseline=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
-    if problem=='seed':baseline['seed']+=1
-    elif problem=='schedule':baseline['train']['epochs']+=1
-    elif problem=='augmentation':baseline['augmentation']['AUG_CONFIG_LIST'][0]['PROBABILITY']=.3
-    elif problem=='loss':baseline['loss']['name']='baseline'
-    elif problem=='encoding':baseline['data']['bev_encoding']['backend']='numpy'
-    elif problem=='heads':baseline['model']['backbone_out_dim']=24
-    else:baseline['model']['local_attention']='eca'
-    with pytest.raises(ValueError,match='ablation|match'):module.validate_comparator(candidate,baseline)
+    config=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
+    with pytest.raises(ValueError,match='COMPARISON_KIND'):
+        module.validate_comparator(config,config,kind='focal_ablation')
 
 
-def test_matching_focal_ablation_accepts_normalized_objective_defaults():
+def test_protocol_comparison_accepts_normalized_objective_defaults():
     module=workflow()
     assert hasattr(module,'validate_comparator'), 'Controlled focal ablation validation is missing'
-    candidate=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_FOCAL_OGA_IQA',augmentation='config')
+    candidate=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
     baseline=notebook_config.resolve_notebook_config(ROOT,preset='UNDER1M_GROUPED_OGA_IQA',augmentation='config')
     candidate['loss']['iou_loss_weight']=1.
     assert module.validate_comparator(candidate,baseline) is True
@@ -388,8 +379,8 @@ def test_notebook_default_custom_controls_reach_the_main_recipe(tmp_path):
     assert ns['AUGMENTATION']=='hybrid_gt'
     assert ns['config_dict']['data']['box_mode']=='bev'
     assert ns['config_dict']['evaluation']['modes']==['local_bev']
-    changed=execute_cell(tmp_path/'other',{'C4_CONTEXT':'none','BACKBONE_OUT_DIM':24})
-    assert changed['config_dict']['model']['c4_context']=='none'
+    changed=execute_cell(tmp_path/'other',{'BACKBONE_OUT_DIM':24})
+    assert 'c4_context' not in changed['config_dict']['model']
     assert changed['config_dict']['model']['backbone_out_dim']==24
 
 

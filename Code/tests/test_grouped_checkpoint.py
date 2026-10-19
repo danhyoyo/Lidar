@@ -48,9 +48,8 @@ def test_identity_is_pure_canonical_and_backend_independent():
     assert identity["encoding"]["metadata"]["channels"] == 14
     assert identity["groups"][1]["classes"] == ["Pedestrian", "Cyclist"]
     explicit = copy.deepcopy(config)
-    explicit["model"].update(c4_context_version=1, c4_context_bottleneck=64,
-                             c4_context_dilations=[1, 2, 3], c4_context_layer_scale_init=.001,
-                             local_attention_eca_kernel_size=3, local_attention_layer_scale_init=.001,
+    explicit["model"].update(local_attention_stage="c3", local_attention_simam_lambda=.0001,
+                             local_attention_layer_scale_init=.001,
                              neck_fusion_channels=24, detail_path=False)
     explicit["loss"]["group_weights"] = {"car": 2., "ped_cyc": 2.}
     explicit["data"]["bev_encoding"]["backend"] = "numba"
@@ -59,9 +58,9 @@ def test_identity_is_pure_canonical_and_backend_independent():
 
 CHANGES = [
     ("model", "stage_depths", [2, 4, 2]), ("model", "backbone_out_dim", 16),
-    ("model", "c4_context", "none"), ("model", "c4_context_dilations", [1, 3, 5]),
-    ("model", "c4_context_bottleneck", 48), ("model", "c4_context_layer_scale_init", .01),
-    ("model", "local_attention_eca_kernel_size", 5), ("model", "local_attention_layer_scale_init", .02),
+    ("model", "local_attention", "none"), ("model", "local_attention_stage", "c5"),
+    ("model", "local_attention_simam_lambda", .002),
+    ("model", "local_attention_layer_scale_init", .02),
     ("model", "neck_fusion_channels", 32), ("model", "detail_path", True),
     ("loss", "temperature", 3.), ("loss", "iou_target_type", "rotated_iou"),
     ("loss", "iou_loss_weight", 2.), ("loss", "group_weights", {"car": 1., "ped_cyc": 2.}),
@@ -89,7 +88,7 @@ def test_mismatched_identity_rejects_before_any_model_criterion_or_optimizer_res
 
 
 @pytest.mark.parametrize("local,field,value", [("simam", "local_attention_simam_lambda", .002),
-                                              ("eca", "local_attention", "none")])
+                                              ("simam", "local_attention", "none")])
 def test_shape_compatible_local_semantics_cannot_silently_resume(local, field, value):
     config, _ = fixture(local=local)
     saved = payload(config, components(config))
@@ -99,8 +98,8 @@ def test_shape_compatible_local_semantics_cannot_silently_resume(local, field, v
         restore(saved, changed, components(changed))
 
 
-@pytest.mark.parametrize("local", ["none", "eca", "simam"])
-def test_matching_serialized_checkpoint_roundtrips_all_bn_gamma_beta_and_iqa(local, tmp_path):
+@pytest.mark.parametrize("local", ["none", "simam"])
+def test_matching_serialized_checkpoint_roundtrips_all_bn_layer_scale_beta_and_iqa(local, tmp_path):
     config, target = fixture(local=local)
     parts = components(config)
     train.set_loss_epoch(parts[1], 0)
@@ -120,7 +119,7 @@ def test_matching_serialized_checkpoint_roundtrips_all_bn_gamma_beta_and_iqa(loc
     assert_state_equal(destination[1], snapshot(parts[1]))
     assert destination[3].state_dict() == parts[3].state_dict()
     assert any("running_mean" in k for k in saved["model_state_dict"])
-    assert any(k.endswith("gamma") for k in saved["model_state_dict"])
+    assert any(k.endswith("layer_scale") for k in saved["model_state_dict"])
     if local != "none":
         assert any(k.endswith("beta") for k in saved["model_state_dict"])
 
@@ -289,7 +288,7 @@ def test_corrupt_training_state_is_preflighted_before_loading_any_weights(broken
     elif broken == "epoch":
         saved["epoch"] = -1
     elif broken == "metadata":
-        saved["config"]["model"]["c4_context_dilations"] = [1, 2, 4]
+        saved["config"]["model"]["local_attention_simam_lambda"] = .002
     else:
         del saved["backends"]["bev"]
     destination = components(config)
@@ -357,16 +356,16 @@ def test_real_cli_epoch_one_resume_matches_uninterrupted_epoch_two_with_workers_
 
 
 @pytest.mark.parametrize("wrapped", [False, True])
-def test_backbone_only_warm_start_preserves_new_input_stage_context_heads_and_training_state(wrapped):
+def test_backbone_only_warm_start_preserves_new_input_stage_attention_heads_and_training_state(wrapped):
     source_config = configured_model(grouped=False)
     source_config["data"]["bev_encoding"] = {"name": "rich8"}
-    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="none",
+    source_config["model"].update(stage_depths=[2, 4, 2], local_attention="none", c4_attention="none",
                                    c4_attention_scales=[])
     source = components(source_config)
     with torch.no_grad():
         for value in source[0].state_dict().values():
             value.fill_(.25 if value.is_floating_point() else 4)
-    config, _ = fixture(local="eca")
+    config, _ = fixture(local="simam")
     destination = components(config)
     model_before, criterion_before = snapshot(destination[0]), snapshot(destination[1])
     checkpoint = payload(source_config, source) if wrapped else source[0].state_dict()
@@ -375,7 +374,7 @@ def test_backbone_only_warm_start_preserves_new_input_stage_context_heads_and_tr
     assert "backbone.stem.0.weight" in result["skipped"]
     assert any(name.startswith("header.") for name in result["skipped"])
     assert any(name.startswith("backbone.stage2.2.") for name in result["missing"])
-    assert any(name.startswith("backbone.c4_context.") for name in result["missing"])
+    assert any(name.startswith("backbone.c3_light_attention.") for name in result["missing"])
     source_state = source[0].state_dict()
     for name, value in destination[0].state_dict().items():
         expected = source_state[name] if name in result["loaded"] else model_before[name]
@@ -428,7 +427,7 @@ def test_actual_cli_warm_start_reports_keys_and_starts_fresh_exact_quality_train
     config["val"] = {"data": str(validation), "physical_batch_size": 1}
     source_config = configured_model(grouped=False)
     source_config["data"]["bev_encoding"] = {"name": "rich8"}
-    source_config["model"].update(stage_depths=[2, 4, 2], c4_context="none", c4_attention="none",
+    source_config["model"].update(stage_depths=[2, 4, 2], local_attention="none", c4_attention="none",
                                   c4_attention_scales=[])
     source = components(source_config)
     source[-1].manual_seed(99)

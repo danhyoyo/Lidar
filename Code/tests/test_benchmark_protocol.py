@@ -11,7 +11,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools/kitti_training_pipeline")]
-CONFIG = ROOT / "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json"
+CONFIG = ROOT / "configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json"
 
 
 def protocol():
@@ -107,7 +107,7 @@ def test_invalid_split_cannot_be_recorded_as_valid_protocol(tmp_path, invalid):
 
 @pytest.mark.parametrize("mode", ["3d","bev"])
 def test_complete_3d_protocol_records_reference_runtime_and_retains_external_gates(mode):
-    config = ROOT/"configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json"
+    config = ROOT/"configs/experiments/under1m/hist14_local3_grouped_oga_iqa_3d.json"
     result = protocol().freeze_protocol(config,ROOT,metric_mode=mode)
     assert result["current_runtime"]["metric_mode"] == mode
     assert result["current_runtime"]["ap_samplings"] == ["R11","R40"]
@@ -122,7 +122,7 @@ def test_complete_3d_protocol_records_reference_runtime_and_retains_external_gat
 
 def test_cpu_smoke_cannot_be_used_as_gpu_protocol_evidence(tmp_path):
     from tools.benchmarks.smoke_detector import run_smoke
-    config = ROOT/"configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json"
+    config = ROOT/"configs/experiments/under1m/hist14_local3_grouped_oga_iqa_3d.json"
     report = run_smoke(json.loads(config.read_text()),device="cpu",precisions=["fp32"],steps=1)
     path = tmp_path/"cpu.json";path.write_text(json.dumps(report))
     with pytest.raises(ValueError,match="CUDA|GPU"):
@@ -132,7 +132,7 @@ def test_cpu_smoke_cannot_be_used_as_gpu_protocol_evidence(tmp_path):
 @pytest.mark.parametrize("problem",["config","precision","failed","vertical","workers"])
 def test_invalid_declared_smoke_evidence_cannot_clear_gpu_gate(tmp_path,problem):
     import hashlib
-    config_path = ROOT/"configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json"
+    config_path = ROOT/"configs/experiments/under1m/hist14_local3_grouped_oga_iqa_3d.json"
     config = json.loads(config_path.read_text())
     # Malformed records are tested only for rejection; these are not GPU evidence.
     report = {"status":"passed","device":"cuda:0","cuda_device_name":"declared",
@@ -151,7 +151,7 @@ def test_invalid_declared_smoke_evidence_cannot_clear_gpu_gate(tmp_path,problem)
 
 
 def test_invalid_reference_revision_cannot_clear_parity_gate(tmp_path):
-    config = ROOT/"configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json"
+    config = ROOT/"configs/experiments/under1m/hist14_local3_grouped_oga_iqa_3d.json"
     record = {"reference_provenance":{"revision":"moving-master","sha256":{}},
               "gpu_reference_cases":19,"full":{"exit_code":0,"skips":0}}
     path=tmp_path/"reference.json";path.write_text(json.dumps(record))
@@ -180,7 +180,7 @@ def test_protocol_cli_defaults_to_current_local_bev_workflow(tmp_path):
 
 
 def test_local_bev_policy_rejects_a_3d_runtime_config():
-    path=ROOT/'configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa_3d.json'
+    path=ROOT/'configs/experiments/under1m/hist14_local3_grouped_oga_iqa_3d.json'
     with pytest.raises(ValueError,match='BEV|bev|3D'):
         protocol().freeze_protocol(path,ROOT,metric_mode='local_bev')
 
@@ -212,7 +212,7 @@ def test_invalid_local_bev_gpu_evidence_is_rejected(tmp_path,problem):
 def test_no_context_reference_protocol_records_its_actual_attention():
     path=ROOT/'configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json'
     result=protocol().freeze_protocol(path,metric_mode='local_bev')
-    assert result['training']['main_attention'].startswith('none, local none')
+    assert result['training']['main_attention'] == 'local none; block SimAM stages []'
 
 
 @pytest.mark.parametrize('iqa',[False,True])

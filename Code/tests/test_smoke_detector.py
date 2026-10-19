@@ -11,7 +11,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "detector"), str(ROOT / "tools/kitti_training_pipeline")]
-CONFIG = ROOT / "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json"
+CONFIG = ROOT / "configs/experiments/under1m/hist14_local3_simam_grouped_oga_iqa.json"
 
 
 def smoke():
@@ -31,12 +31,12 @@ def test_cpu_fp32_smoke_uses_real_dataset_optimizer_checkpoint_and_decoder(tmp_p
     assert run["status"] == "passed" and run["optimizer_updates"] == 2
     assert run["finite_loss"] and run["finite_gradients"] and run["head_weight_changed"]
     assert run["checkpoint_restore_verified"] and run["criterion_state_unchanged_in_validation"]
-    assert run["loss_dtype"] == "torch.float32" and run["focal_modulation_input_dtype"] == "torch.float32"
+    assert run["loss_dtype"] == run["local_gate_dtype"] == "torch.float32"
     assert run["input_shape"] == [2, 14, 64, 48]
     assert run["validation_groups"] == ["car", "ped_cyc"]
     assert run["negative_only_group_seen"] and run["empty_scene_seen"]
     assert run["detection_shape"][1] == 7
-    assert result["source_config_identity"]["model"]["features"]["config"]["c4_context"] == "focal"
+    assert result["source_config_identity"]["model"]["features"]["config"]["local_attention"] == "simam"
     assert result["worker_count"] == 0
 
 

@@ -26,17 +26,12 @@ MODEL_DEFAULTS = {
 }
 
 
-UNDER1M_PRESETS = {
-    "UNDER1M_SINGLE_OGA_IQA": "reference_single_oga_iqa",
-    "UNDER1M_GROUPED_OGA_IQA": "reference_oga_iqa",
-    "UNDER1M_GROUPED_BASELINE_IQA": "reference_baseline_iqa",
-    "UNDER1M_FOCAL_OGA_IQA": "main_focal_oga_iqa",
-    "UNDER1M_FOCAL_BASELINE_IQA": "main_focal_baseline_iqa",
-    "UNDER1M_FOCAL_ECA_OGA_IQA": "optional_focal_eca",
-    "UNDER1M_FOCAL_SIMAM_OGA_IQA": "optional_focal_simam",
-    "UNDER1M_FOCAL_FUSION32_OGA_IQA": "optional_focal_fusion32",
-    "UNDER1M_FOCAL_DETAIL_OGA_IQA": "optional_focal_detail",
-}
+UNDER1M_PRESETS = {'UNDER1M_SINGLE_OGA_IQA': 'reference_single_oga_iqa',
+ 'UNDER1M_GROUPED_OGA_IQA': 'reference_oga_iqa',
+ 'UNDER1M_GROUPED_BASELINE_IQA': 'reference_baseline_iqa',
+ 'UNDER1M_SIMAM_OGA_IQA': 'optional_simam',
+ 'UNDER1M_FUSION32_OGA_IQA': 'optional_fusion32',
+ 'UNDER1M_DETAIL_OGA_IQA': 'optional_detail'}
 UNDER1M_MANIFEST = "docs/plans/lightweight_lidar_backbone_2026/experiment_manifest.json"
 
 # Built-in notebook recipes; configs/config.json is the only source JSON required.
@@ -59,7 +54,6 @@ UNDER1M_COMMON = {'data': {'bev_encoding': {'name': 'hist14',
            'c4_attention': 'none',
            'c4_attention_scales': [],
            'c4_attention_qk_norm': 'none',
-           'c4_context': 'none',
            'local_attention': 'none',
            'neck_fusion_channels': 24,
            'detail_path': False,
@@ -75,68 +69,13 @@ UNDER1M_COMMON = {'data': {'bev_encoding': {'name': 'hist14',
 UNDER1M_OVERRIDES = {'reference_single_oga_iqa': {'model': {'head_mode': 'legacy_single'}, 'data': {'box_mode': 'bev'}},
  'reference_oga_iqa': {'model': {}, 'data': {'box_mode': 'bev'}},
  'reference_baseline_iqa': {'model': {}, 'data': {'box_mode': 'bev'}, 'loss': {'name': 'baseline'}},
- 'main_focal_oga_iqa': {'model': {'c4_context': 'focal',
-                                  'c4_context_version': 1,
-                                  'c4_context_bottleneck': 64,
-                                  'c4_context_dilations': [1, 2, 3],
-                                  'c4_context_layer_scale_init': 0.001},
-                        'data': {'box_mode': 'bev'}},
- 'main_focal_baseline_iqa': {'model': {'c4_context': 'focal',
-                                       'c4_context_version': 1,
-                                       'c4_context_bottleneck': 64,
-                                       'c4_context_dilations': [1, 2, 3],
-                                       'c4_context_layer_scale_init': 0.001},
-                             'data': {'box_mode': 'bev'},
-                             'loss': {'name': 'baseline'}},
- 'optional_focal_eca': {'model': {'c4_context': 'focal',
-                                  'c4_context_version': 1,
-                                  'c4_context_bottleneck': 64,
-                                  'c4_context_dilations': [1, 2, 3],
-                                  'c4_context_layer_scale_init': 0.001,
-                                  'local_attention': 'eca',
-                                  'local_attention_eca_kernel_size': 3,
-                                  'local_attention_layer_scale_init': 0.001},
-                        'data': {'box_mode': 'bev'}},
- 'optional_focal_simam': {'model': {'c4_context': 'focal',
-                                    'c4_context_version': 1,
-                                    'c4_context_bottleneck': 64,
-                                    'c4_context_dilations': [1, 2, 3],
-                                    'c4_context_layer_scale_init': 0.001,
-                                    'local_attention': 'simam',
-                                    'local_attention_simam_lambda': 0.0001,
-                                    'local_attention_layer_scale_init': 0.001},
-                          'data': {'box_mode': 'bev'}},
- 'optional_focal_fusion32': {'model': {'c4_context': 'focal',
-                                       'c4_context_version': 1,
-                                       'c4_context_bottleneck': 64,
-                                       'c4_context_dilations': [1, 2, 3],
-                                       'c4_context_layer_scale_init': 0.001,
-                                       'neck_fusion_channels': 32},
-                             'data': {'box_mode': 'bev'}},
- 'optional_focal_detail': {'model': {'c4_context': 'focal',
-                                     'c4_context_version': 1,
-                                     'c4_context_bottleneck': 64,
-                                     'c4_context_dilations': [1, 2, 3],
-                                     'c4_context_layer_scale_init': 0.001,
-                                     'detail_path': True},
-                           'data': {'box_mode': 'bev'}},
- 'main_focal_3d': {'model': {'c4_context': 'focal',
-                             'c4_context_version': 1,
-                             'c4_context_bottleneck': 64,
-                             'c4_context_dilations': [1, 2, 3],
-                             'c4_context_layer_scale_init': 0.001},
-                   'data': {'box_mode': '3d'},
-                   'loss': {'vertical_loss_weight': 1.0}},
- 'optional_focal_eca_3d': {'model': {'c4_context': 'focal',
-                                     'c4_context_version': 1,
-                                     'c4_context_bottleneck': 64,
-                                     'c4_context_dilations': [1, 2, 3],
-                                     'c4_context_layer_scale_init': 0.001,
-                                     'local_attention': 'eca',
-                                     'local_attention_eca_kernel_size': 3,
-                                     'local_attention_layer_scale_init': 0.001},
-                           'data': {'box_mode': '3d'},
-                           'loss': {'vertical_loss_weight': 1.0}}}
+ 'optional_simam': {'model': {'local_attention': 'simam',
+                              'local_attention_simam_lambda': 0.0001,
+                              'local_attention_layer_scale_init': 0.001},
+                    'data': {'box_mode': 'bev'}},
+ 'optional_fusion32': {'model': {'neck_fusion_channels': 32}, 'data': {'box_mode': 'bev'}},
+ 'optional_detail': {'model': {'detail_path': True}, 'data': {'box_mode': 'bev'}},
+ 'main_grouped_3d': {'data': {'box_mode': '3d'}, 'loss': {'vertical_loss_weight': 1.0}}}
 
 AUGMENTATION_PROFILES = {'hybrid_gt': {'mode': 'openpcdet',
                'DISABLE_AUG_LIST': [],
@@ -256,8 +195,7 @@ def write_under1m_presets(repo_dir):
 
 def resolve_under1m_3d_recipe(repo_dir, recipe_id, *, base_config=None):
     """Resolve explicit 3D recipes without changing BEV notebook defaults."""
-    companions = {"main_focal_3d": "main_focal_oga_iqa",
-                  "optional_focal_eca_3d": "optional_focal_eca"}
+    companions = {"main_grouped_3d": "reference_oga_iqa"}
     if recipe_id not in companions:
         raise ValueError(f"Unknown 3D under1m recipe: {recipe_id!r}")
     root = Path(repo_dir)
@@ -269,12 +207,12 @@ def resolve_under1m_3d_recipe(repo_dir, recipe_id, *, base_config=None):
 
 
 def write_under1m_3d_presets(repo_dir):
-    """Materialize the two explicit 3D options; never rewrite BEV recipes."""
+    """Materialize the explicit grouped 3D option; never rewrite BEV recipes."""
     root = Path(repo_dir)
     manifest = read_json(root / UNDER1M_MANIFEST)
     paths = []
     for variant in manifest["variants"]:
-        if variant["id"] not in {"main_focal_3d", "optional_focal_eca_3d"}:
+        if variant["id"] not in {"main_grouped_3d"}:
             continue
         path = root / variant["planned_config"]
         write_json(path, resolve_under1m_3d_recipe(root, variant["id"]))
@@ -282,10 +220,9 @@ def write_under1m_3d_presets(repo_dir):
     return paths
 
 
-def attention_placement_overrides(model, *, focal_stage="c4", local_attention_stage="c3",
-                                  attention_order="focal_then_local", block_simam=False,
+def attention_placement_overrides(model, *, local_attention_stage="c3", block_simam=False,
                                   block_simam_stages=("c4", "c5"), block_simam_lambda=.0001):
-    """Validate active controls and emit only meaningful placement fields."""
+    """Validate SimAM controls and emit only meaningful placement fields."""
     raw = dict(model)
     if type(block_simam) is not bool:
         raise ValueError("BLOCK_SIMAM must be a boolean")
@@ -293,87 +230,48 @@ def attention_placement_overrides(model, *, focal_stage="c4", local_attention_st
     raw.pop("block_simam_lambda", None)
     if block_simam and block_simam_stages:
         raw["block_simam_lambda"] = block_simam_lambda
-    context, local = raw.get("c4_context", "none"), raw.get("local_attention", "none")
-    focal_active = isinstance(context, str) and context.lower() == "focal"
-    local_active = isinstance(local, str) and local.lower() != "none"
-    if focal_active:
-        raw["focal_stage"] = focal_stage
-    if local_active:
+    if str(raw.get("local_attention", "none")).lower() != "none":
         raw["local_attention_stage"] = local_attention_stage
-    if (focal_active and local_active and isinstance(focal_stage, str) and
-            isinstance(local_attention_stage, str) and focal_stage.lower() == local_attention_stage.lower()):
-        raw["attention_order"] = attention_order
     features = backbone_feature_spec(raw)
     overrides = {key:value for key,value in features.to_dict().items()
-                 if key in {"focal_stage", "local_attention_stage", "attention_order",
-                            "block_simam_stages", "block_simam_lambda"}}
-    # An explicit empty list also disables block attention inherited from a base
-    # config. Validation removes the inactive field before saving the snapshot.
+                 if key in {"local_attention_stage", "block_simam_stages", "block_simam_lambda"}}
     overrides.setdefault("block_simam_stages", [])
     return overrides
 
 
 def attention_placement_summary(config):
-    """Explain actual execution sites without relying on historical state prefixes."""
+    """Explain stage-level and block-level SimAM execution sites."""
     model = config["model"]
     if str(model.get("backbone", "")).lower() != "mobilepixornext":
         return "Attention placement: unavailable for this backbone"
     features = backbone_feature_spec(model)
     placement = features.effective_placement()
     lines = []
-    entries = [("focal", "Focal"), ("local_attention", features.local_attention.upper())]
-    if features.attention_order == "local_then_focal":
-        entries.reverse()
-    entries.sort(key=lambda item: placement[item[0]]["stride"] if placement[item[0]] else float("inf"))
-    for kind, title in entries:
-        entry = placement[kind]
-        if entry is not None:
-            stage = entry["stage"]
-            lines.append(f"{title}: {stage.upper()} (Stage {int(stage[1:])-1}, "
-                         f"stride {entry['stride']}, {entry['channels']} channels)")
-    if not lines:
-        lines.append("Focal / local attention: off")
+    entry = placement["local_attention"]
+    if entry is not None:
+        stage = entry["stage"]
+        lines.append(f"SIMAM: {stage.upper()} (Stage {int(stage[1:])-1}, "
+                     f"stride {entry['stride']}, {entry['channels']} channels)")
+    else:
+        lines.append("Stage-level SimAM: off")
     depths = model.get("stage_depths", (2, 4, 2))
     for entry in placement.get("block_simam", []):
         stage = entry["stage"]
         lines.append(f"Block SimAM: {stage.upper()} (Stage {int(stage[1:])-1}, "
                      f"stride {entry['stride']}, {entry['channels']} channels, "
                      f"{depths[int(stage[1:])-3]} blocks; after projection BN)")
-    if features.attention_order:
-        order = ["Focal", features.local_attention.upper()]
-        if features.attention_order == "local_then_focal":
-            order.reverse()
-        lines.append("Shared-stage order: " + " -> ".join(order))
     lines.append("Feature semantic hash: " + features.semantic_hash)
     return "\n".join(lines)
 
 
 def _merge_custom_model(base_model, patch):
-    """Remove inherited inactive fields, while preserving explicit validation errors."""
+    """Clear inherited disabled SimAM fields; validate explicit overrides later."""
     merged = create_experiment_config(base_model, patch)
-    context = merged.get("c4_context", "none")
-    local = merged.get("local_attention", "none")
-    context = context.lower() if isinstance(context, str) else context
-    local = local.lower() if isinstance(local, str) else local
     inactive = set()
     if not merged.get("block_simam_stages"):
         inactive.add("block_simam_lambda")
-    if context == "none":
-        inactive.update(k for k in merged if k.startswith("c4_context_"))
-        inactive.add("focal_stage")
-    if local == "none":
+    if merged.get("local_attention", "none") == "none":
         inactive.update(k for k in merged if k.startswith("local_attention_"))
-    elif local == "simam":
-        inactive.add("local_attention_eca_kernel_size")
-    elif local == "eca":
-        inactive.add("local_attention_simam_lambda")
-    focal_stage = merged.get("focal_stage", "c4")
-    local_stage = merged.get("local_attention_stage", "c3")
-    colocated = (context == "focal" and local in ("eca", "simam") and
-                 isinstance(focal_stage, str) and isinstance(local_stage, str) and
-                 focal_stage.lower() == local_stage.lower())
-    if not colocated:
-        inactive.add("attention_order")
     for key in inactive - set(patch):
         merged.pop(key, None)
     return merged
@@ -439,14 +337,6 @@ def resolve_notebook_config(
         if "header_use_iou" in overrides.get("model", {}) and "use_iou" not in overrides.get("loss", {}):
             config["loss"]["use_iou"] = config["model"]["header_use_iou"]
     config = create_experiment_config(config, runtime_overrides)
-    encoding = config["data"].get("bev_encoding", {})
-    if encoding.get("name") in {"pillar32", "pillar_rich", "pillar_rich_gate"}:
-        # Older notebook width lookups produce None for newly added encoders.
-        # Resolve that unspecified width here; keep the core schema strict and
-        # preserve validation of explicit widths/backends.
-        if encoding.get("out_channels") is None:
-            encoding["out_channels"] = 32
-        encoding.setdefault("backend", "torch")
     validate_notebook_config(config)
     return config
 
@@ -477,6 +367,7 @@ def validate_notebook_config(config):
     # Validate before legacy preset sanitation can erase conflicting fields.
     features = backbone_feature_spec(model, geometry=config["data"]["kitti"]["geometry"])
     if model.get("backbone") == "mobilepixornext":
+        model.pop("c4_context", None)
         model.pop("block_simam_stages", None)
         model.pop("block_simam_lambda", None)
         model.update(features.to_dict())
@@ -535,8 +426,9 @@ def save_notebook_config(run_dir, config):
             if model.get("header_architecture", "independent") == "independent":
                 model.pop("header_architecture", None)
             if str(model.get("backbone", "")).lower() == "mobilepixornext":
+                model.pop("c4_context", None)
                 features = backbone_feature_spec(model)
-                placement_fields = {"focal_stage", "local_attention_stage", "attention_order",
+                placement_fields = {"local_attention_stage",
                                     "block_simam_stages", "block_simam_lambda"}
                 for key in placement_fields:
                     model.pop(key, None)
@@ -561,7 +453,7 @@ ENCODER_COMPARISON_MODEL = {
     "neck_type": "scale_gated_fpn", "neck_fusion_channels": 24,
     "scale_gated_fpn": False, "detail_path": False,
     "c4_attention": "none", "c4_attention_scales": [], "c4_attention_qk_norm": "none",
-    "c4_context": "none", "local_attention": "none",
+    "local_attention": "none",
     "header_use_bn": True, "header_act": "silu", "header_use_iou": False,
     "use_reparam": False, "deploy": False,
 }
@@ -572,27 +464,6 @@ PRESET_CONFIGS = {
         "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
         "loss": {"name": "baseline", "use_iou": False},
         "data": {"bev_encoding": {"name": "rich8", "intensity_scale": 1, "density_norm": 32}},
-    },
-    "ENCODER_PILLAR32": {
-        "experiment": {"name": "encoder_comparison"},
-        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
-        "loss": {"name": "baseline", "use_iou": False},
-        "data": {"bev_encoding": {"name": "pillar32", "version": 1, "backend": "torch",
-                                  "out_channels": 32, "intensity_scale": 1}},
-    },
-    "ENCODER_PILLAR_RICH": {
-        "experiment": {"name": "encoder_comparison"},
-        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
-        "loss": {"name": "baseline", "use_iou": False},
-        "data": {"bev_encoding": {"name": "pillar_rich", "version": 1, "backend": "torch",
-                                  "out_channels": 32, "intensity_scale": 1, "density_norm": 32}},
-    },
-    "ENCODER_PILLAR_RICH_GATE": {
-        "experiment": {"name": "encoder_comparison"},
-        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
-        "loss": {"name": "baseline", "use_iou": False},
-        "data": {"bev_encoding": {"name": "pillar_rich_gate", "version": 1, "backend": "torch",
-                                  "out_channels": 32, "intensity_scale": 1, "density_norm": 32}},
     },
     "TRUC_A_M1": {
         "model": {

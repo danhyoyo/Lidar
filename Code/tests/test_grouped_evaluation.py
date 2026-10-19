@@ -30,13 +30,13 @@ def test_profiler_counts_grouped_heads_criterion_and_nested_output_shapes(classi
     report = profile_detector(config, shape=(1, 14, 32, 48))
     assert config == before and report["head_mode"] == "grouped"
     counts = report["parameter_counts"]
-    assert counts["backbone_including_neck"] == 660528 < 1_000_000
-    assert counts["backbone_body"] + counts["neck"] == 660528
+    assert counts["backbone_including_neck"] == 635408 < 1_000_000
+    assert counts["backbone_body"] + counts["neck"] == 635408
     assert counts["heads"] == sum(report["head_parameter_counts"].values())
-    assert counts["total_detector"] == counts["heads"] + 660528
+    assert counts["total_detector"] == counts["heads"] + 635408
     assert counts["criterion_train_only"] == (12 if iqa else 10)
     if classification == "gaussian":
-        assert counts["heads"] == 186161 and counts["total_detector"] == 846689
+        assert counts["heads"] == 186161 and counts["total_detector"] == 821569
     output = report["output_shapes"]["groups"]
     assert output["car"]["cls"] == [1, 1 + int(classification == "binary"), 8, 12]
     assert output["ped_cyc"]["cls"] == [1, 2 + int(classification == "binary"), 8, 12]
@@ -107,7 +107,7 @@ def test_actual_grouped_checkpoint_evaluation_saves_global_classes_quality_proto
     assert result["data"]["encoding_semantic_hash"] == common.bev_encoding_spec(config).semantic_hash
     assert "dirty" in result["data"]["source"]
     counts = result["model"]["parameter_counts"]
-    assert counts["backbone_including_neck"] == 660528
+    assert counts["backbone_including_neck"] == 635408
     assert counts["heads"] == sum(result["model"]["head_parameter_counts"].values())
     assert counts["criterion_train_only"] == (12 if iqa else 10)
     assert counts["total_detector"] == result["model"]["parameters"]
@@ -118,14 +118,14 @@ def test_actual_grouped_checkpoint_evaluation_saves_global_classes_quality_proto
     assert saved["counts"]["detections"] == 3
 
 
-@pytest.mark.parametrize("changed", ["class_order", "dilations", "iqa_method", "missing_identity", "raw_weights"])
+@pytest.mark.parametrize("changed", ["class_order", "attention_stage", "iqa_method", "missing_identity", "raw_weights"])
 def test_grouped_evaluation_rejects_semantic_mismatch_even_when_shapes_match(tmp_path, changed):
     config, source, _, _, _ = experiment(tmp_path)
     checkpoint = torch.load(source, weights_only=True)
     if changed == "class_order":
         config["data"]["head_groups"][1]["classes"].reverse()
-    elif changed == "dilations":
-        config["model"]["c4_context_dilations"] = [1, 2, 4]
+    elif changed == "attention_stage":
+        config["model"].update(local_attention="simam", local_attention_stage="c5")
     elif changed == "iqa_method":
         config["loss"]["iou_target_type"] = "rotated_iou"
     elif changed == "missing_identity":
@@ -153,7 +153,7 @@ def test_standalone_profiler_accepts_grouped_config_and_preserves_nested_shapes(
                     "--shape", "1", "14", "32", "48", "--output", str(output)], cwd=tmp_path,
                    check=True, capture_output=True, text=True)
     report = json.loads(output.read_text())
-    assert report["head_mode"] == "grouped" and report["parameter_counts"]["total_detector"] == 846689
+    assert report["head_mode"] == "grouped" and report["parameter_counts"]["total_detector"] == 821569
     assert "ped_cyc" in report["output_shapes"]["groups"]
 
 
@@ -169,13 +169,13 @@ def test_saved_grouped_rows_feed_ap_evaluator_with_supplied_global_ids():
 
 def test_comparison_flatten_keeps_architecture_quality_and_parameter_metadata():
     from compare_models import flatten
-    result = {"model": {"parameters": 846689, "parameter_counts": {
-        "backbone_body": 629984, "neck": 30544, "backbone_including_neck": 660528,
-        "heads": 186161, "total_detector": 846689, "criterion_train_only": 12}},
+    result = {"model": {"parameters": 821569, "parameter_counts": {
+        "backbone_body": 604864, "neck": 30544, "backbone_including_neck": 635408,
+        "heads": 186161, "total_detector": 821569, "criterion_train_only": 12}},
         "protocol": {"head_mode": "grouped", "cls_encoding": "gaussian", "quality_target": "mgiou", "nms_alpha": .5},
         "data": {"resolved_config_sha256": "abc", "split_sha256": "def"}}
     row = flatten(result)
-    assert row["head_mode"] == "grouped" and row["backbone_including_neck_parameters"] == 660528
+    assert row["head_mode"] == "grouped" and row["backbone_including_neck_parameters"] == 635408
     assert row["heads_parameters"] == 186161 and row["criterion_train_only_parameters"] == 12
     assert row["quality_target"] == "mgiou" and row["nms_alpha"] == .5
     assert row["resolved_config_sha256"] == "abc" and row["split_sha256"] == "def"
@@ -205,7 +205,7 @@ def test_real_comparison_cli_preserves_grouped_reports_in_json_and_csv(tmp_path)
           "--warmup-frames", "0", "--progress-every", "0", "--fail-on-model-error"])
     result = json.loads((output / "comparison.json").read_text())
     assert result["status"] == "ok" and result["models_succeeded"] == 1
-    assert result["models"][0]["model"]["parameter_counts"]["total_detector"] == 846689
+    assert result["models"][0]["model"]["parameter_counts"]["total_detector"] == 821569
     assert "backbone_including_neck_parameters" in (output / "comparison.csv").read_text()
 
 
@@ -213,4 +213,4 @@ def test_grouped_profile_full_resolution_has_iqa_shapes_and_correct_total_budget
     report = profile_detector(configured_model())
     assert report["input_shape"] == [1, 14, 800, 704]
     assert report["output_shapes"]["groups"]["ped_cyc"]["iou"] == [1, 1, 200, 176]
-    assert report["parameter_counts"]["total_detector"] == 846689
+    assert report["parameter_counts"]["total_detector"] == 821569

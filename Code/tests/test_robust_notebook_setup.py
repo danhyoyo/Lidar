@@ -40,6 +40,24 @@ def checkout(path, layout, *, stage_support=True):
     return code.resolve()
 
 
+def test_source_check_rejects_checkout_with_removed_context_constructor(tmp_path):
+    import ast
+
+    code = checkout(tmp_path / 'old', 'nested')
+    path = code / 'detector/core/models/backbones/mobilepixornext.py'
+    source = path.read_text().replace('        local_attention: str = "none",',
+        '        c4_context: str = "none",\n        local_attention: str = "none",')
+    assert source != path.read_text()
+    path.write_text(source)
+    source = setup_source()
+    start = source.index('def has_stage_attention_source(')
+    end = source.index('\n\nif IN_COLAB:', start)
+    namespace = {'ast': ast}
+    exec(source[start:end], namespace)
+    assert namespace['has_stage_attention_source'](ROOT)
+    assert not namespace['has_stage_attention_source'](code)
+
+
 def run_setup(tmp_path, monkeypatch, *, colab=True, clone_layout='nested', cwd=None, clone_stage_support=True):
     content = tmp_path / 'content'
     content.mkdir(exist_ok=True)

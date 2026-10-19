@@ -29,8 +29,6 @@ def test_refined_stage_outputs_feed_both_downstream_and_lateral(case):
         assert seen['c3'] is seen['down3'] is seen['lat_c3']
         assert seen['c4'] is seen['down4'] is seen['lat_c4']
         assert seen['c5'] is seen['lat_c5']
-        if case[0]:
-            assert model.c4_context.channels == {'c3':48,'c4':96,'c5':128}[case[0]]
     finally:
         for handle in handles:
             handle.remove()
@@ -45,21 +43,21 @@ class Affine(nn.Module):
         return value * self.scale + self.offset
 
 
-@pytest.mark.parametrize('stage', ['c3','c4','c5'])
-@pytest.mark.parametrize('order', ['focal_then_local','local_then_focal'])
-def test_shared_stage_order_is_noncommuting_composition_once(stage, order):
-    model = build_backbone('mobilepixornext', {**BASE, **placement_patch((stage,stage,order))}, 14).eval()
-    model.c4_context, model.c3_light_attention = Affine(2,1), Affine(3,-4)
-    x = torch.randn(1, {'c3':48,'c4':96,'c5':128}[stage], 4, 6)
-    y = model._apply_stage_attention(x, stage)
-    expected = 3*(2*x+1)-4 if order == 'focal_then_local' else 2*(3*x-4)+1
-    torch.testing.assert_close(y, expected)
-    assert model.c4_context.calls == model.c3_light_attention.calls == 1
+@pytest.mark.parametrize("stage", ["c3", "c4", "c5"])
+def test_selected_stage_applies_one_adapter_once(stage):
+    model = build_backbone("mobilepixornext", {
+        **BASE, "local_attention": "simam", "local_attention_stage": stage}, 14).eval()
+    model.c3_light_attention = Affine(3, -4)
+    x = torch.randn(1, {"c3": 48, "c4": 96, "c5": 128}[stage], 4, 6)
+    other = next(name for name in ("c3", "c4", "c5") if name != stage)
+    assert model._apply_stage_attention(x, other) is x
+    torch.testing.assert_close(model._apply_stage_attention(x, stage), 3*x - 4)
+    assert model.c3_light_attention.calls == 1
 
 
 @pytest.mark.parametrize('stage', ['c3','c4','c5'])
 def test_direct_and_registry_construction_initialize_same_parameters(stage):
-    cfg = {**BASE, **placement_patch((stage,'c3','focal_then_local' if stage == 'c3' else None))}
+    cfg = {**BASE, **placement_patch((None,stage,None))}
     torch.manual_seed(721)
     direct = MobilePixorNeXtBackbone(input_channels=14, **{k:v for k,v in cfg.items() if k != 'backbone'})
     torch.manual_seed(721)
@@ -69,17 +67,15 @@ def test_direct_and_registry_construction_initialize_same_parameters(stage):
         assert torch.equal(value, built.state_dict()[key])
 
 
-@pytest.mark.parametrize('key', ['focal_stage','local_attention_stage','attention_order'])
-def test_constructor_rejects_explicit_null_new_fields(key):
-    with pytest.raises(ValueError, match=key):
-        MobilePixorNeXtBackbone(c4_context='focal', local_attention='simam', **{key:None})
+def test_constructor_rejects_explicit_null_stage():
+    with pytest.raises(ValueError, match="local_attention_stage"):
+        MobilePixorNeXtBackbone(local_attention="simam", local_attention_stage=None)
 
 
 @pytest.mark.parametrize('neck', ['rc_sgfpn','rc_bisgfpn'])
 def test_rc_neck_receives_all_refined_features(neck):
     geometry = {'x_min':0.,'x_max':4.8,'x_res':.1,'y_min':-1.6,'y_max':1.6,'y_res':.1}
-    model = MobilePixorNeXtBackbone(input_channels=14, c4_context='focal', focal_stage='c5',
-        local_attention='simam',local_attention_stage='c4',neck_type=neck,geometry=geometry).eval()
+    model = MobilePixorNeXtBackbone(input_channels=14, local_attention='simam',local_attention_stage='c4',neck_type=neck,geometry=geometry).eval()
     seen, handles = {}, []
     for stage in ('c3','c4','c5'):
         handles.append(getattr(model, f'attention_{stage}_output').register_forward_hook(

@@ -19,20 +19,20 @@ def test_block_stages_canonicalize_without_mutating_input():
     assert result.block_simam_stages == ("c4", "c5")
     assert result.block_simam_lambda == .0001
     assert result.to_dict()["block_simam_stages"] == ["c4", "c5"]
-    assert result.semantic_metadata()["resolver_version"] == 3
+    assert result.semantic_metadata()["resolver_version"] == 4
     assert [entry["stride"] for entry in result.effective_placement()["block_simam"]] == [8, 16]
     assert result.semantic_hash == resolve_backbone_features(
         {"block_simam_stages": ["c4", "c5"], "block_simam_lambda": .0001}).semantic_hash
 
 
 def test_disabled_block_attention_preserves_existing_serialization_and_identity():
-    config = {"c4_context": "focal", "local_attention": "simam"}
+    config = {"local_attention": "simam"}
     implicit = resolve_backbone_features(config)
     explicit = resolve_backbone_features({**config, "block_simam_stages": []})
     assert implicit.to_dict() == explicit.to_dict()
     assert not any(key.startswith("block_simam") for key in explicit.to_dict())
     assert implicit.semantic_hash == explicit.semantic_hash
-    assert implicit.semantic_metadata()["resolver_version"] == 1
+    assert implicit.semantic_metadata()["resolver_version"] == 4
 
 
 @pytest.mark.parametrize("patch", [

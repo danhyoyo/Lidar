@@ -32,7 +32,7 @@ def build_notebook():
     # Cell 0: Header Markdown
     cells.append(make_markdown_cell("""# 🚗 Robust 3D LiDAR Object Detection Pipeline (Colab & Local)
 
-Pipeline nghiên cứu và huấn luyện mô hình phát hiện vật thể 3D LiDAR siêu nhẹ (<1M parameters), hỗ trợ kiến trúc **MobilePixorNeXt**, **BEVNeXt**, cơ chế mã hóa **hist14**, **Focal Context**, **Grouped Heads**, các hàm mất mát tiên tiến (**OGA**, **Q-OGA**) và kỹ thuật tăng cường **Hybrid-GT**.
+Pipeline nghiên cứu và huấn luyện mô hình phát hiện vật thể 3D LiDAR siêu nhẹ (<1M parameters), hỗ trợ kiến trúc **MobilePixorNeXt**, **BEVNeXt**, cơ chế mã hóa **hist14**, **Grouped Heads**, các hàm mất mát tiên tiến (**OGA**, **Q-OGA**) và kỹ thuật tăng cường **Hybrid-GT**.
 
 ### 📌 Các tính năng chính trong Notebook này:
 1. **Thiết lập môi trường linh hoạt**: Tự động nhận diện Google Colab (mount Drive) hoặc Local máy trạm, kiểm tra VRAM và hỗ trợ BF16.
@@ -95,8 +95,9 @@ def has_stage_attention_source(root):
     constructors = [{arg.arg for arg in node.args.args + node.args.kwonlyargs}
                     for node in ast.walk(backbone)
                     if isinstance(node, ast.FunctionDef) and node.name == "__init__"]
-    placement = {"focal_stage", "local_attention_stage", "attention_order",
+    placement = {"local_attention_stage",
                  "block_simam_stages", "block_simam_lambda"}
+    retired = {"c4_context", "focal_stage", "attention_order", "local_attention_eca_kernel_size"}
     helper_args = next(({arg.arg for arg in node.args.kwonlyargs}
                         for node in helpers.body if isinstance(node, ast.FunctionDef)
                         and node.name == "attention_placement_overrides"), set())
@@ -108,6 +109,8 @@ def has_stage_attention_source(root):
     return ({"attention_placement_overrides", "attention_placement_summary"} <= helper_names
             and {"block_simam", "block_simam_stages", "block_simam_lambda"} <= helper_args
             and "simam_lambda" in block_constructor
+            and not retired.intersection(fields | helper_args)
+            and all(not retired.intersection(args) for args in constructors)
             and placement <= fields and any(placement <= args for args in constructors))
 
 
@@ -250,9 +253,9 @@ TARGET_BACKEND = "numba"      # "numba" (nhanh hơn) hoặc "python"
 COMPILE_MODEL = False         # torch.compile (tùy chọn)
 
 # --- 2. MODEL ARCHITECTURE (<1M BUDGET) ---
-PRESET = "custom"             # "custom" | "config" | "UNDER1M_FOCAL_OGA_IQA" | "UNDER1M_FOCAL_ECA_OGA_IQA"
+PRESET = "custom"             # "custom" | "config" | "UNDER1M_GROUPED_OGA_IQA" | "UNDER1M_SIMAM_OGA_IQA"
 BACKBONE = "mobilepixornext"
-BACKBONE_OUT_DIM = 32         # 32 (Focal main) hoặc 16 (legacy)
+BACKBONE_OUT_DIM = 32         # 32 (main) hoặc 16 (legacy)
 BEV_ENCODING = "hist14"       # "hist14" (14 kênh v1) | "rich8" | "binary_slices"
 BEV_BACKEND = "numba"         # "numpy" | "numba"
 STAGE_DEPTHS = [3, 4, 2]
@@ -279,16 +282,9 @@ HEADER_USE_BN = True          # True: Bật BatchNorm2d trong Detection Head | F
 HEADER_USE_SILU = True        # True: Bật SiLU activation trong Detection Head | False: Tắt activation ("none")
                               # (Có thể truyền chuỗi: "silu", "relu", "none")
 
-# Attention & Focal Context
-C4_CONTEXT = "focal"          # "focal" (main under-1m) | "none"
-C4_CONTEXT_BOTTLENECK = 64
-C4_CONTEXT_DILATIONS = [1, 2, 3]
-C4_CONTEXT_LAYER_SCALE_INIT = 0.001
-FOCAL_STAGE = "c4"                 # c3 | c4 | c5 (Stage 2 | 3 | 4)
+# Attention & SimAM
 LOCAL_ATTENTION_STAGE = "c3"
-ATTENTION_ORDER = "focal_then_local"  # focal_then_local | local_then_focal; same stage only
-LOCAL_ATTENTION = "none"      # "none" | "eca" | "simam"
-LOCAL_ATTENTION_ECA_KERNEL_SIZE = 3
+LOCAL_ATTENTION = "none"      # "none" | "simam"
 LOCAL_ATTENTION_SIMAM_LAMBDA = 0.0001
 LOCAL_ATTENTION_LAYER_SCALE_INIT = 0.001
 BLOCK_SIMAM = True                  # True: SimAM inside every block of selected stages
@@ -374,20 +370,16 @@ custom_overrides = {
 
 if BACKBONE == "mobilepixornext":
     cm = custom_overrides["model"]
-    cm.update(stage_depths=STAGE_DEPTHS, c4_context=C4_CONTEXT,
+    cm.update(stage_depths=STAGE_DEPTHS,
               local_attention=LOCAL_ATTENTION, neck_fusion_channels=NECK_FUSION_CHANNELS, detail_path=DETAIL_PATH)
-    if C4_CONTEXT == "focal":
-        cm.update(c4_context_version=1, c4_context_bottleneck=C4_CONTEXT_BOTTLENECK,
-                  c4_context_dilations=C4_CONTEXT_DILATIONS, c4_context_layer_scale_init=C4_CONTEXT_LAYER_SCALE_INIT)
     if LOCAL_ATTENTION != "none":
         cm["local_attention_layer_scale_init"] = LOCAL_ATTENTION_LAYER_SCALE_INIT
-        if LOCAL_ATTENTION == "eca": cm["local_attention_eca_kernel_size"] = LOCAL_ATTENTION_ECA_KERNEL_SIZE
         if LOCAL_ATTENTION == "simam": cm["local_attention_simam_lambda"] = LOCAL_ATTENTION_SIMAM_LAMBDA
 
 if BACKBONE == "mobilepixornext" and PRESET == "custom":
     from notebook_config import attention_placement_overrides
-    cm.update(attention_placement_overrides(cm, focal_stage=FOCAL_STAGE,
-        local_attention_stage=LOCAL_ATTENTION_STAGE, attention_order=ATTENTION_ORDER,
+    cm.update(attention_placement_overrides(cm,
+        local_attention_stage=LOCAL_ATTENTION_STAGE,
         block_simam=BLOCK_SIMAM, block_simam_stages=BLOCK_SIMAM_STAGES,
         block_simam_lambda=BLOCK_SIMAM_LAMBDA))
 

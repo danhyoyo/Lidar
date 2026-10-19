@@ -25,7 +25,7 @@ def source_preflight(repo_root):
         'tools/benchmarks/benchmark_evidence.py', 'tools/benchmarks/benchmark_protocol.py',
         'tools/benchmarks/smoke_detector.py', 'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
         'tools/kitti_training_pipeline/image_metadata.py',
-        'detector/core/models/heads/grouped.py', 'detector/core/models/backbones/focal_context.py']
+        'detector/core/models/heads/grouped.py', 'detector/core/models/backbones/light_attention.py']
     missing = [p for p in required if not (root / p).is_file()]
     if missing:
         raise FileNotFoundError('Selected checkout is missing current tools. Publish the intended branch or '
@@ -172,31 +172,12 @@ def require_training_ready(purpose, protocols):
     return True
 
 
-def validate_comparator(candidate, baseline, *, kind='focal_ablation'):
-    """A focal ablation changes context alone; general protocol comparisons are explicit."""
-    if kind not in {'focal_ablation', 'protocol'}:
-        raise ValueError('COMPARISON_KIND must be focal_ablation or protocol')
-    if kind == 'protocol':
-        return True
-    if candidate['model'].get('c4_context', 'none') != 'focal' or baseline['model'].get('c4_context', 'none') != 'none':
-        raise ValueError('Focal ablation requires a focal candidate and a no-context baseline')
-    identities = [checkpoint_identity(config) for config in (candidate, baseline)]
-    for identity in identities:
-        features = identity['model'].get('features', {}).get('config', {})
-        for key in list(features):
-            if key.startswith('c4_context'):
-                del features[key]
-    mismatches = [key for key in identities[0] if identities[0][key] != identities[1][key]]
-    for key in ('seed', 'augmentation'):
-        if candidate.get(key) != baseline.get(key):
-            mismatches.append(key)
-    for key, default in (('num_workers', 2), ('target_backend', 'python'), ('compile_model', False)):
-        if candidate['train'].get(key, default) != baseline['train'].get(key, default):
-            mismatches.append('train.'+key)
-    if candidate['data']['bev_encoding'].get('backend', 'numpy') != baseline['data']['bev_encoding'].get('backend', 'numpy'):
-        mismatches.append('encoder_backend')
-    if mismatches:
-        raise ValueError(f'Focal ablation conditions must match outside context: {mismatches}')
+def validate_comparator(candidate, baseline, *, kind='protocol'):
+    """Validate both model contracts before a general protocol comparison."""
+    if kind != 'protocol':
+        raise ValueError('COMPARISON_KIND must be protocol')
+    for config in (candidate, baseline):
+        checkpoint_identity(config)
     return True
 
 

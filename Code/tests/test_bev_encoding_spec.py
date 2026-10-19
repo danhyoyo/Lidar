@@ -21,6 +21,25 @@ GEOMETRY = {
 }
 
 
+@pytest.mark.parametrize("name", ["pillar32", "pillar_rich", "pillar_rich_gate", "pillar_rich_eca"])
+def test_retired_learned_encodings_are_rejected(name):
+    from tools.kitti_training_pipeline.common import (
+        build_model, configure_detector_imports, validate_deployment_config,
+    )
+
+    configure_detector_imports(ROOT / "detector")
+    with pytest.raises(ValueError, match="unsupported BEV encoding"):
+        resolve_bev_encoding({"name": name}, GEOMETRY)
+    with pytest.raises(ValueError, match="unsupported BEV encoding"):
+        resolve_input_channels({"name": name})
+    config = json.loads((ROOT / "configs/config.json").read_text())
+    config["data"]["bev_encoding"] = {"name": name}
+    with pytest.raises(ValueError, match="unsupported BEV encoding"):
+        build_model(config)
+    with pytest.raises(ValueError, match="unsupported BEV encoding"):
+        validate_deployment_config(config, "test")
+
+
 def test_hist14_schema_layout_normalization_edges_and_precision():
     schema = resolve_bev_encoding({"name": "hist14"}, GEOMETRY)
     assert schema.channels == 14

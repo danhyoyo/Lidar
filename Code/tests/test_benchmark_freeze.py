@@ -20,8 +20,8 @@ def required_api():
 def files(tmp_path, *, synthetic=False):
     args=evaluation_fixture(tmp_path/'baseline')
     protocol,evaluation,selection,history,config_path,processed,raw=args
-    config=json.loads(config_path.read_text());config['model']['c4_context']='focal'
-    config['experiment']['name']='candidate_focal'
+    config=json.loads(config_path.read_text());config['model']['local_attention']='simam'
+    config['experiment']['name']='candidate_simam'
     candidate=tmp_path/'candidate.json';candidate.write_text(json.dumps(config))
     audit=tmp_path/'audit.json';audit.write_text(json.dumps(audit_assets(candidate,kitti_root=raw)))
     evidence=tmp_path/'evidence.json';evidence.write_text(json.dumps(record_evidence(protocol,evaluation,selection,history,synthetic=synthetic)))

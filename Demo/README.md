@@ -6,6 +6,18 @@ ghi nguồn và SHA256 từng file.
 
 ## Mở kết quả
 
+### Bộ input Hist14 để ghép diagram bài báo
+
+Frame **005663**, scan gốc không augmentation; vùng focus X=0–45 m,
+Y=−20–20 m có 4 Car, 13 Pedestrian, 4 Cyclist theo nhãn KITTI.
+Mở [gallery](outputs/hist14_inputs/005663/index.html) hoặc
+[bảng tổng hợp 14 kênh](outputs/hist14_inputs/005663/hist14_overview.png).
+Ảnh từng kênh có tên/thang màu nằm trong `outputs/hist14_inputs/005663/channels/`;
+PNG nền trong suốt để ghép diagram nằm trong `transparent/`.
+Có cloud 3D/BEV, toàn bộ ROI, tensor gốc và metadata nguồn;
+[README kết quả](outputs/hist14_inputs/005663/README.md) giải thích công thức từng kênh.
+Chạy lại bằng `Demo/code/export_hist14_inputs.py`.
+
 | Nội dung | File chính |
 |---|---|
 | Ảnh camera stitching, frame 005663 | [stitched.png](outputs/camera/005663/stitched.png) |

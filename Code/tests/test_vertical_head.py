@@ -19,7 +19,7 @@ from detector.core.task_groups import resolve_task_groups
 
 
 def config_3d(*, grouped=True, strategy="oga", iqa=True, classification="gaussian"):
-    config = json.loads((ROOT / "configs/experiments/under1m/hist14_local3_focal_grouped_oga_iqa.json").read_text())
+    config = json.loads((ROOT / "configs/experiments/under1m/hist14_local3_grouped_oga_iqa.json").read_text())
     config["data"]["box_mode"] = "3d"
     config["model"].update(header_use_iou=iqa, cls_encoding=classification)
     config["loss"] = {"name": strategy, "use_iou": iqa, "vertical_loss_weight": 1.}

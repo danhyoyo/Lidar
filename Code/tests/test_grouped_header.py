@@ -86,7 +86,7 @@ def pipeline_config():
     config["data"]["head_groups"] = copy.deepcopy(DEFINITIONS)
     config["data"]["bev_encoding"] = {"name": "hist14"}
     config["model"].update(head_mode="grouped", backbone_out_dim=32, stage_depths=[3, 4, 2],
-                           c4_attention="none", c4_attention_scales=[], c4_context="focal",
+                           c4_attention="none", c4_attention_scales=[], local_attention="none",
                            header_use_iou=True)
     config["loss"] = {"name": "oga", "use_iou": True}
     return config
@@ -104,7 +104,7 @@ def test_pipeline_copies_config_and_constructs_shared_backbone_with_grouped_head
     pred = model({"voxel": torch.zeros(1, 14, 32, 48)})
     assert pred["groups"]["car"]["cls"].shape == (1, 1, 8, 12)
     assert pred["groups"]["ped_cyc"]["cls"].shape == (1, 2, 8, 12)
-    assert sum(p.numel() for p in model.backbone.parameters()) == 660528
+    assert sum(p.numel() for p in model.backbone.parameters()) == 635408
     assert sum(p.numel() for p in model.grouped_header.parameters()) == 186161
 
 
@@ -116,7 +116,7 @@ def test_full_resolution_grouped_shape_and_total_budget_on_meta():
         output = model(torch.zeros(1, 14, 800, 704))
     assert output["groups"]["car"]["cls"].shape == (1, 1, 200, 176)
     assert output["groups"]["ped_cyc"]["iou"].shape == (1, 1, 200, 176)
-    assert sum(p.numel() for p in model.parameters()) == 846689
+    assert sum(p.numel() for p in model.parameters()) == 821569
 
 
 def test_direct_grouped_model_requires_resolved_groups_and_validates_class_count():

@@ -363,11 +363,6 @@ class PyTorchRunner:
         self.parameter_report = model_parameter_report(self.model, criterion)
 
     def transfer(self, voxel):
-        if isinstance(voxel, Mapping):
-            return device_timed(lambda: {
-                key: value.contiguous().to(self.device) if torch.is_tensor(value) else value
-                for key, value in voxel.items()
-            }, self.device)
         return device_timed(
             lambda: voxel.unsqueeze(0).contiguous().to(self.device), self.device
         )
@@ -562,8 +557,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         sample = dataset[index]
         preprocess_ms = (time.perf_counter() - part_start) * 1000
         value = sample["voxel"]
-        input_sizes.append(sum(v.numel() * v.element_size() for v in value.values() if torch.is_tensor(v))
-                           if isinstance(value, Mapping) else value.numel() * value.element_size())
+        input_sizes.append(value.numel() * value.element_size())
         input_tensor, transfer_ms = runner.transfer(sample["voxel"])
         output, model_ms = runner.infer(input_tensor)
         part_start = time.perf_counter()
@@ -629,8 +623,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
                  "kitti_root": str(kitti_root.resolve()),
                  "split": str(split_path.resolve()), "split_sha256": sha256(split_path),
                  "input_channels": int(input_shape(config)[1]),
-                 "input_bytes_fp32": (None if bev_encoding_spec(config).is_packed
-                                      else int(np.prod(input_shape(config)) * 4)),
+                 "input_bytes_fp32": int(np.prod(input_shape(config)) * 4),
                  "mean_input_bytes": float(np.mean(input_sizes)),
                  "bev_encoding": config["data"].get("bev_encoding", {"name": "binary_slices"}),
                  "seed": config.get("seed"),
