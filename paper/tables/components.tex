@@ -8,17 +8,17 @@
 \toprule
 ID & Backbone & BEV input & Head & Sampling & Fusion / neck & Added modules \\
 \midrule
-M0 & MobilePIXOR & Binary35 & Single H16 & Standard & ? / SumFPN & None \\
-M1 & MobilePIXORNeXt & Binary35 & Single H16 & Standard & F24 / SumFPN & None \\
-E1 & MobilePIXORNeXt & Strata-BEV8 & Single H16 & Standard & F24 / SumFPN & None \\
-M3 & MobilePIXORNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & None \\
-M4 & MobilePIXORNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & None \\
-M5 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & None \\
-M6 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F24 / SumFPN & None \\
-M7 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SumFPN & None \\
-M8 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & None \\
-M9 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA \\
-M10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA + block SimAM \\
+A0 & MobilePIXOR & Binary35 & Single H16 & Standard & ? / SumFPN & None \\
+A1 & MobilePIXORNeXt & Binary35 & Single H16 & Standard & F24 / SumFPN & None \\
+A2 & MobilePIXORNeXt & Strata-BEV8 & Single H16 & Standard & F24 / SumFPN & None \\
+A3 & MobilePIXORNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & None \\
+A4 & MobilePIXORNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & None \\
+A5 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & None \\
+A6 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F24 / SumFPN & None \\
+A7 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SumFPN & None \\
+A8 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & None \\
+A9 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA \\
+A10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA + block SimAM \\
 \bottomrule
 \end{tabular}\endgroup
 \par\medskip\textbf{(b) Results and source-row mapping}\par\smallskip
@@ -26,18 +26,18 @@ M10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & 
 \toprule
 ID & Workbook record & mAP M & mAP9 & Model ms \\
 \midrule
-M0 & R01 / row 2 & 41.40 & 42.27 & -- \\
-M1 & R02 / row 3 & 47.60 & 49.08 & 5.88 \\
-E1 & R04 / row 4 & 47.37 & 48.95 & 6.06 \\
-M3 & R03 / row 5 & 50.14 & 52.00 & 5.92 \\
-M4 & R05 / row 6 & 51.30 & 53.96 & 6.92 \\
-M5 & Row 7 & 60.22 & 61.11 & 6.70 \\
-M6 & Row 8 & 66.25 & 68.45 & 7.45 \\
-M7 & R06 / row 9 & 68.12 & 70.05 & 6.72 \\
-M8 & R14 / row 10 & -- & -- & 6.94 \\
-M9 & Row 14 & 70.58 & 72.66 & 8.19 \\
-M10 & R37 / row 18 & 71.50 & 73.45 & 8.67 \\
+A0 & R01 / row 2 & 41.40 & 42.27 & -- \\
+A1 & R02 / row 3 & 47.60 & 49.08 & 5.88 \\
+A2 & R04 / row 4 & 47.37 & 48.95 & 6.06 \\
+A3 & R03 / row 5 & 50.14 & 52.00 & 5.92 \\
+A4 & R05 / row 6 & 51.30 & 53.96 & 6.92 \\
+A5 & Row 7 & 60.22 & 61.11 & 6.70 \\
+A6 & Row 8 & 66.25 & 68.45 & 7.45 \\
+A7 & R06 / row 9 & 68.12 & 70.05 & 6.72 \\
+A8 & R14 / row 10 & 67.38 & 69.46 & 6.94 \\
+A9 & Row 14 & 70.58 & 72.66 & 8.19 \\
+A10 & R37 / row 18 & 71.50 & 73.45 & 8.67 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize All rows come from the latest summary sheet. M/E labels are editorial aliases; workbook run IDs are shown only where supplied. E1 is the eight-channel alternative to M3. F denotes fusion width and H denotes head width; grouping does not by itself establish within-group sharing. The added-module column lists OGA, IQA and block SimAM; the other settings are explicit in their own columns. M8 aggregate APs are withheld because they disagree with its class APs. A question mark is an unrecorded setting, not zero. Matched training, head-sharing and timing identities remain to be verified.\end{minipage}
+\par\smallskip\begin{minipage}{\linewidth}\footnotesize All rows come from the latest summary sheet. A-labels are editorial aliases; workbook run IDs are shown only where supplied. A2 is the eight-channel alternative to A3. F denotes fusion width and H denotes head width; grouping does not by itself establish within-group sharing. The added-module column lists OGA, IQA and block SimAM; the other settings are explicit in their own columns. A question mark is an unrecorded setting, not zero. Matched training, head-sharing and timing identities remain to be verified.\end{minipage}
 \end{table*}

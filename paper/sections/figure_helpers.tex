@@ -1,11 +1,11 @@
 % Drop a PDF at the stated figures/ path to replace its placeholder automatically.
-\newcommand{\paperfigure}[3]{%
-  \IfFileExists{figures/#1}{%
-    \includegraphics[width=\linewidth]{figures/#1}%
+\newcommand{\paperfigure}[4][width=\linewidth]{%
+  \IfFileExists{figures/#2}{%
+    \includegraphics[#1]{figures/#2}%
   }{%
-    \fbox{\parbox[c][#2][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+    \fbox{\parbox[c][#3][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
       \centering\small\textbf{Figure placeholder}\\[5pt]
-      \texttt{\detokenize{#1}}\\[6pt]#3}}%
+      \texttt{\detokenize{#2}}\\[6pt]#4}}%
   }%
 }
 \newcommand{\draftnote}[1]{\par\smallskip\noindent\textit{Draft verification note: #1}\par\smallskip}

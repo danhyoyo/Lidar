@@ -1,0 +1,80 @@
+% Compile from this directory with build.ps1. Auxiliary files go to build/.
+\RequirePackage{fix-cm}
+\pdfminorversion=7
+\newcommand{\DoNotLoadEpstopdf}{}
+\documentclass[twocolumn]{svjour3}
+\smartqed
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx,hyperref}
+\usepackage{amsmath,amssymb,amsfonts,booktabs,cite,array}
+\input{sections/figure_helpers}
+\begin{document}
+\raggedbottom
+\title{MobilePixorNeXt: Compact LiDAR Object Detection with Oriented Geometry and Localization Quality %\thanks{Grants or other notes The article that should go on the front page should be
+%placed here. General acknowledgments should be placed at the end of the article.}
+}
+% \subtitle{Do you have a subtitle?\\ If so, write it here.
+
+%\titlerunning{Short form of title}        % if too long for running head
+
+\author{
+        Duyen Huu Nguyen $^1$ \and
+        Anh Duc Bui $^1$ \and
+        Nhan Trong Phan $^1$ \and
+        Hoang Ngoc Tran $^*$$^1$
+        %etc.
+}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{  *Correspondence: Hoang Ngoc Tran \\
+ \at $^1$ 
+              FPT University, Can Tho, 94000, VietNam. \\
+%  \at $^2$ 
+%               Department of Mechatronic Engineering, Faculty of Mechanical
+%             Engineering, Ho Chi Minh City University of Technology (HCMUT),
+% Vietnam National University, Ho Chi Minh City, Vietnam. \\
+              \email{hoang2531992@gmail.com; duyennhce200017@gmail.com;  anhbdce200052@gmail.com; nhanptce200090@gmail.com}           %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+}
+
+\date{Received: date / Accepted: date}
+%The correct dates will be entered by the editor
+
+\titlerunning{MobilePixorNeXt}
+\maketitle  
+
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+\keywords{LiDAR detection \and Bird's-eye view \and Compact convolutional network \and SimAM \and Localization quality}
+
+\section{Introduction}\label{sec:introduction}
+\input{sections/introduction}
+\section{Related Work}\label{sec:related_work}
+\input{sections/related_work}
+\section{Proposed Method}\label{sec:method}
+\input{sections/methodology}
+\section{Experiments}\label{sec:experiments}
+\input{sections/experiments}
+\section{Results and Discussion}\label{sec:results}
+\input{sections/results}
+\clearpage % Keep pending result floats before the closing sections.
+\makeatletter
+\global\@colht=\textheight
+\global\@colroom=\textheight
+\global\vsize=\textheight
+\makeatother
+\section{Conclusion}\label{sec:conclusion}
+\input{sections/conclusion}
+
+\subsubsection*{Acknowledgements}
+\draftnote{To be supplied by the authors.}
+\subsubsection*{Author Contributions}
+\draftnote{To be supplied by the authors.}
+\subsubsection*{Declarations}
+\draftnote{To be supplied by the authors.}
+\bibliographystyle{spmpsci}
+\bibliography{references}
+\end{document}

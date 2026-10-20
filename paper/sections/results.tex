@@ -18,7 +18,7 @@ The final ablation row instead records 8.67~ms model-forward and 42.16~ms end-to
 
 \subsection{Configuration comparisons}
 
-Table~\ref{tab:components} separates complete configurations in panel (a) from their results and source records in panel (b). The backbone is MobilePIXOR in M0. All remaining configurations use the NeXt backbone. In particular, M3 combines MobilePIXORNeXt, Strata-BEV14, a Single H16 head, standard sampling and F24 SumFPN. The M/E labels are editorial aliases, not a definition of inherited settings. Strata-BEV14, grouped prediction and hybrid sampling are recorded as separate transitions, followed by fusion and attention changes. Several rows lack persistent run identifiers or explicit head-sharing metadata. The table is therefore presented as a recipe comparison rather than proof that each listed change caused the entire observed difference.
+Table~\ref{tab:components} separates complete configurations in panel (a) from their results and source records in panel (b). The backbone is MobilePIXOR in A0. All remaining configurations use the NeXt backbone. In particular, A3 combines MobilePIXORNeXt, Strata-BEV14, a Single H16 head, standard sampling and F24 SumFPN. The A-labels are editorial aliases, not a definition of inherited settings. Strata-BEV14, grouped prediction and hybrid sampling are recorded as separate transitions, followed by fusion and attention changes. Several rows lack persistent run identifiers or explicit head-sharing metadata. The table is therefore presented as a recipe comparison rather than proof that each listed change caused the entire observed difference.
 
 \input{tables/components}
 
@@ -45,7 +45,7 @@ Figure~\ref{fig:qualitative} reserves space for matched examples with frame IDs,
 \end{figure*}
 \begin{figure*}[t]
     \centering
-    \paperfigure{precision_recall.pdf}{40mm}{Not supplied by the slides. Retrieve score-ranked predictions and ground truth from matched validation evaluations; export cumulative TP/FP precision--recall arrays and plot them.\\ Car / Pedestrian / Cyclist; Moderate difficulty; fixed class-specific IoU thresholds. Do not reconstruct curves from AP summaries.}
+    \paperfigure{pr_all_difficulties.pdf}{40mm}{Not supplied by the slides. Retrieve score-ranked predictions and ground truth from matched validation evaluations; export cumulative TP/FP precision--recall arrays and plot them.\\ Car / Pedestrian / Cyclist; Moderate difficulty; fixed class-specific IoU thresholds. Do not reconstruct curves from AP summaries.}
     \caption{Reserved precision--recall curves for the baseline and final detector. Curves must be exported from detections and matches; aggregate AP values do not determine their shapes.}
     \label{fig:pr}
 \end{figure*}
