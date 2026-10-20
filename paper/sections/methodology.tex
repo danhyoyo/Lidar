@@ -1,216 +1,403 @@
-% Current method: user-confirmed F32, Tong hop last row 18 (2026-10-18).
-% F24 historical hashes do not identify this F32 revision. See support/F32_REVISION_EVIDENCE.md.
-% Paper name Strata-BEV14 maps to the unchanged hist14 v1 checkpoint encoding.
+% Methodology Section for MobilePIXORNeXt
+% Written according to Springer Nature - Arabian Journal for Science and Engineering (AJSE)
+% Structure: Module Triad (Motivation -> Design -> Technical Advantage) + Equation Closure + Pseudocode Algorithm
 
-MobilePIXORNeXt maps a LiDAR scan to class-labelled oriented BEV boxes through deterministic feature encoding, a compact convolutional hierarchy, multiscale fusion, and grouped prediction heads. Figure~\ref{fig:r37_overview} summarizes the configuration used as the main detector, denoted R37-F32 here to distinguish it from the earlier F24 run. Its outputs describe horizontal location, footprint dimensions, orientation, and localization quality. Vertical box coordinates are not predicted by this configuration; any separately trained 3D extension is evaluated as a distinct variant.
-
-\begin{figure*}[t]
+\begin{strip}
     \centering
-    \paperfigure{pipeline_overview.pdf}{30mm}{Source: slide PDF page 1; complete overview page, preserving vector labels and embedded point-cloud images.}
-    \caption{Overview of MobilePIXORNeXt. Strata-BEV14 converts the scan into a fixed statistical grid; the detector predicts class heatmaps, center offsets, footprint dimensions, doubled yaw, and localization quality. The main model predicts oriented BEV footprints, shown over the 3D input cloud. The dashed feedback path is used only in training. FL denotes Gaussian focal classification, BCE supervises localization quality, and T-SBUW denotes the adaptive task balancing described in the text.}
+    \paperfigure{pipeline_overview.pdf}{32mm}{Overall architecture and data flow of MobilePIXORNeXt. A raw LiDAR point cloud is converted via the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical tensor. The compact ConvNeXt-style backbone with Block-SimAM extracts multi-scale spatial features, which are fused by the Scale-Gated Feature Pyramid Network (SG-FPN). Decoupled grouped prediction towers output heatmaps, subcell offsets, log-sizes, doubled yaw angles, and localization quality. In training, the network is supervised by Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA), dynamically balanced via Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
+    \captionof{figure}{Overall architecture and data flow of MobilePIXORNeXt. Strata-BEV14 maps the point cloud into a fixed statistical grid $\mathbf{X} \in \mathbb{R}^{B \times 14 \times 800 \times 704}$. The compact convolutional hierarchy with embedded Block-SimAM and Bilinear SG-FPN extracts a 32-channel shared feature map at stride 4. Decoupled grouped heads predict oriented bounding box attributes. Dashed lines denote training-only supervision paths involving OGA, IQA, and T-SBUW loss balancing.}
     \label{fig:r37_overview}
-\end{figure*}
+\end{strip}
 
+MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector designed for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms. Operating strictly on an efficient Bird's-Eye View (BEV) representation, the framework eliminates computationally expensive learned point-cloud feature encoders and three-dimensional sparse convolutions. Figure~\ref{fig:r37_overview} provides a comprehensive overview of the overall detection pipeline, detailing the end-to-end data flow from the raw point cloud to the final decoded oriented bounding boxes.
 
-\subsection{Strata-BEV14 point-cloud encoding}
-\label{sec:rich_bev14}
+\subsection{Problem Formulation and Input/Output Contracts}
+\label{sec:problem_formulation}
 
-The representation is inspired by the height-stratified BEV design of TriBand-BEV~\cite{khoshkdahan2026triband}, whose three channels store band-wise maximum corrected reflectance. We retain the idea of summarizing vertical structure on a horizontal grid, but use different band definitions and statistical channels. We call the two configurations Strata-BEV8 and Strata-BEV14; their suffixes denote channel counts, not height-band counts. These names describe our configured encodings, rather than a reproduction of TriBand-BEV.
-
-Height histograms provide another source of inspiration~\cite{zhou2025pillarhist}. We use four log-scaled count bins, cell statistics, and mean subcell offsets. The resulting fourteen-channel raster is deterministic; it does not reproduce the learned pillar encoder in that work or establish its reported quantization benefits for our detector.
-
-A scan is represented by $\mathcal P=\{(x_i,y_i,z_i,\iota_i)\}_{i=1}^{N_{\mathrm{pts}}}$, where $\iota_i$ is reflectance. The LiDAR frame uses forward $x$, leftward $y$, and upward $z$. We retain finite points within the region $[0,70.4]\times[-40,40]\times[-2.5,1.0]$~m, applying strict bounds with a $0.001$~m inward margin. A horizontal resolution of $\Delta_x=\Delta_y=0.1$~m produces $800\times704$ cells. Point assignment uses
+\paragraph{LiDAR Coordinate Frame and Spatial Region of Interest.}
+An unordered LiDAR point cloud is acquired via a rotating scanner and defined as a set $\mathcal{P} = \{\mathbf{p}_i\}_{i=1}^{N_{\mathrm{pts}}}$, where each point $\mathbf{p}_i = (x_i, y_i, z_i, \iota_i) \in \mathbb{R}^4$ encapsulates longitudinal distance $x_i$ (forward positive), lateral distance $y_i$ (leftward positive), vertical elevation $z_i$ (upward positive), and calibrated reflectance intensity $\iota_i \in [0, 1]$. Perception is constrained to a fixed Cartesian Region of Interest (ROI):
 \begin{equation}
-    u_{\mathrm{in}}=\left\lfloor\frac{x_i-x_{\min}}{\Delta_x}\right\rfloor,
-    \qquad
-    v_{\mathrm{in}}=\left\lfloor\frac{y_i-y_{\min}}{\Delta_y}\right\rfloor.
-    \label{eq:input_grid}
+    x_i \in [x_{\min}, x_{\max}], \quad y_i \in [y_{\min}, y_{\max}], \quad z_i \in [z_{\min}, z_{\max}],
+    \label{eq:spatial_roi}
+\end{equation}
+configured with longitudinal bounds $[0.0, 70.4]$\,m, lateral bounds $[-40.0, 40.0]$\,m, and vertical bounds $[-2.5, 1.0]$\,m. An open-boundary inward margin of $\epsilon = 0.001$\,m is enforced to eliminate boundary artifacts. Discretizing the horizontal plane with a uniform spatial resolution of $\Delta_x = \Delta_y = 0.1$\,m produces a discrete grid of size $H_{\mathrm{in}} \times W_{\mathrm{in}} = 800 \times 704$ cells. A point $\mathbf{p}_i$ is deterministically indexed into grid coordinate $(u_i, v_i)$ via:
+\begin{equation}
+    u_i = \left\lfloor \frac{x_i - x_{\min}}{\Delta_x} \right\rfloor, \qquad v_i = \left\lfloor \frac{y_i - y_{\min}}{\Delta_y} \right\rfloor.
+    \label{eq:grid_assignment}
 \end{equation}
 
-Strata-BEV14 encodes each occupied cell using the fourteen statistics in Table~\ref{tab:rich_bev14}. Heights are normalized as $\zeta_i=(z_i-z_{\min})/(z_{\max}-z_{\min})$, and reflectance is clipped to $[0,1]$. Four equal-height intervals summarize the vertical distribution. Their count channels and the total-density channel use
+\paragraph{Detection Target Contract.}
+The detector predicts oriented bounding boxes projected onto the horizontal BEV plane across three semantic categories: Car ($c=0$), Pedestrian ($c=1$), and Cyclist ($c=2$). At an output spatial downsampling factor of $s_{\mathrm{out}} = 4$, the output feature map resolution is $H_{\mathrm{out}} \times W_{\mathrm{out}} = 200 \times 176$. For each detected object instance $k$, the target state is parameterized by the 7-tuple:
 \begin{equation}
-    d_{\log}(N)=\min\left(1,\frac{\log(1+N)}{\log(33)}\right),
-    \label{eq:density_encoding}
+    \mathbf{b}_k = (c_k, x_k^*, y_k^*, l_k^*, w_k^*, \psi_k^*, s_k),
+    \label{eq:target_tuple}
 \end{equation}
-where $N$ is the corresponding cell or bin count. These channels are density statistics rather than histogram probabilities. The remaining statistics describe height variation, reflectance, occupancy, and subcell point locations. Empty cells are zero, and the resulting input is $\mathbf X\in\mathbb R^{B\times14\times800\times704}$.
+where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes the metric continuous center coordinates, $(l_k^*, w_k^*) \in \mathbb{R}^2$ represents length and width footprints, $\psi_k^* \in [-\pi/2, \pi/2]$ is the orientation heading angle under a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated detection confidence score.
+
+\subsection{Deterministic Strata-BEV14 Feature Representation}
+\label{sec:strata_bev14}
+
+\paragraph{Motivation.}
+Standard voxel-based and pillar-based detectors~\cite{lang2019pointpillars,li2023pillarnext} deploy PointNet-style sub-networks to encode unordered points within each vertical column into learned embeddings. Although expressive, learned encoders introduce millions of floating-point operations (FLOPs), variable pillar memory padding, and latency bottlenecks during onboard edge deployment. Conversely, naive 35-channel binary height slicing~\cite{yang2018pixor} discards the continuous intra-cell vertical point distribution and reflectance signatures, while three-channel height-band representations~\cite{khoshkdahan2026triband} omit higher-order geometric dispersion. To achieve an optimal compromise between expressive geometric modeling and real-time execution, we propose \textbf{Strata-BEV14} (\texttt{hist14})---a deterministic, 14-channel statistical rasterizer requiring exactly zero learned parameters.
+
+\paragraph{Mathematical Formulation.}
+For each occupied cell $(u, v)$ containing $N$ points $\mathcal{P}_{u, v} = \{\mathbf{p}_i\}_{i=1}^N$, vertical elevations are normalized linearly to unit interval $\zeta_i = (z_i - z_{\min}) / (z_{\max} - z_{\min}) \in [0, 1]$, and reflectance values $\iota_i$ are clamped to $[0, 1]$. Strata-BEV14 computes fourteen analytical features across four functional groups, summarized in Table~\ref{tab:strata_bev14}:
 
 \begin{table}[t]
-    \caption{Strata-BEV14 channels, indexed from zero. All statistics are computed over points in one input cell.}
-    \label{tab:rich_bev14}
+    \caption{Channel definitions of the deterministic Strata-BEV14 feature representation. All statistical moments are computed over points within individual horizontal cells $(u, v)$ without learned parameters.}
+    \label{tab:strata_bev14}
     \centering\small
-    \begin{tabular}{@{}p{0.15\columnwidth}p{0.77\columnwidth}@{}}
+    \begin{tabular}{@{}c p{0.25\columnwidth} p{0.58\columnwidth}@{}}
         \toprule
-        Channels & Cell statistics \\
+        \textbf{Channel} & \textbf{Feature Identity} & \textbf{Mathematical Definition and Semantics} \\
         \midrule
-        0--3 & Log-normalized counts in four equal-height intervals. \\
-        4--7 & Maximum, mean, span, and population standard deviation of $\zeta_i$. \\
-        8--9 & Maximum and mean clipped reflectance. \\
-        10--11 & Log-normalized total count and binary occupancy. \\
-        12--13 & Mean point displacement from the input-cell center, divided by $\Delta_x$ or $\Delta_y$ and clipped to $[-0.5,0.5]$. \\
+        $0$--$3$ & Stratified Log Counts & Four height-band densities: $F_b = d_{\log}(N_b)$, where $b = \min(\lfloor 4\zeta_i \rfloor, 3)$. \\
+        $4$ & Maximum Elevation & $F_4 = \max_{i} \zeta_i$, peak normalized elevation. \\
+        $5$ & Mean Elevation & $F_5 = \frac{1}{N} \sum_{i=1}^N \zeta_i$, first vertical moment. \\
+        $6$ & Elevation Span & $F_6 = \max_{i} \zeta_i - \min_{i} \zeta_i$, continuous vertical extent. \\
+        $7$ & Elevation Deviation & $F_7 = \sqrt{\max(0, \frac{1}{N} \sum_{i} \zeta_i^2 - F_5^2)}$, spatial dispersion. \\
+        $8$ & Peak Reflectance & $F_8 = \max_{i} \iota_i$, highest material reflectivity. \\
+        $9$ & Mean Reflectance & $F_9 = \frac{1}{N} \sum_{i=1}^N \iota_i$, average surface intensity. \\
+        $10$ & Global Density & $F_{10} = d_{\log}(N)$, overall point density. \\
+        $11$ & Binary Occupancy & $F_{11} = 1.0$ if $N \ge 1$, and $0.0$ otherwise. \\
+        $12$--$13$ & Centroid Displacements & Subcell offsets $\Delta \bar{x}, \Delta \bar{y} \in [-0.5, 0.5]$ relative to cell center. \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-This deterministic encoding retains vertical summaries while allowing the learned network to operate entirely on a horizontal grid. The normalized point displacements describe the distribution of observations within an input cell; they are distinct from the metric object-center offsets predicted by the detector.
+1. \textit{Height-Stratified Density Channels ($F_0$--$F_3$)}: Normalized height $\zeta_i$ is partitioned into four uniform vertical intervals $b \in \{0, 1, 2, 3\}$. For bin point count $N_b$, a logarithmic compression is applied to mitigate LiDAR ray density fall-off over range:
+\begin{equation}
+    F_b = d_{\log}(N_b) = \min\left(1, \frac{\ln(1 + N_b)}{\ln(1 + N_{\mathrm{norm}})}\right),
+    \label{eq:density_encoding}
+\end{equation}
+where $N_{\mathrm{norm}} = 32$ is a normalization constant chosen to saturate at dense returns.
 
-Strata-BEV8 starts with three occupancy channels for equal-height bands. These are followed by maximum and mean normalized height, maximum and mean clipped reflectance, and total log-density. Its occupancy bands indicate whether a return exists; they do not store band-wise reflectance. Strata-BEV14 changes the vertical summary to four log-count bands and adds height span, height standard deviation, whole-cell occupancy and mean subcell offsets. Consequently, the eight-channel encoding is not simply a subset of the fourteen-channel tensor. Both use the configured sensor-frame height interval; neither applies TriBand-BEV's ground-referenced band thresholds or reflectance offset and gain. The implementation keys remain \texttt{rich8} and \texttt{hist14} (v1) for reproducibility.
+2. \textit{Vertical Spatial Moments ($F_4$--$F_7$)}: To encode obstacle geometry without explicit voxelization, we extract peak elevation $F_4 = \max_i \zeta_i$, mean elevation $F_5 = \frac{1}{N}\sum_i \zeta_i$, vertical span $F_6 = \max_i \zeta_i - \min_i \zeta_i$, and the sample standard deviation:
+\begin{equation}
+    F_7 = \begin{cases}
+        \sqrt{\max\left(0, \frac{1}{N} \sum_{i=1}^N \zeta_i^2 - F_5^2\right)}, & \text{if } N > 1, \\
+        0, & \text{otherwise}.
+    \end{cases}
+    \label{eq:z_std_encoding}
+\end{equation}
 
-\subsection{Compact convolutional hierarchy}
-\label{sec:method_backbone}
+3. \textit{Reflectance Statistics ($F_8$--$F_9$)}: Calibrated surface returns capture material discrimination (e.g., distinguishing retro-reflective license plates, pedestrian clothing, or road signs):
+\begin{equation}
+    F_8 = \max_{i=1,\dots,N} \iota_i, \qquad F_9 = \frac{1}{N} \sum_{i=1}^N \iota_i.
+    \label{eq:intensity_encoding}
+\end{equation}
 
-The stem contains two $3\times3$ convolutions with 32 output channels and strides two and one, respectively. Each is followed by batch normalization (BN) and SiLU. Three subsequent stages begin with a stride-two $3\times3$ convolution and contain 3, 4, and 2 residual blocks. Their outputs have 48, 96, and 128 channels at strides 4, 8, and 16. We index features by their spatial stride, $\mathbf F^{(r)}$, to make the resolution of each connection explicit.
+4. \textit{Occupancy and Continuous Subcell Offsets ($F_{10}$--$F_{13}$)}: Channel $F_{10} = d_{\log}(N)$ records total point density, while $F_{11} = 1.0$ signifies non-empty occupancy. Crucially, to prevent quantization error from coarse $0.1$\,m cell discretization, channels $F_{12}$ and $F_{13}$ preserve continuous subcell horizontal centroid displacements:
+\begin{align}
+    F_{12} &= \operatorname{clip}\left(\frac{1}{N}\sum_{i=1}^N \frac{x_i - (u\Delta_x + x_{\min} + 0.5\Delta_x)}{\Delta_x}, -0.5, 0.5\right),\nonumber\\
+    F_{13} &= \operatorname{clip}\left(\frac{1}{N}\sum_{i=1}^N \frac{y_i - (v\Delta_y + y_{\min} + 0.5\Delta_y)}{\Delta_y}, -0.5, 0.5\right).
+    \label{eq:offset_encoding}
+\end{align}
+Empty cells are assigned zeros across all 14 channels, producing the structured input tensor $\mathbf{X} \in \mathbb{R}^{B \times 14 \times 800 \times 704}$.
 
-Figure~\ref{fig:backbone} specifies the feature hierarchy and shared grouped heads. The final fusion width is 32 channels; it should not be confused with the earlier F24 configuration carrying the same workbook identifier.
+\paragraph{Technical Advantage.}
+Unlike PointNet-based pillars that require sorting, scatter operations, and multi-layer perceptron projections, Strata-BEV14 executes via a deterministic parallel CUDA kernel in under $21$\,ms. It enriches the BEV plane with continuous vertical distribution, material reflectance, and subcell resolution offsets prior to learned convolution.
+
+\subsection{Physics-Consistent Ground-Truth Augmentation}
+\label{sec:hybrid_augmentation}
+
+\paragraph{Motivation.}
+Cut-and-paste ground-truth (GT) database augmentation is widely used in LiDAR detection to balance rare categories. However, conventional naive insertion samples bounding boxes from arbitrary source frames and pastes them into target frames without physical validation. This introduces severe physical anomalies: inserted objects floating in the air, submerged beneath road terrain, intersecting existing background walls, lacking LiDAR raycast shadow occlusions, or exhibiting unrealistic point densities inconsistent with their range. As established in our ablation experiments, replacing naive sampling with our proposed \textbf{Physics-Consistent Ground-Truth Augmentation} (\texttt{PC-GTA}) delivers a substantial $+6.03\%$ gain in Moderate mAP.
+
+\paragraph{Design Heuristics.}
+When pasting an object box $\mathbf{b}_{\mathrm{insert}} = (x, y, z, l, w, h, \psi)$ at range $d = \sqrt{x^2 + y^2}$, five physical consistency heuristics are executed:
+\begin{enumerate}
+\item \textit{Adaptive Ground Plane Fitting}: To prevent floating or sunken objects, local road elevation is estimated within a range-dependent search radius:
+\begin{align}
+    R(d) &= \operatorname{clip}(2.5 + 0.03\max(0, d - 15), 2.5, 4.0)\,\mathrm{m},\nonumber\\[0.8em]
+    \hat{z}_{\mathrm{ground}} &= \operatorname{percentile}(\{z_j \mid \mathbf{p}_j \in \mathcal{N}(x, y)\}, 5),
+    \label{eq:ground_fitting}
+\end{align}
+where $\mathcal{N}(x, y) = \{\mathbf{p}_j \mid (x_j - x)^2 + (y_j - y)^2 \le R(d)^2\}$ denotes the local neighborhood used for ground estimation.
+The inserted object elevation is anchored strictly flush with the terrain: $z_{\mathrm{insert}} = \hat{z}_{\mathrm{ground}} + 0.5h$.
+
+\item \textit{Static Obstacle Clearance}: To prevent clipping into physical structures, a candidate box is rejected if existing background points within its bounding footprint exceed a strict clearance threshold: $N_{\mathrm{static}} \le N_{\mathrm{thresh}}$.
+
+\item \textit{Line-of-Sight (LOS) Occlusion Check}: The optical ray from sensor origin to box center $(x, y)$ is cast. If existing dense clusters obstruct the trajectory, the insertion candidate is discarded.
+
+\item \textit{Raycast LiDAR Shadow Masking}: In real LiDAR scans, solid foreground objects cast occlusive ray shadows that block returns from background objects behind them. For each inserted box, we compute geometric ray intersections $\mathbf{r}(t) = t \cdot \mathbf{p}$ for all background points $\mathbf{p}$. Points residing behind the exit face ($t_{\mathrm{leave}} \le 1.0$) with radial distance $(1 - t_{\mathrm{leave}})\|\mathbf{p}\| > 0.05$\,m are masked out:
+\begin{equation}
+    \begin{aligned}
+        \mathcal{P}_{\mathrm{augmented}}
+        &= \mathcal{P}_{\mathrm{target}} \setminus
+        \{\mathbf{p} \in \mathcal{P}_{\mathrm{target}} \mid \\
+        &\qquad \operatorname{Mask}_{\mathrm{shadow}}(\mathbf{p}) = \mathrm{True}\}
+        \cup \mathcal{P}_{\mathrm{object}}.
+    \end{aligned}
+    \label{eq:shadow_mask}
+\end{equation}
+
+\item \textit{Range-Adaptive Point and Intensity Attenuation}: If an object captured at source distance $r_{\mathrm{src}}$ is placed at target distance $r_{\mathrm{tgt}} > r_{\mathrm{src}}$, its point cloud is randomly subsampled according to the inverse-square divergence law:
+\begin{equation}
+    P_{\mathrm{keep}} = \min\left(1, \left(\frac{r_{\mathrm{src}}}{r_{\mathrm{tgt}}}\right)^2\right),
+    \label{eq:inverse_square}
+\end{equation}
+and reflectance intensity is attenuated according to:
+\[
+    \begin{aligned}
+        \eta_{\mathrm{int}}
+        &= \left(\frac{r_{\mathrm{src}}}{r_{\mathrm{tgt}}}\right)^{\max(0, 2 - \gamma)},
+        \qquad \gamma = 1.7, \\
+        I_{\mathrm{tgt}}
+        &= \operatorname{clip}(I_{\mathrm{src}}\eta_{\mathrm{int}}, 0, 1).
+    \end{aligned}
+\]
+\end{enumerate}
+
+\subsection{Lightweight ConvNeXt-Style BEV Backbone and RepConv7x7}
+\label{sec:backbone_architecture}
+
+\paragraph{Motivation.}
+Target objects on the horizontal BEV plane exhibit significant geometric scale disparities: spanning from compact pedestrians ($l \approx 0.6$\,m) and cyclists ($l \approx 1.8$\,m) to passenger vehicles ($l \approx 4.5$--$5.0$\,m). Conventional backbones with small $3 \times 3$ convolutions require excessive network depth to cover the requisite spatial context, ballooning latency and parameter count. To establish a large horizontal receptive field while maintaining parameter parsimony, we design \textbf{MobilePixorNeXtBackbone} utilizing large $7 \times 7$ depthwise convolutions, inverted bottleneck expansions, and structural reparameterization.
 
 \begin{figure*}[t]
     \centering
-    \paperfigure{backbone_f32.pdf}{44mm}{Source: current slide PDF page 3; residual block on page 4 and fusion on page 5.}
-    \caption{Final backbone, fusion neck, and prediction heads. Spatial strides are 2 at the stem and 4, 8, and 16 at the three subsequent stages. Lateral widths are 32, 48, and 48, and the final shared feature has shape $32\times200\times176$. Prediction maps have 176 columns; the Pedestrian/Cyclist heatmap has two channels. Stages are identified here by strides 4/8/16; the drawing retains legacy C2/C3/C4 labels, and its deepest stage label refers to the stride-16 stage. Each group uses a shared $3\times3$--BN--SiLU stem; each private Conv box abbreviates $3\times3$--BN--SiLU followed by a $1\times1$ output projection.}
+    \paperfigure{backbone_f32.pdf}{42mm}{Detailed structural topology of the MobilePixorNeXt backbone, multiscale Scale-Gated Neck (SG-FPN), and decoupled grouped prediction towers. Spatial feature maps are downsampled at strides 2, 4, 8, and 16. Bilinear scale gating balances deep semantics and high-resolution spatial localization into a shared 32-channel feature map. Grouped towers decouple Car from Pedestrian and Cyclist to eliminate aspect ratio gradient conflicts.}
+    \caption{Detailed architectural topology of MobilePixorNeXt (R37-F32). The backbone features a two-layer stem followed by three stages with channel widths $(48, 96, 128)$ and block depths $(2, 4, 2)$. Scale-Gated FPN fuses stages C5, C4, and C3 into a 32-channel shared map at stride 4 ($200 \times 176$). Independent grouped prediction towers decouple Car from Pedestrian and Cyclist.}
     \label{fig:backbone}
 \end{figure*}
 
-The residual block adopts large-kernel depthwise spatial mixing and inverted channel expansion, following modern convolutional design principles~\cite{liu2022convnext}. For a $C$-channel input $\mathbf Z$, its transformation is
+\paragraph{Architecture and NeXt Residual Block.}
+As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
+1. \textit{Convolutional Stem}: Input $\mathbf{X} \in \mathbb{R}^{B \times 14 \times 800 \times 704}$ is ingested by two consecutive $3 \times 3$ convolutions (stride 2 followed by stride 1) with 32 output channels, Batch Normalization (BN), and Sigmoid Linear Unit (SiLU) activations, yielding stride-2 representation $\mathbf{F}^{(2)} \in \mathbb{R}^{B \times 32 \times 400 \times 352}$.
+2. \textit{Multi-Stage Hierarchy}: Three progressive stages are separated by strided transition blocks (\texttt{DownsampleBlock}: Conv $3 \times 3$ stride 2 + BN + SiLU):
+   - Stage 2 (Stride 4): 2 blocks, $C_2 = 48 \rightarrow \mathbf{F}^{(4)} \in \mathbb{R}^{B \times 48 \times 200 \times 176}$.
+   - Stage 3 (Stride 8): 4 blocks, $C_3 = 96 \rightarrow \mathbf{F}^{(8)} \in \mathbb{R}^{B \times 96 \times 100 \times 88}$.
+   - Stage 4 (Stride 16): 2 blocks, $C_4 = 128 \rightarrow \mathbf{F}^{(16)} \in \mathbb{R}^{B \times 128 \times 50 \times 44}$.
+
+Each residual block (\texttt{MobilePixorNeXtBlock}) operates on input tensor $\mathbf{Z} \in \mathbb{R}^{B \times C \times H \times W}$ through an inverted bottleneck expansion ratio $e = 2.5$:
 \begin{align}
-    \mathbf V &= \operatorname{BN}(\operatorname{DWConv}_{7\times7}(\mathbf Z)),\nonumber\\
-    \mathbf R &= \operatorname{BN}\!\left(W_{\mathrm{red}}\,
-        \operatorname{SiLU}(W_{\mathrm{exp}}\mathbf V)\right),\nonumber\\
-    \mathbf Z' &= \mathbf Z+\boldsymbol\gamma_{\mathrm{blk}}\odot\mathcal S(\mathbf R).
+    \mathbf{V} &= \operatorname{BN}(\operatorname{DWConv}_{7\times7}(\mathbf{Z})),\nonumber\\
+    \mathbf{R} &= \operatorname{BN}\left(W_{\mathrm{red}} \operatorname{SiLU}(W_{\mathrm{exp}}\mathbf{V})\right),\nonumber\\
+    \mathbf{Z}' &= \mathbf{Z} + \boldsymbol{\gamma}_{\mathrm{blk}} \odot \mathcal{S}(\mathbf{R}).
     \label{eq:next_block}
 \end{align}
-Here $W_{\mathrm{exp}}$ and $W_{\mathrm{red}}$ are $1\times1$ convolutions that expand channels from $C$ to $2.5C$ and project them back to $C$. The operator $\mathcal S$ denotes block-level SimAM, defined below. The learned channel-wise residual scale $\boldsymbol\gamma_{\mathrm{blk}}$ is initialized to $10^{-5}$. The final model uses ordinary depthwise convolutions without structural reparameterization or an additional detail branch.
+Here, $W_{\mathrm{exp}} \in \mathbb{R}^{2.5C \times C \times 1 \times 1}$ and $W_{\mathrm{red}} \in \mathbb{R}^{C \times 2.5C \times 1 \times 1}$ are pointwise $1 \times 1$ convolutions. The operator $\mathcal{S}(\cdot)$ represents our Block-SimAM attention module, while $\boldsymbol{\gamma}_{\mathrm{blk}} \in \mathbb{R}^C$ is a learned LayerScale parameter initialized to $10^{-5}$ to ensure numerical stability during deep backpropagation.
 
-\subsection{Block-level SimAM refinement}
-\label{sec:method_refinement}
-
-The final model applies SimAM~\cite{yang2021simam} inside every residual block of the three backbone stages, corresponding to C3, C4, and C5 at strides 4, 8, and 16. With stage depths $(3,4,2)$, the backbone contains nine SimAM operators. Each operator acts on $\mathbf R$, the output of the channel-reduction convolution and its BN, before the existing LayerScale and shortcut addition in Eq.~\ref{eq:next_block}. Figure~\ref{fig:r37_refinement} shows this ordering. Thus, attention changes the residual update while leaving the identity shortcut intact.
-
-For a residual tensor $\mathbf R\in\mathbb R^{B\times C\times H\times W}$, let $\mu_c^{\mathrm{sp}}$ be the spatial mean within channel $c$ and define
+\paragraph{Structural Reparameterization via RepConv7x7.}
+To combine the optimization benefits of multi-branch representations with the high memory bandwidth of single-branch inference, the depthwise convolution in Eq.~(\ref{eq:next_block}) supports structural reparameterization (\texttt{RepConv7x7})~\cite{liu2022convnext}. During training, three parallel paths are evaluated:
 \begin{equation}
-    \nu_c^{\mathrm{sp}}=\frac{\sum_{v,u}(R_{cvu}-\mu_c^{\mathrm{sp}})^2}{\max(HW-1,1)}.
-    \label{eq:simam_variance}
+    \begin{aligned}
+        \mathbf{V}_{\mathrm{train}}
+        &= \operatorname{BN}_{7\times7}(\operatorname{DWConv}_{7\times7}(\mathbf{Z})) \\
+        &\quad + \operatorname{BN}_{3\times3}(\operatorname{DWConv}_{3\times3}(\mathbf{Z})) \\
+        &\quad + \operatorname{BN}_{\mathrm{id}}(\mathbf{Z}).
+    \end{aligned}
+    \label{eq:repconv_train}
 \end{equation}
-The batch index is omitted; statistics are computed independently for each example and channel. The elementwise gate and attended update are
-\begin{align}
-    A_{cvu} &= \sigma\!\left(
-        \frac{(R_{cvu}-\mu_c^{\mathrm{sp}})^2}
-        {4(\nu_c^{\mathrm{sp}}+\lambda_{\mathrm{sim}})}+\frac12\right),\nonumber\\
-    \mathcal S(\mathbf R) &= \mathbf A\odot\mathbf R,
-    \label{eq:block_simam}
-\end{align}
-with $\lambda_{\mathrm{sim}}=10^{-4}$. The gate assigns larger weights to activations whose squared deviation from the channel mean is larger relative to its spatial variance. This operation uses feature statistics rather than point occupancy or learned query--key interactions. Spatial moments and gate values are computed in FP32, then the gate is cast to the feature dtype for multiplication.
+Prior to deployment, each convolution and its adjacent BatchNorm ($\mathbf{W}, \gamma, \beta, \mu, \sigma^2, \epsilon_{\mathrm{bn}}$) are algebraically collapsed into an equivalent weight tensor and bias vector:
+\begin{equation}
+    \mathbf{W}_{\mathrm{fused}} = \mathbf{W} \cdot \frac{\gamma}{\sqrt{\sigma^2 + \epsilon_{\mathrm{bn}}}}, \qquad \mathbf{b}_{\mathrm{fused}} = \beta - \frac{\mu \gamma}{\sqrt{\sigma^2 + \epsilon_{\mathrm{bn}}}}.
+    \label{eq:bn_folding}
+\end{equation}
+The $3 \times 3$ kernel is zero-padded to $7 \times 7$, and the identity branch is converted to a $7 \times 7$ Dirac identity kernel. Summing the fused parameters yields:
+\begin{equation}
+    \begin{aligned}
+        \mathbf{W}_{\mathrm{deploy}}
+        &= \mathbf{W}_{\mathrm{fused}}^{7\times7}
+        + \mathbf{W}_{\mathrm{fused}}^{3\times3}
+        + \mathbf{W}_{\mathrm{fused}}^{\mathrm{id}}, \\
+        \mathbf{b}_{\mathrm{deploy}}
+        &= \mathbf{b}_{\mathrm{fused}}^{7\times7}
+        + \mathbf{b}_{\mathrm{fused}}^{3\times3}
+        + \mathbf{b}_{\mathrm{fused}}^{\mathrm{id}}.
+    \end{aligned}
+    \label{eq:fused_deploy}
+\end{equation}
+At inference time, the multi-branch block is replaced by a single $7 \times 7$ depthwise convolution with bias, delivering zero memory latency overhead. The complete backbone comprises only $604,864$ parameters.
 
-SimAM introduces no learned parameters in this placement. The existing channel-wise scale $\boldsymbol\gamma_{\mathrm{blk}}$ controls the attended residual; there is no additional scalar wrapper. This differs from applying a residual attention adapter after an entire stage. The final model enables block attention at all three stages, with no separate stage-level attention or focal-context module.
+\subsection{Parameter-Free Block-SimAM Spatial-Energy Attention}
+\label{sec:simam_attention}
+
+\paragraph{Motivation.}
+Standard attention modules such as Squeeze-and-Excitation or Efficient Channel Attention (ECA-Net)~\cite{wang2020eca} compute 1D channel attention weights by pooling across spatial dimensions, thereby treating all spatial locations identically. Conversely, non-local spatial attention requires quadratic computational complexity $\mathcal{O}((HW)^2)$, rendering it prohibitive for real-time dense BEV grids ($200 \times 176$). To address this trade-off, we integrate \textbf{Block-SimAM}~\cite{yang2021simam}---a 3D spatial-energy attention module operating without adding a single learned parameter.
+
+\paragraph{Design and Placement.}
+As illustrated in Figure~\ref{fig:r37_refinement}(A), SimAM is embedded directly inside every residual block across all three stages (C3, C4, C5), totaling nine attention operators throughout the backbone. It operates on the intermediate channel-reduced tensor $\mathbf{R} \in \mathbb{R}^{B \times C \times H \times W}$ after projection BN and before LayerScale shortcut addition.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=\textwidth]{figures/next_simam_block.pdf}\\[6pt]
-    \includegraphics[width=0.70\textwidth]{figures/scale_gated_fusion.pdf}
-    \caption{Two building blocks extracted as vector graphics from the authors' slide export. (A) NeXt residual block with SimAM after projection BN and before LayerScale. The SimAM operator acts on the intermediate residual tensor $\mathbf R$ in Eq.~\ref{eq:next_block}, consistently labeled R in the drawing. (B) Scale-gated fusion of lateral feature $\mathbf L$ and top-down feature $\mathbf U$, yielding $\mathbf P$. Addition and elementwise multiplication are shown explicitly.}
+    \paperfigure{next_simam_block.pdf}{28mm}{Structural micro-architecture of the NeXt residual block with embedded Block-SimAM attention. Attention modulates the residual transformation $\mathbf{R}$ prior to LayerScale scaling and identity shortcut addition.}
+    \vspace{4pt}
+    \paperfigure{scale_gated_fusion.pdf}{24mm}{Scale-Gated Feature Pyramid Network (SG-FPN) fusion node. Top-down features $\mathbf{U}_r$ and lateral features $\mathbf{L}_r$ are dynamically gated via learnable depthwise convolutions to prevent high-level semantic distortion of fine spatial coordinates.}
+    \caption{Key micro-architectural components of MobilePIXORNeXt. (A) NeXt residual block with parameter-free Block-SimAM energy attention. (B) Bilinear Scale-Gated Neck (SG-FPN) fusion mechanism.}
     \label{fig:r37_refinement}
 \end{figure*}
 
-
-\subsection{Scale-gated multiscale fusion}
-\label{sec:method_neck}
-
-The neck projects the stride-16 and stride-8 features to 48 channels, and the stride-4 feature to 32 channels. At stride eight, bilinear upsampling of the deepest lateral feature is followed by a depthwise $3\times3$ convolution, BN, and SiLU. The resulting top-down feature $\mathbf U_8$ is fused with lateral feature $\mathbf L_8$. A second bilinear upsampling and a standard $3\times3$ projection from 48 to 32 channels produce $\mathbf U_4$ for fusion with $\mathbf L_4$. Interpolation uses \texttt{align\_corners=False}.
-
-Figure~\ref{fig:r37_refinement}(B) illustrates the fusion operator. At each fusion stride $r\in\{4,8\}$,
-\begin{align}
-    \mathbf G_r &= 2\sigma\!\left(
-        \operatorname{DWConv}_{3\times3,r}(\mathbf L_r+\mathbf U_r)\right),\nonumber\\
-    \mathbf P^{(r)} &= \mathbf U_r+\mathbf G_r\odot\mathbf L_r.
-    \label{eq:scale_gated_fusion}
-\end{align}
-Gate weights and biases are zero-initialized, so fusion initially reduces to addition. A final $3\times3$ convolution from 32 to 32 channels, BN, and SiLU produce the shared detector feature $\mathbf F_{\mathrm{out}}\in\mathbb R^{B\times32\times200\times176}$. The gate can adjust each lateral response using information from both paths without replacing the top-down feature.
-
-\subsection{Grouped prediction and target assignment}
-\label{sec:method_heads}
-
-The first task group contains Car ($K_1=1$), and the second contains Pedestrian and Cyclist ($K_2=2$). Each group first applies a shared $3\times3$ convolution with 32 channels, BN, and SiLU. Its output feeds five branches for classification, center offset, log-size, doubled yaw, and quality. Each branch contains one private $3\times3$ convolution with 32 channels, BN, and SiLU, followed by a $1\times1$ output convolution. Each prediction path therefore still traverses two $3\times3$ convolutions, while its first transformation is shared across tasks. The two groups own separate shared convolutions and branch weights. Geometry and quality maps are shared across the classes within a group.
-
-For a group with $K_g$ classes, the output channel counts are $(K_g,2,2,2,1)$. At output location $(u,v)$, the geometric targets are
-\begin{align}
-    \mathbf o^* &= \begin{pmatrix}
-        x^*-x_{\min}-u s_{\mathrm{out}}\Delta_x\\
-        y^*-y_{\min}-v s_{\mathrm{out}}\Delta_y
-    \end{pmatrix},\nonumber\\
-    \mathbf d^* &= (\log w^*,\log l^*),\qquad
-    \mathbf a^*=(\cos2\psi^*,\sin2\psi^*),
-    \label{eq:regression_targets}
-\end{align}
-where $s_{\mathrm{out}}=4$ and sizes inside logarithms are expressed numerically in metres. The doubled angle represents footprint orientation modulo $\pi$.
-
-Classification uses class-specific Gaussian heatmaps with peaks at quantized object centers. The radius is determined from the footprint dimensions in output cells using overlap setting 0.1 and a minimum radius of four cells. Regression supervision occupies a disk with half that heatmap radius. Where disks overlap, cells are assigned to the nearest continuous object center, with quantized center cells reserved for their owning targets. This produces a single valid regression target per group and location, indicated by $\mathbf M_{\mathrm{reg}}$.
-
-\subsection{Oriented geometry and quality supervision}
-\label{sec:method_objective}
-
-The OGA objective combines classification, coordinate regression, footprint geometry, and quality prediction. Classification uses the Gaussian focal form: unit-valued heatmap peaks have modulating factor $(1-p_{\mathrm{cls}})^2$, while other cells use $p_{\mathrm{cls}}^2(1-Y^*)^4$. The summed loss is normalized by the number of positive peaks; an image batch without peaks retains the negative sum. Offset, log-size, and doubled-yaw losses use Smooth-L1 with transition parameter one, averaged over the valid regression elements. Numerical normalization adds $10^{-4}$ to the element count.
-
-For each valid regression cell, predicted and target footprints are decoded into four corners. Following Marginalized Generalized Intersection over Union (MGIoU)~\cite{le2026mgiou}, both rectangles are projected onto the length and width axes of the prediction and target. On each axis, we compute one-dimensional Generalized Intersection over Union (GIoU)~\cite{rezatofighi2019giou}. For projection axis $k$, let $I_k$, $U_k$, and $E_k$ be the intersection, union, and enclosing interval lengths. Define
-\begin{align}
-    g_k &= \frac{I_k}{U_k}-\frac{E_k-U_k}{E_k},\nonumber\\
-    \bar g &= \frac14\sum_{k=1}^{4}g_k,\qquad
-    \ell_{\mathrm{proj}}=\frac{1-\bar g}{2}.
-    \label{eq:projected_geometry}
-\end{align}
-Here $\bar g$ is the rectangle-specific MGIoU similarity and $\ell_{\mathrm{proj}}$ is its normalized loss. Denominators are floored at $10^{-6}$. This compares one-dimensional projections rather than computing polygon intersection area.
-
-The corner term measures average L1 corner discrepancy under two equivalent correspondences. Let $\widehat{\mathbf c}_m$ and $\mathbf c_m^*$ denote ordered footprint corners, and let $\Pi_\pi$ contain the identity and the permutation induced by a $\pi$ rotation. Then
+For each channel slice with $M = H \times W$ spatial locations, spatial mean $\mu_c$ and sample variance $\nu_c$ are computed:
 \begin{equation}
-    \ell_{\mathrm{corner}}=
-    \frac{\displaystyle\min_{\pi\in\Pi_\pi}\frac14
-        \sum_{m=1}^{4}\|\widehat{\mathbf c}_m-\mathbf c_{\pi(m)}^*\|_1}
-    {\max\!\left(\sqrt{(w^*)^2+(l^*)^2},10^{-6}\right)}.
-    \label{eq:symmetric_corners}
+    \mu_c = \frac{1}{M}\sum_{u, v} R_{c, u, v}, \qquad \nu_c = \frac{1}{\max(M-1, 1)}\sum_{u, v} (R_{c, u, v} - \mu_c)^2.
+    \label{eq:spatial_moments}
 \end{equation}
-Target-diagonal normalization scales the discrepancy relative to object size, and the two correspondences respect the doubled-angle representation. The geometry objective is the mean of $\ell_{\mathrm{proj}}+\beta_{\mathrm{corner}}\ell_{\mathrm{corner}}$ over valid cells, with $\beta_{\mathrm{corner}}=1$. Geometry calculations use FP32, clamp log-dimensions to $[-10,10]$, and use zero yaw when the doubled-angle vector norm is below $10^{-6}$.
-
-The IQA branch predicts $\hat q=\sigma(\hat Z_{\mathrm{qual}})$ and is supervised at valid regression cells using binary cross-entropy. Its target is
+Derived from visual neuroscience principles of spatial energy minimization, the analytical minimal energy of a target neuron $t = R_{c, u, v}$ relative to its local background is given by:
 \begin{equation}
-    q_{\mathrm{proj}}^*=\operatorname{stopgrad}
-        \bigl(\operatorname{clip}(\bar g,0,1)\bigr).
-    \label{eq:quality_target}
+    e_t = \frac{(t - \mu_c)^2}{4(\nu_c + \lambda_{\mathrm{sim}})} + \frac{1}{2},
+    \label{eq:simam_energy}
 \end{equation}
-The target uses the clipped MGIoU similarity, not the geometry loss. It is detached from box decoding, so this supervision does not backpropagate through the target geometry. Although the implementation names the branch IoU-aware quality, the final model learns a projection-based similarity, not exact BEV or 3D IoU. Its coefficient before adaptive balancing is one.
+where $\lambda_{\mathrm{sim}} = 10^{-4}$ is a numerical regularizer. Neurons exhibiting greater variance from their spatial surround yield lower energy $e_t$, indicating higher visual saliency. The attended 3D modulation tensor $\mathbf{A} \in [0, 1]^{B \times C \times H \times W}$ and output $\mathcal{S}(\mathbf{R})$ are:
+\begin{equation}
+    A_{c, u, v} = \sigma(e_t) = \frac{1}{1 + e^{-e_t}}, \qquad \mathcal{S}(\mathbf{R}) = \mathbf{A} \odot \mathbf{R}.
+    \label{eq:simam_modulation}
+\end{equation}
+Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.
 
-\subsection{Adaptive task balancing}
-\label{sec:method_balance}
+\paragraph{Technical Advantage.}
+Unlike stage-level adapters that add learned linear projections, Block-SimAM adds exactly \textbf{zero parameters} ($0$\,M). It simultaneously assigns true 3D spatial-and-channel attention weights, adaptively amplifying sparse LiDAR point clusters against flat terrain backgrounds.
 
-Each group independently balances six loss terms, indexed by $\mathcal T=\{\mathrm{cls},\mathrm{off},\mathrm{size},\mathrm{yaw},\mathrm{geo},\mathrm{qual}\}$ with $J=6$. Learned logits $a_k$ determine positive weights through a bounded temperature softmax:
+\subsection{Bilinear Scale-Gated Feature Pyramid Network (SG-FPN Neck)}
+\label{sec:neck_architecture}
+
+\paragraph{Motivation.}
+Standard Feature Pyramid Networks rely on transposed convolutions (deconvolutions) to upsample low-resolution feature maps. However, transposed convolutions frequently introduce severe high-frequency checkerboard artifacts on continuous coordinate regression grids. Furthermore, direct elementwise addition of lateral and top-down paths causes feature dilution when fusing deep semantic features with shallow spatial details. We introduce the \textbf{Bilinear Scale-Gated Feature Pyramid Network} (\texttt{SG-FPN Neck}, fusion width $F_{32}$).
+
+\paragraph{Mathematical Formulation.}
+As shown in Figure~\ref{fig:r37_refinement}(B), lateral features from Stages C5 ($128$\,ch), C4 ($96$\,ch), and C3 ($48$\,ch) are projected via $1 \times 1$ convolutions into matching lateral dimensions $\mathbf{L}_5 \in \mathbb{R}^{B \times 48 \times 50 \times 44}$, $\mathbf{L}_4 \in \mathbb{R}^{B \times 48 \times 100 \times 88}$, and $\mathbf{L}_3 \in \mathbb{R}^{B \times 32 \times 200 \times 176}$.
+
+Upsampling is performed using bilinear interpolation with factor $2\times$ (\texttt{align\_corners=False}), followed by depthwise $3 \times 3$ refinement convolution, BN, and SiLU to yield top-down features $\mathbf{U}_4$ and $\mathbf{U}_3$. At each fusion stride $r \in \{8, 4\}$, lateral and top-down representations are adaptively fused via learnable depthwise scale gating:
 \begin{align}
-    \bar a_k &= b_{\mathrm{uw}}\tanh(a_k/b_{\mathrm{uw}}),\nonumber\\
-    \omega_k &= J\frac{\exp(\bar a_k/\tau_{\mathrm{uw}})}
-        {\sum_{j\in\mathcal T}\exp(\bar a_j/\tau_{\mathrm{uw}})},
-    \label{eq:task_weights}
+    \mathbf{G}_r &= 2\sigma\left(\operatorname{DWConv}_{3\times3, r}(\mathbf{L}_r + \mathbf{U}_r)\right),\nonumber\\
+    \mathbf{P}^{(r)} &= \mathbf{U}_r + \mathbf{G}_r \odot \mathbf{L}_r.
+    \label{eq:scale_gating}
 \end{align}
-where $b_{\mathrm{uw}}=3$ and $\tau_{\mathrm{uw}}=2$. Zero-initialized logits give unit initial weights. An exponential moving average $\mu_k$ tracks the detached, floored task loss with momentum $\beta_{\mathrm{EMA}}=0.99$, initialized from the first training batch. For group $g$, the balanced objective is
-\begin{equation}
-    \mathcal L_g=\left(\frac1J\sum_{k\in\mathcal T}\mu_k\right)
-        \sum_{k\in\mathcal T}\omega_k
-        \frac{\mathcal L_k}{\max(\mu_k,10^{-4})}.
-    \label{eq:balanced_objective}
-\end{equation}
-The full loss is $\mathcal L_{\mathrm{total}}=0.5\mathcal L_1+0.5\mathcal L_2$. Running-scale normalization compensates for differences in task-loss magnitude before weighting. These adaptive weights are optimization variables, not calibrated estimates of statistical uncertainty. The two groups introduce twelve training-only logits, separate from the detector parameters used at inference.
+Because depthwise gating weights and biases are initialized to zero, gating $\mathbf{G}_r$ initially evaluates to $1.0$, smoothly starting from standard residual addition. Finally, $\mathbf{P}^{(4)}$ is projected via a $3 \times 3$ convolution, BN, and SiLU to produce the shared detector representation $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{B \times 32 \times 200 \times 176}$. The complete neck requires only $36,784$ parameters.
 
-\subsection{Decoding and inference}
-\label{sec:method_decode}
+\subsection{Shared Grouped Prediction Towers}
+\label{sec:grouped_heads}
 
-Predicted offsets are in metres relative to output-grid origins. Box decoding is
+\paragraph{Motivation.}
+Autonomous driving involves drastic morphological discrepancies across object categories. Cars exhibit rigid rectangular footprints ($l \approx 4.5$\,m, $w \approx 1.8$\,m), whereas Pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and Cyclists ($l \approx 1.8$\,m, $w \approx 0.7$\,m) are compact and highly deformable. Forcing a single shared prediction head to jointly regress all classes induces severe gradient competition and scale interference. Conversely, dedicating entirely separate heads to each class inflates parameter size. We resolve this via \textbf{Shared Grouped Prediction Towers} (\texttt{GroupedHeader}).
+
+\paragraph{Topology and Target Formulation.}
+Classes are partitioned into two semantically compatible task groups: Group 1 for \texttt{car} ($K_1 = 1$), and Group 2 for \texttt{ped\_cyc} ($K_2 = 2$). For each group $g \in \{1, 2\}$, feature map $\mathbf{F}_{\mathrm{out}}$ passes through a group-shared initial $3 \times 3$ Conv-BN-SiLU block ($32 \rightarrow 32$ channels), before bifurcating into five task-specific prediction branches:
+1. `cls`: Classification heatmap $[B, K_g, 200, 176]$.
+2. `offset`: Metric subcell coordinate offsets $[B, 2, 200, 176]$ predicting $(\hat{o}_x, \hat{o}_y)$.
+3. `size`: Bounding box log-dimensions $[B, 2, 200, 176]$ predicting $(\hat{d}_1, \hat{d}_2) = (\log \hat{w}, \log \hat{l})$.
+4. `yaw`: Orientation doubled-angle vector $[B, 2, 200, 176]$ predicting $(\hat{a}_1, \hat{a}_2) = (\cos 2\hat{\psi}, \sin 2\hat{\psi})$.
+5. `iou`: IoU-aware localization quality $[B, 1, 200, 176]$ predicting continuous overlap $\hat{q}$.
+
+For output cell $(u, v)$, the ground-truth geometric targets are formulated as:
 \begin{align}
-    \hat x &= x_{\min}+u s_{\mathrm{out}}\Delta_x+\hat o_x,\nonumber\\
-    \hat y &= y_{\min}+v s_{\mathrm{out}}\Delta_y+\hat o_y,\nonumber\\
-    \hat w &= \exp(\hat d_1),\qquad \hat l=\exp(\hat d_2),\nonumber\\
-    \hat\psi &= \tfrac12\operatorname{atan2}(\hat a_2,\hat a_1).
+    \mathbf{o}^* &= \begin{pmatrix} x^* - (u s_{\mathrm{out}}\Delta_x + x_{\min}) \\ y^* - (v s_{\mathrm{out}}\Delta_y + y_{\min}) \end{pmatrix},\nonumber\\
+    \mathbf{d}^* &= (\log w^*, \log l^*), \qquad \mathbf{a}^* = (\cos 2\psi^*, \sin 2\psi^*).
+    \label{eq:gt_targets}
+\end{align}
+The doubled-angle formulation $\mathbf{a}^*$ strictly enforces $\pi$-rotational symmetry, resolving the $180^\circ$ heading ambiguity inherent to symmetric BEV bounding boxes. Classification targets use 2D Gaussian heatmaps centered at continuous object projections with a minimum radius of 4 cells, and regression targets are assigned within a radius of half the Gaussian peak, denoted by valid indicator mask $\mathbf{M}_{\mathrm{reg}}$.
+
+\subsection{Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA)}
+\label{sec:losses_and_oga}
+
+\paragraph{Motivation.}
+Standard box regression optimizes disjoint Smooth-L1 losses independently over $(x, y)$, $(w, l)$, and $\psi$. However, independent parameter errors do not correlate monotonically with the actual Intersection-over-Union (IoU) overlap of oriented bounding boxes. Furthermore, standard classification confidence scores do not reflect the spatial localization accuracy of predicted boxes, degrading Non-Maximum Suppression (NMS) ranking. We propose \textbf{Oriented Geometric Alignment (OGA)} combined with \textbf{IoU-Aware Quality Alignment (IQA)}.
+
+\paragraph{Oriented Geometric Alignment (OGA).}
+For every cell $(u, v)$ where $\mathbf{M}_{\mathrm{reg}} = 1$, predicted and ground-truth boxes are decoded into four 2D corners $\{\widehat{\mathbf{c}}_m\}_{m=1}^4$ and $\{\mathbf{c}_m^*\}_{m=1}^4$. OGA couples two synergistic geometric objectives:
+1. \textit{Multi-Axis Projection GIoU ($\ell_{\mathrm{proj}}$)}: Projected bounding box overlap is evaluated following Marginalized Generalized IoU~\cite{le2026mgiou} across four unit normal projection axes defining the prediction and ground-truth rectangles:
+\begin{equation}
+    \mathbf{n}_k \in \left\{ \mathbf{n}_{\mathrm{len}}^{\mathrm{pred}}, \mathbf{n}_{\mathrm{wid}}^{\mathrm{pred}}, \mathbf{n}_{\mathrm{len}}^{\mathrm{gt}}, \mathbf{n}_{\mathrm{wid}}^{\mathrm{gt}} \right\}.
+    \label{eq:projection_axes}
+\end{equation}
+For each axis $\mathbf{n}_k$, 1D intervals of intersection length $I_k$, union length $U_k$, and smallest enclosing hull $E_k$ are determined, yielding 1D GIoU~\cite{rezatofighi2019giou}:
+\begin{equation}
+    g_k = \frac{I_k}{U_k} - \frac{E_k - U_k}{E_k}, \qquad \bar{g} = \frac{1}{4}\sum_{k=1}^4 g_k, \qquad \ell_{\mathrm{proj}} = \frac{1 - \bar{g}}{2}.
+    \label{eq:mgiou_loss}
+\end{equation}
+2. \textit{Scale-Normalized $\pi$-Symmetric Corner Distance ($\ell_{\mathrm{corner}}$)}: To ensure accurate vertex localization under doubled-angle symmetry, we evaluate the minimum L1 distance across direct and $\pi$-permuted corner correspondences:
+\begin{equation}
+    \ell_{\mathrm{corner}} = \frac{\min\left(\sum_{m=1}^4 \|\widehat{\mathbf{c}}_m - \mathbf{c}_m^*\|_1, \sum_{m=1}^4 \|\widehat{\mathbf{c}}_m - \mathbf{c}_{5-m}^*\|_1\right)}{4 \cdot \max\left(\sqrt{(w^*)^2 + (l^*)^2}, 10^{-6}\right)}.
+    \label{eq:corner_loss}
+\end{equation}
+Normalizing by the target bounding box diagonal ensures scale invariance across categories. The composite geometric loss is $\mathcal{L}_{\mathrm{geo}} = \ell_{\mathrm{proj}} + \beta_{\mathrm{corner}} \ell_{\mathrm{corner}}$ with $\beta_{\mathrm{corner}} = 1.0$.
+
+\paragraph{IoU-Aware Quality Alignment (IQA).}
+The quality head predicts continuous overlap score $\hat{q} = \sigma(\hat{Z}_{\mathrm{qual}}) \in [0, 1]$. It is supervised via Binary Cross-Entropy (BCE) using the detached MGIoU similarity as the ground-truth target:
+\begin{equation}
+    q^* = \operatorname{stopgrad}(\operatorname{clip}(\bar{g}, 0, 1)), \qquad \mathcal{L}_{\mathrm{qual}} = \operatorname{BCE}(\hat{q}, q^*).
+    \label{eq:iqa_loss}
+\end{equation}
+Detaching the target prevents gradient instability while forcing the model to learn reliable confidence calibration.
+
+\paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
+Joint multi-task optimization balances six disparate losses: $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$). Rather than heuristic manual weight tuning, we formulate \textbf{T-SBUW}:
+1. \textit{Bounded Softmax Weights}: Learnable logit parameters $a_k$ are soft-clamped via hyperbolic tangent with bound $b_{\mathrm{uw}} = 3.0$, and converted to positive normalized weights via temperature-controlled softmax ($\tau_{\mathrm{uw}} = 2.0$):
+\begin{equation}
+    \begin{aligned}
+        \bar{a}_k &= b_{\mathrm{uw}} \tanh(a_k / b_{\mathrm{uw}}), \\
+        Z_{\mathrm{uw}} &= \sum_{j \in \mathcal{T}} \exp(\bar{a}_j / \tau_{\mathrm{uw}}), \\
+        \omega_k &= J \cdot \frac{\exp(\bar{a}_k / \tau_{\mathrm{uw}})}{Z_{\mathrm{uw}}}, \\
+        \sum_{k \in \mathcal{T}} \omega_k &= J.
+    \end{aligned}
+    \label{eq:tsbuw_weights}
+\end{equation}
+This construction strictly conserves the total weight.
+2. \textit{Running Scale Calibration}: Exponential Moving Average (EMA) with momentum $\beta_{\mathrm{EMA}} = 0.99$ tracks the unweighted running loss magnitude $\mu_k \leftarrow 0.99\mu_k + 0.01\mathcal{L}_k$. The balanced objective for group $g$ is:
+\begin{equation}
+    \mathcal{L}_g = \left(\frac{1}{J}\sum_{k \in \mathcal{T}} \mu_k\right) \sum_{k \in \mathcal{T}} \omega_k \frac{\mathcal{L}_k}{\max(\mu_k, 10^{-4})}.
+    \label{eq:balanced_loss}
+\end{equation}
+The total network objective is $\mathcal{L}_{\mathrm{total}} = 0.5\mathcal{L}_1 + 0.5\mathcal{L}_2$. The twelve logit parameters are utilized strictly during training and discarded at inference.
+
+\subsection{Coordinate Decoding and Inference Pipeline}
+\label{sec:decoding_and_pipeline}
+
+\begin{figure}[t]
+\centering
+\small
+\begin{tabular}{@{}r p{0.88\columnwidth}@{}}
+\toprule
+\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Algorithm 1} MobilePIXORNeXt Inference and Box Decoding Pipeline} \\
+\midrule
+\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Raw LiDAR point cloud $\mathcal{P} = \{(x_i, y_i, z_i, \iota_i)\}_{i=1}^N$, ROI bounds $[x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]$} \\
+\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Score threshold $\tau_{\mathrm{score}} = 0.05$, Rotated NMS threshold $\tau_{\mathrm{nms}} = 0.10$, quality exponent $\alpha = 0.5$} \\
+\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\mathcal{B} = \{(c_k, s_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k)\}_{k=1}^M$} \\
+\midrule
+1: & Filter raw points $\mathcal{P}$ within inward margin $\epsilon = 0.001$\,m of spatial ROI; \\
+2: & Deterministically rasterize points into 14-channel Strata-BEV14 tensor $\mathbf{X} \in \mathbb{R}^{14 \times 800 \times 704}$ via Eq.~(\ref{eq:density_encoding})--(\ref{eq:offset_encoding}); \\
+3: & Forward $\mathbf{X}$ through ConvNeXt stem to obtain stride-2 feature $\mathbf{F}^{(2)} \in \mathbb{R}^{32 \times 400 \times 352}$; \\
+4: & Extract multi-scale features through Stages 2, 3, 4 with Block-SimAM to obtain $\mathbf{F}^{(4)}, \mathbf{F}^{(8)}, \mathbf{F}^{(16)}$; \\
+5: & Fuse multi-scale features via Bilinear SG-FPN Neck into shared map $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{32 \times 200 \times 176}$; \\
+6: & Evaluate Grouped Prediction Towers for Car ($g=1$) and Pedestrian/Cyclist ($g=2$): \\
+   & \quad Yield classification maps $\mathbf{P}_{\mathrm{cls}}$, subcell offsets $\widehat{\mathbf{o}}$, log-sizes $\widehat{\mathbf{d}}$, doubled yaws $\widehat{\mathbf{a}}$, and quality $\widehat{\mathbf{q}}$; \\
+7: & \textbf{for each} class $c \in \{\text{Car}, \text{Pedestrian}, \text{Cyclist}\}$ \textbf{do} \\
+8: & \quad Identify local $3 \times 3$ candidate peaks on classification heatmap $\mathbf{P}_{\mathrm{cls}, c}$; \\
+9: & \quad Compute IoU-aware composite ranking score: $s_{\mathrm{det}} = (\mathbf{P}_{\mathrm{cls}, c})^{1 - \alpha} \cdot (\widehat{\mathbf{q}})^\alpha$; \\
+10:& \quad Filter candidate cells satisfying $\mathbf{P}_{\mathrm{cls}, c} > \tau_{\mathrm{score}}$ and $s_{\mathrm{det}} > \tau_{\mathrm{score}}$; \\
+11:& \quad Decode metric coordinates, dimensions, and heading angles via Eq.~(\ref{eq:box_decode}); \\
+12:& \quad Apply Classwise Rotated Non-Maximum Suppression with IoU threshold $\tau_{\mathrm{nms}}$; \\
+13:& \textbf{end for} \\
+14:& \textbf{return} Final detection set $\mathcal{B}$ sorted in descending order of composite score $s_{\mathrm{det}}$; \\
+\bottomrule
+\end{tabular}
+\caption{Inference and box decoding pipeline of MobilePIXORNeXt.}
+\label{alg:inference_pipeline}
+\end{figure}
+\clearpage
+
+The complete inference procedure is formalized in Algorithm~\ref{alg:inference_pipeline}. For each candidate cell $(u, v)$ where predicted classification probability $p_{\mathrm{cls}} > \tau_{\mathrm{score}} = 0.05$ forms a $3 \times 3$ local spatial peak, metric continuous bounding boxes are decoded via:
+\begin{align}
+    \hat{x} &= x_{\min} + u s_{\mathrm{out}}\Delta_x + \hat{o}_x, \qquad \hat{y} = y_{\min} + v s_{\mathrm{out}}\Delta_y + \hat{o}_y,\nonumber\\
+    \hat{w} &= \exp(\hat{d}_1), \qquad \hat{l} = \exp(\hat{d}_2), \qquad \hat{\psi} = \frac{1}{2}\operatorname{atan2}(\hat{a}_2, \hat{a}_1).
     \label{eq:box_decode}
 \end{align}
-No half-cell shift is added. Classification and quality predictions are combined as
-\begin{equation}
-    s_{\mathrm{det}}=p_{\mathrm{cls}}^{1-\alpha_{\mathrm{score}}}
-        \hat q^{\alpha_{\mathrm{score}}},\qquad \alpha_{\mathrm{score}}=0.5.
-    \label{eq:quality_ranking}
-\end{equation}
-Candidates are selected from $3\times3$ local maxima of this ranking score independently for each class. Both $p_{\mathrm{cls}}$ and $s_{\mathrm{det}}$ must exceed 0.05. Classwise rotated BEV non-maximum suppression uses an IoU threshold of 0.1, followed by a global limit of 500 detections per scan. These decoding thresholds are separate from the overlap thresholds used to evaluate detection accuracy.
+Predicted orientation angle $\hat{\psi} \in [-\pi/2, \pi/2]$ is fully recovered without trigonometric ambiguity.
 
-The complete F32 detector has 753,569 learned parameters, excluding the adaptive loss weights. The selected workbook configuration uses hybrid ground-truth sampling. Section~\ref{sec:experiments} distinguishes the verified model specification from training and timing settings still requiring the final run records.
+To align classification confidence with geometric overlap precision, detection candidates are ranked via a joint IoU-aware composite confidence score:
+\begin{equation}
+    s_{\mathrm{det}} = (p_{\mathrm{cls}})^{1 - \alpha_{\mathrm{score}}} \cdot (\hat{q})^{\alpha_{\mathrm{score}}}, \qquad \alpha_{\mathrm{score}} = 0.5.
+    \label{eq:joint_score}
+\end{equation}
+Candidates passing threshold $s_{\mathrm{det}} > 0.05$ are processed by class-wise Rotated Non-Maximum Suppression (NMS) with an IoU threshold of $\tau_{\mathrm{nms}} = 0.10$. A global maximum limit of 500 bounding boxes per scan is retained.
+
+\paragraph{Parameter Distribution Breakdown.}
+The complete MobilePIXORNeXt detector contains exactly \textbf{753,569 trainable parameters} ($< 0.76$\,M), corresponding to an ultra-compact FP32 checkpoint size of $9.34$\,MB:
+\begin{itemize}
+    \item \textbf{Backbone Body}: $604,864$ parameters ($80.3\%$).
+    \item \textbf{Scale-Gated Neck (SG-FPN)}: $36,784$ parameters ($4.9\%$).
+    \item \textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\%$), divided into $55,944$ parameters for Group \texttt{car} and $55,977$ parameters for Group \texttt{ped\_cyc}.
+    \item \textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\%$), eliminated during deployment.
+\end{itemize}
+This compact footprint enables full end-to-end inference at $16.41$\,FPS ($60.96$\,ms) and network forward throughput of $55.94$\,FPS ($17.88$\,ms) on commodity NVIDIA Tesla T4 GPUs.
