@@ -12,11 +12,14 @@ import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-_RICH_MINIMUM = {"rich8": 8}
+_RICH_MINIMUM = {"rich8": 8, "triband": 3}
 _HIST14_CHANNELS = (
     "height_count_b0", "height_count_b1", "height_count_b2", "height_count_b3",
     "z_max", "z_mean", "z_span", "z_std", "intensity_max", "intensity_mean",
     "log_density", "occupancy", "point_offset_x", "point_offset_y",
+)
+_TRIBAND_CHANNELS = (
+    "band_low_intensity", "band_mid_intensity", "band_high_intensity",
 )
 _RICH_CHANNELS = (
     "height_occupancy_b0", "height_occupancy_b1", "height_occupancy_b2",
@@ -24,6 +27,9 @@ _RICH_CHANNELS = (
 )
 _HIST14_OPTIONS = frozenset({
     "name", "version", "out_channels", "density_norm", "intensity_scale", "backend",
+})
+_TRIBAND_OPTIONS = frozenset({
+    "name", "version", "out_channels", "density_norm", "intensity_scale", "backend", "z_offset",
 })
 
 
@@ -71,6 +77,16 @@ def _options(encoding):
         if backend not in ("numpy", "numba"):
             raise ValueError("hist14 backend must be numpy or numba")
         channels = 14
+    elif name == "triband":
+        unsupported = set(encoding) - _TRIBAND_OPTIONS
+        if unsupported:
+            raise ValueError(f"unsupported triband options: {sorted(unsupported, key=str)}")
+        if "out_channels" in encoding and (type(configured) is not int or configured != 3):
+            raise ValueError("triband out_channels must be exactly integer 3")
+        backend = encoding.get("backend", "numpy")
+        if backend not in ("numpy", "numba"):
+            raise ValueError("triband backend must be numpy or numba")
+        channels = 3
     elif minimum is not None:
         # Preserve int coercion, minimum clamping and zero padding of rich paths.
         try:
@@ -180,6 +196,9 @@ def resolve_bev_encoding(encoding, geometry) -> BEVEncodingSpec:
         names = _HIST14_CHANNELS
         edges = tuple(geom["z_min"] + index * (geom["z_max"] - geom["z_min"]) / 4
                       for index in range(5))
+    elif name == "triband":
+        names = _TRIBAND_CHANNELS
+        edges = (geom["z_min"], -1.08, -0.43, geom["z_max"])
     else:
         names = tuple(_RICH_CHANNELS[index] if index < len(_RICH_CHANNELS) else f"reserved_zero_{index}"
                       for index in range(channels))

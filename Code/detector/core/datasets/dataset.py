@@ -257,10 +257,15 @@ class Dataset(Dataset):
 
 
     def encode_input(self, points, geometry):
-        if self.bev_encoding.get("name") == "hist14":
+        enc_name = self.bev_encoding.get("name")
+        if enc_name == "hist14":
             from .utils_1.bev_backend import encode_hist14_chw
             schema = resolve_bev_encoding(self.bev_encoding, geometry)
             return torch.from_numpy(encode_hist14_chw(points, schema))
+        if enc_name == "triband":
+            from .utils_1.bev_backend import encode_triband_chw
+            schema = resolve_bev_encoding(self.bev_encoding, geometry)
+            return torch.from_numpy(encode_triband_chw(points, schema))
         return torch.from_numpy(self.voxelize(points, geometry)).permute(2, 0, 1)
 
 

@@ -10,6 +10,71 @@ HIST14_IMPLEMENTATION_VERSION = 3
 _numba_kernel = None
 
 
+def encode_triband(points, schema):
+    """TriBand-BEV 3-channel encoding matching Khoshkdahan et al."""
+    return encode_triband_numpy(points, schema)
+
+
+def encode_triband_chw(points, schema):
+    """Return independently owned contiguous [3, Y, X] model input."""
+    return _encode_triband_numpy(points, schema, channels_first=True)
+
+
+def encode_triband_numpy(points, schema):
+    """Return contiguous float32 [Y, X, 3] without modifying source cloud."""
+    return _encode_triband_numpy(points, schema, channels_first=False)
+
+
+def _encode_triband_numpy(points, schema, *, channels_first=False):
+    points = np.asarray(points)
+    if points.ndim != 2 or points.shape[1] < 4:
+        raise ValueError("triband expects points shaped (N, >=4)")
+    geometry = dict(schema.geometry)
+    x_size, y_size, _ = schema.grid_shape
+    cell_count = x_size * y_size
+    output = np.zeros((3, cell_count) if channels_first else (cell_count, 3), dtype=np.float32)
+    shape = (3, y_size, x_size) if channels_first else (y_size, x_size, 3)
+
+    keep = np.isfinite(points[:, :4]).all(axis=1)
+    for col, axis in enumerate("xyz"):
+        keep &= points[:, col] > geometry[f"{axis}_min"] + 0.001
+        keep &= points[:, col] < geometry[f"{axis}_max"] - 0.001
+    pts = points[keep]
+    if len(pts) == 0:
+        return output.reshape(shape)
+
+    ix = np.floor((pts[:, 0] - geometry["x_min"]) / geometry["x_res"]).astype(np.int64)
+    iy = np.floor((pts[:, 1] - geometry["y_min"]) / geometry["y_res"]).astype(np.int64)
+    if np.any((ix < 0) | (ix >= x_size) | (iy < 0) | (iy >= y_size)):
+        raise ValueError("triband point lies outside the resolved grid")
+    flat = iy * x_size + ix
+
+    # TriBand-BEV coordinate shift and height bands
+    # In TriBand, z_offset = 1.73 (KITTI body frame ground shift)
+    z_offset = getattr(schema, "z_offset", 1.73)
+    z_shifted = pts[:, 2] + z_offset
+
+    band = np.zeros(len(pts), dtype=np.int64)
+    band[z_shifted >= 0.65] = 1
+    band[z_shifted >= 1.30] = 2
+
+    intensity = np.clip(pts[:, 3] * schema.intensity_scale, 0.0, 1.0)
+    # TriBand-BEV intensity scaling formula: (I_max + 0.1) * 1.3
+    intensity_scaled = np.clip((intensity + 0.1) * 1.3, 0.0, 1.0).astype(np.float32)
+
+    for b in range(3):
+        mask_b = (band == b)
+        if np.any(mask_b):
+            flat_b = flat[mask_b]
+            intens_b = intensity_scaled[mask_b]
+            if channels_first:
+                np.maximum.at(output[b], flat_b, intens_b)
+            else:
+                np.maximum.at(output[:, b], flat_b, intens_b)
+
+    return output.reshape(shape)
+
+
 def encode_hist14(points, schema):
     """Select the explicitly requested backend; never silently substitute it."""
     if schema.backend == "numpy":
