@@ -44,6 +44,7 @@ outputs/
 *.pdf
 !/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
 !paper/figures/*.pdf
+!paper/figures/*.png
 *.xlsx
 *.dot
 

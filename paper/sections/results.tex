@@ -146,20 +146,20 @@ Both criteria yield nearly identical aggregate accuracy ($71.46\%$ vs. $71.48\%$
 \label{sec:qualitative_analysis}
 
 \paragraph{Visual Inspection on Representative Driving Scenarios.}
-To evaluate spatial localization fidelity in real-world driving environments, Figure~\ref{fig:qualitative_detections} visualizes representative detection outputs produced by MobilePIXORNeXt on the KITTI validation benchmark alongside corresponding 14-channel Strata-BEV14 feature map representations across three diverse road scenes (frames \texttt{002425}, \texttt{005571}, and \texttt{007016}).
+To evaluate spatial localization fidelity in real-world driving environments, Figure~\ref{fig:qualitative_detections} visualizes representative detection outputs produced by MobilePIXORNeXt on the KITTI validation benchmark across three diverse road scenes (top to bottom: frames \texttt{007038}, \texttt{005571}, and \texttt{006761}). To prioritize visual clarity and unobstructed inspection of spatial footprints, all textual tags and confidence scores are omitted from the display.
 
 \begin{figure*}[t]
 \centering
 \paperfigure[width=\textwidth]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.}
-\caption{Qualitative detection results and Strata-BEV14 feature map responses on representative KITTI validation scenes (top to bottom: frames \texttt{002425}, \texttt{005571}, and \texttt{007016}). (Left) Synchronized camera imagery overlaid with 3D bounding box projections decoded from BEV predictions using calibration geometry; (Right) Corresponding 14-channel Strata-BEV14 input representations ($C_{00}$--$C_{13}$), highlighting stratified height bands, elevation dispersion moments, surface reflectance, and continuous subcell displacement offsets.}
+\caption{Qualitative Bird's-Eye View (BEV) detection results produced by MobilePIXORNeXt (checkpoint \texttt{Final-h32}) on representative KITTI validation scenes (top to bottom: frames \texttt{007038}, \texttt{005571}, and \texttt{006761}). (Left) Synchronized front-camera imagery overlaid with flat 2D ground footprint quadrilaterals projected from BEV predictions via calibration geometry ($P_2 \cdot R_{0\_\mathrm{rect}} \cdot Tr_{\mathrm{velo\_to\_cam}}$); (Right) Corresponding Bird's-Eye View perception map ($X \in [0, 70.4]\,\text{m}, Y \in [-30, 30]\,\text{m}$) displaying predicted oriented bounding box footprints without artificial vertical extrusion. Color codes indicate target classes: Car (Green), Pedestrian (Cyan), and Cyclist (Yellow).}
 \label{fig:qualitative_detections}
 \end{figure*}
 
-As shown in Figure~\ref{fig:qualitative_detections}, MobilePIXORNeXt accurately estimates oriented bounding box footprints across varied urban driving conditions:
+As shown in Figure~\ref{fig:qualitative_detections}, MobilePIXORNeXt accurately estimates oriented bounding box footprints across diverse real-world driving conditions:
 \begin{itemize}
-    \item \textbf{Dense Multi-Vehicle Traffic}: In congested road environments (frame \texttt{002425}), the detector accurately bounds adjacent passenger vehicles without merging contiguous bounding boxes or predicting duplicate overlapping candidates. The IQA quality scoring dynamically suppresses false-positive proposals in the inter-vehicle corridors during rotated NMS.
-    \item \textbf{Vulnerable Road Users in Urban Scenarios}: In pedestrian-dense environments (frame \texttt{005571}), small, non-rigid pedestrian candidates are reliably localized without false alarms on curbs or poles. Strata-BEV14's continuous centroid offsets $(\Delta\bar{x}, \Delta\bar{y})$ preserve precise spatial centroids despite point sparsity.
-    \item \textbf{Long-Range and Partially Occluded Objects}: On distant targets exceeding $40\,\text{m}$ (frame \texttt{007016}), the detector produces tight bounding boxes that closely align with LiDAR point returns. Physics-aware range attenuation augmentation ensures that the model remains robust against the characteristic $1/r^2$ point density drop-off in far-range cells.
+    \item \textbf{Mixed Traffic and Distant Targets}: In suburban scenes (frame \texttt{007038}), the detector tightly envelops passenger vehicles and roadside objects, demonstrating precise orientation heading estimation without false-positive clutter.
+    \item \textbf{Vulnerable Road Users in Urban Scenarios}: In pedestrian-dense environments (frame \texttt{005571}), non-rigid pedestrians are localized without false alarms on curbs or poles. Strata-BEV14's continuous centroid displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ preserve fine spatial boundaries despite point sparsity.
+    \item \textbf{Dense Urban Traffic with Partial Occlusion}: In congested urban corridors (frame \texttt{006761}), contiguous and partially occluded vehicles are bounded individually without merging adjacent footprints. The IQA quality scoring dynamically suppresses redundant proposals in the inter-vehicle corridors during rotated NMS.
 \end{itemize}
 
 \subsection{Discussion and Practical Limitations}
