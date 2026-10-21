@@ -1,10 +1,11 @@
 \begin{table*}[t]
 \centering\small
-\caption{Quantitative comparison on the KITTI validation set for Bird's-Eye View (BEV) object detection. Average Precision (AP, \%) is reported under the official 40-point interpolation protocol ($R_{40}$) at Moderate difficulty ($\text{IoU} \ge 0.70$ for Car; $\text{IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact detectors are in \textbf{bold}, and second-best values are \underline{underlined}.}
+\caption{Quantitative object detection comparison on the KITTI validation set for Bird's-Eye View (BEV) bounding box estimation. Average Precision (AP, \%) is evaluated under the official 40-point interpolation protocol ($R_{40}$) at Moderate difficulty ($\text{IoU} \ge 0.70$ for Car; $\text{IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact models are in \textbf{bold}, and second-best values are \underline{underlined}.}
 \label{tab:comparison}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Method} & \textbf{Params (M) $\downarrow$} & \textbf{Car AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Pedestrian AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Cyclist AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{9}$ (\%) $\uparrow$} \\
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} \\
 \midrule
 PIXOR (Car only)~\cite{yang2018pixor} & 2.135 & 72.02 & -- & -- & -- & -- \\
 MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\

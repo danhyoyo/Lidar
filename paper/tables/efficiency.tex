@@ -1,10 +1,11 @@
 \begin{table*}[t]
 \centering\small
-\caption{Inference latency and throughput breakdown on the KITTI validation benchmark (3,769 scans) evaluated on an NVIDIA Tesla T4 GPU. All measurements are conducted with physical batch size 1 under FP32 precision. Best values among compact models are highlighted in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Inference latency and throughput breakdown across pipeline stages on the KITTI validation benchmark (3,769 frames) evaluated on an NVIDIA Tesla T4 GPU. All measurements reflect physical batch size 1 in FP32 precision. Model forward latency measures neural network execution alone; End-to-End (E2E) pipeline latency spans raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network inference, subcell coordinate decoding, and class-wise rotated NMS. Best values among compact models are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:efficiency}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
-\textbf{Method} & \textbf{Params (M) $\downarrow$} & \textbf{Model (ms) $\downarrow$} & \textbf{Model FPS $\uparrow$} & \textbf{E2E (ms) $\downarrow$} & \textbf{E2E FPS $\uparrow$} & \textbf{P50 (ms) $\downarrow$} & \textbf{P95 (ms) $\downarrow$} & \textbf{P99 (ms) $\downarrow$} \\
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Model\\(ms) $\downarrow$}} & \textbf{\shortstack{Model\\FPS $\uparrow$}} & \textbf{\shortstack{E2E\\(ms) $\downarrow$}} & \textbf{\shortstack{E2E\\FPS $\uparrow$}} & \textbf{\shortstack{P50\\(ms) $\downarrow$}} & \textbf{\shortstack{P95\\(ms) $\downarrow$}} & \textbf{\shortstack{P99\\(ms) $\downarrow$}} \\
 \midrule
 PIXOR~\cite{yang2018pixor} & 2.135 & 70.79 & 14.13 & 144.00 & 6.94 & 142.29 & 159.38 & 175.43 \\
 MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & \textbf{11.05} & \textbf{90.50} & 85.92 & 11.64 & 84.11 & 112.52 & 124.94 \\
@@ -19,5 +20,5 @@ PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 160.79 & 6.22 & 188.60 & 5.30 & 186.40 &
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} Model latency measures neural network execution time alone. End-to-end (E2E) pipeline latency spans raw LiDAR point cloud loading, deterministic statistical rasterization, Host-to-Device (H2D) memory transfer, forward propagation, subcell coordinate decoding, and class-wise rotated NMS filtering. Percentiles (P50, P95, P99) are computed over all 3,769 validation frames.}
+{\footnotesize \textit{Note.} Model latency measures neural network execution time within the evaluation pipeline on Tesla T4. Under standalone batch inference without pipeline synchronization, model forward throughput reaches $115.32\,\text{FPS}$ ($8.67\,\text{ms}$, Table~\ref{tab:components}). End-to-end (E2E) pipeline latency spans raw LiDAR point cloud loading, deterministic statistical rasterization, Host-to-Device (H2D) memory transfer, forward propagation, subcell coordinate decoding, and class-wise rotated NMS filtering. Percentiles (P50, P95, P99) are computed over all 3,769 validation frames.}
 \end{table*}

@@ -85,3 +85,5 @@ paper/*.fdb_latexmk
 paper/*.out
 paper/*.log
 paper/*.synctex.gz
+.~lock.*
+.~lock*

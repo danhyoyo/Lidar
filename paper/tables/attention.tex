@@ -1,18 +1,19 @@
 \begin{table*}[t]
 \centering\small
-\caption{Ablation of 3D spatial-energy attention (SimAM) integration and placement within the MobilePIXORNeXt network. Best results are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:attention}
+\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}llrrrr@{}}
 \toprule
-\textbf{SimAM Attention Placement} & \textbf{Neck Fusion Width} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{9}$ (\%) $\uparrow$} & \textbf{Model Forward (ms) $\downarrow$} & \textbf{Model FPS $\uparrow$} \\
+\textbf{\shortstack[l]{SimAM Attention\\Placement}} & \textbf{\shortstack[l]{Neck Fusion\\Width}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Standalone\\Forward (ms) $\downarrow$}} & \textbf{\shortstack{Standalone\\FPS $\uparrow$}} \\
 \midrule
 None (No attention) & $F_{32}$ & \underline{70.58} & \underline{72.66} & \underline{8.19} & \underline{122.16} \\
-Stage-level transition at Stride 4 ($C_2$) & $F_{32}$ & 69.44 & 71.49 & 7.30 & 136.91 \\
-Stage-level transition at Stride 8 ($C_3$) & $F_{32}$ & 69.80 & 71.98 & \textbf{6.94} & \textbf{144.05} \\
-Stage-level transition at Stride 16 ($C_4$) & $F_{32}$ & 69.36 & 71.34 & 7.44 & 134.43 \\
-\textbf{Block-level inside all residual blocks ($C_2, C_3, C_4$)} & \textbf{$F_{32}$} & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
+Stage-2 ($C_2$) & $F_{32}$ & 69.44 & 71.49 & 7.30 & 136.91 \\
+Stage-3 ($C_3$) & $F_{32}$ & 69.80 & 71.98 & \textbf{6.94} & \textbf{144.05} \\
+Stage-4 ($C_4$) & $F_{32}$ & 69.36 & 71.34 & 7.44 & 134.43 \\
+\textbf{Block-level ($C_2, C_3, C_4$)} & \textbf{$F_{32}$} & \textbf{71.46} & \textbf{73.42} & 8.67 & 115.32 \\
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All configurations share the OGA loss, IQA quality head, Strata-BEV14 input, and PC-GTA data augmentation. Stage-level variants append a single attention adapter at the stage boundary, whereas the proposed Block-SimAM embeds 3D parameter-free energy attention inside each of the eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling.}
+{\footnotesize \textit{Note.} All configurations share the OGA loss, IQA quality head, Strata-BEV14 input, and PC-GTA data augmentation. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU on isolated batches. In the complete perception pipeline (Table~\ref{tab:efficiency}), model forward propagation operates at $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with an overall E2E pipeline speed of $16.41\,\text{FPS}$ ($60.96\,\text{ms}$). Stage-level variants append a single attention adapter at the stage boundary, whereas the proposed Block-SimAM embeds 3D parameter-free energy attention inside each of the eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling.}
 \end{table*}

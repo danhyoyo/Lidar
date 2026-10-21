@@ -1,6 +1,6 @@
 \begin{table}[t]
 \centering\small
-\caption{Unified experimental specifications and hyperparameter configuration of MobilePIXORNeXt.}
+\caption{Unified experimental specifications, architectural hyperparameters, and training configuration of the proposed MobilePIXORNeXt detector. All training runs use a deterministic single-seed setup ($\text{seed} = 42$) under PyTorch 2.11.0 with CUDA 13.0, and timing benchmarks are conducted on a dedicated NVIDIA Tesla T4 GPU (16\,GB GDDR6 VRAM) under batch size 1 in FP32 precision.}
 \label{tab:setup}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{.38\columnwidth}>{\raggedright\arraybackslash}p{.56\columnwidth}@{}}
 \toprule
@@ -17,7 +17,7 @@ Attention Mechanism & Parameter-free Block-SimAM (8 residual blocks) \\
 Multiscale Neck & Scale-Gated FPN (SG-FPN, $F_{32}$ fusion width) \\
 Prediction Towers & GroupedHeader: Car ($K_1=1$), Ped/Cyc ($K_2=2$) \\
 Loss Formulation & OGA (MGIoU + $\pi$-Corner) + IQA + T-SBUW \\
-Data Augmentation & Physics-Aware Hybrid GT (PC-GTA) + Global \\
+Data Augmentation & Physics-Consistent GT (PC-GTA) + Global \\
 Optimizer / Base Learning Rate & AdamW (fused) / $\eta = 7.00 \times 10^{-4}$ \\
 Minimum LR / Scheduler & $1.00 \times 10^{-6}$ / Cosine Annealing + 4 ep. Warmup \\
 Weight Decay & $\lambda = 1.00 \times 10^{-3}$ (2D+ tensors only; biases/norm: 0.00) \\

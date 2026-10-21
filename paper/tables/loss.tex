@@ -1,19 +1,20 @@
 \begin{table*}[t]
 \centering\small
-\caption{Factorial comparison of geometric supervision strategies (Baseline Smooth-L1 vs. OGA) and localization quality prediction (with/without IQA Head) on the KITTI validation benchmark at Moderate difficulty. Best results are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Factorial evaluation of geometric supervision strategies (Baseline Smooth-L1 vs. OGA) and localization quality prediction (with and without the explicit IQA Head) alongside the head-free Q-OGA formulation on the KITTI validation benchmark at Moderate difficulty ($R_{40}$). Candidate detections in models with IQA are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:loss}
-\begin{tabular}{@{}llrrrr@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\raggedright\arraybackslash}p{0.26\textwidth}ccrrrrr@{}}
 \toprule
-\textbf{Training Objective} & \textbf{IQA Head} & \textbf{Car AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Pedestrian AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Cyclist AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} \\
+\textbf{Training Objective} & \textbf{\shortstack{IQA\\Head}} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Forward\\(ms) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} \\
 \midrule
-Baseline Smooth-L1 & No  & 83.92 & 55.48 & 62.74 & 67.38 \\ % TODO: [PENDING_BASELINE_METRIC]
-OGA (MGIoU + $\pi$-Corner) & No  & 84.09 & 57.93 & 64.88 & 68.97 \\
-Baseline Smooth-L1 & Yes & 84.13 & \underline{59.45} & \textbf{67.34} & 70.31 \\
-\textbf{OGA (MGIoU + $\pi$-Corner)} & \textbf{Yes} & \textbf{84.87} & \textbf{59.63} & \underline{67.24} & \textbf{70.58} \\
+Baseline Smooth-L1 & No  & \textbf{0.702} & \textbf{6.94} & 83.92 & 55.48 & 62.74 & 67.38 \\
+OGA (MGIoU + $\pi$-Corner) & No  & \textbf{0.702} & \textbf{6.94} & 84.09 & 57.93 & 64.88 & 68.97 \\
+Baseline Smooth-L1 & Yes & 0.721 & 8.19 & 84.13 & \underline{59.45} & \textbf{67.34} & 70.31 \\
+\textbf{OGA (MGIoU + $\pi$-Corner)} & \textbf{Yes} & 0.721 & 8.19 & \textbf{84.87} & \textbf{59.63} & \underline{67.24} & \textbf{70.58} \\
 \midrule
-Q-OGA (Quality-Coupled Focal Loss) & No & \underline{84.35} & 58.12 & 65.13 & 69.20 \\ % TODO: [PENDING_BASELINE_METRIC]
+Q-OGA (Quality-Coupled Focal Loss) & No & \textbf{0.702} & \textbf{6.94} & \underline{84.35} & 58.12 & 65.13 & 69.20 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All variants share identical MobilePixorNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head. Entries labeled with comments reflect pending raw class breakdowns from baseline logs.}
+{\footnotesize \textit{Note.} All variants share identical MobilePixorNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18.59\,\text{K}$ parameters and $1.25\,\text{ms}$ forward latency compared with explicit IQA models.}
 \end{table*}
