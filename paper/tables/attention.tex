@@ -1,17 +1,18 @@
 \begin{table*}[t]
 \centering\small
-\caption{Draft attention-placement comparison with OGA and IQA enabled.}
+\caption{Ablation of 3D spatial-energy attention (SimAM) integration and placement within the MobilePIXORNeXt network. Best results are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:attention}
-\begin{tabular}{@{}llrrr@{}}
+\begin{tabular}{@{}llrrrr@{}}
 \toprule
-SimAM placement & Fusion & mAP M & mAP9 & Model ms \\
+\textbf{SimAM Attention Placement} & \textbf{Neck Fusion Width} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{9}$ (\%) $\uparrow$} & \textbf{Model Forward (ms) $\downarrow$} & \textbf{Model FPS $\uparrow$} \\
 \midrule
-None & F32 & 70.58 & 72.66 & 8.19 \\
-Stage at stride 4 & F32 & 69.44 & 71.49 & 7.30 \\
-Stage at stride 8 & Pending & 69.80 & 71.98 & 6.94 \\
-Stage at stride 16 & F32 & 69.36 & 71.34 & 7.44 \\
-Block at strides 4/8/16 & F32 & 71.50 & 73.45 & 8.67 \\
+None (No attention) & $F_{32}$ & \underline{70.58} & \underline{72.66} & \underline{8.19} & \underline{122.16} \\
+Stage-level transition at Stride 4 ($C_2$) & $F_{32}$ & 69.44 & 71.49 & 7.30 & 136.91 \\
+Stage-level transition at Stride 8 ($C_3$) & $F_{32}$ & 69.80 & 71.98 & \textbf{6.94} & \textbf{144.05} \\
+Stage-level transition at Stride 16 ($C_4$) & $F_{32}$ & 69.36 & 71.34 & 7.44 & 134.43 \\
+\textbf{Block-level inside all residual blocks ($C_2, C_3, C_4$)} & \textbf{$F_{32}$} & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: latest summary rows 14--18. The stride-8 stage row is labeled F32 in one sheet and F24 in its copy and the historical inventory. Block placements and within-group head sharing must be confirmed per run. Stride labels avoid the inconsistent C2/C3/C4 versus C3/C4/C5 naming in slide drafts.\end{minipage}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} All configurations share the OGA loss, IQA quality head, Strata-BEV14 input, and PC-GTA data augmentation. Stage-level variants append a single attention adapter at the stage boundary, whereas the proposed Block-SimAM embeds 3D parameter-free energy attention inside each of the eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling.}
 \end{table*}

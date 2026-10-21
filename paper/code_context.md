@@ -27,56 +27,55 @@ The primary proposal of this project is **MobilePIXORNeXt** (Primary benchmark c
   - End-to-End (E2E) Pipeline Latency: **60.96 ms** (**16.41 FPS**), covering raw file input/output, statistical rasterization, Host-to-Device (H2D) memory transfer, neural network execution, bounding box decoding, and Rotated Non-Maximum Suppression (NMS). This exceeds the pipeline throughput of PointPillars (15.66 FPS), MobilePIXOR (11.64 FPS), SECOND (10.67 FPS), and PIXOR (6.94 FPS).
 - **Competitive Detection Accuracy**: Achieves **71.46% BEV Mean Average Precision (mAP) Moderate** and **73.42% mAP9** across Car, Pedestrian, and Cyclist on the standard KITTI validation benchmark.
 
-### 1.2 The 7 Core Proposed Pillars
+### 1.2 The 6 Core Proposed Pillars
 
 ```mermaid
 flowchart TD
     subgraph P1["Pillar 1: Data Augmentation"]
-        A["Physics-Aware Hybrid Ground-Truth Augmentation<br/>(Local ground height fitting, static obstacle clearance,<br/>line-of-sight ray check, shadow masking, distance fall-off)"]
+        A["Physics-Consistent Ground-Truth Augmentation (PC-GTA)<br/>(Local ground height fitting, static obstacle clearance,<br/>line-of-sight ray check, shadow masking, distance attenuation)"]
     end
     subgraph P2["Pillar 2: BEV Representation"]
         B["Strata-BEV14 (hist14) Encoding<br/>14-channel Statistical Rasterizer<br/>(4 height bins, z moments, reflectance, log density, offsets)"]
     end
     subgraph P3["Pillar 3: Lightweight Backbone"]
-        C["MobilePixorNeXtBackbone<br/>ConvNeXt-style 7x7 Depthwise Conv<br/>Inverted Bottlenecks (exp=2.5) + SiLU + LayerScale"]
+        C["MobilePixorNeXt-S Backbone Hierarchy<br/>Single-Branch ConvNeXt-style 7x7 Depthwise Conv<br/>Inverted Bottlenecks (exp=2.5) + SiLU + LayerScale"]
     end
-    subgraph P4["Pillar 4: Reparameterization"]
-        D["RepConv7x7 Structural Reparameterization<br/>Train: 7x7 DW + 3x3 DW + Identity<br/>Deploy: Single equivalent 7x7 DW Conv"]
+    subgraph P4["Pillar 4: Attention Mechanism"]
+        E["Block-SimAM Energy Attention<br/>Parameter-free 3D spatial-energy attention<br/>embedded inside blocks across C2, C3, C4"]
     end
-    subgraph P5["Pillar 5: Attention Mechanism"]
-        E["Block-SimAM Energy Attention<br/>Parameter-free 3D spatial-energy attention<br/>inside blocks across C3, C4, C5"]
-    end
-    subgraph P6["Pillar 6: Multiscale Neck"]
+    subgraph P5["Pillar 5: Multiscale Neck"]
         F["Scale-Gated Feature Pyramid Network (SG-FPN, F32)<br/>Bilinear Upsampling + DW Refinement<br/>Depthwise Scale-Gating (P4, P3)"]
     end
-    subgraph P7["Pillar 7: Heads & Loss Strategy"]
+    subgraph P6["Pillar 6: Heads & Loss Strategy"]
         G["Shared GroupedHeader<br/>Group 1: Car | Group 2: Pedestrian & Cyclist<br/>Shared Conv3x3 Tower"]
-        H["Oriented Geometric Alignment (OGA)<br/>Multi-Axis Projection GIoU + Pi-Symmetric Corner Loss<br/>T-SBUW Uncertainty + IoU-Aware Quality Alignment (IQA)"]
+        H["Oriented Geometric Alignment (OGA) & Quality Supervision<br/>Multi-Axis Projection GIoU + Pi-Symmetric Corner Loss<br/>12-logit T-SBUW Uncertainty Balancing + IoU Alignment (IQA)"]
     end
 
     A --> B --> C --> E --> F --> G --> H
-    D -.-> C
 ```
 
 1. **Strata-BEV14 (`hist14`) Deterministic BEV Representation**:
    - Replaces binary height occupancy slices (`binary_slices`, 35 channels) and 8-channel representations (`rich8`) with a deterministic 14-channel statistical tensor.
-   - Extracts four log-normalized vertical count bands, four vertical spatial moments ($z_{max}, z_{mean}, z_{span}, z_{std}$), two reflectance moments ($I_{max}, I_{mean}$), global log density, binary occupancy, and subcell centroid displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ with **0 learned parameters**.
-2. **Physics-Aware Hybrid Ground-Truth (GT) Augmentation (`HybridDataBaseSampler`)**:
-   - Replaces standard copy-paste GT sampling, which frequently introduces physical anomalies: floating objects, objects sunken beneath the terrain, objects embedded inside existing background structures, missing LiDAR ray shadows, and invariant point densities across varying distances.
-   - Proposes five physical verification heuristics: local ground plane fitting (`ground_height`), static obstacle collision clearance (`static_obstacle_count`), Line-of-Sight (LOS) occlusion checks (`line_of_sight_blockers`), raycast LiDAR shadow masking (`shadow_mask`), and distance-adaptive point density and intensity fall-off (`transform_object`).
-   - Produces a decisive **+6.03% jump in Moderate mAP** (from 60.22% to 66.25%) in controlled ablation experiments.
-3. **Ultra-Lightweight ConvNeXt-Style BEV Backbone (`MobilePixorNeXtBackbone`)**:
-   - Deploys $7\times 7$ large-kernel depthwise separable convolutions for wide horizontal receptive fields, inverted bottleneck expansions ($e = 2.5$), smooth Sigmoid Linear Unit (SiLU) activations, and LayerScale parameters for stable deep residual optimization.
-4. **Zero-Latency Inference via Structural Reparameterization (`RepConv7x7`)**:
-   - Multi-branch training topology ($7\times 7$ Depthwise + $3\times 3$ Depthwise + Identity) that is algebraically fused into a single equivalent $7\times 7$ Depthwise Convolution with bias at inference time via `switch_to_deploy()`.
-5. **Parameter-Free Spatial-Energy Attention (`Block-SimAM`)**:
-   - Integrates the Simple, Parameter-Free Attention Module (SimAM) directly inside every residual block across all three backbone stages (C3, C4, C5), adaptively weighting 3D spatial saliency based on analytical energy functions without adding a single learned parameter.
-6. **Bilinear Scale-Gated Feature Pyramid Network (`SG-FPN Neck`, $F_{32}$)**:
+   - Extracts four log-normalized vertical count bands, four vertical spatial moments ($z_{max}, z_{mean}, z_{span}, z_{std}$), two reflectance moments ($I_{max}, I_{mean}$), global log density, binary occupancy, and subcell centroid displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ with **0 learned parameters** in under 21 ms via parallel CUDA execution.
+2. **Physics-Consistent Ground-Truth Augmentation (PC-GTA, `HybridDataBaseSampler`)**:
+   - Replaces naive cut-and-paste GT sampling, which introduces physical artifacts: floating objects, objects sunken beneath the terrain, background structural collisions, missing LiDAR ray shadows, and invariant point densities across varying distances.
+   - Proposes five physical verification heuristics: local road ground elevation fitting ($R(d)$, 5th percentile), static obstacle clearance ($N_{static} \le N_{thresh}$), Line-of-Sight (LOS) occlusion checks, raycast LiDAR shadow masking ($t_{leave} \le 1.0$), and range-adaptive point downsampling ($P_{keep} = \min(1, (r_{src}/r_{tgt})^2)$) with intensity attenuation ($\gamma = 1.7$).
+   - Implemented in `Code/detector/core/datasets/augmentor/hybrid_sampler.py` and `hybrid_physics.py`.
+   - Produces a decisive **+6.03% jump in Moderate mAP** (from 60.22% to 66.25%) and **+7.34% mAP9** in controlled ablation experiments.
+3. **Ultra-Lightweight ConvNeXt-Style BEV Backbone (`MobilePixorNeXtBackbone` / `MobilePixorNeXt-S`)**:
+   - Adopts a streamlined single-branch large-kernel ($7\times 7$) depthwise convolution with inverted bottleneck expansion ($e = 2.5$), smooth Sigmoid Linear Unit (SiLU) activations, and learned LayerScale ($\boldsymbol{\gamma}_{\mathrm{blk}}$ initialized to $10^{-5}$) residual stabilization.
+   - At input grid resolution $\Delta x = \Delta y = 0.1$\,m, a single $7 \times 7$ depthwise receptive field directly spans $0.7 \times 0.7$\,m of physical terrain at stride 1, and rapidly expands to over $5.6 \times 5.6$\,m by Stage 3 (stride 8)---sufficient to envelope an entire passenger vehicle in a single layer without dilation artifacts.
+   - Eliminates multi-branch reparameterization training topologies, avoiding auxiliary training memory overhead and post-hoc weight folding. The complete backbone comprises only **604,864 parameters**.
+4. **Parameter-Free Spatial-Energy Attention (`Block-SimAM`)**:
+   - Integrates the Simple, Parameter-Free Attention Module (SimAM) directly inside every residual block across all three backbone stages (C2, C3, C4; 8 attention operators total).
+   - Derives 3D spatial-channel saliency via visual neuroscience minimal energy optimization based on local spatial moments ($\mu_c, \nu_c$), adaptively amplifying sparse LiDAR point clusters without adding a single learned parameter ($0\text{ M}$).
+5. **Top-Down Scale-Gated Feature Pyramid Network (`SG-FPN Neck`, $F_{32}$)**:
    - Eliminates deconvolution checkerboard artifacts by pairing bilinear upsampling ($2\times$) with $3\times 3$ Depthwise convolution refinement.
-   - Employs learnable depthwise scale gating to balance semantic features and spatial details, widened to an optimal 32-channel fusion layer ($F_{32}$).
-7. **Shared Grouped Prediction Towers (`GroupedHeader`) & Multi-Task Geometric Losses (`OGA` + `IQA`)**:
-   - Decouples predictions into semantically distinct task groups (Group 1: `car`, Group 2: `ped_cyc`), using a shared initial $3\times 3$ Conv-BN-SiLU block per group to eliminate scale conflict while conserving parameters.
-   - Trains using Oriented Geometric Alignment (OGA), combining Multi-Axis Projection Generalized Intersection-over-Union (MGIoU), Scale-Normalized $\pi$-Symmetric Corner Distance, Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW), and IoU-Aware Quality Alignment (IQA) confidence calibration.
+   - Dynamically balances top-down semantic context $\mathbf{U}_r$ and fine lateral coordinates $\mathbf{L}_r$ via learnable depthwise scale gating $\mathbf{G}_r = 2\sigma(\operatorname{DWConv}_{3\times3}(\mathbf{L}_r + \mathbf{U}_r))$, initialized to 1.0 via zero-initialized weights.
+   - Fuses multi-scale features into an optimal 32-channel representation ($F_{32}$) with only **36,784 parameters**.
+6. **Decoupled Grouped Prediction Towers (`GroupedHeader`) & Multi-Task Geometric Losses (`OGA` + `IQA` + `T-SBUW`)**:
+   - Decouples predictions into semantically distinct task groups (Group 1: `car`, Group 2: `ped_cyc`), using a shared initial $3\times 3$ Conv-BN-SiLU block per group to eliminate scale conflict while conserving parameters (total 111,921 head parameters).
+   - Trains using Oriented Geometric Alignment (OGA), combining Multi-Axis Projection Generalized Intersection-over-Union (MGIoU), Scale-Normalized $\pi$-Symmetric Corner Distance, 12-parameter Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) with running EMA loss calibration, and IoU-Aware Quality Alignment (IQA) confidence calibration.
 
 ---
 
@@ -113,25 +112,34 @@ Defined in `Code/detector/core/bev_encoding.py:16-39`:
 ### 2.4 Model Output Feature Maps
 - **Spatial Downsampling Factor**: `out_size_factor = 4` (`Code/configs/config.json:12`, `Code/detector/core/detection_config.py:71-73`).
 - **Output Spatial Grid Dimensions**: $H_{out} = 800 / 4 = 200$, $W_{out} = 704 / 4 = 176$.
-- **Prediction Head Map Tensor Definitions** (`Code/detector/core/models/heads/cnn.py:44-97`):
-  1. `cls`: Class classification heatmap $[B, C_{cls}, 200, 176]$. Under Gaussian peak encoding, $C_{cls} = 3$ (0: Car, 1: Pedestrian, 2: Cyclist). Under binary cross-entropy encoding, $C_{cls} = 4$ (including background channel at index 0).
-  2. `offset`: Subcell center coordinate residuals $[B, 2, 200, 176]$, predicting $(\Delta x, \Delta y)$ offsets in metric meters relative to the grid cell center.
-  3. `size`: Footprint log-dimensions $[B, 2, 200, 176]$, predicting $(\log(w), \log(l))$.
-  4. `yaw`: Orientation doubled-angle vector $[B, 2, 200, 176]$, predicting $(\cos(2\theta), \sin(2\theta))$ to enforce $\pi$-rotational symmetry.
-  5. `iou` (IoU-Aware Quality Alignment Head): $[B, 1, 200, 176]$, predicting bounding box overlap quality.
+- **Prediction Head Map Tensor Definitions** (`Code/detector/core/models/heads/cnn.py:44-97`, `Code/detector/core/models/heads/grouped.py:10-36`):
+  1. `cls`: Class classification heatmap $[B, C_{cls}, 200, 176]$, yielding foreground category probability $p_{\mathrm{cls}}$ at grid point $P$. In grouped towers: Group 1 (`car`) has $K_1 = 1$; Group 2 (`ped_cyc`) has $K_2 = 2$.
+  2. `offset`: Metric subcell coordinate offsets $[B, 2, 200, 176]$, predicting $(\hat{o}_x, \hat{o}_y)$ corresponding to continuous displacements $(\Delta x, \Delta y)$ from anchor point $P$ to object center $C$.
+  3. `size`: Footprint log-dimensions $[B, 2, 200, 176]$, predicting $(\hat{d}_1, \hat{d}_2) = (\log \hat{w}, \log \hat{l})$, decoded via $\exp$.
+  4. `yaw`: Orientation doubled-angle vector $[B, 2, 200, 176]$, predicting $(\hat{a}_1, \hat{a}_2) = (\cos 2\hat{\psi}, \sin 2\hat{\psi})$ (denoted as $(c_2, s_2)$ with heading $\psi \equiv \theta$ on the unit circle) to strictly enforce $\pi$-rotational symmetry and eliminate $180^\circ$ heading ambiguity.
+  5. `iou` (IoU-Aware Quality Alignment Head): $[B, 1, 200, 176]$, predicting continuous overlap localization quality $\hat{q} \in [0, 1]$.
   6. `vertical` (Optional 3D Extension): $[B, 2, 200, 176]$, predicting ground-level elevation and log-height $(z_{bottom}, \log(h))$.
 
-### 2.5 Coordinate Decoding & Joint NMS Scoring
+- **Ground-Truth Target Formulation & Radius Assignment**:
+  For output cell $(u, v)$ at stride $s_{\mathrm{out}} = 4$:
+  $$\mathbf{o}^* = \begin{pmatrix} x^* - (u s_{\mathrm{out}}\Delta x + x_{\min}) \\ y^* - (v s_{\mathrm{out}}\Delta y + y_{\min}) \end{pmatrix}, \quad \mathbf{d}^* = (\log w^*, \log l^*), \quad \mathbf{a}^* = (\cos 2\psi^*, \sin 2\psi^*)$$
+  - Classification targets use 2D Gaussian heatmaps centered at continuous object projections with a minimum radius of 4 cells.
+  - Regression targets are assigned within a radius of half the Gaussian peak, denoted by valid indicator mask $\mathbf{M}_{\mathrm{reg}}$.
+
+### 2.5 Coordinate Decoding & Joint NMS Scoring (Algorithm 1 Pipeline)
 Implemented at `Code/detector/postprocess.py:76-245`:
-- Grid cell center in metric space:
-  $$x_c = \Delta x \cdot x_{grid} \cdot 4 + x_{min}, \quad y_c = \Delta y \cdot y_{grid} \cdot 4 + y_{min}$$
-- Bounding box metric position:
-  $$x_{pred} = x_c + \Delta x_{pred}, \quad y_{pred} = y_c + \Delta y_{pred}$$
-- Dimension reconstruction: $l = \exp(\log l), \quad w = \exp(\log w)$.
-- Heading angle recovery: $\theta = \frac{1}{2} \text{atan2}(\sin(2\theta), \cos(2\theta))$.
-- Joint IoU-Aware Confidence Scoring (`postprocess.py:168-180`):
-  $$S_{final} = (P_{cls})^{1 - \alpha} \cdot (S_{iou})^\alpha \quad (\text{configured at } \alpha = 0.5)$$
-- Output Detections: Filtered via class-wise Rotated Non-Maximum Suppression (NMS) with threshold $\tau_{nms} = 0.1$ and score threshold $\tau_{score} = 0.05$ (`Code/configs/config.json:111-113`), returning $[M \times 7]$ vectors $[cls\_id, score, x, y, l, w, \theta]$.
+1. **Local Peak Selection**:
+   Identify $3 \times 3$ local spatial max-pooling peaks on classification heatmap $\mathbf{P}_{\mathrm{cls}}$ satisfying $p_{\mathrm{cls}} > \tau_{\mathrm{score}} = 0.05$.
+2. **IoU-Aware Composite Confidence Calibration**:
+   Rank candidates using the joint geometric-classification score:
+   $$s_{\mathrm{det}} = (p_{\mathrm{cls}})^{1 - \alpha_{\mathrm{score}}} \cdot (\hat{q})^{\alpha_{\mathrm{score}}} = \sqrt{p_{\mathrm{cls}} \hat{q}} \quad (\alpha_{\mathrm{score}} = 0.5)$$
+   Filter cells satisfying $s_{\mathrm{det}} > \tau_{\mathrm{score}} = 0.05$.
+3. **Metric Bounding Box Reconstruction**:
+   $$\hat{x} = x_{\min} + u s_{\mathrm{out}}\Delta x + \hat{o}_x, \quad \hat{y} = y_{\min} + v s_{\mathrm{out}}\Delta y + \hat{o}_y$$
+   $$\hat{w} = \exp(\hat{d}_1), \quad \hat{l} = \exp(\hat{d}_2), \quad \hat{\psi} = \frac{1}{2}\operatorname{atan2}(\hat{a}_2, \hat{a}_1)$$
+   The recovered orientation $\hat{\psi} \in [-\pi/2, \pi/2]$ is fully determined without trigonometric ambiguity.
+4. **Class-Wise Rotated Non-Maximum Suppression (NMS)**:
+   Apply Rotated NMS with IoU threshold $\tau_{\mathrm{nms}} = 0.10$ and maximum cap of 500 detections per scan (`Code/configs/config.json:111-113`), returning sorted $[M \times 7]$ vectors $[cls\_id, s_{\mathrm{det}}, \hat{x}, \hat{y}, \hat{l}, \hat{w}, \hat{\psi}]$.
 
 ---
 
@@ -148,18 +156,18 @@ c1 [B, 32, 400, 352]
   │
   ▼ DownsampleBlock 2 (Conv3x3 s2 + BN + SiLU)
   │ [B, 48, 200, 176]
-  ▼ Stage 2 (2x MobilePixorNeXtBlock with Block-SimAM)
-c2 [B, 48, 200, 176] (Stride 4 feature map)
+  ▼ Stage 2 (2x MobilePixorNeXt-S Block with Block-SimAM)
+c2 [B, 48, 200, 176] (Stride 4 feature map, 2.8m x 2.8m physical RF)
   │
   ▼ DownsampleBlock 3 (Conv3x3 s2 + BN + SiLU)
   │ [B, 96, 100, 88]
-  ▼ Stage 3 (4x MobilePixorNeXtBlock with Block-SimAM)
-c4 [B, 96, 100, 88] (Stride 8 feature map)
+  ▼ Stage 3 (4x MobilePixorNeXt-S Block with Block-SimAM)
+c4 [B, 96, 100, 88] (Stride 8 feature map, 5.6m x 5.6m physical RF)
   │
   ▼ DownsampleBlock 4 (Conv3x3 s2 + BN + SiLU)
   │ [B, 128, 50, 44]
-  ▼ Stage 4 (2x MobilePixorNeXtBlock with Block-SimAM)
-c5 [B, 128, 50, 44] (Stride 16 feature map)
+  ▼ Stage 4 (2x MobilePixorNeXt-S Block with Block-SimAM)
+c5 [B, 128, 50, 44] (Stride 16 feature map, 11.2m x 11.2m physical RF)
   │
   ▼ Scale-Gated FPN Neck (F32)
   ├── LatC5 (Conv1x1: 128 -> 48)  ──> L5 [B, 48, 50, 44]
@@ -190,6 +198,13 @@ p3_out [B, 16, 200, 176]
         └── iou head [B, 1, 200, 176]
 ```
 
+- **Physical BEV Receptive Field (RF) Coverage**:
+  At horizontal resolution $\Delta x = \Delta y = 0.1$\,m:
+  - Stride 1: Single $7 \times 7$ depthwise kernel spans $0.7 \times 0.7$\,m.
+  - Stage 2 (Stride 4): Receptive field spans $2.8 \times 2.8$\,m.
+  - Stage 3 (Stride 8): Receptive field expands to $5.6 \times 5.6$\,m, enveloping an entire passenger vehicle ($l \approx 4.5$--$5.0$\,m) in a single convolutional layer without requiring dilation or multi-branch branches.
+  - Stage 4 (Stride 16): Receptive field spans $11.2 \times 11.2$\,m, providing macroscopic scene context.
+
 ### 3.2 Architectural Module Directory & Code References
 
 | Module / Component | Input Shape | Output Shape | Source File Path | Line Range | Architectural Details |
@@ -202,10 +217,9 @@ p3_out [B, 16, 200, 176]
 | **Stage 3** (Stride 8) | $[B, 96, 100, 88]$ | $[B, 96, 100, 88]$ | `Code/detector/core/models/backbones/mobilepixornext.py` | Lines 162–167 | 4 blocks of `MobilePixorNeXtBlock` ($C=96$, expansion ratio $e=2.5$). |
 | **DownsampleBlock 4** | $[B, 96, 100, 88]$ | $[B, 128, 50, 44]$ | `Code/detector/core/models/backbones/mobilepixornext_blocks.py` | Lines 106–129 | Strided transition block: Conv $3\times 3$ stride 2 + BN + SiLU ($96 \rightarrow 128$ channels). |
 | **Stage 4** (Stride 16) | $[B, 128, 50, 44]$ | $[B, 128, 50, 44]$ | `Code/detector/core/models/backbones/mobilepixornext.py` | Lines 176–181 | 2 blocks of `MobilePixorNeXtBlock` ($C=128$, expansion ratio $e=2.5$). |
-| **NeXt Block** (`MobilePixorNeXtBlock`) | $[B, C, H, W]$ | $[B, C, H, W]$ | `Code/detector/core/models/backbones/mobilepixornext_blocks.py` | Lines 24–105 | Depthwise (DW) Conv $7\times 7 \rightarrow$ BN $\rightarrow$ Pointwise (PW) $1\times 1$ ($C \rightarrow 2.5C$) $\rightarrow$ SiLU $\rightarrow$ PW $1\times 1$ ($2.5C \rightarrow C$) $\rightarrow$ BN $\rightarrow$ Block-SimAM $\rightarrow$ LayerScale + Residual. |
-| **Reparameterization** (`RepConv7x7`) | $[B, C, H, W]$ | $[B, C, H, W]$ | `Code/detector/core/models/backbones/rep_blocks.py` | Lines 61–167 | Training: 3 parallel branches ($7\times 7$ DW + $3\times 3$ DW + Identity); Deploy: Single fused $7\times 7$ DW Conv. |
+| **NeXt-S Block** (`MobilePixorNeXt-S`) | $[B, C, H, W]$ | $[B, C, H, W]$ | `Code/detector/core/models/backbones/mobilepixornext_blocks.py` | Lines 24–105 | Streamlined single-branch ConvNeXt-style block: DW Conv $7\times 7 \rightarrow$ BN $\rightarrow$ PW $1\times 1$ ($C \rightarrow 2.5C$) $\rightarrow$ SiLU $\rightarrow$ PW $1\times 1$ ($2.5C \rightarrow C$) $\rightarrow$ BN $\rightarrow$ Block-SimAM $\rightarrow$ LayerScale ($\boldsymbol{\gamma}_{\mathrm{blk}}$ init $10^{-5}$) + Identity residual shortcut. Zero multi-branch reparameterization overhead. |
 | **Energy Attention** (`SimAMCore`) | $[B, C, H, W]$ | $[B, C, H, W]$ | `Code/detector/core/models/backbones/light_attention.py` | Lines 15–38 | Parameter-free 3D spatial-energy attention; computes channel-local spatial moments in FP32. |
-| **Scale-Gated FPN Neck** (`SG-FPN`) | $C_5, C_4, C_2$ | $[B, 16, 200, 176]$ | `Code/detector/core/models/backbones/mobilepixornext.py` | Lines 186–222, 272–300 | Lateral Conv $1\times 1$, Bilinear $2\times$ interpolation, Depthwise Scale-Gating, and final Conv $3\times 3$ projection. |
+| **Scale-Gated FPN Neck** (`SG-FPN`) | $C_5, C_4, C_2$ | $[B, 16, 200, 176]$ | `Code/detector/core/models/backbones/mobilepixornext.py` | Lines 186–222, 272–300 | Lateral Conv $1\times 1$, Bilinear $2\times$ interpolation, Depthwise Scale-Gating $\mathbf{G}_r = 2\sigma(\operatorname{DWConv}_{3\times3}(\mathbf{L}_r + \mathbf{U}_r))$, and final Conv $3\times 3$ projection. |
 | **Range Neck** (`RC-SGFPN`) | $C_5, C_4, C_2$ | $[B, 16, 200, 176]$ | `Code/detector/core/models/backbones/rc_sgfpn.py` | Lines 16–140 | Continuous Fourier Range Embedding (FRE) modulates depthwise scale gating according to distance $r$. |
 | **Standard Header** (`Header`) | $[B, 16, 200, 176]$ | Dict of 5 maps | `Code/detector/core/models/heads/cnn.py` | Lines 44–97 | Two Conv $3\times 3$ layers per task with optional shared initial layer (`header_architecture: "shared"`). |
 | **Grouped Header** (`GroupedHeader`) | $[B, 16, 200, 176]$ | Dict of 2 groups | `Code/detector/core/models/heads/grouped.py` | Lines 10–36 | Distinct prediction towers for `car` and `ped_cyc` groups, eliminating scale conflict. |
@@ -247,38 +261,48 @@ Normalized elevation: $\zeta_i = \frac{z_i - z_{min}}{z_{max} - z_{min}} \in [0,
     $$F_{12} = \text{clip}\left(\frac{1}{N} \sum_{i=1}^N \frac{x_i - x_c}{\Delta x}, -0.5, 0.5\right)$$
     $$F_{13} = \text{clip}\left(\frac{1}{N} \sum_{i=1}^N \frac{y_i - y_c}{\Delta y}, -0.5, 0.5\right)$$
 
-### 4.2 SimAM Spatial Energy Attention
-Implemented in `Code/detector/core/models/backbones/light_attention.py:26-38`:
-For feature map $X \in \mathbb{R}^{B \times C \times H \times W}$, spatial mean and variance across $M = H \times W$ elements per channel:
-$$\mu = \frac{1}{M} \sum_{i=1}^M x_i, \quad \sigma^2 = \frac{1}{M - 1} \sum_{i=1}^M (x_i - \mu)^2$$
-The analytical minimal energy of neuron $t$:
-$$e_t = \frac{(t - \mu)^2}{4(\sigma^2 + \lambda)} + 0.5 \quad (\lambda = 10^{-4})$$
-Modulation weight and attended output:
-$$g_t = \sigma(e_t) = \frac{1}{1 + e^{-e_t}}, \quad \mathbf{X}_{out} = \mathbf{X} \odot \mathbf{g}$$
+### 4.2 MobilePixorNeXt-S Residual Block & Block-SimAM Energy Attention
+Implemented in `Code/detector/core/models/backbones/mobilepixornext_blocks.py:24-105` and `light_attention.py:15-38`:
 
-### 4.3 Structural Reparameterization (`RepConv7x7`)
-Implemented in `Code/detector/core/models/backbones/rep_blocks.py:14-59`:
-Fusing Conv $7\times 7$ and BatchNorm ($\gamma, \beta, \mu, \sigma^2, \epsilon$):
-$$\mathbf{W}_{fused} = \mathbf{W} \cdot \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}}, \quad \mathbf{b}_{fused} = \beta - \frac{\mu \gamma}{\sqrt{\sigma^2 + \epsilon}}$$
-Fusing across training branches ($7\times 7$ DW, $3\times 3$ DW zero-padded to $7\times 7$, and Identity Dirac kernel):
-$$\mathbf{W}_{deploy} = \mathbf{W}_{fused}^{7\times 7} + \mathbf{W}_{fused}^{3\times 3} + \mathbf{W}_{fused}^{ident}, \quad \mathbf{b}_{deploy} = \mathbf{b}_{fused}^{7\times 7} + \mathbf{b}_{fused}^{3\times 3} + \mathbf{b}_{fused}^{ident}$$
+1. **MobilePixorNeXt-S Residual Block**:
+   Given input tensor $\mathbf{Z} \in \mathbb{R}^{B \times C \times H \times W}$, each block executes an inverted bottleneck with expansion ratio $e = 2.5$:
+   $$\mathbf{V} = \operatorname{BN}(\operatorname{DWConv}_{7\times7}(\mathbf{Z}))$$
+   $$\mathbf{R} = \operatorname{BN}\left(W_{\mathrm{red}} \operatorname{SiLU}(W_{\mathrm{exp}}\mathbf{V})\right)$$
+   $$\mathbf{Z}' = \mathbf{Z} + \boldsymbol{\gamma}_{\mathrm{blk}} \odot \mathcal{S}(\mathbf{R})$$
+   where $W_{\mathrm{exp}} \in \mathbb{R}^{2.5C \times C \times 1 \times 1}$ and $W_{\mathrm{red}} \in \mathbb{R}^{C \times 2.5C \times 1 \times 1}$ are pointwise convolutions. The learned LayerScale parameter $\boldsymbol{\gamma}_{\mathrm{blk}} \in \mathbb{R}^C$ is initialized to $10^{-5}$ (`layer_scale_init = 1e-5`), ensuring stable convergence during deep backpropagation without requiring multi-branch training paths.
 
-### 4.4 Physics-Aware Hybrid Ground-Truth Augmentation Formulations
-Implemented in `Code/detector/core/datasets/augmentor/hybrid_physics.py`:
-1. **Local Ground Plane Fitting (`ground_height`)**:
-   Radius $R = \text{clip}(2.5 + 0.03 \max(0, d - 15), 2.5, 4.0)\text{ m}$ around $(x, y)$. Extracts ground height:
-   $$\hat{z}_{bottom} = \text{percentile}(Z_{local}, 5)$$
-2. **Raycast LiDAR Shadow Masking (`shadow_mask`)**:
-   Solves ray equation $\mathbf{r}(t) = t \cdot \mathbf{p}$ with the inserted bounding box. Points behind exit face are masked:
-   $$\text{Mask}_{shadow}(\mathbf{p}) = \text{True} \quad \text{if } t_{leave} \le 1.0 \text{ and } (1 - t_{leave}) \|\mathbf{p}\| > 0.05\text{ m}$$
-3. **Range-Adaptive Attenuation (`transform_object`)**:
-   When placing an object from source distance $r_{src}$ to target distance $r_{tgt} > r_{src}$:
-   - Downsampling retention probability: $P_{keep} = \min\left(1, \left(\frac{r_{src}}{r_{tgt}}\right)^2\right)$.
-   - Reflectance fall-off: $I_{tgt} = \text{clip}\left(I_{src} \cdot \left(\frac{r_{src}}{r_{tgt}}\right)^{\max(0, 2 - \gamma)}, 0, 1\right)$ with $\gamma = 1.7$.
+2. **Block-SimAM Spatial Energy Attention ($\mathcal{S}(\mathbf{R})$)**:
+   Embedded directly inside each residual block operating on $\mathbf{R} \in \mathbb{R}^{B \times C \times H \times W}$ in FP32 precision. For spatial locations $M = H \times W$ per channel slice:
+   $$\mu_c = \frac{1}{M} \sum_{u, v} R_{c, u, v}, \quad \nu_c = \frac{1}{\max(M - 1, 1)} \sum_{u, v} (R_{c, u, v} - \mu_c)^2$$
+   The analytical minimal energy of target neuron $t = R_{c, u, v}$ relative to its surround:
+   $$e_t = \frac{(t - \mu_c)^2}{4(\nu_c + \lambda_{\mathrm{sim}})} + \frac{1}{2} \quad (\lambda_{\mathrm{sim}} = 10^{-4})$$
+   Modulation weight tensor $\mathbf{A} \in [0, 1]^{B \times C \times H \times W}$ and modulated feature output:
+   $$A_{c, u, v} = \sigma(e_t) = \frac{1}{1 + e^{-e_t}}, \quad \mathcal{S}(\mathbf{R}) = \mathbf{A} \odot \mathbf{R}$$
+   Adds exactly **0 learned parameters** ($0\text{ M}$).
+
+### 4.3 Physics-Consistent Ground-Truth Augmentation (PC-GTA) Formulations
+Implemented in `Code/detector/core/datasets/augmentor/hybrid_physics.py` and `hybrid_sampler.py`:
+1. **Adaptive Ground Plane Elevation Fitting (`ground_height`)**:
+   Radius $R(d) = \text{clip}(2.5 + 0.03 \max(0, d - 15), 2.5, 4.0)\text{ m}$ around $(x, y)$. Extracts local ground elevation:
+   $$\hat{z}_{\mathrm{ground}} = \text{percentile}(\{z_j \mid \mathbf{p}_j \in \mathcal{N}(x, y)\}, 5)$$
+   Object bounding box vertical center is anchored flush to terrain: $z_{\mathrm{insert}} = \hat{z}_{\mathrm{ground}} + 0.5h$.
+2. **Static Obstacle Collision Clearance (`static_obstacle_count`)**:
+   Candidate box is rejected if existing background points within its 3D footprint exceed threshold: $N_{\mathrm{static}} \le N_{\mathrm{thresh}}$ (prevents physical clipping into walls/vehicles).
+3. **Line-of-Sight (LOS) Occlusion Check (`line_of_sight_blockers`)**:
+   An optical ray from the sensor origin to box center $(x, y)$ is cast. If existing dense clusters obstruct the trajectory, the insertion candidate is discarded.
+4. **Raycast LiDAR Shadow Masking (`shadow_mask`)**:
+   Solves ray equation $\mathbf{r}(t) = t \cdot \mathbf{p}$ with the inserted bounding box faces. Background points behind the exit face ($t_{\mathrm{leave}} \le 1.0$) with radial distance $(1 - t_{\mathrm{leave}})\|\mathbf{p}\| > 0.05\text{ m}$ are masked out:
+   $$\mathcal{P}_{\mathrm{augmented}} = \mathcal{P}_{\mathrm{target}} \setminus \{\mathbf{p} \in \mathcal{P}_{\mathrm{target}} \mid \text{Mask}_{\mathrm{shadow}}(\mathbf{p}) = \text{True}\} \cup \mathcal{P}_{\mathrm{object}}$$
+5. **Range-Adaptive Attenuation (`transform_object`)**:
+   When placing an object from source distance $r_{\mathrm{src}}$ to target distance $r_{\mathrm{tgt}} > r_{\mathrm{src}}$:
+   - Subsampling retention probability via inverse-square law:
+     $$P_{\mathrm{keep}} = \min\left(1, \left(\frac{r_{\mathrm{src}}}{r_{\mathrm{tgt}}}\right)^2\right)$$
+   - Reflectance fall-off attenuation:
+     $$I_{\mathrm{tgt}} = \text{clip}\left(I_{\mathrm{src}} \cdot \left(\frac{r_{\mathrm{src}}}{r_{\mathrm{tgt}}}\right)^{\max(0, 2 - \gamma)}, 0, 1\right) \quad (\gamma = 1.7)$$
 
 ---
 
-### 4.5 Loss Function Formulations & Component Weights
+### 4.4 Loss Function Formulations & Component Weights
 
 #### 1. Baseline Loss Strategy (`Code/detector/core/losses/strategies/baseline.py`)
 $$\mathcal{L}_{baseline} = \mathcal{L}_{cls} + \mathcal{L}_{offset} + \mathcal{L}_{size} + \mathcal{L}_{yaw} + \mathcal{L}_{iou}$$
@@ -290,23 +314,29 @@ $$\mathcal{L}_{baseline} = \mathcal{L}_{cls} + \mathcal{L}_{offset} + \mathcal{L
   $$\mathcal{L}_{task} = \frac{1}{N_{pos}} \sum_{i \in \text{pos}} \|\hat{\mathbf{y}}_i - \mathbf{y}_i\|_1 \quad (\text{for } task \in \{offset, size, yaw\})$$
 
 #### 2. Oriented Geometric Alignment (OGA) Loss (`Code/detector/core/losses/strategies/oga.py`)
-1. **Multi-Axis Projection Generalized Intersection-over-Union ($L_{proj\_giou}$)** (`oriented_geometry_loss.py:106-133`):
-   Projects 4 corners onto 4 normal axes $\mathbf{a}_k \in \{\mathbf{n}_l^{pred}, \mathbf{n}_w^{pred}, \mathbf{n}_l^{gt}, \mathbf{n}_w^{gt}\}$:
-   $$\text{GIoU}_k = \frac{\text{Inter}_k}{\text{Union}_k} - \frac{\text{Hull}_k - \text{Union}_k}{\text{Hull}_k}, \quad \mathcal{L}_{proj\_giou} = \frac{1}{N_{pos}} \sum_{i \in \text{pos}} \frac{1}{4} \sum_{k=1}^4 \frac{1 - \text{GIoU}_k}{2}$$
-2. **Scale-Normalized $\pi$-Symmetric Corner Distance ($L_{corner}$)** (`oriented_geometry_loss.py:66-104`):
-   $$D_{direct} = \frac{1}{4} \sum_{j=1}^4 \|\mathbf{c}_j^{pred} - \mathbf{c}_j^{gt}\|_1, \quad D_{\pi} = \frac{1}{4} \sum_{j=1}^4 \|\mathbf{c}_j^{pred} - \mathbf{c}_{5-j}^{gt}\|_1$$
-   $$\mathcal{L}_{corner} = \frac{1}{N_{pos}} \sum_{i \in \text{pos}} \frac{\min(D_{direct}, D_{\pi})}{\sqrt{w_{gt}^2 + l_{gt}^2} + \epsilon}$$
+1. **Multi-Axis Projection Generalized Intersection-over-Union ($\ell_{\mathrm{proj}}$)** (`oriented_geometry_loss.py:106-133`):
+   Projects 4 corners onto 4 normal axes $\mathbf{n}_k \in \{\mathbf{n}_l^{pred}, \mathbf{n}_w^{pred}, \mathbf{n}_l^{gt}, \mathbf{n}_w^{gt}\}$:
+   $$g_k = \frac{\text{Inter}_k}{\text{Union}_k} - \frac{\text{Hull}_k - \text{Union}_k}{\text{Hull}_k}, \quad \bar{g} = \frac{1}{4} \sum_{k=1}^4 g_k, \quad \ell_{\mathrm{proj}} = \frac{1 - \bar{g}}{2}$$
+2. **Scale-Normalized $\pi$-Symmetric Corner Distance ($\ell_{\mathrm{corner}}$)** (`oriented_geometry_loss.py:66-104`):
+   $$D_{direct} = \sum_{m=1}^4 \|\widehat{\mathbf{c}}_m - \mathbf{c}_m^*\|_1, \quad D_{\pi} = \sum_{m=1}^4 \|\widehat{\mathbf{c}}_m - \mathbf{c}_{5-m}^*\|_1$$
+   $$\ell_{\mathrm{corner}} = \frac{\min(D_{direct}, D_{\pi})}{4 \max(\sqrt{(w^*)^2 + (l^*)^2}, 10^{-6})}$$
 3. **Composite Geometric Loss**:
-   $$\mathcal{L}_{geo} = \mathcal{L}_{proj\_giou} + \beta \cdot \mathcal{L}_{corner} \quad (\text{with } \beta = 1.0, \text{max\_abs\_log\_size} = 10.0)$$
-4. **Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)** (`uncertainty_weighting.py:10-77`):
-   Learns uncertainty logits $s_i$ across $M = 5$ tasks ($cls, offset, size, yaw, geo$):
-   - Soft-bounding via tanh: $s_{bounded, i} = C_{clamp} \cdot \tanh(s_i / C_{clamp})$ with $C_{clamp} = 3.0$.
-   - Normalized conserved weights:
-     $$w_i = M \cdot \frac{\exp(s_{bounded, i} / \tau)}{\sum_{j=1}^M \exp(s_{bounded, j} / \tau)} \quad (\tau = 2.0, \sum_{i=1}^M w_i = M)$$
-   - Running loss calibration via Exponential Moving Average (EMA, momentum $\mu = 0.99$):
-     $$\text{EMA}(\mathcal{L}_i) \leftarrow 0.99 \cdot \text{EMA}(\mathcal{L}_i) + 0.01 \cdot \mathcal{L}_i, \quad \mathcal{L}_{calibrated, i} = \frac{\mathcal{L}_i}{\text{EMA}(\mathcal{L}_i)}$$
-   - Total composite loss:
-     $$\mathcal{L}_{total} = \left(\frac{1}{M}\sum_{j=1}^M \text{EMA}(\mathcal{L}_j)\right) \cdot \sum_{i=1}^M w_i \cdot \mathcal{L}_{calibrated, i}$$
+   $$\mathcal{L}_{\mathrm{geo}} = \ell_{\mathrm{proj}} + \beta_{\mathrm{corner}} \cdot \ell_{\mathrm{corner}} \quad (\text{with } \beta_{\mathrm{corner}} = 1.0)$$
+4. **IoU-Aware Quality Alignment (IQA)** (`quality_focal_loss.py`, `Code/detector/core/models/heads/grouped.py`):
+   The predicted quality $\hat{q} = \sigma(\hat{Z}_{\mathrm{qual}}) \in [0, 1]$ is supervised with Binary Cross-Entropy using detached MGIoU similarity:
+   $$q^* = \operatorname{stopgrad}(\operatorname{clip}(\bar{g}, 0, 1)), \quad \mathcal{L}_{\mathrm{qual}} = \operatorname{BCE}(\hat{q}, q^*)$$
+5. **Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)** (`uncertainty_weighting.py:10-77`):
+   Harmonizes multi-task gradients across $J = 6$ objectives $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ per group.
+   With 2 groups (`car` and `ped_cyc`), there are exactly **12 learnable logit parameters** $a_k$ (6 per group, discarded at inference):
+   - Soft-bounding via hyperbolic tangent: $\bar{a}_k = b_{\mathrm{uw}} \cdot \tanh(a_k / b_{\mathrm{uw}})$ with bound $b_{\mathrm{uw}} = 3.0$.
+   - Temperature-softmax normalization ($\tau_{\mathrm{uw}} = 2.0$):
+     $$\omega_k = J \cdot \frac{\exp(\bar{a}_k / \tau_{\mathrm{uw}})}{\sum_{j \in \mathcal{T}} \exp(\bar{a}_j / \tau_{\mathrm{uw}})} \quad \left(\sum_{k \in \mathcal{T}} \omega_k = J = 6\right)$$
+   - Running loss magnitude calibration via Exponential Moving Average (EMA, momentum $\mu = 0.99$):
+     $$\mu_k \leftarrow 0.99 \mu_k + 0.01 \mathcal{L}_k$$
+   - Total balanced objective for group $g$:
+     $$\mathcal{L}_g = \left(\frac{1}{J}\sum_{k \in \mathcal{T}} \mu_k\right) \sum_{k \in \mathcal{T}} \omega_k \frac{\mathcal{L}_k}{\max(\mu_k, 10^{-4})}$$
+   - Total detector loss across both groups:
+     $$\mathcal{L}_{\mathrm{total}} = 0.5 \mathcal{L}_1 + 0.5 \mathcal{L}_2$$
 
 #### 3. Q-OGA Loss Strategy (`Code/detector/core/losses/strategies/q_oga.py`)
 1. **CenterNet-Compatible Quality-Coupled Focal Loss (CQFL)** (`quality_focal_loss.py:8-60`):
@@ -443,9 +473,10 @@ Extracted from `Result/benchmark_T4_20261018/ours_local_AP_vs_loss.csv` and `/ho
 ---
 
 ### 6.6 Full Ablation Study Progression (Runs R01 to R37)
-Extracted verbatim from `Result/Lidar_result_final.xlsx`, sheet `Tong hop last`:
+Extracted verbatim from `Result/Lidar_result_final.xlsx`, sheet `Tong hop last`.  
+*Note on Nomenclature*: The proposed augmentation methodology is formalized as **PC-GTA** (Physics-Consistent Ground-Truth Augmentation) in the paper; in the master experimental workbook and run IDs below, it is designated as **Hybrid GT**.
 
-| Run ID | Backbone | Encoder (BEV) | Head Architecture | GT Sampling | Fusion Width | Neck Type | OGA Loss | Q-OGA Loss | IQA Head | Stage-SimAM | Block-SimAM | Moderate mAP (%) | mAP9 (%) | Model FPS | E2E FPS |
+| Run ID | Backbone | Encoder (BEV) | Head Architecture | GT Sampling (PC-GTA) | Fusion Width | Neck Type | OGA Loss | Q-OGA Loss | IQA Head | Stage-SimAM | Block-SimAM | Moderate mAP (%) | mAP9 (%) | Model FPS | E2E FPS |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **R01** (Baseline) | mobilepixor | Binary35 | Single H16 | Standard | ? | SumFPN | — | — | — | — | — | 41.40 | 42.27 | 90.57 | 11.36 |
 | **R02** | **mobilepixornext** | Binary35 | Single H16 | Standard | F24 | SumFPN | — | — | — | — | — | 47.60 | 49.08 | **169.97** | 12.38 |
@@ -469,7 +500,7 @@ Extracted verbatim from `Result/Lidar_result_final.xlsx`, sheet `Tong hop last`:
 1. **Backbone Transition (R01 $\rightarrow$ R02)**: Replacing MobilePIXOR with MobilePixorNeXt ($7\times 7$ DW-Conv, SiLU, Inverted Bottleneck) lifts Moderate mAP from 41.40% to 47.60% (**+$6.20\%$ mAP**), while nearly doubling standalone forward throughput from 90.57 to **169.97 FPS**.
 2. **BEV Representation (R02 $\rightarrow$ R03)**: Moving from binary occupancy Binary35 to Strata-BEV14 (Rich14) raises Moderate mAP from 47.60% to 50.14% (**+$2.54\%$ mAP**).
 3. **Grouped Prediction Towers (R03 $\rightarrow$ R05 $\rightarrow$ H32)**: Segregating task heads into Car and Pedestrian/Cyclist groups with expanded capacity H32 increases Moderate mAP from 50.14% to 60.22% (**+$10.08\%$ mAP**), eliminating aspect ratio conflicts.
-4. **Physics-Aware Hybrid GT Augmentation (H32 Standard $\rightarrow$ Hybrid GT)**: Incorporating ground plane alignment, static obstacle clearance, and raycast shadow masking produces a massive improvement from 60.22% to 66.25% (**+$6.03\%$ Moderate mAP**, **+$7.34\%$ mAP9**).
+4. **Physics-Consistent Ground-Truth Augmentation (PC-GTA, Standard $\rightarrow$ Hybrid GT)**: Incorporating local ground elevation fitting, static obstacle clearance, Line-of-Sight occlusion checks, raycast shadow masking, and range-adaptive attenuation produces a massive improvement from 60.22% to 66.25% (**+$6.03\%$ Moderate mAP**, **+$7.34\%$ mAP9**).
 5. **Fusion Width & Scale-Gating (F24 $\rightarrow$ F32 $\rightarrow$ SG-FPN)**: Widening feature fusion to 32 channels and adding depthwise scale-gating raises mAP to 68.12% (**+$1.87\%$ mAP**).
 6. **OGA Loss & IQA Supervision**: Adding OGA geometric supervision and IoU quality ranking drives mAP to 70.58% (**+$3.20\%$ mAP** over baseline SG-FPN).
-7. **Block-SimAM Energy Attention**: Embedding parameter-free SimAM inside all residual blocks across C3, C4, and C5 completes **R37 (Ours)**, establishing the peak performance of **71.50% Moderate mAP** and **73.45% mAP9**.
+7. **Block-SimAM Energy Attention**: Embedding parameter-free SimAM inside all residual blocks across C2, C3, and C4 (8 attention operators total) completes **R37 (Ours)**, establishing the peak performance of **71.50% Moderate mAP** and **73.45% mAP9** with 0 additional parameters.

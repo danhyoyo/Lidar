@@ -35,7 +35,7 @@ The detector predicts oriented bounding boxes projected onto the horizontal BEV 
     \mathbf{b}_k = (c_k, x_k^*, y_k^*, l_k^*, w_k^*, \psi_k^*, s_k),
     \label{eq:target_tuple}
 \end{equation}
-where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes the metric continuous center coordinates, $(l_k^*, w_k^*) \in \mathbb{R}^2$ represents length and width footprints, $\psi_k^* \in [-\pi/2, \pi/2]$ is the orientation heading angle under a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated detection confidence score.
+where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes the metric continuous center coordinates, $(l_k^*, w_k^*) \in \mathbb{R}^2$ represents length and width footprints, $\psi_k^* \in [-\pi/2, \pi/2]$ is the orientation heading angle under a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated detection confidence score. Operating on this contract requires a structured, dense BEV representation that captures fine 3D geometric distributions without the latency of learned point encoders, which we formulate next.
 
 \subsection{Deterministic Strata-BEV14 Feature Representation}
 \label{sec:strata_bev14}
@@ -167,6 +167,7 @@ and reflectance intensity is attenuated according to:
     \end{aligned}
 \]
 \end{enumerate}
+During training, the resulting physically consistent point cloud $\mathcal{P}_{\mathrm{augmented}}$ is rasterized into the 14-channel input tensor $\mathbf{X}$ and fed into the convolutional backbone hierarchy.
 
 \subsection{ConvNeXt-Style Multi-Scale BEV Backbone Hierarchy}
 \label{sec:backbone_architecture}
@@ -184,20 +185,7 @@ and reflectance intensity is attenuated according to:
 
 
 \paragraph{Motivation.}
-Target objects on the horizontal BEV plane exhibit significant geometric scale disparities: spanning from compact pedestrians ($l \approx 0.6$\,m) and cyclists ($l \approx 1.8$\,m) to passenger vehicles ($l \approx 4.5$--$5.0$\,m). Conventional backbones with small $3 \times 3$ convolutions require excessive network depth to cover the requisite spatial context, ballooning latency and parameter count. To establish a large horizontal receptive field while maintaining parameter parsimony, we design the \textbf{MobilePixorNeXt Backbone} hierarchy featuring large $7 \times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale residual stabilization organized into repeated \texttt{MobilePixorNeXt-S} blocks.
-
-
-% \begin{strip}
-%     \centering
-%     \begin{minipage}{0.8\textwidth}
-%         \centering
-%     \paperfigure{backbone_f32.pdf}{42mm}{Detailed structural topology of the MobilePIXORNeXt feedforward architecture, comprising the multi-scale backbone hierarchy, Top-Down Scale-Gated Neck (SG-FPN), and decoupled grouped prediction towers. Spatial feature maps are progressively downsampled at strides 2, 4, 8, and 16 using repeated MobilePixorNeXt-S blocks. Scale-gated top-down fusion balances deep semantics with fine spatial localization into a shared 32-channel representation at stride 4 ($200 \times 176$). Independent grouped prediction towers decouple Car from Pedestrian and Cyclist.}
-%     \end{minipage}
-%     \captionof{figure}{Detailed architectural topology of the MobilePIXORNeXt network. The backbone processes the 14-channel input tensor through a two-layer stem followed by three progressive stages with channel widths $(48, 96, 128)$ and block depths $(2, 4, 2)$ composed of \texttt{MobilePixorNeXt-S} blocks. Scale-Gated FPN fuses stages C4, C3, and C2 into a shared 32-channel feature map at stride 4 ($200 \times 176$), which feeds into decoupled grouped prediction towers for Car and Pedestrian/Cyclist.}
-%     \label{fig:backbone}
-% \end{strip}
-
-
+Target objects on the horizontal BEV plane exhibit significant geometric scale disparities: spanning from compact pedestrians ($l \approx 0.6$\,m) and cyclists ($l \approx 1.8$\,m) to passenger vehicles ($l \approx 4.5$--$5.0$\,m). Conventional backbones with small $3 \times 3$ convolutions require excessive network depth to cover the requisite spatial context, ballooning latency and parameter count. In contrast, at our input grid resolution of $\Delta_x = \Delta_y = 0.1$\,m, a single $7 \times 7$ depthwise receptive field directly spans $0.7 \times 0.7$\,m of physical terrain at stride 1, and rapidly expands to over $5.6 \times 5.6$\,m by Stage 3 (stride 8)---sufficient to envelop an entire passenger vehicle in a single layer without dilation artifacts. To achieve this wide context under strict parameter parsimony, we design the \textbf{MobilePixorNeXt Backbone} hierarchy featuring large $7 \times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale residual stabilization organized into repeated \texttt{MobilePixorNeXt-S} blocks.
 
 \paragraph{Backbone Topology and Multi-Stage Hierarchy.}
 As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
@@ -292,13 +280,7 @@ The feature aggregation proceeds strictly along a unidirectional top-down path. 
     \mathbf{P}^{(r)} &= \mathbf{U}_r + \mathbf{G}_r \odot \mathbf{L}_r.
     \label{eq:scale_gating}
 \end{align}
-Because depthwise gating weights and biases are initialized to zero, gating $\mathbf{G}_r$ initially evaluates to $1.0$, smoothly starting from standard residual addition. Finally, $\mathbf{P}^{(4)}$ is projected via a $3 \times 3$ convolution, BN, and SiLU to produce the shared detector representation $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{B \times 32 \times 200 \times 176}$. The complete neck requires only $36,784$ parameters.
-
-\subsection{Shared Grouped Prediction Towers}
-\label{sec:grouped_heads}
-
-\paragraph{Motivation.}
-Autonomous driving involves drastic morphological discrepancies across object categories. Cars exhibit rigid rectangular footprints ($l \approx 4.5$\,m, $w \approx 1.8$\,m), whereas Pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and Cyclists ($l \approx 1.8$\,m, $w \approx 0.7$\,m) are compact and highly deformable. Forcing a single shared prediction head to jointly regress all classes induces severe gradient competition and scale interference. Conversely, dedicating entirely separate heads to each class inflates parameter size. We resolve this via \textbf{Shared Grouped Prediction Towers}.
+Because depthwise gating weights and biases are initialized to zero, gating $\mathbf{G}_r$ initially evaluates to $1.0$, smoothly starting from standard residual addition. Finally, $\mathbf{P}^{(4)}$ is projected via a $3 \times 3$ convolution, BN, and SiLU to produce the shared detector representation $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{B \times 32 \times 200 \times 176}$. The complete neck requires only $36,784$ parameters, delivering this calibrated multi-scale representation directly to the prediction towers.
 
 \subsection{Shared Grouped Prediction Towers}
 \label{sec:grouped_heads}
@@ -312,6 +294,9 @@ Autonomous driving involves drastic morphological discrepancies across object ca
     \label{fig:geometry_output}
 \end{minipage}
 \par
+
+\paragraph{Motivation.}
+Autonomous driving involves drastic morphological discrepancies across object categories. Cars exhibit rigid rectangular footprints ($l \approx 4.5$\,m, $w \approx 1.8$\,m), whereas Pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and Cyclists ($l \approx 1.8$\,m, $w \approx 0.7$\,m) are compact and highly deformable. Forcing a single shared prediction head to jointly regress all classes induces severe gradient competition and scale interference. Conversely, dedicating entirely separate heads to each class inflates parameter size. We resolve this via \textbf{Shared Grouped Prediction Towers} (\texttt{GroupedHeader}).
 
 \paragraph{Topology and Target Formulation.}
 Classes are partitioned into two semantically compatible task groups: Group 1 for \texttt{car} ($K_1 = 1$), and Group 2 for \texttt{ped\_cyc} ($K_2 = 2$). For each group $g \in \{1, 2\}$, feature map $\mathbf{F}_{\mathrm{out}}$ passes through a group-shared initial $3 \times 3$ Conv-BN-SiLU block ($32 \rightarrow 32$ channels), before bifurcating into five task-specific prediction branches:
@@ -335,7 +320,7 @@ The doubled-angle formulation $\mathbf{a}^*$ strictly enforces $\pi$-rotational 
 \label{sec:losses_and_oga}
 
 \paragraph{Motivation.}
-Standard box regression optimizes disjoint Smooth-L1 losses independently over $(x, y)$, $(w, l)$, and $\psi$. However, independent parameter errors do not correlate monotonically with the actual Intersection-over-Union (IoU) overlap of oriented bounding boxes. Furthermore, standard classification confidence scores do not reflect the spatial localization accuracy of predicted boxes, degrading Non-Maximum Suppression (NMS) ranking. We propose \textbf{Oriented Geometric Alignment (OGA)} combined with \textbf{IoU-Aware Quality Alignment (IQA)}.
+We propose \textbf{Oriented Geometric Alignment (OGA)} combined with \textbf{IoU-Aware Quality Alignment (IQA)} to bridge the disparity between independent coordinate parameter regression and true oriented bounding box overlap. In standard anchor-free detectors, box regression optimizes disjoint Smooth-L1 losses independently over spatial center $(x, y)$, footprint $(w, l)$, and heading angle $\psi$. However, independent parameter errors do not correlate monotonically with the actual Intersection-over-Union (IoU) overlap of rotated bounding boxes. Furthermore, standard classification confidence scores fail to reflect spatial localization precision, severely degrading candidate ranking during rotated Non-Maximum Suppression (NMS).
 
 \paragraph{Oriented Geometric Alignment (OGA).}
 For every cell $(u, v)$ where $\mathbf{M}_{\mathrm{reg}} = 1$, predicted and ground-truth boxes are decoded into four 2D corners $\{\widehat{\mathbf{c}}_m\}_{m=1}^4$ and $\{\mathbf{c}_m^*\}_{m=1}^4$. OGA couples two synergistic geometric objectives:
@@ -375,7 +360,7 @@ The quality head predicts continuous overlap score $\hat{q} = \sigma(\hat{Z}_{\m
 Detaching the target prevents gradient instability while forcing the model to learn reliable confidence calibration.
 
 \paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
-Joint multi-task optimization balances six disparate losses: $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$). Rather than heuristic manual weight tuning, we formulate \textbf{T-SBUW}:
+To dynamically harmonize multi-task gradient scales across six heterogeneous loss objectives $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$), we formulate \textbf{T-SBUW} as a principled, bounded optimization framework that eliminates fragile manual hyperparameter tuning. The formulation operates via two coupled mechanisms:
 1. \textit{Bounded Softmax Weights}: Learnable logit parameters $a_k$ are soft-clamped via hyperbolic tangent with bound $b_{\mathrm{uw}} = 3.0$, and converted to positive normalized weights via temperature-controlled softmax ($\tau_{\mathrm{uw}} = 2.0$):
 \begin{equation}
     \begin{aligned}
@@ -398,11 +383,12 @@ The total network objective is $\mathcal{L}_{\mathrm{total}} = 0.5\mathcal{L}_1 
 \label{sec:decoding_and_pipeline}
 
 \noindent\begin{minipage}{\columnwidth}
+\captionof{algorithm}{End-to-end MobilePIXORNeXt inference and box decoding pipeline.}
+\label{alg:inference_pipeline}
+\vspace{2pt}
 \centering\small
 \begin{tabular}{@{}r p{0.88\columnwidth}@{}}
 \toprule
-\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Algorithm 1} MobilePIXORNeXt Inference and Box Decoding Pipeline} \\
-\midrule
 \multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Raw LiDAR point cloud $\mathcal{P} = \{(x_i, y_i, z_i, \iota_i)\}_{i=1}^N$, ROI bounds $[x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]$} \\
 \multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Score threshold $\tau_{\mathrm{score}} = 0.05$, Rotated NMS threshold $\tau_{\mathrm{nms}} = 0.10$, quality exponent $\alpha = 0.5$} \\
 \multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\mathcal{B} = \{(c_k, s_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k)\}_{k=1}^M$} \\
@@ -424,8 +410,6 @@ The total network objective is $\mathcal{L}_{\mathrm{total}} = 0.5\mathcal{L}_1 
 14:& \textbf{return} Final detection set $\mathcal{B}$ sorted in descending order of composite score $s_{\mathrm{det}}$; \\
 \bottomrule
 \end{tabular}
-\captionof{figure}{MobilePIXORNeXt inference and box decoding.}
-\label{alg:inference_pipeline}
 \end{minipage}
 
 \par\vspace{0.5\baselineskip}

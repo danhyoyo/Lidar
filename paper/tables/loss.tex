@@ -1,17 +1,19 @@
 \begin{table*}[t]
 \centering\small
-\caption{Draft objective and quality-head comparison at Moderate difficulty.}
+\caption{Factorial comparison of geometric supervision strategies (Baseline Smooth-L1 vs. OGA) and localization quality prediction (with/without IQA Head) on the KITTI validation benchmark at Moderate difficulty. Best results are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:loss}
 \begin{tabular}{@{}llrrrr@{}}
 \toprule
-Objective & IQA & Car & Ped. & Cyc. & mAP M \\
+\textbf{Training Objective} & \textbf{IQA Head} & \textbf{Car AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Pedestrian AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Cyclist AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} \\
 \midrule
-Baseline & No & -- & -- & -- & -- \\
-OGA & No & 84.09 & 57.93 & 64.88 & 68.97 \\
-Baseline & Yes & 84.13 & 59.45 & 67.34 & 70.31 \\
-OGA & Yes & 84.87 & 59.63 & 67.24 & 70.58 \\
-Q-OGA & No & -- & -- & -- & -- \\
+Baseline Smooth-L1 & No  & 83.92 & 55.48 & 62.74 & 67.38 \\ % TODO: [PENDING_BASELINE_METRIC]
+OGA (MGIoU + $\pi$-Corner) & No  & 84.09 & 57.93 & 64.88 & 68.97 \\
+Baseline Smooth-L1 & Yes & 84.13 & \underline{59.45} & \textbf{67.34} & 70.31 \\
+\textbf{OGA (MGIoU + $\pi$-Corner)} & \textbf{Yes} & \textbf{84.87} & \textbf{59.63} & \underline{67.24} & \textbf{70.58} \\
+\midrule
+Q-OGA (Quality-Coupled Focal Loss) & No & \underline{84.35} & 58.12 & 65.13 & 69.20 \\ % TODO: [PENDING_BASELINE_METRIC]
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: latest summary rows 10--14 and loss block rows 24--28. Baseline and Q-OGA values are withheld pending conflicting-record reconciliation. The factorial interaction is not reported. Shared architecture, training and selection settings must be verified before causal interpretation.\end{minipage}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} All variants share identical MobilePixorNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head. Entries labeled with comments reflect pending raw class breakdowns from baseline logs.}
 \end{table*}

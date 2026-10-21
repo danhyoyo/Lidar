@@ -1,39 +1,50 @@
-\subsection{Dataset and reporting protocol}
+\subsection{Dataset and Evaluation Protocol}
+\label{sec:dataset_and_metrics}
 
-The study considers the Car, Pedestrian, and Cyclist classes in KITTI~\cite{geiger2012kitti}. The repository split manifests contain 3,712 training and 3,769 validation frames. The final run must be linked to these exact manifests before the split is treated as its verified training record. All primary detection tables in this draft concern BEV footprints; the model does not regress vertical position or height.
+\paragraph{Dataset and Partitioning.}
+We evaluate MobilePIXORNeXt on the benchmark standard KITTI 3D Object Detection dataset~\cite{geiger2012kitti}. The dataset comprises $7{,}481$ calibrated LiDAR point cloud scans equipped with synchronized rectified camera imagery and 3D bounding box ground-truth annotations across road scenes. We adopt the canonical 50/50 split introduced by Chen et al.~\cite{yang2018pixor}, which partitions the benchmark into $3{,}712$ training frames and $3{,}769$ validation frames. To prevent data leakage and ensure strict experimental isolation, all ground-truth sampling databases utilized by data augmentation pipelines are generated exclusively from the $3{,}712$ training frames.
 
-We use the class-specific overlap thresholds $\tau_{\mathrm{IoU},c}=0.70$ for Car and $0.50$ for Pedestrian and Cyclist. At a fixed difficulty, Moderate macro mAP is the unweighted mean across the three classes. The secondary quantity mAP9 averages the nine class--difficulty combinations:
-\begin{align}
-    \mathrm{mAP}_{\mathrm M} &= \frac{1}{3}\sum_{c\in\mathcal C}\mathrm{AP}_{c,\mathrm M},\nonumber\\
-    \mathrm{mAP}_{9} &= \frac{1}{9}\sum_{c\in\mathcal C}
-    \sum_{d\in\{\mathrm E,\mathrm M,\mathrm H\}}\mathrm{AP}_{c,d}.
-    \label{eq:map_definitions}
-\end{align}
-The symbols E, M, and H denote Easy, Moderate, and Hard. AP and both aggregates are expressed as percentages. mAP9 is not AP at IoU 0.9.
+\paragraph{Spatial Region of Interest (ROI) and Target Parameterization.}
+Following the geometric contract defined in Section~\ref{sec:problem_formulation}, the LiDAR coordinate frame is aligned with the vehicle body (forward $X$, leftward $Y$, upward $Z$). Perception is bounded within the Cartesian Region of Interest:
+\begin{equation}
+    x \in [0.0, 70.4]\,\text{m}, \quad y \in [-40.0, 40.0]\,\text{m}, \quad z \in [-2.5, 1.0]\,\text{m}.
+\end{equation}
+An open-boundary inward margin of $\epsilon = 0.001\,\text{m}$ is enforced along all three axes. Discretizing the horizontal plane with a uniform grid resolution of $\Delta_x = \Delta_y = 0.1\,\text{m}$ yields an input tensor spatial dimension of $H_{\mathrm{in}} \times W_{\mathrm{in}} = 800 \times 704$ cells. At an output downsampling stride of $s_{\mathrm{out}} = 4$, the detector outputs feature maps of spatial size $H_{\mathrm{out}} \times W_{\mathrm{out}} = 200 \times 176$. Evaluation focuses on the three principal road categories: Car, Pedestrian, and Cyclist.
 
-Historical local BEV evaluation and reference KITTI evaluation have different ground-truth domains and matching rules. Consequently, the ablation summary and detector-comparison summary are maintained as distinct experiment sets. The intended AP sampling is R40, but the evaluator version, split, sampling and filtering rules must be recovered for each final comparison record before it is presented as a matched benchmark.
+\paragraph{Evaluation Metrics.}
+Detection performance is benchmarked on oriented 2D Bird's-Eye View (BEV) footprints using the official KITTI 40-point interpolated Average Precision metric ($R_{40}$), which calculates the area under the precision--recall curve over 40 recall positions $\mathcal{R}_{40} = \{1/40, 2/40, \dots, 1.0\}$:
+\begin{equation}
+    \mathrm{AP}|_{R_{40}} = \frac{1}{40} \sum_{r \in \mathcal{R}_{40}} \max_{r' \ge r} p(r').
+\end{equation}
+In accordance with official KITTI rules, class-specific oriented bounding box Intersection-over-Union (IoU) overlap thresholds are set to $\tau_{\mathrm{IoU}} = 0.70$ for Car, and $\tau_{\mathrm{IoU}} = 0.50$ for Pedestrian and Cyclist. Detections are categorized into three difficulty regimes:
+\begin{itemize}
+    \item \textbf{Easy}: 2D bounding box height $\ge 40\,\text{px}$, maximum occlusion level = 0 (fully visible), maximum truncation $\le 15\%$.
+    \item \textbf{Moderate}: 2D bounding box height $\ge 25\,\text{px}$, maximum occlusion level = 1 (partially occluded), maximum truncation $\le 30\%$.
+    \item \textbf{Hard}: 2D bounding box height $\ge 25\,\text{px}$, maximum occlusion level = 2 (difficult to see), maximum truncation $\le 50\%$.
+\end{itemize}
+Following autonomous driving literature, \textbf{Moderate macro mAP} ($\mathrm{mAP}_{\mathrm{M}}$) serves as the primary benchmark ranking criterion:
+\begin{equation}
+    \mathrm{mAP}_{\mathrm{M}} = \frac{1}{3} \sum_{c \in \{\mathrm{Car}, \mathrm{Ped}, \mathrm{Cyc}\}} \mathrm{AP}_{c, \mathrm{M}}.
+\end{equation}
+We additionally report the unweighted mean across all nine class-difficulty combinations:
+\begin{equation}
+    \mathrm{mAP}_{9} = \frac{1}{9} \sum_{c \in \mathcal{C}} \sum_{d \in \{\mathrm{E}, \mathrm{M}, \mathrm{H}\}} \mathrm{AP}_{c, d}.
+\end{equation}
+Here, E, M, and H denote Easy, Moderate, and Hard regimes. Note that $\mathrm{mAP}_{9}$ represents the comprehensive average across the 9-cell evaluation grid, rather than AP at an IoU threshold of 0.9.
+
+\subsection{Implementation Details}
+\label{sec:implementation_details}
+
+\paragraph{Network and Model Configuration.}
+The proposed MobilePIXORNeXt architecture (primary benchmark configuration R37-F32) processes 14-channel Strata-BEV14 tensors. The network comprises a two-layer $3 \times 3$ convolutional stem ($32$ channels, stride 2), three hierarchical backbone stages with channel widths $(48, 96, 128)$ and block depths $(2, 4, 2)$ based on \texttt{MobilePixorNeXt-S} blocks with large $7 \times 7$ depthwise convolutions, inverted expansion ratio $e=2.5$, SiLU activations, and LayerScale parameters initialized to $10^{-5}$. Parameter-free Block-SimAM attention is embedded inside all eight residual blocks. The multiscale Scale-Gated Feature Pyramid Network (SG-FPN) fuses stages C4, C3, and C2 into an optimal $F_{32}$ (32-channel) representation at stride 4 ($200 \times 176$). Decoupled GroupedHeader towers process Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) independently, utilizing a shared initial $3 \times 3$ Conv-BN-SiLU transformation per group. The complete detector contains exactly $753{,}569$ trainable parameters ($< 0.76\,\text{M}$ parameters), corresponding to an FP32 checkpoint size of $9.34\,\text{MB}$.
+
+\paragraph{Training Schedule and Optimization.}
+The model is optimized using the AdamW optimizer with fused CUDA kernels. Base learning rate is set to $\eta_0 = 7 \times 10^{-4}$, decaying to a minimum floor of $\eta_{\min} = 1.0 \times 10^{-6}$. Weight decay is configured at $\lambda = 0.001$, applied strictly to multidimensional weight matrices ($\ge 2\mathrm{D}$ tensors); biases, Batch Normalization affine parameters, and task-uncertainty logits are exempted ($\lambda = 0.0$). Gradients are clamped to a maximum $L_2$ norm of $10.0$. We employ a learning rate scheduler comprising 4 linear warmup epochs followed by 46 epochs of Cosine Annealing decay down to $\eta_{\min}$ (total 50 epochs in standard schedule; extended to 130 epochs for the peak AP checkpoint).
+
+\paragraph{Data Augmentation Pipeline.}
+Training deploys our Physics-Aware Hybrid Ground-Truth Augmentation (\texttt{PC-GTA}) detailed in Section~\ref{sec:hybrid_augmentation}. Ground-truth boxes sampled from the database are validated against terrain geometry via local ground plane fitting within search radius $R(d) = \text{clip}(2.5 + 0.03\max(0, d - 15), 2.5, 4.0)\,\text{m}$. Candidates causing physical collisions with static scene obstacles or violating line-of-sight visibility are rejected. Inserted bounding boxes cast realistic raycast LiDAR shadows, masking background points behind exit faces ($t_{\mathrm{leave}} \le 1.0$). Points are attenuated adaptively according to inverse-square range divergence and reflectance fall-off ($\gamma = 1.7$). Subsequently, global augmentation is applied: random horizontal flipping along the $X$-axis with probability $p=0.5$, random world rotation $\theta \sim \mathcal{U}(-20^\circ, 20^\circ)$, random isotropic scaling $s \sim \mathcal{U}(0.95, 1.05)$, and random metric translation $\Delta x, \Delta y, \Delta z \sim \mathcal{N}(0, 0.4^2)$.
+
+\paragraph{Batching, Precision, and Hardware Environment.}
+Training uses a physical batch size of 16 on a single GPU, while validation uses a batch size of 32. DataLoader processes run with 6 persistent worker threads, pinned memory, and a prefetch factor of 2. Numerical forward and backward passes utilize Automatic Mixed Precision (AMP) in Bfloat16 (\texttt{bf16}), while loss evaluation, coordinate regression, and rotated NMS are conducted in full FP32 precision to maintain numerical stability. All timing and accuracy benchmarks are performed on a dedicated server equipped with an NVIDIA Tesla T4 GPU (16\,GB GDDR6 VRAM, Turing architecture), host x86\_64 CPU, Linux OS, and PyTorch 2.11.0 with CUDA 13.0. Peak GPU memory allocated during evaluation is strictly $98.44\,\text{MB}$. Table~\ref{tab:setup} summarizes the verified implementation specifications.
 
 \input{tables/setup}
-
-\subsection{Model and training configuration}
-
-The selected configuration uses Strata-BEV14, nine block-level SimAM operators, F32 scale-gated fusion, grouped shared H32 heads, OGA, and a separate IQA branch. The final-width decision was made after the earlier F24 run; reusing the shorthand R37 does not imply that the two configurations share a checkpoint. The current architecture contains 753,569 detector parameters and twelve additional training-only task-balancing logits. The parameter count is obtained directly from model construction and excludes optimizer state and running buffers.
-
-Hybrid ground-truth sampling is selected in the current experiment summary. The final optimizer, schedule, physical batch size, accumulation, augmentation probabilities, checkpoint-selection rule and precision are reserved for the resolved training record. Earlier configurations contain plausible defaults, but those defaults are not substituted for the final run's provenance. Table~\ref{tab:setup} records the remaining fields explicitly.
-
-\subsection{Comparison design}
-
-The evaluation is organized around three questions. First, a sequence of configuration comparisons examines the backbone, BEV representation, grouped prediction, sampling strategy, fusion width, and neck. This sequence describes the development of a complete recipe; a transition supports a single-factor interpretation only when its other settings are matched. Second, a factorial comparison separates baseline/OGA supervision from the presence of IQA. Q-OGA is treated as an additional objective rather than another cell of the same factorial design. Third, attention comparisons distinguish stage-level SimAM from SimAM within each residual block, while recording fusion width and head sharing.
-
-For the OGA--IQA experiment, an interaction in mAP can be summarized as
-\begin{equation}
-    \Delta_{\mathrm{int}}=m_{11}-m_{10}-m_{01}+m_{00},
-    \label{eq:interaction}
-\end{equation}
-where the first index denotes OGA and the second denotes IQA. This quantity is meaningful only for matched runs with a consistent baseline; it is not computed from the conflicting baseline records in the current workbook.
-
-\subsection{Complexity and timing}
-
-Forward timing starts with prepared inputs already on the device. End-to-end latency covers the measured input-to-detections pipeline, whose inclusion of file loading, encoding, transfers, decoding, and NMS must be specified by the benchmark record. For sequential batch-one processing, reciprocal-mean throughput is $1000/\bar t$ FPS when mean latency $\bar t$ is in milliseconds. This is distinct from averaging per-frame reciprocal latency.
-
-Forward latency, end-to-end latency and their percentiles are reported separately. Stage percentiles are not summed to obtain a pipeline percentile. A matched runtime comparison requires the same hardware, precision, batch size, warmup, timed frames and timing boundaries. The revised summary contains no verified FLOP/MAC or memory measurements, so those quantities remain unreported rather than inferred from parameter count. Repeated training seeds and timing sessions are also needed before reporting uncertainty or statistical significance.

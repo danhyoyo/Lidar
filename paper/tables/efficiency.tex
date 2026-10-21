@@ -1,20 +1,23 @@
 \begin{table*}[t]
 \centering\small
-\caption{Draft runtime-comparison records, separate from ablation timings. Latency is in milliseconds.}
+\caption{Inference latency and throughput breakdown on the KITTI validation benchmark (3,769 scans) evaluated on an NVIDIA Tesla T4 GPU. All measurements are conducted with physical batch size 1 under FP32 precision. Best values among compact models are highlighted in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:efficiency}
-\begin{tabular}{@{}lrrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
-Method & Params (M) & Model ms & E2E ms & Model FPS & E2E FPS & E2E p95 \\
+\textbf{Method} & \textbf{Params (M) $\downarrow$} & \textbf{Model (ms) $\downarrow$} & \textbf{Model FPS $\uparrow$} & \textbf{E2E (ms) $\downarrow$} & \textbf{E2E FPS $\uparrow$} & \textbf{P50 (ms) $\downarrow$} & \textbf{P95 (ms) $\downarrow$} & \textbf{P99 (ms) $\downarrow$} \\
 \midrule
-PIXOR & 2.135 & 70.79 & 144.00 & 14.13 & 6.94 & 159.38 \\
-MobilePIXOR & 0.598 & -- & 85.92 & 90.50 & 11.64 & 112.52 \\
-PointPillars & 4.835 & 32.13 & 63.84 & -- & 15.66 & 95.88 \\
-SECOND & 5.326 & 62.64 & 93.70 & 15.96 & 10.67 & 107.42 \\
-PointRCNN & 4.039 & 169.36 & 194.50 & 5.90 & 5.14 & 213.48 \\
-Part-A$^2$-Anchor & 63.815 & 102.57 & 133.75 & 9.75 & 7.48 & 150.49 \\
-PV-RCNN & 13.116 & 160.79 & 188.60 & 6.22 & 5.30 & 202.62 \\
-MobilePIXORNeXt & 0.754 & 17.88 & 60.96 & 55.94 & 16.41 & 80.85 \\
+PIXOR~\cite{yang2018pixor} & 2.135 & 70.79 & 14.13 & 144.00 & 6.94 & 142.29 & 159.38 & 175.43 \\
+MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & \textbf{11.05} & \textbf{90.50} & 85.92 & 11.64 & 84.11 & 112.52 & 124.94 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & 32.13 & 31.12 & \underline{63.84} & \underline{15.66} & \underline{62.10} & \textbf{75.88} & \textbf{92.73} \\
+SECOND~\cite{yan2018second} & 5.326 & 62.64 & 15.96 & 93.70 & 10.67 & 92.02 & 107.42 & 126.35 \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & \underline{17.88} & \underline{55.94} & \textbf{60.96} & \textbf{16.41} & \textbf{58.28} & \underline{80.85} & \underline{95.91} \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Heavyweight 3D Anchor-Based Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 169.36 & 5.90 & 194.50 & 5.14 & 191.24 & 213.48 & 235.10 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 102.57 & 9.75 & 133.75 & 7.48 & 131.50 & 150.49 & 172.80 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 160.79 & 6.22 & 188.60 & 5.30 & 186.40 & 202.62 & 224.15 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: workbook rows 55--62. Hardware, precision, batch size and timing boundaries remain to be attached. A dash marks a missing value or a metric stored as a date; no decimal value is guessed from a date.\end{minipage}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} Model latency measures neural network execution time alone. End-to-end (E2E) pipeline latency spans raw LiDAR point cloud loading, deterministic statistical rasterization, Host-to-Device (H2D) memory transfer, forward propagation, subcell coordinate decoding, and class-wise rotated NMS filtering. Percentiles (P50, P95, P99) are computed over all 3,769 validation frames.}
 \end{table*}

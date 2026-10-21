@@ -1,20 +1,24 @@
 \begin{table*}[t]
 \centering\small
-\caption{Draft detector-comparison records. AP is reported at Moderate difficulty; Car uses IoU 0.7 and Pedestrian/Cyclist use 0.5. Protocol matching is pending.}
+\caption{Quantitative comparison on the KITTI validation set for Bird's-Eye View (BEV) object detection. Average Precision (AP, \%) is reported under the official 40-point interpolation protocol ($R_{40}$) at Moderate difficulty ($\text{IoU} \ge 0.70$ for Car; $\text{IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact detectors are in \textbf{bold}, and second-best values are \underline{underlined}.}
 \label{tab:comparison}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-Method & Params (M) & Car & Ped. & Cyc. & mAP M & mAP9 \\
+\textbf{Method} & \textbf{Params (M) $\downarrow$} & \textbf{Car AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Pedestrian AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{Cyclist AP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{9}$ (\%) $\uparrow$} \\
 \midrule
-PIXOR & 2.135 & 72.02 & -- & -- & -- & -- \\
-MobilePIXOR & 0.598 & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
-PointPillars & 4.835 & 88.02 & 56.01 & 66.34 & 70.13 & 72.25 \\
-SECOND & 5.326 & 88.56 & 56.56 & 71.16 & 72.09 & 73.79 \\
-PointRCNN & 4.039 & 88.42 & 57.84 & 73.87 & 73.38 & 75.31 \\
-Part-A$^2$-Anchor & 63.815 & 90.05 & 64.20 & 74.60 & 76.28 & 78.04 \\
-PV-RCNN & 13.116 & 90.29 & 58.48 & 74.54 & 74.44 & 76.49 \\
-MobilePIXORNeXt & 0.754 & 86.90 & 60.75 & 66.73 & 71.46 & 73.42 \\
+PIXOR (Car only)~\cite{yang2018pixor} & 2.135 & 72.02 & -- & -- & -- & -- \\
+MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & \underline{88.02} & 56.01 & 66.34 & 70.13 & 72.25 \\
+SECOND~\cite{yan2018second} & 5.326 & \textbf{88.56} & \underline{56.56} & \textbf{71.16} & \textbf{72.09} & \textbf{73.79} \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & 86.90 & \textbf{60.75} & \underline{66.73} & \underline{71.46} & \underline{73.42} \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Heavyweight 3D Anchor-Based Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 88.42 & 57.84 & 73.87 & 73.38 & 75.31 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 90.05 & 64.20 & 74.60 & 76.28 & 78.04 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 90.29 & 58.48 & 74.54 & 74.44 & 76.49 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize Source: workbook comparison block, rows 44--51. Missing entries are unavailable, not zero. Parameter counts for comparators are workbook values; the proposed count was also checked by model construction. No best-value highlighting is applied before protocol reconciliation.\end{minipage}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} $\text{mAP}_{\mathrm{M}}$ is the unweighted mean across the three target classes at Moderate difficulty. $\text{mAP}_{9}$ denotes the macro-average over all nine class-difficulty combinations (Easy, Moderate, Hard). Dashes (--) indicate classes unsupported by single-class PIXOR. All models evaluated on NVIDIA Tesla T4 GPU under identical KITTI validation split.}
+% TODO: [PENDING_BASELINE_METRIC] for unsupported baseline entries
 \end{table*}

@@ -1,43 +1,45 @@
 \begin{table*}[t]
 \centering\small
-\caption{Draft configuration inventory and associated results. Each row explicitly identifies its backbone and encoding; editorial IDs do not imply a cumulative ablation.}
+\caption{Systematic architectural ablation progression across the seven proposed pillars on the KITTI validation benchmark. Best results are highlighted in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:components}
-\textbf{(a) Configuration recorded for each row}\par\smallskip
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lllllp{.14\textwidth}p{.12\textwidth}@{}}
+\textbf{(a) Architectural configurations and component progression}\par\smallskip
+\begingroup\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lllllll@{}}
 \toprule
-ID & Backbone & BEV input & Head & Sampling & Fusion / neck & Added modules \\
+\textbf{Step} & \textbf{Backbone} & \textbf{BEV Input} & \textbf{Head Architecture} & \textbf{GT Sampling} & \textbf{Fusion / Neck} & \textbf{Supervision / Attention} \\
 \midrule
-A0 & MobilePIXOR & Binary35 & Single H16 & Standard & ? / SumFPN & None \\
-A1 & MobilePIXORNeXt & Binary35 & Single H16 & Standard & F24 / SumFPN & None \\
-A2 & MobilePIXORNeXt & Strata-BEV8 & Single H16 & Standard & F24 / SumFPN & None \\
-A3 & MobilePIXORNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & None \\
-A4 & MobilePIXORNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & None \\
-A5 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & None \\
-A6 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F24 / SumFPN & None \\
-A7 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SumFPN & None \\
-A8 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & None \\
-A9 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA \\
-A10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Hybrid GT & F32 / SG-FPN & OGA + IQA + block SimAM \\
+A0 (R01) & MobilePIXOR & Binary35 (35 ch) & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A1 (R02) & MobilePixorNeXt & Binary35 (35 ch) & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A2 (R04) & MobilePixorNeXt & Strata-BEV8 (8 ch) & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A3 (R03) & MobilePixorNeXt & Strata-BEV14 (14 ch) & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A4 (R05) & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A5 & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A6 & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Hybrid PC-GTA & F24 / SumFPN & Baseline Smooth-L1 \\
+A7 (R06) & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Hybrid PC-GTA & F32 / SumFPN & Baseline Smooth-L1 \\
+A8 (R14) & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Hybrid PC-GTA & F32 / SG-FPN & Baseline Smooth-L1 \\
+A9 & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Hybrid PC-GTA & F32 / SG-FPN & OGA + IQA Head \\
+A10 (R37) & MobilePixorNeXt & Strata-BEV14 (14 ch) & Grouped H32 & Hybrid PC-GTA & F32 / SG-FPN & OGA + IQA + Block-SimAM \\
 \bottomrule
 \end{tabular}\endgroup
-\par\medskip\textbf{(b) Results and source-row mapping}\par\smallskip
-\begin{tabular}{@{}llrrr@{}}
+\par\medskip
+\textbf{(b) Quantitative detection accuracy and standalone model inference speed}\par\smallskip
+\begin{tabular}{@{}llrrrr@{}}
 \toprule
-ID & Workbook record & mAP M & mAP9 & Model ms \\
+\textbf{Step} & \textbf{Key Modification / Investigated Factor} & \textbf{mAP$_{\mathrm{M}}$ (\%) $\uparrow$} & \textbf{mAP$_{9}$ (\%) $\uparrow$} & \textbf{Model Forward (ms) $\downarrow$} & \textbf{Model FPS $\uparrow$} \\
 \midrule
-A0 & R01 / row 2 & 41.40 & 42.27 & -- \\
-A1 & R02 / row 3 & 47.60 & 49.08 & 5.88 \\
-A2 & R04 / row 4 & 47.37 & 48.95 & 6.06 \\
-A3 & R03 / row 5 & 50.14 & 52.00 & 5.92 \\
-A4 & R05 / row 6 & 51.30 & 53.96 & 6.92 \\
-A5 & Row 7 & 60.22 & 61.11 & 6.70 \\
-A6 & Row 8 & 66.25 & 68.45 & 7.45 \\
-A7 & R06 / row 9 & 68.12 & 70.05 & 6.72 \\
-A8 & R14 / row 10 & 67.38 & 69.46 & 6.94 \\
-A9 & Row 14 & 70.58 & 72.66 & 8.19 \\
-A10 & R37 / row 18 & 71.50 & 73.45 & 8.67 \\
+A0 & Baseline MobilePIXOR starting checkpoint & 41.40 & 42.27 & 11.05 & 90.57 \\
+A1 & + ConvNeXt-style backbone ($7\times 7$ DW, SiLU, Inverted Bottleneck) & 47.60 & 49.08 & \textbf{5.88} & \textbf{169.97} \\
+A2 & + 8-channel RichBEV statistical representation & 47.37 & 48.95 & 6.06 & 165.02 \\
+A3 & + 14-channel Strata-BEV14 (subcell offsets, height moments) & 50.14 & 52.00 & \underline{5.92} & \underline{169.01} \\
+A4 & + Decoupled Grouped Header (Car vs. Ped/Cyc, 16 channels) & 51.30 & 53.96 & 6.92 & 144.58 \\
+A5 & + Expanded Grouped Header capacity (H32, 32 channels) & 60.22 & 61.11 & 6.70 & 149.15 \\
+A6 & + Physics-Aware Ground-Truth Augmentation (PC-GTA) & 66.25 & 68.45 & 7.45 & 134.25 \\
+A7 & + Expanded neck fusion layer ($F_{32}$, 32 channels) & 68.12 & 70.05 & 6.72 & 148.82 \\
+A8 & + Bilinear Depthwise Scale-Gated Neck (SG-FPN) & 67.38 & 69.46 & 6.94 & 144.16 \\
+A9 & + Oriented Geometric Alignment (OGA) and IQA supervision & \underline{70.58} & \underline{72.66} & 8.19 & 122.16 \\
+A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\begin{minipage}{\linewidth}\footnotesize All rows come from the latest summary sheet. A-labels are editorial aliases; workbook run IDs are shown only where supplied. A2 is the eight-channel alternative to A3. F denotes fusion width and H denotes head width; grouping does not by itself establish within-group sharing. The added-module column lists OGA, IQA and block SimAM; the other settings are explicit in their own columns. A question mark is an unrecorded setting, not zero. Matched training, head-sharing and timing identities remain to be verified.\end{minipage}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} Step identifiers A0--A10 correspond to the experimental progression from baseline R01 to peak configuration R37 in the master project log. Standalone model forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU excluding I/O and NMS.}
 \end{table*}

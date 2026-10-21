@@ -73,3 +73,13 @@ e2e_demo/
 /Result
 /References
 /Demo
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/*.log
+paper/*.synctex.gz

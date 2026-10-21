@@ -9,3 +9,12 @@
   }%
 }
 \newcommand{\draftnote}[1]{\par\smallskip\noindent\textit{Draft verification note: #1}\par\smallskip}
+
+% Dedicated Algorithm Counter and Caption Support (Springer AJSE compatible)
+\newcounter{algorithm}
+\setcounter{algorithm}{0}
+\renewcommand{\thealgorithm}{\arabic{algorithm}}
+\makeatletter
+\newcommand{\fnum@algorithm}{\textbf{Algorithm~\thealgorithm}}
+\newcommand{\ext@algorithm}{loa}
+\makeatother

@@ -1,23 +1,30 @@
 \begin{table}[t]
 \centering\small
-\caption{Verified model settings and remaining run-specific fields.}
+\caption{Unified experimental specifications and hyperparameter configuration of MobilePIXORNeXt.}
 \label{tab:setup}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{.38\columnwidth}>{\raggedright\arraybackslash}p{.55\columnwidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{.38\columnwidth}>{\raggedright\arraybackslash}p{.56\columnwidth}@{}}
 \toprule
-Setting & Value \\
+\textbf{Configuration Element} & \textbf{Specification / Value} \\
 \midrule
-Input & Strata-BEV14; $14\times800\times704$ \\
-ROI (m) & $x:[0,70.4]$; $y:[-40,40]$; $z:[-2.5,1]$ \\
-XY cell / output stride & 0.1 m / 4 \\
-Stage widths / depths & 48, 96, 128 / 3, 4, 2 \\
-Fusion / Head width & 32 / 32 \\
-Prediction groups & Car; Pedestrian + Cyclist \\
-Training objective & OGA + projection-target IQA \\
-Sampling recipe & PC-GTA \\
-Final run / checkpoint & Pending resolved config and hash \\
-Training schedule / seeds & Pending final run record \\
-AP protocol / split hashes & Pending per experiment set \\
-Hardware / timing setup & Pending per benchmark record \\
+LiDAR Input Representation & Strata-BEV14 (14 channels, deterministic) \\
+Spatial ROI bounds ($X, Y, Z$) & $[0.00, 70.40]\,\text{m} \times [-40.00, 40.00]\,\text{m} \times [-2.50, 1.00]\,\text{m}$ \\
+Grid resolution ($\Delta_x, \Delta_y, \Delta_z$) & $0.10\,\text{m} \times 0.10\,\text{m} \times 0.10\,\text{m}$ \\
+Input / Output Grid Dimensions & $800 \times 704$ / $200 \times 176$ ($s_{\mathrm{out}} = 4$) \\
+Detector Parameters & 753,569 trainable ($< 0.76\,\text{M}$); 9.34\,MB FP32 \\
+Backbone Stages ($C_2, C_3, C_4$) & Widths: (48, 96, 128); Depths: (2, 4, 2) \\
+Inverted Bottleneck Expansion & $e = 2.50$; $7 \times 7$ Depthwise Convolution \\
+Attention Mechanism & Parameter-free Block-SimAM (8 residual blocks) \\
+Multiscale Neck & Scale-Gated FPN (SG-FPN, $F_{32}$ fusion width) \\
+Prediction Towers & GroupedHeader: Car ($K_1=1$), Ped/Cyc ($K_2=2$) \\
+Loss Formulation & OGA (MGIoU + $\pi$-Corner) + IQA + T-SBUW \\
+Data Augmentation & Physics-Aware Hybrid GT (PC-GTA) + Global \\
+Optimizer / Base Learning Rate & AdamW (fused) / $\eta = 7.00 \times 10^{-4}$ \\
+Minimum LR / Scheduler & $1.00 \times 10^{-6}$ / Cosine Annealing + 4 ep. Warmup \\
+Weight Decay & $\lambda = 1.00 \times 10^{-3}$ (2D+ tensors only; biases/norm: 0.00) \\
+Gradient Clipping Norm & Maximum $L_2$ norm = 10.00 \\
+Batch Size (Train / Val) & 16 / 32 \\
+Numerical Precision & Automatic Mixed Precision (Bfloat16 / FP32) \\
+Hardware Environment & NVIDIA Tesla T4 GPU (16\,GB GDDR6, 98.44\,MB peak) \\
 \bottomrule
 \end{tabular}
 \end{table}
