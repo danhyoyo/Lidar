@@ -11,6 +11,7 @@
 
 MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector designed for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms. Operating strictly on an efficient Bird's-Eye View (BEV) representation, the framework eliminates computationally expensive learned point-cloud feature encoders and three-dimensional sparse convolutions. Figure~\ref{fig:r37_overview} provides a comprehensive overview of the overall detection pipeline, detailing the end-to-end data flow from the raw point cloud to the final decoded oriented bounding boxes.
 
+\par\vspace{-0.5\baselineskip}
 \subsection{Problem Formulation and Input/Output Contracts}
 \label{sec:problem_formulation}
 
@@ -37,6 +38,7 @@ The detector predicts oriented bounding boxes projected onto the horizontal BEV 
 \end{equation}
 where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes the metric continuous center coordinates, $(l_k^*, w_k^*) \in \mathbb{R}^2$ represents length and width footprints, $\psi_k^* \in [-\pi/2, \pi/2]$ is the orientation heading angle under a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated detection confidence score. Operating on this contract requires a structured, dense BEV representation that captures fine 3D geometric distributions without the latency of learned point encoders, which we formulate next.
 
+\par\vspace{-0.5\baselineskip}
 \subsection{Deterministic Strata-BEV14 Feature Representation}
 \label{sec:strata_bev14}
 
@@ -46,7 +48,7 @@ where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes the metric continuous center coo
     \centering
     \paperfigure{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene. Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}
     \captionof{figure}{Visual representation of the fourteen deterministic feature channels in the \texttt{Strata-BEV14} representation for a representative KITTI driving scene. 
-    Channels $0$--$3$: stratified height-band log densities. Channels $4$--$7$: intra-cell vertical moments (peak, mean, vertical span, sample deviation). Channels $8$--$9$: surface reflectance statistics (maximum and mean). Channels $10$--$11$: global density and binary occupancy. Channels $12$--$13$: continuous subcell centroid displacements ($\Delta \bar{x}, \Delta \bar{y}$).
+    % Channels $0$--$3$: stratified height-band log densities. Channels $4$--$7$: intra-cell vertical moments (peak, mean, vertical span, sample deviation). Channels $8$--$9$: surface reflectance statistics (maximum and mean). Channels $10$--$11$: global density and binary occupancy. Channels $12$--$13$: continuous subcell centroid displacements ($\Delta \bar{x}, \Delta \bar{y}$).
     }
     \label{fig:strata_bev14}
 \end{minipage}
@@ -91,6 +93,7 @@ where $N_{\mathrm{norm}} = 32$ is a normalization constant chosen to saturate at
 \end{align}
 Empty cells are assigned zeros across all 14 channels, producing the structured input tensor $\mathbf{X} \in \mathbb{R}^{B \times 14 \times 800 \times 704}$.
 
+\par\vspace{-1.5\baselineskip}
 \begin{table}[!htbp]
     \caption{Channel definitions of the deterministic Strata-BEV14 feature representation. All statistical moments are computed over points within individual horizontal cells $(u, v)$ without learned parameters.}
     \label{tab:strata_bev14}
@@ -113,6 +116,9 @@ Empty cells are assigned zeros across all 14 channels, producing the structured 
         \bottomrule
     \end{tabular}
 \end{table}
+
+\par\vspace{-1.5\baselineskip}
+
 
 \paragraph{Technical Advantage.}
 Unlike PointNet-based pillars that require sorting, scatter operations, and multi-layer perceptron projections, Strata-BEV14 executes via a deterministic parallel CUDA kernel in under $21$\,ms. It enriches the BEV plane with continuous vertical distribution, material reflectance, and subcell resolution offsets prior to learned convolution.
@@ -175,7 +181,7 @@ During training, the resulting physically consistent point cloud $\mathcal{P}_{\
 
 \begin{strip}
     \centering
-    \begin{minipage}{0.9645\textwidth}
+    \begin{minipage}{0.95\textwidth}
         \centering
     \paperfigure{backbone_f32.pdf}{42mm}{Detailed structural topology of the MobilePIXORNeXt feedforward architecture, comprising the multi-scale backbone hierarchy, Top-Down Scale-Gated Neck (SG-FPN), and decoupled grouped prediction towers. Spatial feature maps are progressively downsampled at strides 2, 4, 8, and 16 using repeated MobilePixorNeXt-S blocks. Scale-gated top-down fusion balances deep semantics with fine spatial localization into a shared 32-channel representation at stride 4 ($200 \times 176$). Independent grouped prediction towers decouple Car from Pedestrian and Cyclist.}
     \end{minipage}
@@ -203,15 +209,16 @@ As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
 Unlike multi-branch reparameterization paradigms that mandate complex multi-path training topologies and post-hoc weight folding, MobilePIXORNeXt directly trains and deploys a clean single-branch large-kernel ($7 \times 7$) depthwise convolution. By pairing wide spatial receptive fields with inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization, the backbone achieves rapid optimization convergence and fast throughput ($55.94$\,FPS on Tesla T4) without incurring auxiliary branch memory overhead during backpropagation. The complete backbone comprises only $604,864$ parameters.
 
 \FloatBarrier
+\clearpage
 \subsection{MobilePixorNeXt-S Residual Block with Embedded Block-SimAM}
 \label{sec:next_s_block}
 
-\begin{figure*}[t]
+\begin{strip}
     \centering
     \paperfigure[width=\linewidth,height=60mm,keepaspectratio]{next_simam_block.pdf}{60mm}{Micro-architecture of the MobilePixorNeXt-S residual block and embedded parameter-free Block-SimAM energy attention. (Top) Complete feedforward path from input X to output Y through the 7x7 depthwise convolution, inverted bottleneck expansion (e=2.5), SimAM modulation, LayerScale scaling, and identity residual addition. (Bottom) Zoom-in structure of the parameter-free SimAM module, detailing spatial moment estimation, minimal energy calculation, sigmoid saliency mapping, and element-wise feature recalibration.}
-    \caption{Detailed micro-architecture of the \texttt{MobilePixorNeXt-S} residual block. \textit{Top}: Complete residual transformation path from input $X$ to output $Y$ featuring $7 \times 7$ depthwise convolution, inverted bottleneck expansion ratio $e = 2.5$, LayerScale scaling $\boldsymbol{\gamma}_{\mathrm{blk}}$, and identity shortcut. \textit{Bottom}: Internal mechanism of the parameter-free Block-SimAM attention module, detailing spatial moment computation, energy-based visual saliency evaluation, and 3D element-wise modulation $\mathcal{S}(\mathbf{R}) = \mathbf{A} \odot \mathbf{R}$.}
+    \captionof{figure}{Detailed micro-architecture of the \texttt{MobilePixorNeXt-S} residual block. \textit{Top}: Complete residual transformation path from input $X$ to output $Y$ featuring $7 \times 7$ depthwise convolution, inverted bottleneck expansion ratio $e = 2.5$, LayerScale scaling $\boldsymbol{\gamma}_{\mathrm{blk}}$, and identity shortcut. \textit{Bottom}: Internal mechanism of the parameter-free Block-SimAM attention module, detailing spatial moment computation, energy-based visual saliency evaluation, and 3D element-wise modulation $\mathcal{S}(\mathbf{R}) = \mathbf{A} \odot \mathbf{R}$.}
     \label{fig:next_s_block}
-\end{figure*}
+\end{strip}
 
 \paragraph{Micro-Architecture and Inverted Bottleneck.}
 Figure~\ref{fig:next_s_block} illustrates the \texttt{MobilePixorNeXt-S} residual block. Given input tensor $\mathbf{Z} \in \mathbb{R}^{B \times C \times H \times W}$, each block applies an inverted bottleneck with expansion ratio $e = 2.5$:
@@ -379,38 +386,39 @@ This construction strictly conserves the total weight.
 \end{equation}
 The total network objective is $\mathcal{L}_{\mathrm{total}} = 0.5\mathcal{L}_1 + 0.5\mathcal{L}_2$. The twelve logit parameters are utilized strictly during training and discarded at inference.
 
+
 \subsection{Coordinate Decoding and Inference Pipeline}
 \label{sec:decoding_and_pipeline}
 
-\noindent\begin{minipage}{\columnwidth}
+\noindent
 \captionof{algorithm}{End-to-end MobilePIXORNeXt inference and box decoding pipeline.}
 \label{alg:inference_pipeline}
 \vspace{2pt}
-\centering\small
-\begin{tabular}{@{}r p{0.88\columnwidth}@{}}
-\toprule
-\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Raw LiDAR point cloud $\mathcal{P} = \{(x_i, y_i, z_i, \iota_i)\}_{i=1}^N$, ROI bounds $[x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]$} \\
-\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Require:} Score threshold $\tau_{\mathrm{score}} = 0.05$, Rotated NMS threshold $\tau_{\mathrm{nms}} = 0.10$, quality exponent $\alpha = 0.5$} \\
-\multicolumn{2}{@{}p{\columnwidth}@{}}{\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\mathcal{B} = \{(c_k, s_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k)\}_{k=1}^M$} \\
-\midrule
-1: & Filter raw points $\mathcal{P}$ within inward margin $\epsilon = 0.001$\,m of spatial ROI; \\
-2: & Deterministically rasterize points into 14-channel Strata-BEV14 tensor $\mathbf{X} \in \mathbb{R}^{14 \times 800 \times 704}$ via Eq.~(\ref{eq:density_encoding})--(\ref{eq:offset_encoding}); \\
-3: & Forward $\mathbf{X}$ through ConvNeXt stem to obtain stride-2 feature $\mathbf{F}^{(2)} \in \mathbb{R}^{32 \times 400 \times 352}$; \\
-4: & Extract multi-scale features through Stages 2, 3, 4 via MobilePixorNeXt-S blocks to obtain $\mathbf{F}^{(4)}, \mathbf{F}^{(8)}, \mathbf{F}^{(16)}$; \\
-5: & Fuse multi-scale features via Top-Down SG-FPN Neck into shared map $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{32 \times 200 \times 176}$; \\
-6: & Evaluate Grouped Prediction Towers for Car ($g=1$) and Pedestrian/Cyclist ($g=2$): \\
-   & \quad Yield classification maps $\mathbf{P}_{\mathrm{cls}}$, subcell offsets $\widehat{\mathbf{o}}$, log-sizes $\widehat{\mathbf{d}}$, doubled yaws $\widehat{\mathbf{a}}$, and quality $\widehat{\mathbf{q}}$; \\
-7: & \textbf{for each} class $c \in \{\text{Car}, \text{Pedestrian}, \text{Cyclist}\}$ \textbf{do} \\
-8: & \quad Identify local $3 \times 3$ candidate peaks on classification heatmap $\mathbf{P}_{\mathrm{cls}, c}$; \\
-9: & \quad Compute IoU-aware composite ranking score: $s_{\mathrm{det}} = (\mathbf{P}_{\mathrm{cls}, c})^{1 - \alpha} \cdot (\widehat{\mathbf{q}})^\alpha$; \\
-10:& \quad Filter candidate cells satisfying $\mathbf{P}_{\mathrm{cls}, c} > \tau_{\mathrm{score}}$ and $s_{\mathrm{det}} > \tau_{\mathrm{score}}$; \\
-11:& \quad Decode metric coordinates, dimensions, and heading angles via Eq.~(\ref{eq:box_decode}); \\
-12:& \quad Apply Classwise Rotated Non-Maximum Suppression with IoU threshold $\tau_{\mathrm{nms}}$; \\
-13:& \textbf{end for} \\
-14:& \textbf{return} Final detection set $\mathcal{B}$ sorted in descending order of composite score $s_{\mathrm{det}}$; \\
-\bottomrule
-\end{tabular}
-\end{minipage}
+{\small
+\noindent\textbf{Require:} Raw LiDAR point cloud $\mathcal{P} = \{(x_i, y_i, z_i, \iota_i)\}_{i=1}^N$, ROI bounds $[x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]$\par
+\noindent\textbf{Require:} Score threshold $\tau_{\mathrm{score}} = 0.05$, Rotated NMS threshold $\tau_{\mathrm{nms}} = 0.10$, quality exponent $\alpha = 0.5$\par
+\noindent\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\mathcal{B} = \{(c_k, s_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k)\}_{k=1}^M$\par
+\begin{enumerate}
+    \setlength{\topsep}{2pt}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \renewcommand{\labelenumi}{\textbf{\arabic{enumi}:}}
+    \item Filter raw points $\mathcal{P}$ within inward margin $\epsilon = 0.001$\,m of spatial ROI.
+    \item Deterministically rasterize points into 14-channel Strata-BEV14 tensor $\mathbf{X} \in \mathbb{R}^{14 \times 800 \times 704}$ via Eq.~(\ref{eq:density_encoding})--(\ref{eq:offset_encoding}).
+    \item Forward $\mathbf{X}$ through ConvNeXt stem to obtain stride-2 feature $\mathbf{F}^{(2)} \in \mathbb{R}^{32 \times 400 \times 352}$.
+    \item Extract multi-scale features through Stages 2, 3, 4 via MobilePixorNeXt-S blocks to obtain $\mathbf{F}^{(4)}, \mathbf{F}^{(8)}, \mathbf{F}^{(16)}$.
+    \item Fuse multi-scale features via Top-Down SG-FPN Neck into shared map $\mathbf{F}_{\mathrm{out}} \in \mathbb{R}^{32 \times 200 \times 176}$.
+    \item Evaluate Grouped Prediction Towers for Car ($g=1$) and Pedestrian/Cyclist ($g=2$), yielding classification maps $\mathbf{P}_{\mathrm{cls}}$, subcell offsets $\widehat{\mathbf{o}}$, log-sizes $\widehat{\mathbf{d}}$, doubled yaws $\widehat{\mathbf{a}}$, and quality $\widehat{\mathbf{q}}$.
+    \item \textbf{for each} class $c \in \{\text{Car}, \text{Pedestrian}, \text{Cyclist}\}$ \textbf{do}
+    \item \quad Identify local $3 \times 3$ candidate peaks on classification heatmap $\mathbf{P}_{\mathrm{cls}, c}$.
+    \item \quad Compute IoU-aware composite ranking score: $s_{\mathrm{det}} = (\mathbf{P}_{\mathrm{cls}, c})^{1 - \alpha} \cdot (\widehat{\mathbf{q}})^\alpha$.
+    \item \quad Filter candidate cells satisfying $\mathbf{P}_{\mathrm{cls}, c} > \tau_{\mathrm{score}}$ and $s_{\mathrm{det}} > \tau_{\mathrm{score}}$.
+    \item \quad Decode metric coordinates, dimensions, and heading angles via Eq.~(\ref{eq:box_decode}).
+    \item \quad Apply Classwise Rotated Non-Maximum Suppression with IoU threshold $\tau_{\mathrm{nms}}$.
+    \item \textbf{end for}
+    \item \textbf{return} Final detection set $\mathcal{B}$ sorted in descending order of composite score $s_{\mathrm{det}}$.
+\end{enumerate}
+}
 
 \par\vspace{0.5\baselineskip}
 

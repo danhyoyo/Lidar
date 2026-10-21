@@ -6,11 +6,25 @@ Table~\ref{tab:comparison} presents a comprehensive quantitative comparison on t
 
 \input{tables/comparison}
 
+\begin{figure*}[t]
+\centering
+\paperfigure[width=\textwidth]{pareto_tradeoff.pdf}{48mm}{Pareto trade-off efficiency on the KITTI validation benchmark.}
+\caption{Pareto trade-off efficiency of MobilePIXORNeXt against established LiDAR detectors on the KITTI validation benchmark: (a) Detection accuracy ($\text{mAP}_{\mathrm{M}}$) versus parameter footprint (M) on a logarithmic scale; (b) Detection accuracy versus end-to-end pipeline latency (ms) on an NVIDIA Tesla T4 GPU. MobilePIXORNeXt establishes a new Pareto frontier in the compact, real-time regime, achieving $71.46\%$ Moderate mAP with only $0.754\,\text{M}$ parameters and $60.96\,\text{ms}$ total pipeline latency.}
+\label{fig:pareto_tradeoff}
+\end{figure*}
+
 \textit{1. Overall Accuracy-to-Parameter Pareto Efficiency.}
-MobilePIXORNeXt establishes a favorable accuracy-to-parameter trade-off for real-time edge perception. Operating with only $0.754\,\text{M}$ trainable parameters ($9.34\,\text{MB}$ checkpoint size), MobilePIXORNeXt achieves $71.46\%$ Moderate mAP and $73.42\%$ $\text{mAP}_{9}$. Compared to PointPillars~\cite{lang2019pointpillars} ($4.835\,\text{M}$ parameters), MobilePIXORNeXt achieves higher Moderate mAP ($71.46\%$ vs. $70.13\%$, a $+1.33\%$ margin) and higher $\text{mAP}_{9}$ ($73.42\%$ vs. $72.25\%$) while requiring an $84.4\%$ reduction in parameter count. Compared to the widely deployed SECOND detector~\cite{yan2018second} ($5.326\,\text{M}$ parameters), MobilePIXORNeXt trails by merely $0.63\%$ Moderate mAP ($71.46\%$ vs. $72.09\%$) despite operating with $7.1\times$ fewer parameters. Furthermore, compared to its direct lineage baseline MobilePIXOR~\cite{nguyen2024indoor} ($41.40\%$ mAP), MobilePIXORNeXt achieves an absolute improvement of $+30.06\%$ Moderate mAP ($71.46\%$ vs. $41.40\%$) and $+31.15\%$ $\text{mAP}_{9}$ ($73.42\%$ vs. $42.27\%$).
+As visualized in the Pareto frontier plots (Figure~\ref{fig:pareto_tradeoff}), MobilePIXORNeXt establishes a favorable accuracy-to-parameter and accuracy-to-latency trade-off for real-time edge perception. Operating with only $0.754\,\text{M}$ trainable parameters ($9.34\,\text{MB}$ checkpoint size), MobilePIXORNeXt achieves $71.46\%$ Moderate mAP and $73.42\%$ $\text{mAP}_{9}$. Compared to PointPillars~\cite{lang2019pointpillars} ($4.835\,\text{M}$ parameters), MobilePIXORNeXt achieves higher Moderate mAP ($71.46\%$ vs. $70.13\%$, a $+1.33\%$ margin) and higher $\text{mAP}_{9}$ ($73.42\%$ vs. $72.25\%$) while requiring an $84.4\%$ reduction in parameter count. Compared to the widely deployed SECOND detector~\cite{yan2018second} ($5.326\,\text{M}$ parameters), MobilePIXORNeXt trails by merely $0.63\%$ Moderate mAP ($71.46\%$ vs. $72.09\%$) despite operating with $7.1\times$ fewer parameters. Furthermore, compared to its direct lineage baseline MobilePIXOR~\cite{nguyen2024indoor} ($41.40\%$ mAP), MobilePIXORNeXt achieves an absolute improvement of $+30.06\%$ Moderate mAP ($71.46\%$ vs. $41.40\%$) and $+31.15\%$ $\text{mAP}_{9}$ ($73.42\%$ vs. $42.27\%$).
+
+\begin{figure*}[t]
+\centering
+\paperfigure[width=\textwidth]{pr_all_difficulties.pdf}{65mm}{Precision-Recall benchmark curves across classes and difficulties on the KITTI validation set.}
+\caption{Comprehensive 9-cell Precision--Recall ($R_{40}$) benchmark curves across Car, Pedestrian, and Cyclist under Easy, Moderate, and Hard difficulty regimes on the KITTI validation split. Curves benchmark MobilePIXORNeXt against MobilePIXOR~\cite{nguyen2024indoor}, PointPillars~\cite{lang2019pointpillars}, and SECOND~\cite{yan2018second}.}
+\label{fig:pr_curves}
+\end{figure*}
 
 \textit{2. Performance on Vulnerable Road Users (Pedestrian).}
-In autonomous driving perception, detecting small, non-rigid objects such as pedestrians represents the most challenging operational regime due to extreme point sparsity and severe aspect-ratio disparity. As evidenced in Table~\ref{tab:comparison}, MobilePIXORNeXt achieves \textbf{60.75\% Moderate AP} on Pedestrians, outperforming PointPillars ($56.01\%$, a $+4.74\%$ gain) and SECOND ($56.56\%$, a $+4.19\%$ gain), while more than doubling the baseline MobilePIXOR ($28.16\%$, a $+32.59\%$ gain). This performance advantage is directly attributable to two synergistic innovations: (i) Strata-BEV14's continuous subcell displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ which eliminate the $0.1\,\text{m}$ grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture which isolates pedestrian regression from large vehicle footprints, preventing dominant car gradients from overwhelming pedestrian feature channels.
+In autonomous driving perception, detecting small, non-rigid objects such as pedestrians represents the most challenging operational regime due to extreme point sparsity and severe aspect-ratio disparity. As evidenced in Table~\ref{tab:comparison} and the Precision--Recall curves in Figure~\ref{fig:pr_curves}, MobilePIXORNeXt achieves \textbf{60.75\% Moderate AP} on Pedestrians, outperforming PointPillars ($56.01\%$, a $+4.74\%$ gain) and SECOND ($56.56\%$, a $+4.19\%$ gain), while more than doubling the baseline MobilePIXOR ($28.16\%$, a $+32.59\%$ gain). This performance advantage is directly attributable to two synergistic innovations: (i) Strata-BEV14's continuous subcell displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ which eliminate the $0.1\,\text{m}$ grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture which isolates pedestrian regression from large vehicle footprints, preventing dominant car gradients from overwhelming pedestrian feature channels.
 
 \textit{3. Balanced Multi-Class Detection.}
 For passenger vehicles (Car), MobilePIXORNeXt achieves $86.90\%$ Moderate AP, closely trailing PointPillars ($88.02\%$) and SECOND ($88.56\%$) by less than $1.7\%$, while outperforming the original PIXOR ($72.02\%$) by $+14.88\%$ and MobilePIXOR ($75.52\%$) by $+11.38\%$. On Cyclists, MobilePIXORNeXt attains $66.73\%$ Moderate AP, surpassing PointPillars ($66.34\%$) and trailing SECOND ($71.16\%$). While two-stage 3D anchor-based detectors (PointRCNN, Part-A$^2$, PV-RCNN) achieve higher absolute accuracy on rigid vehicles, they require between $4.0\,\text{M}$ and $63.8\,\text{M}$ parameters and operate at higher latencies ($133\text{--}195\,\text{ms}$), exceeding the real-time constraints of embedded edge processors.
@@ -127,6 +141,26 @@ Best Loss (Sensitivity)     & 47           & 82.71 & \textbf{62.30} & \textbf{69
 \end{table}
 
 Both criteria yield nearly identical aggregate accuracy ($71.46\%$ vs. $71.48\%$ Moderate mAP). However, the Best AP checkpoint exhibits a $20.27\,\text{ms}$ lower end-to-end pipeline latency ($60.96\,\text{ms}$, $16.41\,\text{FPS}$ vs. $81.23\,\text{ms}$, $12.31\,\text{FPS}$). Extended training sharpens classification heatmaps around true positive centers, suppressing ambiguous low-confidence background peaks and accelerating candidate filtering and rotated NMS.
+
+\subsection{Qualitative Visualizations and Analysis}
+\label{sec:qualitative_analysis}
+
+\paragraph{Visual Inspection on Representative Driving Scenarios.}
+To evaluate spatial localization fidelity in real-world driving environments, Figure~\ref{fig:qualitative_detections} visualizes representative detection outputs produced by MobilePIXORNeXt on the KITTI validation benchmark alongside corresponding 14-channel Strata-BEV14 feature map representations across three diverse road scenes (frames \texttt{002425}, \texttt{005571}, and \texttt{007016}).
+
+\begin{figure*}[t]
+\centering
+\paperfigure[width=\textwidth]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.}
+\caption{Qualitative detection results and Strata-BEV14 feature map responses on representative KITTI validation scenes (top to bottom: frames \texttt{002425}, \texttt{005571}, and \texttt{007016}). (Left) Synchronized camera imagery overlaid with 3D bounding box projections decoded from BEV predictions using calibration geometry; (Right) Corresponding 14-channel Strata-BEV14 input representations ($C_{00}$--$C_{13}$), highlighting stratified height bands, elevation dispersion moments, surface reflectance, and continuous subcell displacement offsets.}
+\label{fig:qualitative_detections}
+\end{figure*}
+
+As shown in Figure~\ref{fig:qualitative_detections}, MobilePIXORNeXt accurately estimates oriented bounding box footprints across varied urban driving conditions:
+\begin{itemize}
+    \item \textbf{Dense Multi-Vehicle Traffic}: In congested road environments (frame \texttt{002425}), the detector accurately bounds adjacent passenger vehicles without merging contiguous bounding boxes or predicting duplicate overlapping candidates. The IQA quality scoring dynamically suppresses false-positive proposals in the inter-vehicle corridors during rotated NMS.
+    \item \textbf{Vulnerable Road Users in Urban Scenarios}: In pedestrian-dense environments (frame \texttt{005571}), small, non-rigid pedestrian candidates are reliably localized without false alarms on curbs or poles. Strata-BEV14's continuous centroid offsets $(\Delta\bar{x}, \Delta\bar{y})$ preserve precise spatial centroids despite point sparsity.
+    \item \textbf{Long-Range and Partially Occluded Objects}: On distant targets exceeding $40\,\text{m}$ (frame \texttt{007016}), the detector produces tight bounding boxes that closely align with LiDAR point returns. Physics-aware range attenuation augmentation ensures that the model remains robust against the characteristic $1/r^2$ point density drop-off in far-range cells.
+\end{itemize}
 
 \subsection{Discussion and Practical Limitations}
 \label{sec:discussion_limitations}
