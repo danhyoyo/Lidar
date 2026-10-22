@@ -1,0 +1,178 @@
+% WARN: include file not found: tables/comparison (results.tex:7)
+% WARN: include file not found: tables/efficiency (results.tex:37)
+% WARN: include file not found: tables/distance_our_vs_mbpixor (results.tex:65)
+% WARN: include file not found: tables/components (results.tex:81)
+% WARN: include file not found: tables/loss (results.tex:121)
+% WARN: include file not found: tables/attention (results.tex:130)
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 8, 46 words, 6 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \begin{figure*}[t] \centering \paperfigure[width=\textwidth]{pareto_tradeoff.pdf}{48mm}{Pareto trade-off efficiency on the KITTI validation benchmark.} Detection accuracy ( , \%) versus parameter footprint (M) on a logarithmic scale, highlighting that MobilePIXORNeXt (red star) achieves   mAP with only   parameters, matching SECOND ( ,  ) and outperforming PointPillars ( ,  ) with   fewer parameters.
+% Suggested: \begin{figure*}[t] \centering \paperfigure[width=\textwidth]{pareto_tradeoff.pdf}{48mm}{Pareto trade-off efficiency on the KITTI validation benchmark.} Detection accuracy (. \%) versus parameter footprint (M) on a logarithmic scale. highlighting that MobilePIXORNeXt (red star) achieves   mAP with only   parameters. matching SECOND (. ) and outperforming PointPillars (. ) with   fewer parameters..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 8, 36 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \textbf{(b)} Detection accuracy ( , \%) versus end-to-end pipeline latency (ms) at batch size 1 (Tesla T4, except the historical MobilePIXOR result on L4), demonstrating that MobilePIXORNeXt achieves the fastest complete perception pipeline ( ,  ) among all evaluated real-time detectors.}
+% Suggested: \textbf{(b)} Detection accuracy (. \%) versus end-to-end pipeline latency (ms) at batch size 1 (Tesla T4. except the historical MobilePIXOR result on L4). demonstrating that MobilePIXORNeXt achieves the fastest complete perception pipeline (. ) among all evaluated real-time detectors.}.
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 28, 36 words, 7 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: As evidenced in Table~  and the Precision--Recall curves in Figure~ , MobilePIXORNeXt achieved \textbf{60.75\% Moderate AP} on Pedestrians, outperforming PointPillars ( , a   gain) and SECOND ( , a   gain), while more than doubling the baseline MobilePIXOR ( , a   gain).
+% Suggested: As evidenced in Table~  and the Precision--Recall curves in Figure~. MobilePIXORNeXt achieved \textbf{60.75\% Moderate AP} on Pedestrians. outperforming PointPillars (. a   gain) and SECOND (. a   gain). while more than doubling the baseline MobilePIXOR (. a   gain)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 28, 50 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: We attribute this performance advantage primarily to two architectural mechanisms: (i) Strata-BEV14's continuous subcell displacement offsets  , which mitigate the   grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture, which isolates pedestrian regression from large vehicle footprints to alleviate gradient interference across morphologically disparate categories.
+% Suggested: We attribute this performance advantage primarily to two architectural mechanisms: (i) Strata-BEV14's continuous subcell displacement offsets. which mitigate the   grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture. which isolates pedestrian regression from large vehicle footprints to alleviate gradient interference across morphologically disparate categories..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 31, 28 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Balanced Multi-Class Detection.} For passenger vehicles (Car), MobilePIXORNeXt achieved   Moderate AP, closely trailing PointPillars ( ) and SECOND ( ) by less than  , while outperforming the original PIXOR ( ) by   and MobilePIXOR ( ) by  .
+% Suggested: Balanced Multi-Class Detection.} For passenger vehicles (Car). MobilePIXORNeXt achieved   Moderate AP. closely trailing PointPillars ( ) and SECOND ( ) by less than. while outperforming the original PIXOR ( ) by   and MobilePIXOR ( ) by  ..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 31, 33 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: While two-stage 3D anchor-based detectors (PointRCNN, Part-A , PV-RCNN) achieve higher absolute accuracy on rigid vehicles, they require between   and   parameters and operate at higher latencies ( ), exceeding the real-time constraints of embedded edge processors.
+% Suggested: While two-stage 3D anchor-based detectors (PointRCNN. Part-A. PV-RCNN) achieve higher absolute accuracy on rigid vehicles. they require between   and   parameters and operate at higher latencies ( ). exceeding the real-time constraints of embedded edge processors..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 37, 25 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: A complete perception system must account for point cloud loading, input feature tensorization, Host-to-Device (H2D) memory transfer, forward execution, coordinate decoding, and Non-Maximum Suppression (NMS).
+% Suggested: A complete perception system must account for point cloud loading. input feature tensorization. Host-to-Device (H2D) memory transfer. forward execution. coordinate decoding. and Non-Maximum Suppression (NMS)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 42, 34 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: End-to-End Pipeline Latency Comparison.} As detailed in Table~ , MobilePIXORNeXt achieved an End-to-End (E2E) pipeline latency of \textbf{60.96\,ms} (\textbf{16.41\,FPS}), delivering the lowest full-system latency among all evaluated real-time detectors.
+% Suggested: End-to-End Pipeline Latency Comparison.} As detailed in Table~. MobilePIXORNeXt achieved an End-to-End (E2E) pipeline latency of \textbf{60.96\. ms} (\textbf{16.41\. FPS}). delivering the lowest full-system latency among all evaluated real-time detectors..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 42, 16 words, 7 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: It operated faster than PointPillars ( ,  ), MobilePIXOR ( ,  ), and SECOND ( ,  ), and ran over   faster than the original PIXOR ( ,  ).
+% Suggested: It operated faster than PointPillars (. ). MobilePIXOR (. ). and SECOND (. ). and ran over   faster than the original PIXOR (. )..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 42, 34 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Percentile analysis indicates consistent latency bounds in the evaluated environment: MobilePIXORNeXt exhibited a median P50 latency of \textbf{58.28\,ms}, P95 of  , and P99 of  , demonstrating low latency dispersion under desktop GPU benchmarking.
+% Suggested: Percentile analysis indicates consistent latency bounds in the evaluated environment: MobilePIXORNeXt exhibited a median P50 latency of \textbf{58.28\. ms}. P95 of. and P99 of. demonstrating low latency dispersion under desktop GPU benchmarking..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 45, 42 words, 6 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \item \textbf{Host-to-Device Memory Transfer ( )}: Unlike 35-channel binary occupancy tensors that require transferring   per scan, Strata-BEV14's compact 14-channel layout requires transferring only   (a   payload reduction), which, in conjunction with pinned-memory buffer optimization, reduces H2D latency to   compared with   for the MobilePIXOR baseline.
+% Suggested: \item \textbf{Host-to-Device Memory Transfer ( )}: Unlike 35-channel binary occupancy tensors that require transferring   per scan. Strata-BEV14's compact 14-channel layout requires transferring only   (a   payload reduction). which. in conjunction with pinned-memory buffer optimization. reduces H2D latency to   compared with   for the MobilePIXOR baseline..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 66, 40 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Near-Range Safety Envelope ( ).} Within the near-range   evaluation zone, MobilePIXORNeXt delivered substantial accuracy gains over baseline MobilePIXOR: Pedestrian AP reached \textbf{65.23\%} (more than double MobilePIXOR's  , a   improvement), while Cyclist AP reached \textbf{76.32\%} (nearly triple MobilePIXOR's  , a   improvement).
+% Suggested: Near-Range Safety Envelope ( ).} Within the near-range   evaluation zone. MobilePIXORNeXt delivered substantial accuracy gains over baseline MobilePIXOR: Pedestrian AP reached \textbf{65.23\%} (more than double MobilePIXOR's. a   improvement). while Cyclist AP reached \textbf{76.32\%} (nearly triple MobilePIXOR's. a   improvement)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 81, 42 words, 6 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Backbone Architecture (A0   A1).} Replacing MobilePIXOR's residual blocks with our ConvNeXt-style backbone (  depthwise convolutions, inverted bottleneck expansion  , SiLU activations, and LayerScale) elevated Moderate mAP from   to   (\textbf{+6.20\% mAP}), while nearly doubling standalone forward throughput from   to \textbf{169.97\,FPS}.
+% Suggested: Backbone Architecture (A0   A1).} Replacing MobilePIXOR's residual blocks with our ConvNeXt-style backbone (  depthwise convolutions. inverted bottleneck expansion. SiLU activations. and LayerScale) elevated Moderate mAP from   to   (\textbf{+6.20\% mAP}). while nearly doubling standalone forward throughput from   to \textbf{169.97\. FPS}..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 118, 27 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: As shown in Table~ , introducing OGA alone into baseline training increased Moderate mAP from   to   (\textbf{+1.59\% mAP}), with consistent gains across Car ( ), Pedestrian ( ), and Cyclist ( ).
+% Suggested: As shown in Table~. introducing OGA alone into baseline training increased Moderate mAP from   to   (\textbf{+1.59\% mAP}). with consistent gains across Car ( ). Pedestrian ( ). and Cyclist ( )..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 118, 40 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: These findings demonstrate that OGA and IQA provide complementary benefits: OGA refines continuous corner and boundary alignment during backpropagation, whereas IQA calibrates classification scores with true geometric overlap during inference ( ), preventing misaligned boxes from suppressing high-quality candidates during rotated NMS.
+% Suggested: These findings demonstrate that OGA and IQA provide complementary benefits: OGA refines continuous corner and boundary alignment during backpropagation. whereas IQA calibrates classification scores with true geometric overlap during inference ( ). preventing misaligned boxes from suppressing high-quality candidates during rotated NMS..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 120, 33 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: These findings confirm that Q-OGA provides a parsimonious edge-deployment configuration when memory and latency budgets are strictly capped, whereas the explicit IQA configuration offers peak accuracy ( ) when resources accommodate a dedicated quality branch.
+% Suggested: These findings confirm that Q-OGA provides a parsimonious edge-deployment configuration when memory and latency budgets are strictly capped. whereas the explicit IQA configuration offers peak accuracy ( ) when resources accommodate a dedicated quality branch..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 135, 54 words, 7 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \paragraph{Multi-Task Optimization Dynamics and Convergence.} To analyze empirical training stability and convergence behavior across the ablation sequence, Figure~  illustrates the training and validation loss trajectories across 50 epochs for the overall composite objective alongside the six constituent multi-task components (Classification, Geometry, IoU Quality, Subcell Offset, Size, and Yaw), tracking configurations A1 through A10.
+% Suggested: \paragraph{Multi-Task Optimization Dynamics and Convergence.} To analyze empirical training stability and convergence behavior across the ablation sequence. Figure~  illustrates the training and validation loss trajectories across 50 epochs for the overall composite objective alongside the six constituent multi-task components (Classification. Geometry. IoU Quality. Subcell Offset. Size. and Yaw). tracking configurations A1 through A10..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 147, 65 words, 0 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \setlength{\tabcolsep}{1.5pt} \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcrrrrr@{}} \toprule \textbf{Selection} & \textbf{Epoch} & \textbf{Car} & \textbf{Ped.} & \textbf{Cyc.} & \textbf{mAP } & \textbf{E2E} \\ \midrule \textbf{Best AP} & \textbf{130} & \textbf{86.90} & 60.75 & 66.73 & \textbf{71.46} & \textbf{60.96} \\ Best loss & 47 & 82.71 & \textbf{62.30} & \textbf{69.43} & \textbf{71.48} & 81.23 \\ \bottomrule \end{tabular*} \end{table}
+% Suggested: \setlength{\tabcolsep}{1.5pt} \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcrrrrr@{}} \toprule \textbf{Selection} & \textbf{Epoch} & \textbf{Car} & \textbf{Ped.} & \textbf{Cyc.} & \textbf{mAP } & \textbf{E2E} \\ \midrule \textbf{Best AP} & \textbf{130} & \textbf{86.90} & 60.75 & 66.73 & \textbf{71.46} & \textbf{60.96} \\ Best loss & 47 & 82.71 & \textbf{62.30} & \textbf{69.43} & \textbf{71.48} & 81.23 \\ \bottomrule \end{tabular*} \end{table}
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 166, 37 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \begin{figure}[t] \centering \paperfigure[width=\columnwidth,height=0.38\textheight,keepaspectratio]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.} ) on KITTI validation frames \texttt{007038}, \texttt{005571}, and \texttt{006761} (top to bottom).
+% Suggested: \begin{figure}[t] \centering \paperfigure[width=\columnwidth. height=0.38\textheight. keepaspectratio]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.} ) on KITTI validation frames \texttt{007038}. \texttt{005571}. and \texttt{006761} (top to bottom)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

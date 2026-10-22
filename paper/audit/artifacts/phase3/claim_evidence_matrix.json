@@ -1,0 +1,3095 @@
+[
+  {
+    "id": "C01",
+    "source_file": "sections/abstract.tex",
+    "quote": "a compact, proposal-free Bird's-Eye View (BEV) detector with 753,569 parameters.",
+    "paper_evidence": "tab:comparison .754M; Methods L459–464:604864+36784+111921=753569; log confirms.",
+    "context_evidence": "L23,229–236:753569 detector params +12 training-only logits.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ 753,569 detector parameters; phân biệt criterion training-only 12 logits.",
+    "related_locations": "Intro L11,15,19; Conclusion L7",
+    "root_cause_key": "claim-01",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison .754M; Methods L459–464:604864+36784+111921=753569; log confirms."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L23,229–236:753569 detector params +12 training-only logits."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C02",
+    "source_file": "sections/conclusion.tex",
+    "quote": "($9.34\\,\\text{MB}$ checkpoint)",
+    "paper_evidence": "tab:setup và Methods L459; canonical log:9338383bytes≈9.34MB.",
+    "context_evidence": "L23 và §3.3:9.34MB,753569params.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ checkpoint file size 9.34MB; không gọi là raw FP32 weights hoặc training memory.",
+    "related_locations": "Intro L19; Experiments L43",
+    "root_cause_key": "claim-02",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 7,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setup và Methods L459; canonical log:9338383bytes≈9.34MB."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L23 và §3.3:9.34MB,753569params."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C03",
+    "source_file": "sections/abstract.tex",
+    "quote": "a parameter-free deterministic NumPy/Numba CPU rasterizer.",
+    "paper_evidence": "tab:strata_bev14 caption/Methods L96,122,tab:setup:CPU NumPy/Numba.",
+    "context_evidence": "L59 nói parallel CUDA, trái CPU; §4.1 có14 deterministic formulas.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ CPU theo implementation final; sửa context L59. Đây là implementation/backend mismatch ở context, không phải benchmark GPU raster đã được chứng minh.",
+    "related_locations": "Intro L11; Conclusion L5",
+    "root_cause_key": "context-raster-backend",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14 caption/Methods L96,122,tab:setup:CPU NumPy/Numba."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L59 nói parallel CUDA, trái CPU; §4.1 có14 deterministic formulas."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ CPU theo implementation final; sửa context L59. Đây là implementation/backend mismatch ở context, không phải benchmark GPU raster đã được chứng minh."
+    ],
+    "forbidden_wording": [
+      "a parameter-free deterministic NumPy/Numba CPU rasterizer."
+    ]
+  },
+  {
+    "id": "C04",
+    "source_file": "sections/abstract.tex",
+    "quote": "It extracted 14 statistical feature channels encoding stratified height distributions, elevation moments, surface reflectance, and continuous subcell centroid displacement offsets.",
+    "paper_evidence": "tab:strata_bev14:4density+4height+2reflectance+logdensity+occupancy+2offset=14;fig:strata_bev14.",
+    "context_evidence": "L248–262 đúng14features.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ mô tả feature statistics; không nâng thành khôi phục toàn bộ point geometry.",
+    "related_locations": "Intro L11,15; Conclusion L5",
+    "root_cause_key": "claim-04",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14:4density+4height+2reflectance+logdensity+occupancy+2offset=14;fig:strata_bev14."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L248–262 đúng14features."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C05",
+    "source_file": "sections/abstract.tex",
+    "quote": "Measured input preprocessing took 20.94 milliseconds, including point-cloud loading and rasterization.",
+    "paper_evidence": "Results L50; log preprocess20.939096ms→20.94; đây là loading+rasterization.",
+    "context_evidence": "§6.3 L446:20.94ms;L59 gọi raster riêng under21ms/CUDA là diễn giải sai.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ loading and CPU rasterization; không viết riêng raster kernel đạt20.94ms.",
+    "related_locations": "Intro L11; Methods L122",
+    "root_cause_key": "claim-05",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Results L50; log preprocess20.939096ms→20.94; đây là loading+rasterization."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.3 L446:20.94ms;L59 gọi raster riêng under21ms/CUDA là diễn giải sai."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C06",
+    "source_file": "sections/abstract.tex",
+    "quote": "71.46\\% Moderate mean Average Precision (mAP)",
+    "paper_evidence": "tab:comparison/tab:components A10/tab:attention:71.46; canonical raw71.461874…→71.46.",
+    "context_evidence": "§1.1/§6.1 L28,413:71.46;§6.6 L497 và L517:71.50.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ71.46 cho canonical final benchmark; gắn run/checkpoint/protocol cho71.50 hoặc bỏ số cũ khỏi context. Không đổi headline thành71.50.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "context-final-result-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison/tab:components A10/tab:attention:71.46; canonical raw71.461874…→71.46."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §1.1/§6.1 L28,413:71.46;§6.6 L497 và L517:71.50."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ71.46 cho canonical final benchmark; gắn run/checkpoint/protocol cho71.50 hoặc bỏ số cũ khỏi context. Không đổi headline thành71.50."
+    ],
+    "forbidden_wording": [
+      "71.46\\% Moderate mean Average Precision (mAP)"
+    ]
+  },
+  {
+    "id": "C07",
+    "source_file": "sections/abstract.tex",
+    "quote": "73.42\\% overall 9-cell mAP",
+    "paper_evidence": "tab:comparison/attention:73.42; canonical raw73.418711…→73.42.",
+    "context_evidence": "§6.1 L413:73.42;§6.6 L497/L517:73.45.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ73.42, tách snapshot73.45; mAP9 là9class×difficulty cells, không phảiIoU.9.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "context-final-result-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison/attention:73.42; canonical raw73.418711…→73.42."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.1 L413:73.42;§6.6 L497/L517:73.45."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ73.42, tách snapshot73.45; mAP9 là9class×difficulty cells, không phảiIoU.9."
+    ],
+    "forbidden_wording": [
+      "73.42\\% overall 9-cell mAP"
+    ]
+  },
+  {
+    "id": "C08",
+    "source_file": "sections/abstract.tex",
+    "quote": "Pedestrian Moderate AP reached 60.75\\%.",
+    "paper_evidence": "tab:comparison:60.75;PR figure own legend60.75;canonical log matches.",
+    "context_evidence": "L413,417,470:60.75.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ giá trị cùng BEV/Moderate/R40/KITTI validation boundary.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "claim-08",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison:60.75;PR figure own legend60.75;canonical log matches."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L413,417,470:60.75."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C09",
+    "source_file": "sections/abstract.tex",
+    "quote": "It outperformed PointPillars (70.13\\% mAP)",
+    "paper_evidence": "tab:comparison:71.46 vs70.13;note:local vsreference evaluator. PR figure shared-local PP mean≈70.27,không70.13.",
+    "context_evidence": "L411/413/416:70.13,71.46,+1.33;không cung cấp evaluator equivalence.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "The reported Moderate mAP values were 71.46% and70.13% under their respective evaluators; the1.33-point difference is descriptive. Muốn superiority:chung evaluator và seeds/uncertainty phù hợp.",
+    "related_locations": "Intro L19; Conclusion L7; Results L19",
+    "root_cause_key": "e03-headline",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison:71.46 vs70.13;note:local vsreference evaluator. PR figure shared-local PP mean≈70.27,không70.13."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L411/413/416:70.13,71.46,+1.33;không cung cấp evaluator equivalence."
+      }
+    ],
+    "missing_evidence": [
+      "The reported Moderate mAP values were 71.46% and70.13% under their respective evaluators; the1.33-point difference is descriptive. Muốn superiority:chung evaluator và seeds/uncertainty phù hợp."
+    ],
+    "forbidden_wording": [
+      "It outperformed PointPillars (70.13\\% mAP)"
+    ]
+  },
+  {
+    "id": "C10",
+    "source_file": "sections/abstract.tex",
+    "quote": "matched SECOND (72.09\\% mAP)",
+    "paper_evidence": "tab:comparison:ours71.46<72.09,−.63pp;PR shared-local SECOND mean≈72.18;khôngequivalence test.",
+    "context_evidence": "L416 thừa nhận trailing0.63.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "The reported score was0.63 percentage points below SECOND, with substantially fewer parameters; disclose protocol difference. Không dùng matched/equivalent.",
+    "related_locations": "Intro L19; Conclusion L7; Results caption L12",
+    "root_cause_key": "e03-headline",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison:ours71.46<72.09,−.63pp;PR shared-local SECOND mean≈72.18;khôngequivalence test."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L416 thừa nhận trailing0.63."
+      }
+    ],
+    "missing_evidence": [
+      "The reported score was0.63 percentage points below SECOND, with substantially fewer parameters; disclose protocol difference. Không dùng matched/equivalent."
+    ],
+    "forbidden_wording": [
+      "matched SECOND (72.09\\% mAP)"
+    ]
+  },
+  {
+    "id": "C11",
+    "source_file": "sections/abstract.tex",
+    "quote": "an 84.4\\% parameter reduction",
+    "paper_evidence": "tab:comparison .754M vs4.835M;raw753569/4834888→84.41393058%→84.4%.",
+    "context_evidence": "L23,416:84.4%.",
+    "status": "VERIFIED",
+    "allowed_wording": "84.4% fewer detector parameters, hoặc84.41% nếu thống nhất2decimal.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "claim-11",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison .754M vs4.835M;raw753569/4834888→84.41393058%→84.4%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L23,416:84.4%."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C12",
+    "source_file": "sections/abstract.tex",
+    "quote": "85.8\\% fewer parameters",
+    "paper_evidence": "Raw753569/5325576→85.850000075%→85.9%(1dp),85.85%(2dp). Rounded table .754/5.326→85.8430%→85.8%.",
+    "context_evidence": "L23:85.8%;L412 dùng5.326M,khôngexact count.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Dùng85.85% từ raw counts, hoặc85.9% một chữ số; công bố cơ sở làm tròn.85.8% tái tạo từ bảng đã làm tròn nhưng không phải round-once raw count.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "parameter-reduction-double-rounding",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Raw753569/5325576→85.850000075%→85.9%(1dp),85.85%(2dp). Rounded table .754/5.326→85.8430%→85.8%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L23:85.8%;L412 dùng5.326M,khôngexact count."
+      }
+    ],
+    "missing_evidence": [
+      "Dùng85.85% từ raw counts, hoặc85.9% một chữ số; công bố cơ sở làm tròn.85.8% tái tạo từ bảng đã làm tròn nhưng không phải round-once raw count."
+    ],
+    "forbidden_wording": [
+      "85.8\\% fewer parameters"
+    ]
+  },
+  {
+    "id": "C13",
+    "source_file": "sections/introduction.tex",
+    "quote": "($7.1\\times$ parameter reduction)",
+    "paper_evidence": "Raw5325576/753569=7.06713785→7.1;tab:comparison supports.",
+    "context_evidence": "SECOND/ours counts ratio≈7.1 từL412–413.",
+    "status": "VERIFIED",
+    "allowed_wording": "Use approximately one-seventh as many parameters (7.07× smaller parameter count); không viết7.1× fewer theo nghĩa phép trừ.",
+    "related_locations": "Conclusion L7; Results L19",
+    "root_cause_key": "claim-13",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Raw5325576/753569=7.06713785→7.1;tab:comparison supports."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: SECOND/ours counts ratio≈7.1 từL412–413."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C14",
+    "source_file": "sections/abstract.tex",
+    "quote": "The complete pipeline ran in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU,",
+    "paper_evidence": "tab:efficiency:60.96ms/16.41FPS;log60.9563246ms và16.4051886FPS;3759timedframes,batch1FP32.",
+    "context_evidence": "L27,413,446:khớp.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ sequential raw-file-input-to-detections mean latency trên T4;FPS lấy cùng unrounded mean,khôngmodel-only.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "claim-14",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency:60.96ms/16.41FPS;log60.9563246ms và16.4051886FPS;3759timedframes,batch1FP32."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L27,413,446:khớp."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C15",
+    "source_file": "sections/abstract.tex",
+    "quote": "the fastest end-to-end throughput among the evaluated real-time detectors.",
+    "paper_evidence": "tab:efficiency:T4ours16.41>PP15.66>SECOND10.67;historicalMobilePIXOR11.64 trênL4.",
+    "context_evidence": "L418 cùng nhận định,nhưngMobilePIXOR L4 ởL410.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ giới hạn among the evaluated detectors trong recorded benchmark; tốt hơn viết lowest measured mean E2E latency in the T4 cohort. Không suy universal SOTA/edge deployment.",
+    "related_locations": "Intro L19; Conclusion L7",
+    "root_cause_key": "claim-15",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency:T4ours16.41>PP15.66>SECOND10.67;historicalMobilePIXOR11.64 trênL4."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L418 cùng nhận định,nhưngMobilePIXOR L4 ởL410."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C16",
+    "source_file": "sections/abstract.tex",
+    "quote": "accurate LiDAR perception on resource-constrained embedded systems.",
+    "paper_evidence": "tab:efficiency đoTeslaT4;khôngembedded target,watt/energy,thermal/INT8/ROS deployment test.",
+    "context_evidence": "L386–389:T4/98.44MB,suitability làsuy rộng.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "These results motivate evaluation on embedded platforms; the present measurements are from a desktop/server GPU pipeline.",
+    "related_locations": "Methods L12; Intro L9,11; Conclusion L5",
+    "root_cause_key": "edge-deployment-extrapolation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 1,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency đoTeslaT4;khôngembedded target,watt/energy,thermal/INT8/ROS deployment test."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L386–389:T4/98.44MB,suitability làsuy rộng."
+      }
+    ],
+    "missing_evidence": [
+      "These results motivate evaluation on embedded platforms; the present measurements are from a desktop/server GPU pipeline."
+    ],
+    "forbidden_wording": [
+      "accurate LiDAR perception on resource-constrained embedded systems."
+    ]
+  },
+  {
+    "id": "C17",
+    "source_file": "sections/conclusion.tex",
+    "quote": "a compact, proposal-free 3D LiDAR object detector",
+    "paper_evidence": "Methods Eq.target_tuple/Algorithm:chỉ x,y,l,w,yaw;tab:comparison BEV;khôngprimary3DAP.",
+    "context_evidence": "L425–433:oursN/A3D,BEVonly;optionalvertical ởL121.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "a compact BEV object detector operating on3D LiDAR point clouds; giữ limitation full3D chưađánhgiá.",
+    "related_locations": "Intro L11; Methods L12,415; Results L192",
+    "root_cause_key": "bev-versus-full-3d",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 5,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Methods Eq.target_tuple/Algorithm:chỉ x,y,l,w,yaw;tab:comparison BEV;khôngprimary3DAP."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L425–433:oursN/A3D,BEVonly;optionalvertical ởL121."
+      }
+    ],
+    "missing_evidence": [
+      "a compact BEV object detector operating on3D LiDAR point clouds; giữ limitation full3D chưađánhgiá."
+    ],
+    "forbidden_wording": [
+      "a compact, proposal-free 3D LiDAR object detector"
+    ]
+  },
+  {
+    "id": "C18",
+    "source_file": "sections/introduction.tex",
+    "quote": "Empirical validation and leading edge Pareto efficiency.",
+    "paper_evidence": "fig:pareto_tradeoff/tablecomparison:ours nondominated trong observed set;khácAPprotocol/hardware. Parameter-frontier line đi quaSECOND dùPointRCNN(4.039M,73.38)dominatesSECOND(5.326M,72.09).",
+    "context_evidence": "§6.1 chỉ5models;khôngsearchtoànliterature.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "Empirical accuracy–parameter–latency trade-offs on KITTI validation. Có thể nói observed non-dominated point nếu giữ protocol caveats.",
+    "related_locations": "",
+    "root_cause_key": "pareto-scope",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:pareto_tradeoff/tablecomparison:ours nondominated trong observed set;khácAPprotocol/hardware. Parameter-frontier line đi quaSECOND dùPointRCNN(4.039M,73.38)dominatesSECOND(5.326M,72.09)."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.1 chỉ5models;khôngsearchtoànliterature."
+      }
+    ],
+    "missing_evidence": [
+      "Empirical accuracy–parameter–latency trade-offs on KITTI validation. Có thể nói observed non-dominated point nếu giữ protocol caveats."
+    ],
+    "forbidden_wording": [
+      "Empirical validation and leading edge Pareto efficiency."
+    ]
+  },
+  {
+    "id": "C19",
+    "source_file": "sections/introduction.tex",
+    "quote": "Neither combines continuous subcell displacements with continuous vertical spatial moments.",
+    "paper_evidence": "ChỉcitesPillarHist/TriBand;encodingtable đo3channelvariant,khôngxác minh nội dung từngpaper.",
+    "context_evidence": "L503–508 soencoding variants;khôngprior-art claim verification.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Nêu thành phần mà paper này combines; kiểm tra original references trước khi khẳng định neither. Không tự thêm first/novel.",
+    "related_locations": "Related Work L6",
+    "root_cause_key": "prior-art-claim-not-verified",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 7,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "ChỉcitesPillarHist/TriBand;encodingtable đo3channelvariant,khôngxác minh nội dung từngpaper."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L503–508 soencoding variants;khôngprior-art claim verification."
+      }
+    ],
+    "missing_evidence": [
+      "Nêu thành phần mà paper này combines; kiểm tra original references trước khi khẳng định neither. Không tự thêm first/novel."
+    ],
+    "forbidden_wording": [
+      "Neither combines continuous subcell displacements with continuous vertical spatial moments."
+    ]
+  },
+  {
+    "id": "C20",
+    "source_file": "sections/introduction.tex",
+    "quote": "without learned PointNet encoders or 3D sparse convolutions.",
+    "paper_evidence": "fig:r37_overview,tab:strata_bev14,backbone/tableconfig;codefinal2Dconv.",
+    "context_evidence": "L24,58,220 xác nhận design.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ structural statement; không đồng nhất encoder-free với zero preprocessing cost.",
+    "related_locations": "Abstract; Methods L12; Conclusion L5",
+    "root_cause_key": "claim-20",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 15,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:r37_overview,tab:strata_bev14,backbone/tableconfig;codefinal2Dconv."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L24,58,220 xác nhận design."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C21",
+    "source_file": "sections/methodology.tex",
+    "quote": "Both compute the same fourteen deterministic features without learned parameters.",
+    "paper_evidence": "tab:strata_bev14 vàrasterformulas define14ch;khôngquantlearner.",
+    "context_evidence": "§4.1 L248–262:khớp.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ cùng feature definitions; không hàm ý bitwise-identical mọibackend nếu chưa differential test.",
+    "related_locations": "Abstract; Intro L11; Conclusion L5",
+    "root_cause_key": "claim-21",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 122,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14 vàrasterformulas define14ch;khôngquantlearner."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §4.1 L248–262:khớp."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C22",
+    "source_file": "sections/methodology.tex",
+    "quote": "Block-SimAM adds \\textbf{zero parameters}",
+    "paper_evidence": "tab:attention caption;source SimAMCore khôngParameter;Phase2countsamearchitectureoff/on đều753569.",
+    "context_evidence": "L71,281:0learnedparams.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ zero additional trainable attention parameters; có thêm operations/latency.",
+    "related_locations": "Abstract; Intro L15; Conclusion L5",
+    "root_cause_key": "claim-22",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 261,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:attention caption;source SimAMCore khôngParameter;Phase2countsamearchitectureoff/on đều753569."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L71,281:0learnedparams."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C23",
+    "source_file": "sections/methodology.tex",
+    "quote": "for nine attention operators in total.",
+    "paper_evidence": "fig:backbone_f32/tab:setup depths3+4+2=9;resolved finalconfigmatches.",
+    "context_evidence": "L70,159,215,517 nói8 hoặcdepth2/4/2.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ9(final);context8 phảigắn lịch sử2/4/2. Không sửa final về8.",
+    "related_locations": "Intro L11; Experiments L43",
+    "root_cause_key": "context-architecture-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 235,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:backbone_f32/tab:setup depths3+4+2=9;resolved finalconfigmatches."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L70,159,215,517 nói8 hoặcdepth2/4/2."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ9(final);context8 phảigắn lịch sử2/4/2. Không sửa final về8."
+    ],
+    "forbidden_wording": [
+      "for nine attention operators in total."
+    ]
+  },
+  {
+    "id": "C24",
+    "source_file": "sections/methodology.tex",
+    "quote": "\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}",
+    "paper_evidence": "fig:backbone_f32/tab:setup/head32;resolvedconfig F32,out32,H32.",
+    "context_evidence": "L182–198,222–225 nóiout16/head16,trongL75 lạiF32.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ final32; version context và channel contract.",
+    "related_locations": "Intro L11,15; Experiments L43",
+    "root_cause_key": "context-architecture-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 291,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:backbone_f32/tab:setup/head32;resolvedconfig F32,out32,H32."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L182–198,222–225 nóiout16/head16,trongL75 lạiF32."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ final32; version context và channel contract."
+    ],
+    "forbidden_wording": [
+      "\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}"
+    ]
+  },
+  {
+    "id": "C25",
+    "source_file": "sections/methodology.tex",
+    "quote": "depthwise $3 \\times 3$ refinement, BN, and SiLU produce $\\mathbf{U}_4$ and $\\mathbf{U}_3$",
+    "paper_evidence": "fig:backbone_f32 thực ghiDW48→48 rồiConv48→32;codeproj_u3 thường,khôngDW.",
+    "context_evidence": "L177–179 phân biệtRefine/Proj nhưngL73 diễnđạtchungDW.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Nêustride8 depthwise48→48;stride4 standardConv48→32. Sửa cùngcaption SG-FPN vàIntro.",
+    "related_locations": "Intro L11; Methods caption L186,276",
+    "root_cause_key": "t01",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 285,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:backbone_f32 thực ghiDW48→48 rồiConv48→32;codeproj_u3 thường,khôngDW."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L177–179 phân biệtRefine/Proj nhưngL73 diễnđạtchungDW."
+      }
+    ],
+    "missing_evidence": [
+      "Nêustride8 depthwise48→48;stride4 standardConv48→32. Sửa cùngcaption SG-FPN vàIntro."
+    ],
+    "forbidden_wording": [
+      "depthwise $3 \\times 3$ refinement, BN, and SiLU produce $\\mathbf{U}_4$ and $\\mathbf{U}_3$"
+    ]
+  },
+  {
+    "id": "C26",
+    "source_file": "sections/introduction.tex",
+    "quote": "avoiding deconvolution checkerboard artifacts.",
+    "paper_evidence": "tab:components A7→A8:68.12→67.38,−.74pp;fig:scale_gated_fusion làschematic,khôngartifacterror metric.",
+    "context_evidence": "L73 nóieliminates;L515 gộpnhầmwidth/gategain.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "uses bilinear upsampling in place of transposed convolution; intended to avoid that particular upsampling mechanism. Chưaclaim artifact-free/suppressnoiseproved.",
+    "related_locations": "Methods L276; Results L106",
+    "root_cause_key": "gating-artifact-claim",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 11,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components A7→A8:68.12→67.38,−.74pp;fig:scale_gated_fusion làschematic,khôngartifacterror metric."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L73 nóieliminates;L515 gộpnhầmwidth/gategain."
+      }
+    ],
+    "missing_evidence": [
+      "uses bilinear upsampling in place of transposed convolution; intended to avoid that particular upsampling mechanism. Chưaclaim artifact-free/suppressnoiseproved."
+    ],
+    "forbidden_wording": [
+      "avoiding deconvolution checkerboard artifacts."
+    ]
+  },
+  {
+    "id": "C27",
+    "source_file": "sections/methodology.tex",
+    "quote": "a $7 \\times 7$ depthwise receptive field spans $0.7 \\times 0.7$\\,m at stride 1.",
+    "paper_evidence": "Kernel-footprint arithmetic7×.1=.7m;stride8 footprint7×8×.1=5.6m;fig:backbone.",
+    "context_evidence": "L67,203–206 cùngvalues.",
+    "status": "VERIFIED",
+    "allowed_wording": "Gọi nominal kernel footprint; không nhầm với accumulated effective receptive field của toàn network.",
+    "related_locations": "Intro L9,11",
+    "root_cause_key": "claim-27",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 192,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Kernel-footprint arithmetic7×.1=.7m;stride8 footprint7×8×.1=5.6m;fig:backbone."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L67,203–206 cùngvalues."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C28",
+    "source_file": "sections/methodology.tex",
+    "quote": "The backbone achieved $55.94$\\,FPS on Tesla T4",
+    "paper_evidence": "tab:efficiency55.94 làwhole model+heads,17.88ms;backbone604864 chỉmộtcomponent.",
+    "context_evidence": "L26,446 cũngwhole model.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "The complete detector achieved55.94FPS for in-pipeline model forward; chưacóbackbone-onlytiming.",
+    "related_locations": "",
+    "root_cause_key": "latency-scope",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 207,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency55.94 làwhole model+heads,17.88ms;backbone604864 chỉmộtcomponent."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L26,446 cũngwhole model."
+      }
+    ],
+    "missing_evidence": [
+      "The complete detector achieved55.94FPS for in-pipeline model forward; chưacóbackbone-onlytiming."
+    ],
+    "forbidden_wording": [
+      "The backbone achieved $55.94$\\,FPS on Tesla T4"
+    ]
+  },
+  {
+    "id": "C29",
+    "source_file": "sections/methodology.tex",
+    "quote": "standalone network throughput reached $55.94$\\,FPS",
+    "paper_evidence": "tab:components/efficiency note:standalone115.32FPS,8.67ms;pipelineforward55.94FPS,17.88ms.",
+    "context_evidence": "L26 phânbiệtđúng2regimes.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Đổi55.94 thành in-pipeline model forward; giữ standalone riêng115.32 với raw timing protocol cần xác minh.",
+    "related_locations": "",
+    "root_cause_key": "latency-scope",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 466,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components/efficiency note:standalone115.32FPS,8.67ms;pipelineforward55.94FPS,17.88ms."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L26 phânbiệtđúng2regimes."
+      }
+    ],
+    "missing_evidence": [
+      "Đổi55.94 thành in-pipeline model forward; giữ standalone riêng115.32 với raw timing protocol cần xác minh."
+    ],
+    "forbidden_wording": [
+      "standalone network throughput reached $55.94$\\,FPS"
+    ]
+  },
+  {
+    "id": "C30",
+    "source_file": "sections/methodology.tex",
+    "quote": "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.",
+    "paper_evidence": "tab:componentsA5=60.22,A6=66.25:6.03pp;relative10.0132846%.",
+    "context_evidence": "L64,486–487,514:+6.03 nhưnggọibằng%.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "The reported progression increased Moderate mAP from60.22% to66.25%,a6.03-percentage-point change; controlled-effect qualification cần manifests.",
+    "related_locations": "Intro L19; Results L102; Conclusion L7",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 128,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA5=60.22,A6=66.25:6.03pp;relative10.0132846%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L64,486–487,514:+6.03 nhưnggọibằng%."
+      }
+    ],
+    "missing_evidence": [
+      "The reported progression increased Moderate mAP from60.22% to66.25%,a6.03-percentage-point change; controlled-effect qualification cần manifests."
+    ],
+    "forbidden_wording": [
+      "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations."
+    ]
+  },
+  {
+    "id": "C31",
+    "source_file": "sections/introduction.tex",
+    "quote": "OGA and IQA added \\textbf{+3.20\\% mAP}",
+    "paper_evidence": "tab:componentsA8=67.38,A9=70.58:3.20pp;lossfactorial full.",
+    "context_evidence": "L493,516:70.58−67.38=3.20.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "OGA+IQA row was3.20percentage points abovebaseline; package-level,khôngmỗimodule3.20.",
+    "related_locations": "Results L110; Conclusion L7",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA8=67.38,A9=70.58:3.20pp;lossfactorial full."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L493,516:70.58−67.38=3.20."
+      }
+    ],
+    "missing_evidence": [
+      "OGA+IQA row was3.20percentage points abovebaseline; package-level,khôngmỗimodule3.20."
+    ],
+    "forbidden_wording": [
+      "OGA and IQA added \\textbf{+3.20\\% mAP}"
+    ]
+  },
+  {
+    "id": "C32",
+    "source_file": "sections/introduction.tex",
+    "quote": "Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters.",
+    "paper_evidence": "tab:attention70.58→71.46=.88pp;off/onparameter-freeclaim đúng;historicalrowidentity chưa khóa.",
+    "context_evidence": "L493→497:70.58→71.50=.92pp,mAP9 .79 so paper .76.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "The reported A9–A10 difference was.88percentage points; reconcile context snapshot and architecture/schedule before isolated causal claim.",
+    "related_locations": "Methods L261; Results L115–117,134",
+    "root_cause_key": "context-final-result-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:attention70.58→71.46=.88pp;off/onparameter-freeclaim đúng;historicalrowidentity chưa khóa."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L493→497:70.58→71.50=.92pp,mAP9 .79 so paper .76."
+      }
+    ],
+    "missing_evidence": [
+      "The reported A9–A10 difference was.88percentage points; reconcile context snapshot and architecture/schedule before isolated causal claim."
+    ],
+    "forbidden_wording": [
+      "Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters."
+    ]
+  },
+  {
+    "id": "C33",
+    "source_file": "sections/introduction.tex",
+    "quote": "In controlled ablations,",
+    "paper_evidence": "tab:loss noattention.721M vsfinal.753569M;zero-paramSimAM cannot explain delta;curves50 vsfinal160epochs.",
+    "context_evidence": "§6.6 progression khôngmanifest từngrun;depth8 old vsfinal9.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "In the reported architectural progression; chỉkhôi phục controlled sau config/hash,budget,seed,selectionpolicy matched.",
+    "related_locations": "Conclusion L7; Tables encoding/loss",
+    "root_cause_key": "m03",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss noattention.721M vsfinal.753569M;zero-paramSimAM cannot explain delta;curves50 vsfinal160epochs."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.6 progression khôngmanifest từngrun;depth8 old vsfinal9."
+      }
+    ],
+    "missing_evidence": [
+      "In the reported architectural progression; chỉkhôi phục controlled sau config/hash,budget,seed,selectionpolicy matched."
+    ],
+    "forbidden_wording": [
+      "In controlled ablations,"
+    ]
+  },
+  {
+    "id": "C34",
+    "source_file": "sections/introduction.tex",
+    "quote": "Optional visibility, shadow-masking, and intensity-adjustment heuristics address additional synthesis artifacts.",
+    "paper_evidence": "Khôngablation từngoptionalmechanism;Experiments L49:disableLOS/shadow/radiometry;visibilityflagguardbypassfinal.",
+    "context_evidence": "L62,514 gángainchoLOS/shadowtoànpackage,khôngđúngfinaltoggles.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "The sampler provides optional checks; their individual benefits were not evaluated in the reported final configuration. Giữ chúng làcapability,khôngvalidated contribution.",
+    "related_locations": "",
+    "root_cause_key": "optional-branch-evidence",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 17,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Khôngablation từngoptionalmechanism;Experiments L49:disableLOS/shadow/radiometry;visibilityflagguardbypassfinal."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L62,514 gángainchoLOS/shadowtoànpackage,khôngđúngfinaltoggles."
+      }
+    ],
+    "missing_evidence": [
+      "The sampler provides optional checks; their individual benefits were not evaluated in the reported final configuration. Giữ chúng làcapability,khôngvalidated contribution."
+    ],
+    "forbidden_wording": [
+      "Optional visibility, shadow-masking, and intensity-adjustment heuristics address additional synthesis artifacts."
+    ]
+  },
+  {
+    "id": "C35",
+    "source_file": "sections/introduction.tex",
+    "quote": "12-parameter \\textbf{T-SBUW} balances task objectives,",
+    "paper_evidence": "MethodsL384–401 formula12logits;fig:loss_curves khônguniform/EMA-only/fullT-SBUW ablation.",
+    "context_evidence": "L328–339 cóformulation nhưng§6.6khôngrowtáchweighting.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "T-SBUW defines adaptive weights; its isolated contribution was not measured. Nếugiữđónggópchính,thêmmatched ablation.",
+    "related_locations": "Conclusion L5; Methods L384",
+    "root_cause_key": "orphan-tsbuw",
+    "orphan_contribution": true,
+    "critical_blocker": true,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 17,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "MethodsL384–401 formula12logits;fig:loss_curves khônguniform/EMA-only/fullT-SBUW ablation."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L328–339 cóformulation nhưng§6.6khôngrowtáchweighting."
+      }
+    ],
+    "missing_evidence": [
+      "T-SBUW defines adaptive weights; its isolated contribution was not measured. Nếugiữđónggópchính,thêmmatched ablation."
+    ],
+    "forbidden_wording": [
+      "12-parameter \\textbf{T-SBUW} balances task objectives,"
+    ]
+  },
+  {
+    "id": "C36",
+    "source_file": "sections/methodology.tex",
+    "quote": "This construction strictly conserves the total weight.",
+    "paper_evidence": "Eq.tsbuw_weights:sumω=J=6 bằngsoftmaxnormalization;proofalgebra,khôngcầnbảngAP.",
+    "context_evidence": "L333:sumω=6.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ total task weight; không nâng thành conserved gradient norm hoặc guaranteed convergence.",
+    "related_locations": "",
+    "root_cause_key": "claim-36",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 395,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.tsbuw_weights:sumω=J=6 bằngsoftmaxnormalization;proofalgebra,khôngcầnbảngAP."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L333:sumω=6."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C37",
+    "source_file": "sections/methodology.tex",
+    "quote": "to ensure numerical stability during deep backpropagation.",
+    "paper_evidence": "LayerScaleinit1e-5 ởMethods;khônggradientstats/nonfinite-rate/controlledstabilitytest.",
+    "context_evidence": "L272 cũngensuringstableconvergence nhưngkhôngsupportingstats.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "to initialize residual updates at a small scale; stability làdesign motivation,khôngguarantee.",
+    "related_locations": "",
+    "root_cause_key": "stability-guarantee",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 229,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "LayerScaleinit1e-5 ởMethods;khônggradientstats/nonfinite-rate/controlledstabilitytest."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L272 cũngensuringstableconvergence nhưngkhôngsupportingstats."
+      }
+    ],
+    "missing_evidence": [
+      "to initialize residual updates at a small scale; stability làdesign motivation,khôngguarantee."
+    ],
+    "forbidden_wording": [
+      "to ensure numerical stability during deep backpropagation."
+    ]
+  },
+  {
+    "id": "C38",
+    "source_file": "sections/methodology.tex",
+    "quote": "Detaching the target limits gradient instability while retaining supervision for confidence calibration.",
+    "paper_evidence": "Eq.iqa_loss stopgrad đúngchặngradientquaqualitytarget;khôngcalibration ECE/reliability/stability ablation.",
+    "context_evidence": "L326–327:BCEwithdetachedproxy.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Detaching the target prevents gradients from propagating through the target-generation path. Chưađịnhlượnggradientstability/calibration improvement.",
+    "related_locations": "",
+    "root_cause_key": "quality-calibration-mechanism",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 368,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.iqa_loss stopgrad đúngchặngradientquaqualitytarget;khôngcalibration ECE/reliability/stability ablation."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L326–327:BCEwithdetachedproxy."
+      }
+    ],
+    "missing_evidence": [
+      "Detaching the target prevents gradients from propagating through the target-generation path. Chưađịnhlượnggradientstability/calibration improvement."
+    ],
+    "forbidden_wording": [
+      "Detaching the target limits gradient instability while retaining supervision for confidence calibration."
+    ]
+  },
+  {
+    "id": "C39",
+    "source_file": "sections/methodology.tex",
+    "quote": "We developed \\textbf{Q-OGA} as a head-free alternative for resource-constrained platforms.",
+    "paper_evidence": "tab:loss cóQOGA69.20/.702M/6.94ms;Methods cósectionnhưngIntroduction contributions/ConclusionkhôngtómQ-OGA.",
+    "context_evidence": "§4.4.3 và§6.6 L491:69.20.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Nếu Q-OGA là đóng góp mới: thêm Intro và Conclusion cùng bounded result; hoặc ghi rõ auxiliary comparison, không phải main contribution.",
+    "related_locations": "Related Work L24; Results L127",
+    "root_cause_key": "orphan-qoga",
+    "orphan_contribution": true,
+    "critical_blocker": true,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 371,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss cóQOGA69.20/.702M/6.94ms;Methods cósectionnhưngIntroduction contributions/ConclusionkhôngtómQ-OGA."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §4.4.3 và§6.6 L491:69.20."
+      }
+    ],
+    "missing_evidence": [
+      "Nếu Q-OGA là đóng góp mới: thêm Intro và Conclusion cùng bounded result; hoặc ghi rõ auxiliary comparison, không phải main contribution."
+    ],
+    "forbidden_wording": [
+      "We developed \\textbf{Q-OGA} as a head-free alternative for resource-constrained platforms."
+    ]
+  },
+  {
+    "id": "C40",
+    "source_file": "sections/methodology.tex",
+    "quote": "adding $18.59\\,\\text{K}$ parameters",
+    "paper_evidence": "tab:loss .721−.702=.019M saurounding,khôngsuyexact18.59K;final-source counterIQA=18626=18.626K.",
+    "context_evidence": "§3.3heads111921 nhưngkhôngexactIQA-onlydelta;historicalconfigs chưakhóa.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Khôngkhẳngđịnh18.59K cho final. Côngbốexactper-run counts;finalsame-topologybranchdelta18,626,nhưngkhôngghiđèhistoricalrows chưaresolve.",
+    "related_locations": "Methods L381; Results L127; tab:loss note",
+    "root_cause_key": "iqa-parameter-delta",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 371,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss .721−.702=.019M saurounding,khôngsuyexact18.59K;final-source counterIQA=18626=18.626K."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §3.3heads111921 nhưngkhôngexactIQA-onlydelta;historicalconfigs chưakhóa."
+      }
+    ],
+    "missing_evidence": [
+      "Khôngkhẳngđịnh18.59K cho final. Côngbốexactper-run counts;finalsame-topologybranchdelta18,626,nhưngkhôngghiđèhistoricalrows chưaresolve."
+    ],
+    "forbidden_wording": [
+      "adding $18.59\\,\\text{K}$ parameters"
+    ]
+  },
+  {
+    "id": "C41",
+    "source_file": "sections/methodology.tex",
+    "quote": "Q-OGA reduced forward latency by $1.25\\,\\text{ms}$",
+    "paper_evidence": "tab:loss8.19−6.94=1.25ms;đúngtableonly.",
+    "context_evidence": "§6.6IQA122.16FPS→8.186ms,QOGA133.97FPS→7.465ms,delta≈.722ms;khác144.16FPSpaper.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "The standalone table reports1.25ms; reconcile different run/device/timing snapshots in context before attributing saving solely to removing IQA.",
+    "related_locations": "Results L127",
+    "root_cause_key": "standalone-run-provenance",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 381,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss8.19−6.94=1.25ms;đúngtableonly."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.6IQA122.16FPS→8.186ms,QOGA133.97FPS→7.465ms,delta≈.722ms;khác144.16FPSpaper."
+      }
+    ],
+    "missing_evidence": [
+      "The standalone table reports1.25ms; reconcile different run/device/timing snapshots in context before attributing saving solely to removing IQA."
+    ],
+    "forbidden_wording": [
+      "Q-OGA reduced forward latency by $1.25\\,\\text{ms}$"
+    ]
+  },
+  {
+    "id": "C42",
+    "source_file": "sections/results.tex",
+    "quote": "Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$.",
+    "paper_evidence": "tab:loss69.20−68.97=.23pp;69.20−67.38=1.82pp.",
+    "context_evidence": "L489–491:67.38,68.97,69.20.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ69.20%;gains.23 và1.82percentage points. QOGA cònđổiRDA/softmin,khôngisolatequalitycoupling alone.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 127,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss69.20−68.97=.23pp;69.20−67.38=1.82pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L489–491:67.38,68.97,69.20."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ69.20%;gains.23 và1.82percentage points. QOGA cònđổiRDA/softmin,khôngisolatequalitycoupling alone."
+    ],
+    "forbidden_wording": [
+      "Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$."
+    ]
+  },
+  {
+    "id": "C43",
+    "source_file": "sections/methodology.tex",
+    "quote": "The explicit IQA branch gave the highest ranking accuracy,",
+    "paper_evidence": "tab:lossđoAP fullobjectives;khôngrankaccuracy/AP-atfixedranking/ECE/qualitycorrelationmetric.",
+    "context_evidence": "§6.6IQA-only70.31,OGA+IQA70.58;khôngrankingaccuracymeasure.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "The OGA+IQA configuration had the highest Moderate mAP among the configurations in the loss-factorial table.",
+    "related_locations": "",
+    "root_cause_key": "quality-calibration-mechanism",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 371,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:lossđoAP fullobjectives;khôngrankaccuracy/AP-atfixedranking/ECE/qualitycorrelationmetric."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.6IQA-only70.31,OGA+IQA70.58;khôngrankingaccuracymeasure."
+      }
+    ],
+    "missing_evidence": [
+      "The OGA+IQA configuration had the highest Moderate mAP among the configurations in the loss-factorial table."
+    ],
+    "forbidden_wording": [
+      "The explicit IQA branch gave the highest ranking accuracy,"
+    ]
+  },
+  {
+    "id": "C44",
+    "source_file": "sections/methodology.tex",
+    "quote": "Normalizing by the target bounding box diagonal ensures scale invariance across categories.",
+    "paper_evidence": "Eq.corner_loss numerator/GTdiagonal scalescancel khi predicted/targetgeometry cùngscale,floorinactive.",
+    "context_evidence": "L320–324 cùngformula.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ scale-normalized distance; qualify invariance under common uniform scaling away fromepsilon/logclamps. Khôngđồngnhấtclass-independentAP.",
+    "related_locations": "",
+    "root_cause_key": "claim-44",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 360,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.corner_loss numerator/GTdiagonal scalescancel khi predicted/targetgeometry cùngscale,floorinactive."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L320–324 cùngformula."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C45",
+    "source_file": "sections/methodology.tex",
+    "quote": "continuous bounding box IoU quality $q^*$",
+    "paper_evidence": "Eq.iqa_loss targetclip(mean4axisGIoU,0,1),khôngexactrotatedareaIoU;Phase2squarewitnessproxy.5 vsIoU.25.",
+    "context_evidence": "L319/327 gọiMGIoUsimilarity.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "detached projection-GIoU quality proxy; khôngclaim exactIoU calibration nếu chưađocorrelation/reliability.",
+    "related_locations": "IQA head descriptions/Conclusion L5",
+    "root_cause_key": "proxy-versus-iou",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 371,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.iqa_loss targetclip(mean4axisGIoU,0,1),khôngexactrotatedareaIoU;Phase2squarewitnessproxy.5 vsIoU.25."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L319/327 gọiMGIoUsimilarity."
+      }
+    ],
+    "missing_evidence": [
+      "detached projection-GIoU quality proxy; khôngclaim exactIoU calibration nếu chưađocorrelation/reliability."
+    ],
+    "forbidden_wording": [
+      "continuous bounding box IoU quality $q^*$"
+    ]
+  },
+  {
+    "id": "C46",
+    "source_file": "sections/results.tex",
+    "quote": "a $+1.33\\%$ margin",
+    "paper_evidence": "tab:comparison71.46−70.13=1.33pp;relative1.896478%.",
+    "context_evidence": "L416:+1.33%,arithmeticmatchnhưngunitsmơhồ.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "a1.33-percentage-point reported difference; retain evaluator caveat.",
+    "related_locations": "Conclusion L7",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison71.46−70.13=1.33pp;relative1.896478%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L416:+1.33%,arithmeticmatchnhưngunitsmơhồ."
+      }
+    ],
+    "missing_evidence": [
+      "a1.33-percentage-point reported difference; retain evaluator caveat."
+    ],
+    "forbidden_wording": [
+      "a $+1.33\\%$ margin"
+    ]
+  },
+  {
+    "id": "C47",
+    "source_file": "sections/introduction.tex",
+    "quote": "(+4.74\\% over PointPillars, +4.19\\% over SECOND)",
+    "paper_evidence": "tab:comparison60.75−56.01=4.74pp;60.75−56.56=4.19pp;PRfigurebaselines55.83/56.47→4.92/4.28.",
+    "context_evidence": "L411–417:referencevalues56.01/56.56.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "4.74 and4.19percentage points from reference-table values; đừngghép vớiPRshared-localnumbers. Chọnđồngnhấtprotocol trước infer superiority.",
+    "related_locations": "Conclusion L7; Results L30",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison60.75−56.01=4.74pp;60.75−56.56=4.19pp;PRfigurebaselines55.83/56.47→4.92/4.28."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L411–417:referencevalues56.01/56.56."
+      }
+    ],
+    "missing_evidence": [
+      "4.74 and4.19percentage points from reference-table values; đừngghép vớiPRshared-localnumbers. Chọnđồngnhấtprotocol trước infer superiority."
+    ],
+    "forbidden_wording": [
+      "(+4.74\\% over PointPillars, +4.19\\% over SECOND)"
+    ]
+  },
+  {
+    "id": "C48",
+    "source_file": "sections/results.tex",
+    "quote": "by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$",
+    "paper_evidence": "tab:comparison71.46−41.40=30.06pp;73.42−42.27=31.15pp.",
+    "context_evidence": "§6.1L410,413:cùngvalueslocalR40.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "30.06percentage points inModerate mAP and31.15points inmAP9; khôngrelativepercent.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 19,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison71.46−41.40=30.06pp;73.42−42.27=31.15pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.1L410,413:cùngvalueslocalR40."
+      }
+    ],
+    "missing_evidence": [
+      "30.06percentage points inModerate mAP and31.15points inmAP9; khôngrelativepercent."
+    ],
+    "forbidden_wording": [
+      "by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$"
+    ]
+  },
+  {
+    "id": "C49",
+    "source_file": "sections/results.tex",
+    "quote": "(\\textbf{+6.20\\% mAP})",
+    "paper_evidence": "tab:components47.60−41.40=6.20pp;throughput169.97/90.57≈1.8767 nên nearlydouble hợp lý nhưngGPUschưakhóa.",
+    "context_evidence": "L481–482,511:+6.20.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "a6.20-percentage-point increase in the reported progression; throughputprovenance phảiđồngnhất.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 86,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components47.60−41.40=6.20pp;throughput169.97/90.57≈1.8767 nên nearlydouble hợp lý nhưngGPUschưakhóa."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L481–482,511:+6.20."
+      }
+    ],
+    "missing_evidence": [
+      "a6.20-percentage-point increase in the reported progression; throughputprovenance phảiđồngnhất."
+    ],
+    "forbidden_wording": [
+      "(\\textbf{+6.20\\% mAP})"
+    ]
+  },
+  {
+    "id": "C50",
+    "source_file": "sections/results.tex",
+    "quote": "($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35)",
+    "paper_evidence": "tab:encoding50.14−44.42=5.72pp;50.14−47.60=2.54pp.",
+    "context_evidence": "L505–508,512:khớpvalues.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "5.72 and2.54percentage points;góiencoding thay nhiều features,nênkhôngquyriêngoffsetgain.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 91,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:encoding50.14−44.42=5.72pp;50.14−47.60=2.54pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L505–508,512:khớpvalues."
+      }
+    ],
+    "missing_evidence": [
+      "5.72 and2.54percentage points;góiencoding thay nhiều features,nênkhôngquyriêngoffsetgain."
+    ],
+    "forbidden_wording": [
+      "($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35)"
+    ]
+  },
+  {
+    "id": "C51",
+    "source_file": "sections/results.tex",
+    "quote": "(\\textbf{+8.92\\% mAP})",
+    "paper_evidence": "tab:componentsA5=60.22,A4=51.30:8.92pp;A3→A5=10.08ppcombinetwochanges.",
+    "context_evidence": "L485–486,513:có50.14→60.22=10.08.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "8.92percentage points forH16→H32 row;10.08points appliesgrouping+widthcombined.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 97,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA5=60.22,A4=51.30:8.92pp;A3→A5=10.08ppcombinetwochanges."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L485–486,513:có50.14→60.22=10.08."
+      }
+    ],
+    "missing_evidence": [
+      "8.92percentage points forH16→H32 row;10.08points appliesgrouping+widthcombined."
+    ],
+    "forbidden_wording": [
+      "(\\textbf{+8.92\\% mAP})"
+    ]
+  },
+  {
+    "id": "C52",
+    "source_file": "sections/results.tex",
+    "quote": "(\\textbf{+7.34\\% mAP})",
+    "paper_evidence": "tab:components68.45−61.11=7.34pp in mAP9,khôngModerate.",
+    "context_evidence": "L64,486–487,514:7.34mAP9.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "a7.34-percentage-point change inmAP9; labelmetricexplicitly.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 102,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components68.45−61.11=7.34pp in mAP9,khôngModerate."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L64,486–487,514:7.34mAP9."
+      }
+    ],
+    "missing_evidence": [
+      "a7.34-percentage-point change inmAP9; labelmetricexplicitly."
+    ],
+    "forbidden_wording": [
+      "(\\textbf{+7.34\\% mAP})"
+    ]
+  },
+  {
+    "id": "C53",
+    "source_file": "sections/results.tex",
+    "quote": "(\\textbf{+1.87\\% mAP})",
+    "paper_evidence": "tab:componentsA6→A7:68.12−66.25=1.87pp(widthonly);A7→A8:−.74;A6→A8:+1.13.",
+    "context_evidence": "L515 gộpaddinggatecũngthành68.12/+1.87;saiattribution.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "1.87points for fusion-width increase alone. SG-FPN row is.74points lower;updatecontext L515.",
+    "related_locations": "",
+    "root_cause_key": "context-gating-attribution",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 106,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA6→A7:68.12−66.25=1.87pp(widthonly);A7→A8:−.74;A6→A8:+1.13."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L515 gộpaddinggatecũngthành68.12/+1.87;saiattribution."
+      }
+    ],
+    "missing_evidence": [
+      "1.87points for fusion-width increase alone. SG-FPN row is.74points lower;updatecontext L515."
+    ],
+    "forbidden_wording": [
+      "(\\textbf{+1.87\\% mAP})"
+    ]
+  },
+  {
+    "id": "C54",
+    "source_file": "sections/results.tex",
+    "quote": "(\\textbf{+1.59\\% mAP})",
+    "paper_evidence": "tab:loss68.97−67.38=1.59pp;Car.17,Ped2.45,Cyc2.14pp;IQAalone70.31−67.38=2.93pp.",
+    "context_evidence": "L489–493:compositevaluesavailable;classdeltanottabulatedcontext.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Use1.59/2.93percentage points;fullfactorialinteraction3.20−1.59−2.93=−1.32points. Khônggọipositive synergisticgain.",
+    "related_locations": "Results L125",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 125,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss68.97−67.38=1.59pp;Car.17,Ped2.45,Cyc2.14pp;IQAalone70.31−67.38=2.93pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L489–493:compositevaluesavailable;classdeltanottabulatedcontext."
+      }
+    ],
+    "missing_evidence": [
+      "Use1.59/2.93percentage points;fullfactorialinteraction3.20−1.59−2.93=−1.32points. Khônggọipositive synergisticgain."
+    ],
+    "forbidden_wording": [
+      "(\\textbf{+1.59\\% mAP})"
+    ]
+  },
+  {
+    "id": "C55",
+    "source_file": "sections/results.tex",
+    "quote": "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants",
+    "paper_evidence": "tab:attention71.46−69.80=1.66,−69.44=2.02,−69.36=2.10pp;rangeđúng.",
+    "context_evidence": "Contextstagevaluescùngnhưngfinal71.50→range1.70–2.14.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữ1.66–2.10points chofinal71.46;resolvecontext71.50. FPS144.05 thuộcstage3,khôngmọistage.",
+    "related_locations": "",
+    "root_cause_key": "context-final-result-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 117,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:attention71.46−69.80=1.66,−69.44=2.02,−69.36=2.10pp;rangeđúng."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Contextstagevaluescùngnhưngfinal71.50→range1.70–2.14."
+      }
+    ],
+    "missing_evidence": [
+      "Giữ1.66–2.10points chofinal71.46;resolvecontext71.50. FPS144.05 thuộcstage3,khôngmọistage."
+    ],
+    "forbidden_wording": [
+      "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants"
+    ]
+  },
+  {
+    "id": "C56",
+    "source_file": "sections/results.tex",
+    "quote": "The plotted losses weighted by T-SBUW show no divergence or oscillation.",
+    "paper_evidence": "fig:loss_curves actualPDF:validation/classificationA6pink spike≈epoch18→~100,otherfluctuations;chưadataexport.",
+    "context_evidence": "Khôngloss-timeseries/rawspikestats ởcontext.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "Losses generally declined; visible validation/classification spikes occurred in some runs. Khôngclaimnooscillation.",
+    "related_locations": "Results L145–146",
+    "root_cause_key": "loss-curve-overclaim",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 139,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:loss_curves actualPDF:validation/classificationA6pink spike≈epoch18→~100,otherfluctuations;chưadataexport."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Khôngloss-timeseries/rawspikestats ởcontext."
+      }
+    ],
+    "missing_evidence": [
+      "Losses generally declined; visible validation/classification spikes occurred in some runs. Khôngclaimnooscillation."
+    ],
+    "forbidden_wording": [
+      "The plotted losses weighted by T-SBUW show no divergence or oscillation."
+    ]
+  },
+  {
+    "id": "C57",
+    "source_file": "sections/results.tex",
+    "quote": "Configuration A10 has the lowest late-training validation losses across the continuous regression tasks.",
+    "paper_evidence": "fig:loss_curves A9blue belowA10red ởGeometry/IoU vànhiềuđiểmOffset/Yaw;lossnormalizationkhácobjective.",
+    "context_evidence": "Khôngper-tasklate-epochnumbers haycommon-normalizationcomparisons.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "The plotted regression losses decrease over training; no uniform lowest-loss claim forA10. Export comparable unweighted taskmetrics trước ranking.",
+    "related_locations": "",
+    "root_cause_key": "loss-curve-overclaim",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 139,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:loss_curves A9blue belowA10red ởGeometry/IoU vànhiềuđiểmOffset/Yaw;lossnormalizationkhácobjective."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Khôngper-tasklate-epochnumbers haycommon-normalizationcomparisons."
+      }
+    ],
+    "missing_evidence": [
+      "The plotted regression losses decrease over training; no uniform lowest-loss claim forA10. Export comparable unweighted taskmetrics trước ranking."
+    ],
+    "forbidden_wording": [
+      "Configuration A10 has the lowest late-training validation losses across the continuous regression tasks."
+    ]
+  },
+  {
+    "id": "C58",
+    "source_file": "sections/results.tex",
+    "quote": "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting.",
+    "paper_evidence": "fig:loss_curves givestrajectories;khôngmatchedregularization/underfittingdiagnostic;A6cóspike.",
+    "context_evidence": "PC-GTA APpackageeffectkhôngđooverfitmechanism.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "State observed training/validation trends; mechanism and degree of underfitting remain undetermined. Hedgeskhôngtạoevidence.",
+    "related_locations": "",
+    "root_cause_key": "loss-mechanism-speculation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 145,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:loss_curves givestrajectories;khôngmatchedregularization/underfittingdiagnostic;A6cóspike."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: PC-GTA APpackageeffectkhôngđooverfitmechanism."
+      }
+    ],
+    "missing_evidence": [
+      "State observed training/validation trends; mechanism and degree of underfitting remain undetermined. Hedgeskhôngtạoevidence."
+    ],
+    "forbidden_wording": [
+      "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting."
+    ]
+  },
+  {
+    "id": "C59",
+    "source_file": "sections/results.tex",
+    "quote": "compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.",
+    "paper_evidence": "PRasset legendsPedModeratePP55.83,SECOND56.47;tablemain56.01/56.56. Assettitle/footer:sharedlocalevaluator.",
+    "context_evidence": "§6.1L411–412:56.01/56.56reference. Đây không chỉrounding.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Caption phảiphânbiệtreference-tablevaluesvslocalPRfigure. Regenerateallfigure/tablefromoneprotocol;khôngđổilegendthủcôngmàgiữcurvekhác.",
+    "related_locations": "",
+    "root_cause_key": "pr-table-protocol-mismatch",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 24,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "PRasset legendsPedModeratePP55.83,SECOND56.47;tablemain56.01/56.56. Assettitle/footer:sharedlocalevaluator."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.1L411–412:56.01/56.56reference. Đây không chỉrounding."
+      }
+    ],
+    "missing_evidence": [
+      "Caption phảiphânbiệtreference-tablevaluesvslocalPRfigure. Regenerateallfigure/tablefromoneprotocol;khôngđổilegendthủcôngmàgiữcurvekhác."
+    ],
+    "forbidden_wording": [
+      "compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND."
+    ]
+  },
+  {
+    "id": "C60",
+    "source_file": "sections/results.tex",
+    "quote": "MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users,",
+    "paper_evidence": "tab:comparisonCyclist66.73<SECOND71.16;PRassetCyclistModerateours66.73<SECOND70.70;curvescross.",
+    "context_evidence": "L413vsL412Cyclist66.73<71.16;farPed.80<.99.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "Higher Pedestrian AP is observed; Cyclist performance remains below SECOND at Moderate difficulty. KhôngclaimpointwisePRdominance/allVRUs.",
+    "related_locations": "",
+    "root_cause_key": "pr-vru-dominance",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 24,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparisonCyclist66.73<SECOND71.16;PRassetCyclistModerateours66.73<SECOND70.70;curvescross."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L413vsL412Cyclist66.73<71.16;farPed.80<.99."
+      }
+    ],
+    "missing_evidence": [
+      "Higher Pedestrian AP is observed; Cyclist performance remains below SECOND at Moderate difficulty. KhôngclaimpointwisePRdominance/allVRUs."
+    ],
+    "forbidden_wording": [
+      "MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users,"
+    ]
+  },
+  {
+    "id": "C61",
+    "source_file": "sections/results.tex",
+    "quote": "Car (top row,",
+    "paper_evidence": "PRactualcolumnsCar/Ped/Cyc,rowsEasy/Moderate/Hard;oursgold,PPgreen,SECONDblue,MobilePIXORred.",
+    "context_evidence": "ContextkhôngPRlayout/color mapping.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Sửacaption theoactualrows/columns/colors;đồngthờisửareferenceAPs. Lỗi visualization/legendcontract,cùngroot vớiPRnumericmismatch.",
+    "related_locations": "Results L24",
+    "root_cause_key": "pr-table-protocol-mismatch",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 24,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "PRactualcolumnsCar/Ped/Cyc,rowsEasy/Moderate/Hard;oursgold,PPgreen,SECONDblue,MobilePIXORred."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: ContextkhôngPRlayout/color mapping."
+      }
+    ],
+    "missing_evidence": [
+      "Sửacaption theoactualrows/columns/colors;đồngthờisửareferenceAPs. Lỗi visualization/legendcontract,cùngroot vớiPRnumericmismatch."
+    ],
+    "forbidden_wording": [
+      "Car (top row,"
+    ]
+  },
+  {
+    "id": "C62",
+    "source_file": "sections/results.tex",
+    "quote": "over $2.3\\times$ faster than PIXOR",
+    "paper_evidence": "tab:efficiency144.00/60.96≈2.3622;PIXOR/oursđềuT4.",
+    "context_evidence": "L442,446:144.00,60.96.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ about2.36×pipeline throughput undermeasuredconfiguration;khôngmodel-onlyspeedup.",
+    "related_locations": "",
+    "root_cause_key": "claim-62",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 45,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency144.00/60.96≈2.3622;PIXOR/oursđềuT4."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L442,446:144.00,60.96."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C63",
+    "source_file": "sections/results.tex",
+    "quote": "reducing payload by $60.0\\%$.",
+    "paper_evidence": "tab:encoding35→14float32channels:(35−14)/35=.6;78.848MB→31.5392MB.",
+    "context_evidence": "L507–508:78.85/31.54MB,512:60%.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ tensor-payload reduction60%;khôngđồngnhấtH2Dlatencyreduction60%.",
+    "related_locations": "Related Work L7; tab:encoding note",
+    "root_cause_key": "claim-63",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 51,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:encoding35→14float32channels:(35−14)/35=.6;78.848MB→31.5392MB."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L507–508:78.85/31.54MB,512:60%."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C64",
+    "source_file": "sections/results.tex",
+    "quote": "With pinned-memory buffers, H2D latency fell to $6.91\\,\\text{ms}$, compared with $40.63\\,\\text{ms}$ for MobilePIXOR.",
+    "paper_evidence": "Tab:efficiency/rawbreakdownoursT4,MobilePIXORL4;channels/host/timerdiffer,khôngpinning-onlycontrol.",
+    "context_evidence": "L443vs446:L4vsT4,40.63vs6.91.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "Recorded H2D times were6.91ms and40.63ms on the respective pipelines; no isolated attribution to pinning orchannelcount.",
+    "related_locations": "",
+    "root_cause_key": "h2d-causal-attribution",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 51,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Tab:efficiency/rawbreakdownoursT4,MobilePIXORL4;channels/host/timerdiffer,khôngpinning-onlycontrol."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L443vs446:L4vsT4,40.63vs6.91."
+      }
+    ],
+    "missing_evidence": [
+      "Recorded H2D times were6.91ms and40.63ms on the respective pipelines; no isolated attribution to pinning orchannelcount."
+    ],
+    "forbidden_wording": [
+      "With pinned-memory buffers, H2D latency fell to $6.91\\,\\text{ms}$, compared with $40.63\\,\\text{ms}$ for MobilePIXOR."
+    ]
+  },
+  {
+    "id": "C65",
+    "source_file": "sections/results.tex",
+    "quote": "(a $+34.78\\%$ improvement)",
+    "paper_evidence": "tab:distance65.23−30.45=34.78pp;Cyclist76.32−25.55=50.77pp;ratios2.142/2.987.",
+    "context_evidence": "L456,459:cùngvalues;L461doublenearlytripleđúng.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "34.78 and50.77percentage points; morethandouble/nearlytriple đúngAPratio,khôngsafetydemonstration.",
+    "related_locations": "Results L70",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 70,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:distance65.23−30.45=34.78pp;Cyclist76.32−25.55=50.77pp;ratios2.142/2.987."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L456,459:cùngvalues;L461doublenearlytripleđúng."
+      }
+    ],
+    "missing_evidence": [
+      "34.78 and50.77percentage points; morethandouble/nearlytriple đúngAPratio,khôngsafetydemonstration."
+    ],
+    "forbidden_wording": [
+      "(a $+34.78\\%$ improvement)"
+    ]
+  },
+  {
+    "id": "C66",
+    "source_file": "sections/results.tex",
+    "quote": "(vs. $12.61\\%$, a $+31.69\\%$ gain)",
+    "paper_evidence": "tab:distance44.30−12.61=31.69pp;11.49−3.75=7.74pp;farCyclist14.38pp.",
+    "context_evidence": "§6.4L456,459:cùngvalues.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "31.69percentage points; explicitlyretainfarPedestrian.80vs.99,−.19points.",
+    "related_locations": "Results L73",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 73,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:distance44.30−12.61=31.69pp;11.49−3.75=7.74pp;farCyclist14.38pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.4L456,459:cùngvalues."
+      }
+    ],
+    "missing_evidence": [
+      "31.69percentage points; explicitlyretainfarPedestrian.80vs.99,−.19points."
+    ],
+    "forbidden_wording": [
+      "(vs. $12.61\\%$, a $+31.69\\%$ gain)"
+    ]
+  },
+  {
+    "id": "C67",
+    "source_file": "sections/introduction.tex",
+    "quote": "Physics-consistent synthesis regularizes distant returns,",
+    "paper_evidence": "tab:distancefinalvsMobilePIXOR đổi nhiều modules;farPedours.80<.99;khôngrange-specificPC-GTAoff/on.",
+    "context_evidence": "L461claimnear/mid tốt;L514 gáncơchếchưađượcisolate.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Range-adaptive subsampling is intended to model distance-dependent density; its isolated range-wise benefit was not established.",
+    "related_locations": "Results L70,73",
+    "root_cause_key": "range-mechanism-speculation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 9,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:distancefinalvsMobilePIXOR đổi nhiều modules;farPedours.80<.99;khôngrange-specificPC-GTAoff/on."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L461claimnear/mid tốt;L514 gáncơchếchưađượcisolate."
+      }
+    ],
+    "missing_evidence": [
+      "Range-adaptive subsampling is intended to model distance-dependent density; its isolated range-wise benefit was not established."
+    ],
+    "forbidden_wording": [
+      "Physics-consistent synthesis regularizes distant returns,"
+    ]
+  },
+  {
+    "id": "C68",
+    "source_file": "sections/results.tex",
+    "quote": "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone.",
+    "paper_evidence": "tab:components cópackage/widthchanges;khôngdepth-onlycontrol row.",
+    "context_evidence": "§6.6 khôngdepth-onlyrun.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "PC-GTA and grouped-head changes had large reported progression differences; remove comparison with untested depth-only scaling.",
+    "related_locations": "",
+    "root_cause_key": "untested-depth-comparison",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 192,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components cópackage/widthchanges;khôngdepth-onlycontrol row."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.6 khôngdepth-onlyrun."
+      }
+    ],
+    "missing_evidence": [
+      "PC-GTA and grouped-head changes had large reported progression differences; remove comparison with untested depth-only scaling."
+    ],
+    "forbidden_wording": [
+      "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone."
+    ]
+  },
+  {
+    "id": "C69",
+    "source_file": "sections/results.tex",
+    "quote": "from the extended run (Epoch 50)",
+    "paper_evidence": "tab:ap_vs_lossL160/captionL153:130;setupfinalselected130;canonicalcheckpoint130.",
+    "context_evidence": "L470:Epoch130;L378130extendedtraininglàcontextstaleschedule.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "from the extended160-epoch run, selected at epoch130.50 chỉstandard schedule/illustratedcurves.",
+    "related_locations": "",
+    "root_cause_key": "checkpoint-epoch",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 149,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:ap_vs_lossL160/captionL153:130;setupfinalselected130;canonicalcheckpoint130."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L470:Epoch130;L378130extendedtraininglàcontextstaleschedule."
+      }
+    ],
+    "missing_evidence": [
+      "from the extended160-epoch run, selected at epoch130.50 chỉstandard schedule/illustratedcurves."
+    ],
+    "forbidden_wording": [
+      "from the extended run (Epoch 50)"
+    ]
+  },
+  {
+    "id": "C70",
+    "source_file": "sections/results.tex",
+    "quote": "validation AP maximization (Epoch 130)",
+    "paper_evidence": "tab:ap_vs_lossfinalAP71.46<best-loss71.48;selectiontrainingpolicyrecordedmaximumvalAP,khôngallcheckpointselectionmetrics.",
+    "context_evidence": "L470–471cũng71.46vs71.48.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "recorded AP-selected checkpoint(epoch130);clarifytraining-selectionmetricvsfinalbenchmarkandresolvewhyfinalrescorebestlossishigher.",
+    "related_locations": "",
+    "root_cause_key": "checkpoint-selection-provenance",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 153,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:ap_vs_lossfinalAP71.46<best-loss71.48;selectiontrainingpolicyrecordedmaximumvalAP,khôngallcheckpointselectionmetrics."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L470–471cũng71.46vs71.48."
+      }
+    ],
+    "missing_evidence": [
+      "recorded AP-selected checkpoint(epoch130);clarifytraining-selectionmetricvsfinalbenchmarkandresolvewhyfinalrescorebestlossishigher."
+    ],
+    "forbidden_wording": [
+      "validation AP maximization (Epoch 130)"
+    ]
+  },
+  {
+    "id": "C71",
+    "source_file": "sections/results.tex",
+    "quote": "had $20.27\\,\\text{ms}$ lower end-to-end latency",
+    "paper_evidence": "tab:ap_vs_loss81.23−60.96=20.27ms;ours_best_loss/AP logsconfirm.",
+    "context_evidence": "L470–471:81.23vs60.96.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữobservedmeanlatencydifference;khônggánnguyênnhâncheckpointnếukhôngcontroltiming/candidatecounts.",
+    "related_locations": "",
+    "root_cause_key": "claim-71",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 166,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:ap_vs_loss81.23−60.96=20.27ms;ours_best_loss/AP logsconfirm."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L470–471:81.23vs60.96."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C72",
+    "source_file": "sections/results.tex",
+    "quote": "A possible explanation is that extended training sharpened classification heatmaps around positive centers,",
+    "paper_evidence": "Khôngpeakcount,NMS-candidatehistograms,heatmapsharpness,h2d/model/decodecontrolledanalysis.",
+    "context_evidence": "§6.5onlymetrics;khôngmechanismdiagnostics.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "The mechanism behind the timing difference remains undetermined; testcandidatecounts andstage-levelrepeatedtimings. Giữhypothesisrõnếuđềxuấtfuturetest.",
+    "related_locations": "",
+    "root_cause_key": "checkpoint-latency-speculation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 166,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Khôngpeakcount,NMS-candidatehistograms,heatmapsharpness,h2d/model/decodecontrolledanalysis."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.5onlymetrics;khôngmechanismdiagnostics."
+      }
+    ],
+    "missing_evidence": [
+      "The mechanism behind the timing difference remains undetermined; testcandidatecounts andstage-levelrepeatedtimings. Giữhypothesisrõnếuđềxuấtfuturetest."
+    ],
+    "forbidden_wording": [
+      "A possible explanation is that extended training sharpened classification heatmaps around positive centers,"
+    ]
+  },
+  {
+    "id": "C73",
+    "source_file": "sections/experiments.tex",
+    "quote": "Peak allocated GPU memory was $98.44\\,\\text{MB}$.",
+    "paper_evidence": "rawfield98.439453125;source divides1024²→MiB,notdecimalMB;~103.22MBdecimal.",
+    "context_evidence": "L389 gọi98.44MB,cùngunitlabelissue.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Peak allocated evaluation GPU memory was98.44MiB;khôngtrainingpeak/modeldiskbytes.",
+    "related_locations": "",
+    "root_cause_key": "memory-unit",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 52,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "rawfield98.439453125;source divides1024²→MiB,notdecimalMB;~103.22MBdecimal."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L389 gọi98.44MB,cùngunitlabelissue."
+      }
+    ],
+    "missing_evidence": [
+      "Peak allocated evaluation GPU memory was98.44MiB;khôngtrainingpeak/modeldiskbytes."
+    ],
+    "forbidden_wording": [
+      "Peak allocated GPU memory was $98.44\\,\\text{MB}$."
+    ]
+  },
+  {
+    "id": "C74",
+    "source_file": "sections/experiments.tex",
+    "quote": "The reported checkpoint came from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130.",
+    "paper_evidence": "tab:setup đúng160/10/130;resolvedfinalconfig/checkpointidentityconfirms.",
+    "context_evidence": "L377–378chỉstandard50/warmup4 hoặcextended130.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Giữpaper160/10/130;refreshcontext phânbiệtschedule length vàselectedepoch.",
+    "related_locations": "",
+    "root_cause_key": "context-training-snapshot",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 46,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setup đúng160/10/130;resolvedfinalconfig/checkpointidentityconfirms."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L377–378chỉstandard50/warmup4 hoặcextended130."
+      }
+    ],
+    "missing_evidence": [
+      "Giữpaper160/10/130;refreshcontext phânbiệtschedule length vàselectedepoch."
+    ],
+    "forbidden_wording": [
+      "The reported checkpoint came from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130."
+    ]
+  },
+  {
+    "id": "C75",
+    "source_file": "sections/experiments.tex",
+    "quote": "Variance and standard deviation",
+    "paper_evidence": "ExperimentsL52nóileftforfuture,ResultsL5cùngsingle-seed42;khôngstatisticalCItest.",
+    "context_evidence": "Configseed42;contextkhôngmulti-seedstats.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữsingle-seedlimitation;khôngtựthêmstatistically significant,robustacrossseeds ởrewrites.",
+    "related_locations": "",
+    "root_cause_key": "claim-75",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 52,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "ExperimentsL52nóileftforfuture,ResultsL5cùngsingle-seed42;khôngstatisticalCItest."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Configseed42;contextkhôngmulti-seedstats."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C76",
+    "source_file": "sections/methodology.tex",
+    "quote": "is fully recovered without trigonometric ambiguity.",
+    "paper_evidence": "Eq.box_decodehalfatan2 choheadingcanonical[−π/2,π/2];notfull2πorientation;GTusesπsymmetry.",
+    "context_evidence": "L119,139–140:cùngπsymmetriccontract.",
+    "status": "VERIFIED",
+    "allowed_wording": "The canonical heading is recovered moduloπ; khôngclaimfront/backdisambiguation.",
+    "related_locations": "",
+    "root_cause_key": "claim-76",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 449,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.box_decodehalfatan2 choheadingcanonical[−π/2,π/2];notfull2πorientation;GTusesπsymmetry."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L119,139–140:cùngπsymmetriccontract."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C77",
+    "source_file": "sections/related_work.tex",
+    "quote": "($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$)",
+    "paper_evidence": "tab:strata_bev14actualmax,mean,span,std;khôngstandalonez_minchannel.",
+    "context_evidence": "L250–254:max,mean,span,std.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "ĐổiRelatedWorkthànhz_max,z_mean,z_span,z_std. Minimum cóthểsuy từmax−span,nhưngkhôngphảichannelriêng.",
+    "related_locations": "",
+    "root_cause_key": "encoding-feature-list",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 6,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14actualmax,mean,span,std;khôngstandalonez_minchannel."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L250–254:max,mean,span,std."
+      }
+    ],
+    "missing_evidence": [
+      "ĐổiRelatedWorkthànhz_max,z_mean,z_span,z_std. Minimum cóthểsuy từmax−span,nhưngkhôngphảichannelriêng."
+    ],
+    "forbidden_wording": [
+      "($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$)"
+    ]
+  },
+  {
+    "id": "C78",
+    "source_file": "sections/introduction.tex",
+    "quote": "memory access latencies ($100\\text{--}195\\,\\text{ms}$)",
+    "paper_evidence": "tab:efficiency làE2E,khôngmemoryaccess;SECOND93.70ms<100;two-stage133.75–194.50.",
+    "context_evidence": "§6.1SECOND93.70;§6.3stagebreakdownnotmemory-only.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Name E2E latencies and the exact detector subset; do not relabel whole-pipeline timing as memory access or infer embedded limits from T4.",
+    "related_locations": "RelatedWork L11; Results L33",
+    "root_cause_key": "latency-scope",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 7,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency làE2E,khôngmemoryaccess;SECOND93.70ms<100;two-stage133.75–194.50."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: §6.1SECOND93.70;§6.3stagebreakdownnotmemory-only."
+      }
+    ],
+    "missing_evidence": [
+      "Name E2E latencies and the exact detector subset; do not relabel whole-pipeline timing as memory access or infer embedded limits from T4."
+    ],
+    "forbidden_wording": [
+      "memory access latencies ($100\\text{--}195\\,\\text{ms}$)"
+    ]
+  },
+  {
+    "id": "C79",
+    "source_file": "sections/methodology.tex",
+    "quote": "Calibrated surface returns capture material discrimination",
+    "paper_evidence": "tab:strata_bev14ch8/9max/meanintensity;khôngmaterial-labelclassification/calibrationstudy.",
+    "context_evidence": "L255–256onlyreflectanceformulas.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Reflectance statistics provide intensity cues; remove untested examples ofmaterialdiscrimination.",
+    "related_locations": "",
+    "root_cause_key": "reflectance-semantics",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 78,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14ch8/9max/meanintensity;khôngmaterial-labelclassification/calibrationstudy."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L255–256onlyreflectanceformulas."
+      }
+    ],
+    "missing_evidence": [
+      "Reflectance statistics provide intensity cues; remove untested examples ofmaterialdiscrimination."
+    ],
+    "forbidden_wording": [
+      "Calibrated surface returns capture material discrimination"
+    ]
+  },
+  {
+    "id": "C80",
+    "source_file": "sections/methodology.tex",
+    "quote": "anchored strictly flush with the terrain:",
+    "paper_evidence": "Eq.ground_fitting setsbottomtoestimatedpercentileheight;khôngtruegrounderror/planeGTmetric.",
+    "context_evidence": "L286–288sameheuristic.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "anchored to the estimated local ground elevation; do notpromiseexactphysicalterrainalignment.",
+    "related_locations": "",
+    "root_cause_key": "ground-estimate-versus-truth",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 140,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.ground_fitting setsbottomtoestimatedpercentileheight;khôngtruegrounderror/planeGTmetric."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L286–288sameheuristic."
+      }
+    ],
+    "missing_evidence": [
+      "anchored to the estimated local ground elevation; do notpromiseexactphysicalterrainalignment."
+    ],
+    "forbidden_wording": [
+      "anchored strictly flush with the terrain:"
+    ]
+  },
+  {
+    "id": "C81",
+    "source_file": "sections/methodology.tex",
+    "quote": "The twelve logit parameters are utilized strictly during training and discarded at inference.",
+    "paper_evidence": "tab:setup/Methods12criterionparams;detectorforwardusesneithercriterionnorEMA.",
+    "context_evidence": "L236,330:12trainingonly.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữ12training-onlylogits,notpartof753569detectorweights.",
+    "related_locations": "",
+    "root_cause_key": "claim-81",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 401,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setup/Methods12criterionparams;detectorforwardusesneithercriterionnorEMA."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L236,330:12trainingonly."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C82",
+    "source_file": "sections/experiments.tex",
+    "quote": "and visibility protection.",
+    "paper_evidence": "tab:setupPCGTApackage;hybrid_sampler protect=flag&&(shadow||extra_width>0||margin<=1e-8). Finalflagtrue,shadowfalse,width0,margin.1→false.",
+    "context_evidence": "Contextmô tảmechanisms,khôngruntimeguard distinction.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "The visibility-protection flag was enabled, but the explicit check was bypassed under the final sampler guard; do notclaimitactivelytestedallplacements.",
+    "related_locations": "",
+    "root_cause_key": "visibility-guard",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 49,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setupPCGTApackage;hybrid_sampler protect=flag&&(shadow||extra_width>0||margin<=1e-8). Finalflagtrue,shadowfalse,width0,margin.1→false."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Contextmô tảmechanisms,khôngruntimeguard distinction."
+      }
+    ],
+    "missing_evidence": [
+      "The visibility-protection flag was enabled, but the explicit check was bypassed under the final sampler guard; do notclaimitactivelytestedallplacements."
+    ],
+    "forbidden_wording": [
+      "and visibility protection."
+    ]
+  },
+  {
+    "id": "C83",
+    "source_file": "sections/results.tex",
+    "quote": "($188.4\\,\\text{FPS}$)",
+    "paper_evidence": "tab:encoding188.43→188.4(1dp),169.01→169.0;GPUL4caption.",
+    "context_evidence": "L501–508:L4,188.43/169.01;componentsreuse169.97/165.02/169.01asT4.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Roundingvaluesđúng;reconcileL4vsT4forreusedrows. Do notcallforwardFPS E2E FPS.",
+    "related_locations": "",
+    "root_cause_key": "e07-nguồn",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 91,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:encoding188.43→188.4(1dp),169.01→169.0;GPUL4caption."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L501–508:L4,188.43/169.01;componentsreuse169.97/165.02/169.01asT4."
+      }
+    ],
+    "missing_evidence": [
+      "Roundingvaluesđúng;reconcileL4vsT4forreusedrows. Do notcallforwardFPS E2E FPS."
+    ],
+    "forbidden_wording": [
+      "($188.4\\,\\text{FPS}$)"
+    ]
+  },
+  {
+    "id": "C84",
+    "source_file": "sections/results.tex",
+    "quote": "Percentile analysis showed low latency dispersion in the evaluated desktop GPU environment:",
+    "paper_evidence": "tab:efficiencyp50=58.28,p95=80.85,p99=95.91;noquantitativecriterionforlowdispersion.",
+    "context_evidence": "L446cùngpercentiles.",
+    "status": "OVERCLAIM",
+    "allowed_wording": "Reportpercentilesdirectly;mean16.41FPSsupports10Hzaveragebutnotworst-caseharddeadline.",
+    "related_locations": "",
+    "root_cause_key": "latency-variability-wording",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 45,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiencyp50=58.28,p95=80.85,p99=95.91;noquantitativecriterionforlowdispersion."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L446cùngpercentiles."
+      }
+    ],
+    "missing_evidence": [
+      "Reportpercentilesdirectly;mean16.41FPSsupports10Hzaveragebutnotworst-caseharddeadline."
+    ],
+    "forbidden_wording": [
+      "Percentile analysis showed low latency dispersion in the evaluated desktop GPU environment:"
+    ]
+  },
+  {
+    "id": "C85",
+    "source_file": "sections/conclusion.tex",
+    "quote": "The primary detector estimates oriented 2D Bird's-Eye View bounding boxes.",
+    "paper_evidence": "tab:comparisonBEV,Eq.target_tuple7values,fig:qualitativecaptionsprojectedfootprints.",
+    "context_evidence": "L431–433:BEVonly.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữlimitationnày vàđưaBEVscopeđếnAbstract/Intro;khôngxóachỉđểclaimmạnhhơn.",
+    "related_locations": "",
+    "root_cause_key": "claim-85",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 9,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparisonBEV,Eq.target_tuple7values,fig:qualitativecaptionsprojectedfootprints."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L431–433:BEVonly."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C86",
+    "source_file": "sections/conclusion.tex",
+    "quote": "requires evaluation on dedicated off-road benchmarks.",
+    "paper_evidence": "Khôngoff-road/adverseweather/16beam/TensorRTINT8resulttrongtables;futuretenseproper.",
+    "context_evidence": "ContextchỉKITTI64beam/fairweather;optional3Dheadnotbenchmarked.",
+    "status": "VERIFIED",
+    "allowed_wording": "Giữaslimitation/futurework,khôngcoiđây làorphanvalidatedcontribution. Đồngthờikhôngclaimembeddedproven.",
+    "related_locations": "Conclusion L9; Results L195",
+    "root_cause_key": "claim-86",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "strong",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 9,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Khôngoff-road/adverseweather/16beam/TensorRTINT8resulttrongtables;futuretenseproper."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: ContextchỉKITTI64beam/fairweather;optional3Dheadnotbenchmarked."
+      }
+    ],
+    "missing_evidence": [],
+    "forbidden_wording": []
+  },
+  {
+    "id": "C87",
+    "source_file": "sections/results.tex",
+    "quote": "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories.",
+    "paper_evidence": "tab:componentsgrouping/widthgivesAProws;khônggradient-cosine/conflictstatistics;đồngthờiđổi nhiềufeatures trongcross-familycomparison.",
+    "context_evidence": "L77,225,513 nóieliminatesconflict nhưngkhôngđogradients.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "GroupedHeader separates task parameters. Its isolated effect on gradient interference was not measured; keep as motivation, not explanation established by AP.",
+    "related_locations": "Results L97; Methods L307",
+    "root_cause_key": "gradient-mechanism-speculation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 30,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsgrouping/widthgivesAProws;khônggradient-cosine/conflictstatistics;đồngthờiđổi nhiềufeatures trongcross-familycomparison."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L77,225,513 nóieliminatesconflict nhưngkhôngđogradients."
+      }
+    ],
+    "missing_evidence": [
+      "GroupedHeader separates task parameters. Its isolated effect on gradient interference was not measured; keep as motivation, not explanation established by AP."
+    ],
+    "forbidden_wording": [
+      "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories."
+    ]
+  },
+  {
+    "id": "C88",
+    "source_file": "sections/methodology.tex",
+    "quote": "Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds.",
+    "paper_evidence": "Eq.simam_energy maskphụthuộcactivationdeviation;khôngsemanticLiDARcluster/terrainattentiongroundtruth.",
+    "context_evidence": "L71 tươngtựamplifyingclusters;khôngclass-specificmaskmetrics.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "The mask modulates feature activations according to their deviation from channel moments; tests would be needed to establish preferential amplification of object clusters.",
+    "related_locations": "",
+    "root_cause_key": "attention-semantic-extrapolation",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 261,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.simam_energy maskphụthuộcactivationdeviation;khôngsemanticLiDARcluster/terrainattentiongroundtruth."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L71 tươngtựamplifyingclusters;khôngclass-specificmaskmetrics."
+      }
+    ],
+    "missing_evidence": [
+      "The mask modulates feature activations according to their deviation from channel moments; tests would be needed to establish preferential amplification of object clusters."
+    ],
+    "forbidden_wording": [
+      "Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds."
+    ]
+  },
+  {
+    "id": "C89",
+    "source_file": "sections/methodology.tex",
+    "quote": "stage-level adapters add learned linear projections.",
+    "paper_evidence": "Code ResidualLightAttention có một scalar beta vớiX+beta*(SimAM(X)−X),khônglearnedchannelprojection;tableattentionkhôngparamcounttừngadapter.",
+    "context_evidence": "Context khôngexactadapterdelta;rawrevision củahistoricalruns chưađượcchỉrõ.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "Describe the current adapter as a learned scalar residual interpolation, or cite the historical implementation actually benchmarked.",
+    "related_locations": "",
+    "root_cause_key": "t08",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 261,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Code ResidualLightAttention có một scalar beta vớiX+beta*(SimAM(X)−X),khônglearnedchannelprojection;tableattentionkhôngparamcounttừngadapter."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Context khôngexactadapterdelta;rawrevision củahistoricalruns chưađượcchỉrõ."
+      }
+    ],
+    "missing_evidence": [
+      "Describe the current adapter as a learned scalar residual interpolation, or cite the historical implementation actually benchmarked."
+    ],
+    "forbidden_wording": [
+      "stage-level adapters add learned linear projections."
+    ]
+  },
+  {
+    "id": "C90",
+    "source_file": "sections/related_work.tex",
+    "quote": "inverted bottleneck expansions ($e=2.5$)",
+    "paper_evidence": "RelatedWork gánchoConvNeXt citedpaper;Methods codefinalMobilePIXORNeXt-Sexpansion2.5 đúng nhưngkhôngxácminhoriginalConvNeXt.",
+    "context_evidence": "L66,220 chỉmô tảprojectownblock2.5.",
+    "status": "UNSUPPORTED",
+    "allowed_wording": "Attribute large-kernel design inspiration to ConvNeXt and state separately that the present block uses expansion2.5; verify original citation before assigning that ratio to it.",
+    "related_locations": "",
+    "root_cause_key": "prior-art-claim-not-verified",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "unsupported",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 13,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "RelatedWork gánchoConvNeXt citedpaper;Methods codefinalMobilePIXORNeXt-Sexpansion2.5 đúng nhưngkhôngxácminhoriginalConvNeXt."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L66,220 chỉmô tảprojectownblock2.5."
+      }
+    ],
+    "missing_evidence": [
+      "Attribute large-kernel design inspiration to ConvNeXt and state separately that the present block uses expansion2.5; verify original citation before assigning that ratio to it."
+    ],
+    "forbidden_wording": [
+      "inverted bottleneck expansions ($e=2.5$)"
+    ]
+  },
+  {
+    "id": "C91",
+    "source_file": "sections/results.tex",
+    "quote": "by less than $1.7\\%$",
+    "paper_evidence": "tab:comparisonCar:86.90−88.02=−1.12pp,86.90−88.56=−1.66pp;vsPIXOR+14.88pp,MobilePIXOR+11.38pp. CyclistvsPP+.39pp,vsSECOND−4.43pp.",
+    "context_evidence": "L409–413 cùngAPvalues.",
+    "status": "METRIC_MISMATCH",
+    "allowed_wording": "less than1.7percentage points forCar;retainCyclist deficit4.43points relative toSECOND and evaluator boundary.",
+    "related_locations": "",
+    "root_cause_key": "percentage-points-units",
+    "orphan_contribution": false,
+    "critical_blocker": false,
+    "claim_strength": "observed",
+    "source_kind": "llm",
+    "comment_type": "claim_accuracy",
+    "quote_verified": true,
+    "source_line": 33,
+    "quote_source_verified": true,
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparisonCar:86.90−88.02=−1.12pp,86.90−88.56=−1.66pp;vsPIXOR+14.88pp,MobilePIXOR+11.38pp. CyclistvsPP+.39pp,vsSECOND−4.43pp."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L409–413 cùngAPvalues."
+      }
+    ],
+    "missing_evidence": [
+      "less than1.7percentage points forCar;retainCyclist deficit4.43points relative toSECOND and evaluator boundary."
+    ],
+    "forbidden_wording": [
+      "by less than $1.7\\%$"
+    ]
+  }
+]

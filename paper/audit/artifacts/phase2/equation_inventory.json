@@ -1,0 +1,1510 @@
+{
+  "numbered_blocks": [
+    {
+      "line": 20,
+      "environment": "equation",
+      "label": "eq:spatial_roi",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        x_i &\\in [x_{\\min}, x_{\\max}], \\\\\n        y_i &\\in [y_{\\min}, y_{\\max}], \\\\  z_i &\\in [z_{\\min}, z_{\\max}].\n    \\end{aligned}\n    \\label{eq:spatial_roi}\n\\end{equation}"
+    },
+    {
+      "line": 28,
+      "environment": "equation",
+      "label": "eq:grid_assignment",
+      "source": "\\begin{equation}\n    u_i = \\left\\lfloor \\frac{x_i - x_{\\min}}{\\Delta_x} \\right\\rfloor, \\qquad v_i = \\left\\lfloor \\frac{y_i - y_{\\min}}{\\Delta_y} \\right\\rfloor.\n    \\label{eq:grid_assignment}\n\\end{equation}"
+    },
+    {
+      "line": 35,
+      "environment": "equation",
+      "label": "eq:target_tuple",
+      "source": "\\begin{equation}\n    \\mathbf{b}_k = (c_k, x_k^*, y_k^*, l_k^*, w_k^*, \\psi_k^*, s_k),\n    \\label{eq:target_tuple}\n\\end{equation}"
+    },
+    {
+      "line": 63,
+      "environment": "equation",
+      "label": "eq:density_encoding",
+      "source": "\\begin{equation}\n    F_b = d_{\\log}(N_b) = \\min\\left(1, \\frac{\\ln(1 + N_b)}{\\ln(1 + N_{\\mathrm{norm}})}\\right),\n    \\label{eq:density_encoding}\n\\end{equation}"
+    },
+    {
+      "line": 70,
+      "environment": "equation",
+      "label": "eq:z_std_encoding",
+      "source": "\\begin{equation}\n    F_7 = \\begin{cases}\n        \\sqrt{\\max\\left(0, \\frac{1}{N} \\sum_{i=1}^N \\zeta_i^2 - F_5^2\\right)}, & \\text{if } N > 1, \\\\\n        0, & \\text{otherwise}.\n    \\end{cases}\n    \\label{eq:z_std_encoding}\n\\end{equation}"
+    },
+    {
+      "line": 79,
+      "environment": "equation",
+      "label": "eq:intensity_encoding",
+      "source": "\\begin{equation}\n    F_8 = \\max_{i=1,\\dots,N} \\iota_i, \\qquad F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i.\n    \\label{eq:intensity_encoding}\n\\end{equation}"
+    },
+    {
+      "line": 85,
+      "environment": "align",
+      "label": "eq:offset_encoding",
+      "source": "\\begin{align}\n    x_u^{\\mathrm{cell}} &= x_{\\min} + (u + 0.5)\\Delta_x, \\nonumber\\\\\n    y_v^{\\mathrm{cell}} &= y_{\\min} + (v + 0.5)\\Delta_y, \\nonumber\\\\\n    F_{12} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (x_i - x_u^{\\mathrm{cell}})}{N\\Delta_x}, -0.5, 0.5\\right), \\nonumber\\\\\n    F_{13} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (y_i - y_v^{\\mathrm{cell}})}{N\\Delta_y}, -0.5, 0.5\\right).\n    \\label{eq:offset_encoding}\n\\end{align}"
+    },
+    {
+      "line": 134,
+      "environment": "align",
+      "label": "eq:ground_fitting",
+      "source": "\\begin{align}\n    R(d) &= \\operatorname{clip}(2.5 + 0.03\\max(0, d - 15), 2.5, 4.0)\\,\\mathrm{m},\\nonumber\\\\[0.8em]\n    \\hat{z}_{\\mathrm{ground}} &= \\operatorname{percentile}(\\{z_j \\mid \\mathbf{p}_j \\in \\mathcal{N}(x, y)\\}, 5),\n    \\label{eq:ground_fitting}\n\\end{align}"
+    },
+    {
+      "line": 147,
+      "environment": "equation",
+      "label": "eq:shadow_mask",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        \\mathcal{P}_{\\mathrm{augmented}}\n        &= \\mathcal{P}_{\\mathrm{target}} \\setminus\n        \\{\\mathbf{p} \\in \\mathcal{P}_{\\mathrm{target}} \\mid \\\\\n        &\\qquad \\operatorname{Mask}_{\\mathrm{shadow}}(\\mathbf{p}) = \\mathrm{True}\\}\n        \\cup \\mathcal{P}_{\\mathrm{object}}.\n    \\end{aligned}\n    \\label{eq:shadow_mask}\n\\end{equation}"
+    },
+    {
+      "line": 159,
+      "environment": "equation",
+      "label": "eq:inverse_square",
+      "source": "\\begin{equation}\n    P_{\\mathrm{keep}} = \\min\\left(1, \\left(\\frac{r_{\\mathrm{src}}}{r_{\\mathrm{tgt}}}\\right)^2\\right),\n    \\label{eq:inverse_square}\n\\end{equation}"
+    },
+    {
+      "line": 223,
+      "environment": "align",
+      "label": "eq:next_block",
+      "source": "\\begin{align}\n    \\mathbf{V} &= \\operatorname{BN}(\\operatorname{DWConv}_{7\\times7}(\\mathbf{Z})),\\nonumber\\\\\n    \\mathbf{R} &= \\operatorname{BN}\\left(W_{\\mathrm{red}} \\operatorname{SiLU}(W_{\\mathrm{exp}}\\mathbf{V})\\right),\\nonumber\\\\\n    \\mathbf{Z}' &= \\mathbf{Z} + \\boldsymbol{\\gamma}_{\\mathrm{blk}} \\odot \\mathcal{S}(\\mathbf{R}).\n    \\label{eq:next_block}\n\\end{align}"
+    },
+    {
+      "line": 238,
+      "environment": "equation",
+      "label": "eq:spatial_moments",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        \\mu_c &= \\frac{1}{M}\\sum_{u, v} R_{c, u, v}, \\\\\n        \\nu_c &= \\frac{1}{\\max(M-1, 1)}\\sum_{u, v} (R_{c, u, v} - \\mu_c)^2.\n    \\end{aligned}\n    \\label{eq:spatial_moments}\n\\end{equation}"
+    },
+    {
+      "line": 246,
+      "environment": "equation",
+      "label": "eq:simam_energy",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        e_t^\\star &= \\frac{4(\\nu_c + \\lambda_{\\mathrm{sim}})}{(t-\\mu_c)^2 + 2(\\nu_c + \\lambda_{\\mathrm{sim}})}, \\\\\n        s_t &= \\frac{1}{e_t^\\star} = \\frac{(t - \\mu_c)^2}{4(\\nu_c + \\lambda_{\\mathrm{sim}})} + \\frac{1}{2}.\n    \\end{aligned}\n    \\label{eq:simam_energy}\n\\end{equation}"
+    },
+    {
+      "line": 254,
+      "environment": "equation",
+      "label": "eq:simam_modulation",
+      "source": "\\begin{equation}\n    A_{c, u, v} = \\sigma(s_t) = \\frac{1}{1 + e^{-s_t}}, \\qquad \\mathcal{S}(\\mathbf{R}) = \\mathbf{A} \\odot \\mathbf{R}.\n    \\label{eq:simam_modulation}\n\\end{equation}"
+    },
+    {
+      "line": 286,
+      "environment": "align",
+      "label": "eq:scale_gating",
+      "source": "\\begin{align}\n    \\mathbf{G}_r &= 2\\sigma\\left(\\operatorname{DWConv}_{3\\times3, r}(\\mathbf{L}_r + \\mathbf{U}_r)\\right),\\nonumber\\\\\n    \\mathbf{P}^{(r)} &= \\mathbf{U}_r + \\mathbf{G}_r \\odot \\mathbf{L}_r.\n    \\label{eq:scale_gating}\n\\end{align}"
+    },
+    {
+      "line": 320,
+      "environment": "align",
+      "label": "eq:gt_targets",
+      "source": "\\begin{align}\n    \\mathbf{o}^* &= \\begin{pmatrix} x^* - (u s_{\\mathrm{out}}\\Delta_x + x_{\\min}) \\\\ y^* - (v s_{\\mathrm{out}}\\Delta_y + y_{\\min}) \\end{pmatrix},\\nonumber\\\\\n    \\mathbf{d}^* &= (\\log w^*, \\log l^*), \\qquad \\mathbf{a}^* = (\\cos 2\\psi^*, \\sin 2\\psi^*).\n    \\label{eq:gt_targets}\n\\end{align}"
+    },
+    {
+      "line": 336,
+      "environment": "equation",
+      "label": "eq:projection_axes",
+      "source": "\\begin{equation}\n    \\mathbf{n}_k \\in \\left\\{ \\mathbf{n}_{\\mathrm{len}}^{\\mathrm{pred}}, \\mathbf{n}_{\\mathrm{wid}}^{\\mathrm{pred}}, \\mathbf{n}_{\\mathrm{len}}^{\\mathrm{gt}}, \\mathbf{n}_{\\mathrm{wid}}^{\\mathrm{gt}} \\right\\}.\n    \\label{eq:projection_axes}\n\\end{equation}"
+    },
+    {
+      "line": 341,
+      "environment": "equation",
+      "label": "eq:mgiou_loss",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        g_k &= \\frac{I_k}{U_k} - \\frac{E_k - U_k}{E_k}, \\\\\n        \\bar{g} &= \\frac{1}{4}\\sum_{k=1}^4 g_k, \\qquad\n        \\ell_{\\mathrm{proj}} = \\frac{1 - \\bar{g}}{2}.\n    \\end{aligned}\n    \\label{eq:mgiou_loss}\n\\end{equation}"
+    },
+    {
+      "line": 351,
+      "environment": "equation",
+      "label": "eq:corner_loss",
+      "source": "\\begin{equation}\n    \\ell_{\\mathrm{corner}} = \\frac{\\min\\left\\{\n        \\begin{array}{l}\n            \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_m^*\\|_1, \\\\\n            \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_{5-m}^*\\|_1\n        \\end{array}\n    \\right.}{4\\max\\left(\\sqrt{(w^*)^2 + (l^*)^2}, 10^{-6}\\right)}.\n    \\label{eq:corner_loss}\n\\end{equation}"
+    },
+    {
+      "line": 364,
+      "environment": "equation",
+      "label": "eq:iqa_loss",
+      "source": "\\begin{equation}\n    q^* = \\operatorname{stopgrad}(\\operatorname{clip}(\\bar{g}, 0, 1)), \\qquad \\mathcal{L}_{\\mathrm{qual}} = \\operatorname{BCE}(\\hat{q}, q^*).\n    \\label{eq:iqa_loss}\n\\end{equation}"
+    },
+    {
+      "line": 372,
+      "environment": "equation",
+      "label": "eq:cqfl_target",
+      "source": "\\begin{equation}\n    y^* = (q^*)^\\beta \\quad (\\beta = 1.0).\n    \\label{eq:cqfl_target}\n\\end{equation}"
+    },
+    {
+      "line": 377,
+      "environment": "equation",
+      "label": "eq:cqfl_loss",
+      "source": "\\begin{equation}\n    \\mathcal{L}_{\\mathrm{CQFL}} = |y^* - \\hat{p}|^\\gamma \\left[ y^* (-\\ln \\hat{p}) + (1 - y^*) (-\\ln(1 - \\hat{p})) \\right],\n    \\label{eq:cqfl_loss}\n\\end{equation}"
+    },
+    {
+      "line": 386,
+      "environment": "equation",
+      "label": "eq:tsbuw_weights",
+      "source": "\\begin{equation}\n    \\begin{aligned}\n        \\bar{a}_k &= b_{\\mathrm{uw}} \\tanh(a_k / b_{\\mathrm{uw}}), \\\\\n        Z_{\\mathrm{uw}} &= \\sum_{j \\in \\mathcal{T}} \\exp(\\bar{a}_j / \\tau_{\\mathrm{uw}}), \\\\\n        \\omega_k &= J \\cdot \\frac{\\exp(\\bar{a}_k / \\tau_{\\mathrm{uw}})}{Z_{\\mathrm{uw}}}, \\\\\n        \\sum_{k \\in \\mathcal{T}} \\omega_k &= J.\n    \\end{aligned}\n    \\label{eq:tsbuw_weights}\n\\end{equation}"
+    },
+    {
+      "line": 397,
+      "environment": "equation",
+      "label": "eq:balanced_loss",
+      "source": "\\begin{equation}\n    \\mathcal{L}_g = \\left(\\frac{1}{J}\\sum_{k \\in \\mathcal{T}} \\mu_k\\right) \\sum_{k \\in \\mathcal{T}} \\omega_k \\frac{\\mathcal{L}_k}{\\max(\\mu_k, 10^{-4})}.\n    \\label{eq:balanced_loss}\n\\end{equation}"
+    },
+    {
+      "line": 442,
+      "environment": "align",
+      "label": "eq:box_decode",
+      "source": "\\begin{align}\n    \\hat{x} &= x_{\\min} + u s_{\\mathrm{out}}\\Delta_x + \\hat{o}_x, \\nonumber\\\\\n    \\hat{y} &= y_{\\min} + v s_{\\mathrm{out}}\\Delta_y + \\hat{o}_y, \\nonumber\\\\\n    \\hat{w} &= \\exp(\\hat{d}_1), \\qquad \\hat{l} = \\exp(\\hat{d}_2), \\nonumber\\\\\n    \\hat{\\psi} &= \\frac{1}{2}\\operatorname{atan2}(\\hat{a}_2, \\hat{a}_1).\n    \\label{eq:box_decode}\n\\end{align}"
+    },
+    {
+      "line": 452,
+      "environment": "equation",
+      "label": "eq:joint_score",
+      "source": "\\begin{equation}\n    s_{\\mathrm{det}} = (p_{\\mathrm{cls}})^{1 - \\alpha_{\\mathrm{score}}} \\cdot (\\hat{q})^{\\alpha_{\\mathrm{score}}}, \\qquad \\alpha_{\\mathrm{score}} = 0.5.\n    \\label{eq:joint_score}\n\\end{equation}"
+    }
+  ],
+  "inline_math": [
+    {
+      "line": 8,
+      "math": "\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}"
+    },
+    {
+      "line": 8,
+      "math": "200 \\times 176"
+    },
+    {
+      "line": 19,
+      "math": "\\mathcal{P} = \\{\\mathbf{p}_i\\}_{i=1}^{N_{\\mathrm{pts}}}"
+    },
+    {
+      "line": 19,
+      "math": "\\mathbf{p}_i = (x_i, y_i, z_i, \\iota_i) \\in \\mathbb{R}^4"
+    },
+    {
+      "line": 19,
+      "math": "x_i"
+    },
+    {
+      "line": 19,
+      "math": "y_i"
+    },
+    {
+      "line": 19,
+      "math": "z_i"
+    },
+    {
+      "line": 19,
+      "math": "\\iota_i \\in [0, 1]"
+    },
+    {
+      "line": 27,
+      "math": "[0.0, 70.4]"
+    },
+    {
+      "line": 27,
+      "math": "[-40.0, 40.0]"
+    },
+    {
+      "line": 27,
+      "math": "[-2.5, 1.0]"
+    },
+    {
+      "line": 27,
+      "math": "\\epsilon = 0.001"
+    },
+    {
+      "line": 27,
+      "math": "\\Delta_x = \\Delta_y = 0.1"
+    },
+    {
+      "line": 27,
+      "math": "H_{\\mathrm{in}} \\times W_{\\mathrm{in}} = 800 \\times 704"
+    },
+    {
+      "line": 27,
+      "math": "\\mathbf{p}_i"
+    },
+    {
+      "line": 27,
+      "math": "(u_i, v_i)"
+    },
+    {
+      "line": 34,
+      "math": "c=0"
+    },
+    {
+      "line": 34,
+      "math": "c=1"
+    },
+    {
+      "line": 34,
+      "math": "c=2"
+    },
+    {
+      "line": 34,
+      "math": "s_{\\mathrm{out}} = 4"
+    },
+    {
+      "line": 34,
+      "math": "H_{\\mathrm{out}} \\times W_{\\mathrm{out}} = 200 \\times 176"
+    },
+    {
+      "line": 34,
+      "math": "k"
+    },
+    {
+      "line": 39,
+      "math": "(x_k^*, y_k^*) \\in \\mathbb{R}^2"
+    },
+    {
+      "line": 39,
+      "math": "(l_k^*, w_k^*) \\in \\mathbb{R}^2"
+    },
+    {
+      "line": 39,
+      "math": "\\psi_k^* \\in [-\\pi/2, \\pi/2]"
+    },
+    {
+      "line": 39,
+      "math": "\\pi"
+    },
+    {
+      "line": 39,
+      "math": "s_k \\in [0, 1]"
+    },
+    {
+      "line": 50,
+      "math": "800 \\times 704"
+    },
+    {
+      "line": 50,
+      "math": "0.1\\,\\text{m}"
+    },
+    {
+      "line": 50,
+      "math": "[-2.5, 1.0]\\,\\text{m}"
+    },
+    {
+      "line": 50,
+      "math": "z_{\\max}"
+    },
+    {
+      "line": 50,
+      "math": "z_{\\mathrm{mean}}"
+    },
+    {
+      "line": 50,
+      "math": "z_{\\mathrm{span}}"
+    },
+    {
+      "line": 50,
+      "math": "z_{\\mathrm{std}}"
+    },
+    {
+      "line": 50,
+      "math": "(\\Delta\\bar{x}, \\Delta\\bar{y}) \\in [-0.5, 0.5]"
+    },
+    {
+      "line": 60,
+      "math": "(u, v)"
+    },
+    {
+      "line": 60,
+      "math": "N"
+    },
+    {
+      "line": 60,
+      "math": "\\mathcal{P}_{u, v} = \\{\\mathbf{p}_i\\}_{i=1}^N"
+    },
+    {
+      "line": 60,
+      "math": "\\zeta_i = (z_i - z_{\\min}) / (z_{\\max} - z_{\\min}) \\in [0, 1]"
+    },
+    {
+      "line": 60,
+      "math": "\\iota_i"
+    },
+    {
+      "line": 60,
+      "math": "[0, 1]"
+    },
+    {
+      "line": 62,
+      "math": "F_0"
+    },
+    {
+      "line": 62,
+      "math": "F_3"
+    },
+    {
+      "line": 62,
+      "math": "\\zeta_i"
+    },
+    {
+      "line": 62,
+      "math": "b \\in \\{0, 1, 2, 3\\}"
+    },
+    {
+      "line": 62,
+      "math": "N_b"
+    },
+    {
+      "line": 67,
+      "math": "N_{\\mathrm{norm}} = 32"
+    },
+    {
+      "line": 69,
+      "math": "F_4"
+    },
+    {
+      "line": 69,
+      "math": "F_7"
+    },
+    {
+      "line": 69,
+      "math": "F_4 = \\max_i \\zeta_i"
+    },
+    {
+      "line": 69,
+      "math": "F_5 = \\frac{1}{N}\\sum_i \\zeta_i"
+    },
+    {
+      "line": 69,
+      "math": "F_6 = \\max_i \\zeta_i - \\min_i \\zeta_i"
+    },
+    {
+      "line": 78,
+      "math": "F_8"
+    },
+    {
+      "line": 78,
+      "math": "F_9"
+    },
+    {
+      "line": 84,
+      "math": "F_{10}"
+    },
+    {
+      "line": 84,
+      "math": "F_{13}"
+    },
+    {
+      "line": 84,
+      "math": "F_{10} = d_{\\log}(N)"
+    },
+    {
+      "line": 84,
+      "math": "F_{11} = 1.0"
+    },
+    {
+      "line": 84,
+      "math": "0.1"
+    },
+    {
+      "line": 84,
+      "math": "F_{12}"
+    },
+    {
+      "line": 84,
+      "math": "F_{13}"
+    },
+    {
+      "line": 92,
+      "math": "\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}"
+    },
+    {
+      "line": 96,
+      "math": "\\Delta_x = \\Delta_y = 0.1\\,\\text{m}"
+    },
+    {
+      "line": 96,
+      "math": "800 \\times 704"
+    },
+    {
+      "line": 104,
+      "math": "0"
+    },
+    {
+      "line": 104,
+      "math": "3"
+    },
+    {
+      "line": 104,
+      "math": "F_b = d_{\\log}(N_b)"
+    },
+    {
+      "line": 104,
+      "math": "b = \\min(\\lfloor 4\\zeta_i \\rfloor, 3)"
+    },
+    {
+      "line": 105,
+      "math": "4"
+    },
+    {
+      "line": 105,
+      "math": "F_4 = \\max_{i} \\zeta_i"
+    },
+    {
+      "line": 106,
+      "math": "5"
+    },
+    {
+      "line": 106,
+      "math": "F_5 = \\frac{1}{N} \\sum_{i=1}^N \\zeta_i"
+    },
+    {
+      "line": 107,
+      "math": "6"
+    },
+    {
+      "line": 107,
+      "math": "F_6 = \\max_{i} \\zeta_i - \\min_{i} \\zeta_i"
+    },
+    {
+      "line": 108,
+      "math": "7"
+    },
+    {
+      "line": 108,
+      "math": "F_7 = \\sqrt{\\max(0, \\frac{1}{N} \\sum_{i} \\zeta_i^2 - F_5^2)}"
+    },
+    {
+      "line": 109,
+      "math": "8"
+    },
+    {
+      "line": 109,
+      "math": "F_8 = \\max_{i} \\iota_i"
+    },
+    {
+      "line": 110,
+      "math": "9"
+    },
+    {
+      "line": 110,
+      "math": "F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i"
+    },
+    {
+      "line": 111,
+      "math": "10"
+    },
+    {
+      "line": 111,
+      "math": "F_{10} = d_{\\log}(N)"
+    },
+    {
+      "line": 112,
+      "math": "11"
+    },
+    {
+      "line": 112,
+      "math": "F_{11} = 1.0"
+    },
+    {
+      "line": 112,
+      "math": "N \\ge 1"
+    },
+    {
+      "line": 112,
+      "math": "0.0"
+    },
+    {
+      "line": 113,
+      "math": "12"
+    },
+    {
+      "line": 113,
+      "math": "13"
+    },
+    {
+      "line": 113,
+      "math": "\\Delta \\bar{x}, \\Delta \\bar{y} \\in [-0.5, 0.5]"
+    },
+    {
+      "line": 122,
+      "math": "20.94"
+    },
+    {
+      "line": 128,
+      "math": "+6.03\\%"
+    },
+    {
+      "line": 131,
+      "math": "\\mathbf{b}_{\\mathrm{insert}} = (x, y, z, l, w, h, \\psi)"
+    },
+    {
+      "line": 131,
+      "math": "d = \\sqrt{x^2 + y^2}"
+    },
+    {
+      "line": 139,
+      "math": "\\mathcal{N}(x, y) = \\{\\mathbf{p}_j \\mid (x_j - x)^2 + (y_j - y)^2 \\le R(d)^2\\}"
+    },
+    {
+      "line": 140,
+      "math": "z_{\\mathrm{insert}} = \\hat{z}_{\\mathrm{ground}} + 0.5h"
+    },
+    {
+      "line": 142,
+      "math": "N_{\\mathrm{static}} \\le N_{\\mathrm{thresh}}"
+    },
+    {
+      "line": 144,
+      "math": "(x, y)"
+    },
+    {
+      "line": 146,
+      "math": "\\mathbf{r}(t) = t \\cdot \\mathbf{p}"
+    },
+    {
+      "line": 146,
+      "math": "\\mathbf{p}"
+    },
+    {
+      "line": 146,
+      "math": "t_{\\mathrm{leave}} \\le 1.0"
+    },
+    {
+      "line": 146,
+      "math": "(1 - t_{\\mathrm{leave}})\\|\\mathbf{p}\\| > 0.05"
+    },
+    {
+      "line": 158,
+      "math": "r_{\\mathrm{src}}"
+    },
+    {
+      "line": 158,
+      "math": "r_{\\mathrm{tgt}} > r_{\\mathrm{src}}"
+    },
+    {
+      "line": 174,
+      "math": "\\mathcal{P}_{\\mathrm{augmented}}"
+    },
+    {
+      "line": 174,
+      "math": "\\mathbf{X}"
+    },
+    {
+      "line": 184,
+      "math": "200 \\times 176"
+    },
+    {
+      "line": 186,
+      "math": "400 \\times 352"
+    },
+    {
+      "line": 186,
+      "math": "1 \\times 1"
+    },
+    {
+      "line": 186,
+      "math": "2\\times"
+    },
+    {
+      "line": 186,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 186,
+      "math": "\\mathbf{G}_r"
+    },
+    {
+      "line": 186,
+      "math": "F_{32}"
+    },
+    {
+      "line": 186,
+      "math": "200 \\times 176"
+    },
+    {
+      "line": 192,
+      "math": "l \\approx 0.6"
+    },
+    {
+      "line": 192,
+      "math": "l \\approx 1.8"
+    },
+    {
+      "line": 192,
+      "math": "l \\approx 4.5"
+    },
+    {
+      "line": 192,
+      "math": "5.0"
+    },
+    {
+      "line": 192,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 192,
+      "math": "\\Delta_x = \\Delta_y = 0.1"
+    },
+    {
+      "line": 192,
+      "math": "7 \\times 7"
+    },
+    {
+      "line": 192,
+      "math": "0.7 \\times 0.7"
+    },
+    {
+      "line": 192,
+      "math": "5.6 \\times 5.6"
+    },
+    {
+      "line": 192,
+      "math": "7 \\times 7"
+    },
+    {
+      "line": 197,
+      "math": "\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}"
+    },
+    {
+      "line": 197,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 197,
+      "math": "\\mathbf{F}^{(2)} \\in \\mathbb{R}^{B \\times 32 \\times 400 \\times 352}"
+    },
+    {
+      "line": 198,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 200,
+      "math": "C_2 = 48 \\rightarrow \\mathbf{F}^{(4)} \\in \\mathbb{R}^{B \\times 48 \\times 200 \\times 176}"
+    },
+    {
+      "line": 201,
+      "math": "C_3 = 96 \\rightarrow \\mathbf{F}^{(8)} \\in \\mathbb{R}^{B \\times 96 \\times 100 \\times 88}"
+    },
+    {
+      "line": 202,
+      "math": "C_4 = 128 \\rightarrow \\mathbf{F}^{(16)} \\in \\mathbb{R}^{B \\times 128 \\times 50 \\times 44}"
+    },
+    {
+      "line": 207,
+      "math": "7 \\times 7"
+    },
+    {
+      "line": 207,
+      "math": "e=2.5"
+    },
+    {
+      "line": 207,
+      "math": "55.94"
+    },
+    {
+      "line": 207,
+      "math": "604,864"
+    },
+    {
+      "line": 217,
+      "math": "\\mathbf{Z}"
+    },
+    {
+      "line": 217,
+      "math": "\\mathbf{Z}'"
+    },
+    {
+      "line": 217,
+      "math": "7 \\times 7"
+    },
+    {
+      "line": 217,
+      "math": "e = 2.5"
+    },
+    {
+      "line": 217,
+      "math": "\\mathcal{S}(\\mathbf{R})"
+    },
+    {
+      "line": 217,
+      "math": "\\boldsymbol{\\gamma}_{\\mathrm{blk}}"
+    },
+    {
+      "line": 217,
+      "math": "10^{-5}"
+    },
+    {
+      "line": 217,
+      "math": "\\mu_c, \\nu_c"
+    },
+    {
+      "line": 217,
+      "math": "s_t = (t - \\mu_c)^2 / (4(\\nu_c + \\lambda_{\\mathrm{sim}})) + 0.5"
+    },
+    {
+      "line": 217,
+      "math": "\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}"
+    },
+    {
+      "line": 222,
+      "math": "\\mathbf{Z} \\in \\mathbb{R}^{B \\times C \\times H \\times W}"
+    },
+    {
+      "line": 222,
+      "math": "e = 2.5"
+    },
+    {
+      "line": 229,
+      "math": "W_{\\mathrm{exp}} \\in \\mathbb{R}^{2.5C \\times C \\times 1 \\times 1}"
+    },
+    {
+      "line": 229,
+      "math": "W_{\\mathrm{red}} \\in \\mathbb{R}^{C \\times 2.5C \\times 1 \\times 1}"
+    },
+    {
+      "line": 229,
+      "math": "1 \\times 1"
+    },
+    {
+      "line": 229,
+      "math": "\\mathcal{S}(\\cdot)"
+    },
+    {
+      "line": 229,
+      "math": "\\boldsymbol{\\gamma}_{\\mathrm{blk}} \\in \\mathbb{R}^C"
+    },
+    {
+      "line": 229,
+      "math": "10^{-5}"
+    },
+    {
+      "line": 232,
+      "math": "\\mathcal{O}((HW)^2)"
+    },
+    {
+      "line": 232,
+      "math": "200 \\times 176"
+    },
+    {
+      "line": 235,
+      "math": "\\mathbf{R} \\in \\mathbb{R}^{B \\times C \\times H \\times W}"
+    },
+    {
+      "line": 237,
+      "math": "M = H \\times W"
+    },
+    {
+      "line": 237,
+      "math": "\\mu_c"
+    },
+    {
+      "line": 237,
+      "math": "\\nu_c"
+    },
+    {
+      "line": 245,
+      "math": "e_t^\\star"
+    },
+    {
+      "line": 245,
+      "math": "s_t"
+    },
+    {
+      "line": 245,
+      "math": "t = R_{c,u,v}"
+    },
+    {
+      "line": 253,
+      "math": "\\lambda_{\\mathrm{sim}} = 10^{-4}"
+    },
+    {
+      "line": 253,
+      "math": "(t-\\mu_c)^2"
+    },
+    {
+      "line": 253,
+      "math": "e_t^\\star"
+    },
+    {
+      "line": 253,
+      "math": "s_t"
+    },
+    {
+      "line": 253,
+      "math": "\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}"
+    },
+    {
+      "line": 253,
+      "math": "\\mathcal{S}(\\mathbf{R})"
+    },
+    {
+      "line": 261,
+      "math": "0"
+    },
+    {
+      "line": 261,
+      "math": "+0.88\\%"
+    },
+    {
+      "line": 261,
+      "math": "+2.10\\%"
+    },
+    {
+      "line": 275,
+      "math": "\\mathbf{U}_r"
+    },
+    {
+      "line": 275,
+      "math": "\\mathbf{L}_r"
+    },
+    {
+      "line": 276,
+      "math": "r \\in \\{8, 4\\}"
+    },
+    {
+      "line": 276,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 276,
+      "math": "\\mathbf{U}_r"
+    },
+    {
+      "line": 276,
+      "math": "\\mathbf{L}_r"
+    },
+    {
+      "line": 276,
+      "math": "\\mathbf{G}_r = 2\\sigma(\\operatorname{DWConv}_{3\\times3}(\\mathbf{L}_r + \\mathbf{U}_r))"
+    },
+    {
+      "line": 276,
+      "math": "\\mathbf{P}^{(r)} = \\mathbf{U}_r + \\mathbf{G}_r \\odot \\mathbf{L}_r"
+    },
+    {
+      "line": 283,
+      "math": "128"
+    },
+    {
+      "line": 283,
+      "math": "96"
+    },
+    {
+      "line": 283,
+      "math": "48"
+    },
+    {
+      "line": 283,
+      "math": "1 \\times 1"
+    },
+    {
+      "line": 283,
+      "math": "\\mathbf{L}_5 \\in \\mathbb{R}^{B \\times 48 \\times 50 \\times 44}"
+    },
+    {
+      "line": 283,
+      "math": "\\mathbf{L}_4 \\in \\mathbb{R}^{B \\times 48 \\times 100 \\times 88}"
+    },
+    {
+      "line": 283,
+      "math": "\\mathbf{L}_3 \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}"
+    },
+    {
+      "line": 285,
+      "math": "2\\times"
+    },
+    {
+      "line": 285,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 285,
+      "math": "\\mathbf{U}_4"
+    },
+    {
+      "line": 285,
+      "math": "\\mathbf{U}_3"
+    },
+    {
+      "line": 285,
+      "math": "r \\in \\{8, 4\\}"
+    },
+    {
+      "line": 291,
+      "math": "\\mathbf{G}_r"
+    },
+    {
+      "line": 291,
+      "math": "1.0"
+    },
+    {
+      "line": 291,
+      "math": "\\mathbf{P}^{(4)}"
+    },
+    {
+      "line": 291,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 291,
+      "math": "\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}"
+    },
+    {
+      "line": 291,
+      "math": "36,784"
+    },
+    {
+      "line": 300,
+      "math": "(\\Delta x, \\Delta y)"
+    },
+    {
+      "line": 300,
+      "math": "P"
+    },
+    {
+      "line": 300,
+      "math": "C"
+    },
+    {
+      "line": 300,
+      "math": "(\\log w, \\log l)"
+    },
+    {
+      "line": 300,
+      "math": "(c_2, s_2) = (\\cos 2\\theta, \\sin 2\\theta)"
+    },
+    {
+      "line": 300,
+      "math": "\\pi"
+    },
+    {
+      "line": 300,
+      "math": "s = (p_{\\mathrm{cls}})^{1-\\alpha} q^{\\alpha}"
+    },
+    {
+      "line": 301,
+      "math": "(\\hat{o}_x, \\hat{o}_y)"
+    },
+    {
+      "line": 301,
+      "math": "P"
+    },
+    {
+      "line": 301,
+      "math": "C"
+    },
+    {
+      "line": 301,
+      "math": "(t_w, t_l) = (\\log w, \\log l)"
+    },
+    {
+      "line": 301,
+      "math": "(c_2, s_2) = (\\cos 2\\theta, \\sin 2\\theta)"
+    },
+    {
+      "line": 301,
+      "math": "180^\\circ"
+    },
+    {
+      "line": 301,
+      "math": "\\pi"
+    },
+    {
+      "line": 301,
+      "math": "\\hat{q} \\in [0, 1]"
+    },
+    {
+      "line": 301,
+      "math": "p_{\\mathrm{cls}}"
+    },
+    {
+      "line": 301,
+      "math": "s_{\\mathrm{det}} = (p_{\\mathrm{cls}})^{1-\\alpha} \\hat{q}^\\alpha"
+    },
+    {
+      "line": 301,
+      "math": "\\alpha = 0.5"
+    },
+    {
+      "line": 307,
+      "math": "l \\approx 4.5"
+    },
+    {
+      "line": 307,
+      "math": "w \\approx 1.8"
+    },
+    {
+      "line": 307,
+      "math": "l \\approx 0.8"
+    },
+    {
+      "line": 307,
+      "math": "w \\approx 0.6"
+    },
+    {
+      "line": 307,
+      "math": "l \\approx 1.8"
+    },
+    {
+      "line": 307,
+      "math": "w \\approx 0.7"
+    },
+    {
+      "line": 310,
+      "math": "K_1 = 1"
+    },
+    {
+      "line": 310,
+      "math": "K_2 = 2"
+    },
+    {
+      "line": 310,
+      "math": "g \\in \\{1, 2\\}"
+    },
+    {
+      "line": 310,
+      "math": "\\mathbf{F}_{\\mathrm{out}}"
+    },
+    {
+      "line": 310,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 310,
+      "math": "32 \\rightarrow 32"
+    },
+    {
+      "line": 312,
+      "math": "[B, K_g, 200, 176]"
+    },
+    {
+      "line": 312,
+      "math": "p_{\\mathrm{cls}}"
+    },
+    {
+      "line": 312,
+      "math": "P"
+    },
+    {
+      "line": 313,
+      "math": "[B,\\allowbreak 2,\\allowbreak 200,\\allowbreak 176]"
+    },
+    {
+      "line": 313,
+      "math": "(\\hat{o}_x, \\hat{o}_y)"
+    },
+    {
+      "line": 313,
+      "math": "(\\Delta x, \\Delta y)"
+    },
+    {
+      "line": 313,
+      "math": "P"
+    },
+    {
+      "line": 313,
+      "math": "C"
+    },
+    {
+      "line": 314,
+      "math": "[B, 2, 200, 176]"
+    },
+    {
+      "line": 314,
+      "math": "(\\hat{d}_1, \\hat{d}_2) = (\\log \\hat{w}, \\log \\hat{l})"
+    },
+    {
+      "line": 314,
+      "math": "(t_w, t_l)"
+    },
+    {
+      "line": 314,
+      "math": "\\exp"
+    },
+    {
+      "line": 315,
+      "math": "[B, 2, 200, 176]"
+    },
+    {
+      "line": 315,
+      "math": "(\\hat{a}_1, \\hat{a}_2) = (\\cos 2\\hat{\\psi}, \\sin 2\\hat{\\psi})"
+    },
+    {
+      "line": 315,
+      "math": "(c_2, s_2)"
+    },
+    {
+      "line": 315,
+      "math": "\\theta \\equiv \\hat{\\psi}"
+    },
+    {
+      "line": 315,
+      "math": "\\pi"
+    },
+    {
+      "line": 316,
+      "math": "[B, 1, 200, 176]"
+    },
+    {
+      "line": 316,
+      "math": "\\hat{q} \\in [0, 1]"
+    },
+    {
+      "line": 316,
+      "math": "q(P)"
+    },
+    {
+      "line": 316,
+      "math": "s_{\\mathrm{det}} = (p_{\\mathrm{cls}})^{1-\\alpha} \\hat{q}^\\alpha = \\sqrt{p_{\\mathrm{cls}} \\hat{q}}"
+    },
+    {
+      "line": 316,
+      "math": "\\alpha=0.5"
+    },
+    {
+      "line": 319,
+      "math": "(u, v)"
+    },
+    {
+      "line": 325,
+      "math": "\\mathbf{a}^*"
+    },
+    {
+      "line": 325,
+      "math": "\\pi"
+    },
+    {
+      "line": 325,
+      "math": "180^\\circ"
+    },
+    {
+      "line": 325,
+      "math": "\\mathbf{M}_{\\mathrm{reg}}"
+    },
+    {
+      "line": 331,
+      "math": "(x, y)"
+    },
+    {
+      "line": 331,
+      "math": "(w, l)"
+    },
+    {
+      "line": 331,
+      "math": "\\psi"
+    },
+    {
+      "line": 334,
+      "math": "(u, v)"
+    },
+    {
+      "line": 334,
+      "math": "\\mathbf{M}_{\\mathrm{reg}} = 1"
+    },
+    {
+      "line": 334,
+      "math": "\\{\\widehat{\\mathbf{c}}_m\\}_{m=1}^4"
+    },
+    {
+      "line": 334,
+      "math": "\\{\\mathbf{c}_m^*\\}_{m=1}^4"
+    },
+    {
+      "line": 335,
+      "math": "\\ell_{\\mathrm{proj}}"
+    },
+    {
+      "line": 340,
+      "math": "\\mathbf{n}_k"
+    },
+    {
+      "line": 340,
+      "math": "I_k"
+    },
+    {
+      "line": 340,
+      "math": "U_k"
+    },
+    {
+      "line": 340,
+      "math": "E_k"
+    },
+    {
+      "line": 349,
+      "math": "\\pi"
+    },
+    {
+      "line": 349,
+      "math": "\\ell_{\\mathrm{corner}}"
+    },
+    {
+      "line": 350,
+      "math": "\\pi"
+    },
+    {
+      "line": 360,
+      "math": "\\mathcal{L}_{\\mathrm{geo}} = \\ell_{\\mathrm{proj}} + \\beta_{\\mathrm{corner}} \\ell_{\\mathrm{corner}}"
+    },
+    {
+      "line": 360,
+      "math": "\\beta_{\\mathrm{corner}} = 1.0"
+    },
+    {
+      "line": 363,
+      "math": "\\hat{q} = \\sigma(\\hat{Z}_{\\mathrm{qual}}) \\in [0, 1]"
+    },
+    {
+      "line": 371,
+      "math": "18.59\\,\\text{K}"
+    },
+    {
+      "line": 371,
+      "math": "1.25\\,\\text{ms}"
+    },
+    {
+      "line": 371,
+      "math": "y=1.0"
+    },
+    {
+      "line": 371,
+      "math": "q^*"
+    },
+    {
+      "line": 381,
+      "math": "\\gamma = 2.0"
+    },
+    {
+      "line": 381,
+      "math": "18.59\\,\\text{K}"
+    },
+    {
+      "line": 381,
+      "math": "1.25\\,\\text{ms}"
+    },
+    {
+      "line": 384,
+      "math": "\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}"
+    },
+    {
+      "line": 384,
+      "math": "J=6"
+    },
+    {
+      "line": 385,
+      "math": "a_k"
+    },
+    {
+      "line": 385,
+      "math": "b_{\\mathrm{uw}} = 3.0"
+    },
+    {
+      "line": 385,
+      "math": "\\tau_{\\mathrm{uw}} = 2.0"
+    },
+    {
+      "line": 396,
+      "math": "\\beta_{\\mathrm{EMA}} = 0.99"
+    },
+    {
+      "line": 396,
+      "math": "\\mu_k \\leftarrow 0.99\\mu_k + 0.01\\mathcal{L}_k"
+    },
+    {
+      "line": 396,
+      "math": "g"
+    },
+    {
+      "line": 401,
+      "math": "\\mathcal{L}_{\\mathrm{total}} = 0.5\\mathcal{L}_1 + 0.5\\mathcal{L}_2"
+    },
+    {
+      "line": 413,
+      "math": "\\mathcal{P} = \\{(x_i, y_i, z_i, \\iota_i)\\}_{i=1}^N"
+    },
+    {
+      "line": 413,
+      "math": "[x_{\\min}, x_{\\max}] \\times [y_{\\min}, y_{\\max}] \\times [z_{\\min}, z_{\\max}]"
+    },
+    {
+      "line": 414,
+      "math": "\\tau_{\\mathrm{score}} = 0.05"
+    },
+    {
+      "line": 414,
+      "math": "\\tau_{\\mathrm{nms}} = 0.10"
+    },
+    {
+      "line": 414,
+      "math": "\\alpha = 0.5"
+    },
+    {
+      "line": 415,
+      "math": "\\mathcal{B} = \\{(c_k, s_k, \\hat{x}_k, \\hat{y}_k, \\hat{l}_k, \\hat{w}_k, \\hat{\\psi}_k)\\}_{k=1}^M"
+    },
+    {
+      "line": 421,
+      "math": "\\mathcal{P}"
+    },
+    {
+      "line": 421,
+      "math": "\\epsilon = 0.001"
+    },
+    {
+      "line": 422,
+      "math": "\\mathbf{X} \\in \\mathbb{R}^{14 \\times 800 \\times 704}"
+    },
+    {
+      "line": 423,
+      "math": "\\mathbf{X}"
+    },
+    {
+      "line": 423,
+      "math": "\\mathbf{F}^{(2)} \\in \\mathbb{R}^{32 \\times 400 \\times 352}"
+    },
+    {
+      "line": 424,
+      "math": "\\mathbf{F}^{(4)}, \\mathbf{F}^{(8)}, \\mathbf{F}^{(16)}"
+    },
+    {
+      "line": 425,
+      "math": "\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{32 \\times 200 \\times 176}"
+    },
+    {
+      "line": 426,
+      "math": "g=1"
+    },
+    {
+      "line": 426,
+      "math": "g=2"
+    },
+    {
+      "line": 426,
+      "math": "\\mathbf{P}_{\\mathrm{cls}}"
+    },
+    {
+      "line": 426,
+      "math": "\\widehat{\\mathbf{o}}"
+    },
+    {
+      "line": 426,
+      "math": "\\widehat{\\mathbf{d}}"
+    },
+    {
+      "line": 426,
+      "math": "\\widehat{\\mathbf{a}}"
+    },
+    {
+      "line": 426,
+      "math": "\\widehat{\\mathbf{q}}"
+    },
+    {
+      "line": 427,
+      "math": "c \\in \\{\\text{Car}, \\text{Pedestrian}, \\text{Cyclist}\\}"
+    },
+    {
+      "line": 428,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 428,
+      "math": "\\mathbf{P}_{\\mathrm{cls}, c}"
+    },
+    {
+      "line": 429,
+      "math": "s_{\\mathrm{det}} = (\\mathbf{P}_{\\mathrm{cls}, c})^{1 - \\alpha} \\cdot (\\widehat{\\mathbf{q}})^\\alpha"
+    },
+    {
+      "line": 430,
+      "math": "\\mathbf{P}_{\\mathrm{cls}, c} > \\tau_{\\mathrm{score}}"
+    },
+    {
+      "line": 430,
+      "math": "s_{\\mathrm{det}} > \\tau_{\\mathrm{score}}"
+    },
+    {
+      "line": 432,
+      "math": "\\tau_{\\mathrm{nms}}"
+    },
+    {
+      "line": 434,
+      "math": "\\mathcal{B}"
+    },
+    {
+      "line": 434,
+      "math": "s_{\\mathrm{det}}"
+    },
+    {
+      "line": 441,
+      "math": "(u, v)"
+    },
+    {
+      "line": 441,
+      "math": "p_{\\mathrm{cls}} > \\tau_{\\mathrm{score}} = 0.05"
+    },
+    {
+      "line": 441,
+      "math": "3 \\times 3"
+    },
+    {
+      "line": 449,
+      "math": "\\hat{\\psi} \\in [-\\pi/2, \\pi/2]"
+    },
+    {
+      "line": 456,
+      "math": "s_{\\mathrm{det}} > 0.05"
+    },
+    {
+      "line": 456,
+      "math": "\\tau_{\\mathrm{nms}} = 0.10"
+    },
+    {
+      "line": 459,
+      "math": "< 0.76"
+    },
+    {
+      "line": 459,
+      "math": "9.34"
+    },
+    {
+      "line": 461,
+      "math": "604,864"
+    },
+    {
+      "line": 461,
+      "math": "80.3\\%"
+    },
+    {
+      "line": 462,
+      "math": "36,784"
+    },
+    {
+      "line": 462,
+      "math": "4.9\\%"
+    },
+    {
+      "line": 463,
+      "math": "111,921"
+    },
+    {
+      "line": 463,
+      "math": "14.8\\%"
+    },
+    {
+      "line": 463,
+      "math": "55,944"
+    },
+    {
+      "line": 463,
+      "math": "55,977"
+    },
+    {
+      "line": 464,
+      "math": "< 0.01\\%"
+    },
+    {
+      "line": 466,
+      "math": "16.41"
+    },
+    {
+      "line": 466,
+      "math": "60.96"
+    },
+    {
+      "line": 466,
+      "math": "55.94"
+    },
+    {
+      "line": 466,
+      "math": "17.88"
+    }
+  ]
+}

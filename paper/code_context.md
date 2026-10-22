@@ -496,9 +496,20 @@ Extracted verbatim from `Result/Lidar_result_final.xlsx`, sheet `Tong hop last`.
 | **R27** | mobilepixornext | Rich14 | Grouped H32 | Hybrid GT | F32 | SG-FPN | **✓** | — | **✓** | @C5 | — | 69.36 | 71.34 | 134.43 | 19.10 |
 | **R37 (OUR)**| **mobilepixornext** | **Rich14** | **Grouped H32** | **Hybrid GT** | **F32** | **SG-FPN** | **✓** | — | **✓** | — | **✓** | **71.50** | **73.45** | **115.32** | **23.72** |
 
-### 6.7 Key Ablation Insights
+### 6.7 BEV Input Representation Controlled Ablation Matrix
+Extracted from `Result/artifacts/ablation_analysis_20261012/paper_02_Encoding.csv` and newly verified run `mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42` (`Result/artifacts/triband_ablation_20261022/comparison_best_ap_vs_loss.json`):
+- All runs share identical MobilePixorNeXt-S backbone ($7\times 7$ DW-Conv, $e=2.5$), F24 SumFPN neck, single-head H16, standard GT augmentation, and baseline Smooth-L1 loss, evaluated on NVIDIA L4 GPU under KITTI R40 local BEV protocol:
+
+| Representation | Channels $C_{\mathrm{in}}$ | H2D Payload ($800\times 704$) | Car AP [Mod.] (%) | Ped. AP [Mod.] (%) | Cyc. AP [Mod.] (%) | Moderate mAP (%) | mAP9 (%) | Standalone FPS |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **TriBand-BEV** (Khoshkdahan et al.) | 3 | **6.76 MB** | 74.10 | 38.05 | 21.12 | 44.42 | 46.55 | **188.43** |
+| **RichBEV** (Strata-BEV8) | 8 | 18.02 MB | 78.35 | 38.48 | **25.29** | 47.37 | 48.95 | 165.02 |
+| **Binary35** (Yang et al. PIXOR) | 35 | 78.85 MB | 75.24 | 44.36 | 23.20 | 47.60 | 49.08 | 169.97 |
+| **Strata-BEV14 (Ours)** | **14** | 31.54 MB | **79.97** | **45.36** | 25.10 | **50.14** | **52.00** | 169.01 |
+
+### 6.8 Key Ablation Insights
 1. **Backbone Transition (R01 $\rightarrow$ R02)**: Replacing MobilePIXOR with MobilePixorNeXt ($7\times 7$ DW-Conv, SiLU, Inverted Bottleneck) lifts Moderate mAP from 41.40% to 47.60% (**+$6.20\%$ mAP**), while nearly doubling standalone forward throughput from 90.57 to **169.97 FPS**.
-2. **BEV Representation (R02 $\rightarrow$ R03)**: Moving from binary occupancy Binary35 to Strata-BEV14 (Rich14) raises Moderate mAP from 47.60% to 50.14% (**+$2.54\%$ mAP**).
+2. **BEV Representation (TriBand $\to$ Binary35 $\to$ Strata-BEV14)**: Moving from TriBand-BEV (44.42%) to Binary35 yields 47.60%, while our 14-channel Strata-BEV14 representation (Rich14) raises Moderate mAP to 50.14% (**+$5.72\%$ over TriBand**, **+$2.54\%$ over Binary35**), maintaining 169.01 FPS and slashing PCIe memory transfer size by 60.0% compared to Binary35.
 3. **Grouped Prediction Towers (R03 $\rightarrow$ R05 $\rightarrow$ H32)**: Segregating task heads into Car and Pedestrian/Cyclist groups with expanded capacity H32 increases Moderate mAP from 50.14% to 60.22% (**+$10.08\%$ mAP**), eliminating aspect ratio conflicts.
 4. **Physics-Consistent Ground-Truth Augmentation (PC-GTA, Standard $\rightarrow$ Hybrid GT)**: Incorporating local ground elevation fitting, static obstacle clearance, Line-of-Sight occlusion checks, raycast shadow masking, and range-adaptive attenuation produces a massive improvement from 60.22% to 66.25% (**+$6.03\%$ Moderate mAP**, **+$7.34\%$ mAP9**).
 5. **Fusion Width & Scale-Gating (F24 $\rightarrow$ F32 $\rightarrow$ SG-FPN)**: Widening feature fusion to 32 channels and adding depthwise scale-gating raises mAP to 68.12% (**+$1.87\%$ mAP**).

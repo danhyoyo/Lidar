@@ -1,0 +1,11 @@
+(B) Scale-gated fusion
+
+  L                 DWConv3×3
+             +                    2 · sigmoid   ×
+                      zero-init
+
+
+                                                    +   P
+
+  U
+

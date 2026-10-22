@@ -1,0 +1,7 @@
+{
+  "train": 3712,
+  "val": 3769,
+  "overlap": 0,
+  "train_sha256": "040e6b83709797dcb8637370affda638f4338c4b942053c74ca347a4b1f1a887",
+  "val_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+}

@@ -1,0 +1,3906 @@
+[
+  {
+    "id": "M001",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 1,
+    "source_sentence": "Three-dimensional object detection from Light Detection and Ranging (LiDAR) point clouds is critical for autonomous navigation; however, conventional volumetric and pillar-based architectures impose severe computational challenges on edge accelerators.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe",
+      "critical"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M002",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 2,
+    "source_sentence": "We propose MobilePIXORNeXt, an ultra-compact, proposal-free Bird's-Eye View (BEV) detector operating under 753,569 parameters.",
+    "categories": [
+      "vocabulary-context",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "ultra-compact"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [
+      "We propose"
+    ],
+    "visible_words": 15,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M003",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 3,
+    "source_sentence": "The framework replaces learned point encoders with Strata-BEV14, a parameter-free deterministic NumPy/Numba CPU rasterizer that extracts 14 statistical feature channels---capturing stratified height distributions, elevation moments, surface reflectance, and continuous subcell centroid displacement offsets---with a measured input preprocessing time of 20.94 milliseconds, including point-cloud loading and rasterization.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "The framework replaces",
+      "extracts 14"
+    ],
+    "visible_words": 48,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M004",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 4,
+    "source_sentence": "Spatial features are extracted by a single-branch ConvNeXt-style backbone with embedded parameter-free 3D spatial-energy attention (Block-SimAM), fused through a Scale-Gated Feature Pyramid Network, and predicted by decoupled grouped heads.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Spatial features are extracted"
+    ],
+    "visible_words": 29,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M005",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 5,
+    "source_sentence": "Training is supervised by Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment, dynamically balanced via 12-parameter Temperature-Softmax Bounded Uncertainty Weighting.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Training is supervised"
+    ],
+    "visible_words": 19,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M006",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 6,
+    "source_sentence": "On the KITTI validation set using BEV AP $R_{40}$, MobilePIXORNeXt achieves 71.46\\% Moderate mean Average Precision (mAP) and 73.42\\% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "achieves"
+    ],
+    "visible_words": 29,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M007",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 7,
+    "source_sentence": "It outperforms PointPillars (70.13\\% mAP) with an 84.4\\% parameter reduction and matches SECOND (72.09\\% mAP) with 85.8\\% fewer parameters, while reaching 60.75\\% Moderate AP on pedestrians.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "It outperforms",
+      "matches SECOND"
+    ],
+    "visible_words": 31,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M008",
+    "unit": "U001",
+    "file": "sections/abstract.tex",
+    "line": 1,
+    "sentence_index": 8,
+    "source_sentence": "The complete pipeline executes in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, delivering the fastest end-to-end throughput among evaluated real-time detectors.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "The complete pipeline executes"
+    ],
+    "visible_words": 28,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M009",
+    "unit": "U002",
+    "file": "sections/conclusion.tex",
+    "line": 5,
+    "sentence_index": 1,
+    "source_sentence": "In this work, we presented MobilePIXORNeXt, an ultra-compact, proposal-free 3D LiDAR object detector designed for real-time edge perception on resource-constrained platforms.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "ultra-compact"
+    ],
+    "contextual_spans": [
+      "In this work, we"
+    ],
+    "tense_spans": [],
+    "visible_words": 21,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M010",
+    "unit": "U002",
+    "file": "sections/conclusion.tex",
+    "line": 5,
+    "sentence_index": 2,
+    "source_sentence": "By introducing the deterministic Strata-BEV14 rasterizer, the architecture eliminates computationally intensive PointNet pillar encoders and 3D sparse convolutions, preserving continuous vertical distribution moments, material surface reflectivity, and horizontal subcell centroid displacements with zero learned parameters.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "eliminates"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M011",
+    "unit": "U002",
+    "file": "sections/conclusion.tex",
+    "line": 5,
+    "sentence_index": 3,
+    "source_sentence": "Multi-scale spatial features are processed via a single-branch ConvNeXt-style backbone hierarchy with embedded parameter-free Block-SimAM 3D energy attention, unified by a Scale-Gated Feature Pyramid Network into decoupled grouped prediction towers.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Multi-scale spatial features are processed"
+    ],
+    "visible_words": 30,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M012",
+    "unit": "U002",
+    "file": "sections/conclusion.tex",
+    "line": 5,
+    "sentence_index": 4,
+    "source_sentence": "Training is governed by Physics-Consistent Ground-Truth Augmentation (PC-GTA) alongside Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA), dynamically balanced via 12-parameter Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Training is governed"
+    ],
+    "visible_words": 27,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M013",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 1,
+    "source_sentence": "Evaluations on the KITTI validation benchmark using Moderate BEV AP $R_{40}$ demonstrate that MobilePIXORNeXt establishes a leading Pareto trade-off between detection accuracy, model compactness, and operational latency.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "leading"
+    ],
+    "contextual_spans": [
+      "establishes a leading Pareto trade-off"
+    ],
+    "tense_spans": [
+      "Evaluations on"
+    ],
+    "visible_words": 26,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M014",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 2,
+    "source_sentence": "Containing exactly $753{,}569$ parameters ($9.34\\,\\text{MB}$ checkpoint), the model achieves $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_9$ across Car, Pedestrian, and Cyclist.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "the model achieves"
+    ],
+    "visible_words": 15,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M015",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 3,
+    "source_sentence": "These results surpass PointPillars by $1.33\\%$ Moderate mAP with an $84.4\\%$ parameter reduction, while matching the detection performance of SECOND ($72.09\\%$ mAP) with an $85.8\\%$ parameter reduction ($7.1\\times$ fewer parameters).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "These results surpass"
+    ],
+    "visible_words": 25,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M016",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 4,
+    "source_sentence": "On vulnerable road users, the network achieves $60.75\\%$ Moderate AP on pedestrians, outperforming PointPillars by $4.74\\%$ and SECOND by $4.19\\%$.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "the network achieves"
+    ],
+    "visible_words": 17,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M017",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 5,
+    "source_sentence": "In full-system benchmarking on an NVIDIA Tesla T4 GPU, MobilePIXORNeXt executes the complete input-to-detection pipeline in $60.96\\,\\text{ms}$ ($16.41\\,\\text{FPS}$), achieving the lowest operational latency among evaluated real-time detectors.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "MobilePIXORNeXt executes"
+    ],
+    "visible_words": 25,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M018",
+    "unit": "U003",
+    "file": "sections/conclusion.tex",
+    "line": 7,
+    "sentence_index": 6,
+    "source_sentence": "Controlled ablation experiments confirm that PC-GTA yields a $+6.03\\%$ mAP improvement by mitigating unphysical synthesis artifacts, while OGA and IQA deliver an additional $+3.20\\%$ mAP gain through rotated geometric overlap alignment and confidence score calibration.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "confirm that"
+    ],
+    "tense_spans": [
+      "confirm that",
+      "PC-GTA yields",
+      "OGA and IQA deliver"
+    ],
+    "visible_words": 33,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M019",
+    "unit": "U004",
+    "file": "sections/conclusion.tex",
+    "line": 9,
+    "sentence_index": 1,
+    "source_sentence": "Despite these advantages, several practical limitations outline directions for future research.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "Despite these advantages, several practical limitations outline directions for future research"
+    ],
+    "tense_spans": [],
+    "visible_words": 11,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M020",
+    "unit": "U004",
+    "file": "sections/conclusion.tex",
+    "line": 9,
+    "sentence_index": 3,
+    "source_sentence": "While vertical elevation and height regression are supported via an auxiliary branch, localization fidelity on steep grades, multi-level interchanges, and irregular non-planar terrains requires further investigation on dedicated off-road benchmarks.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 30,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M021",
+    "unit": "U005",
+    "file": "sections/declarations.tex",
+    "line": 5,
+    "sentence_index": 1,
+    "source_sentence": "The authors would like to acknowledge FPT University, Vietnam, for providing computational infrastructure, GPU workstation clusters, and laboratory facilities supporting this research.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "would like to acknowledge"
+    ],
+    "tense_spans": [],
+    "visible_words": 22,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M022",
+    "unit": "U012",
+    "file": "sections/declarations.tex",
+    "line": 29,
+    "sentence_index": 1,
+    "source_sentence": "All authors contributed significantly to the study conception, architecture design, and empirical evaluation.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "significantly"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 13,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M023",
+    "unit": "U013",
+    "file": "sections/experiments.tex",
+    "line": 5,
+    "sentence_index": 3,
+    "source_sentence": "We adopt the canonical 50/50 split introduced by Chen et al.~\\cite{yang2018pixor}, which partitions the benchmark into $3{,}712$ training frames and $3{,}769$ validation frames.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "We adopt"
+    ],
+    "visible_words": 22,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M024",
+    "unit": "U013",
+    "file": "sections/experiments.tex",
+    "line": 5,
+    "sentence_index": 4,
+    "source_sentence": "To prevent data leakage and ensure strict experimental isolation, all ground-truth sampling databases utilized by data augmentation pipelines are generated exclusively from the $3{,}712$ training frames.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "are generated exclusively"
+    ],
+    "visible_words": 25,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M025",
+    "unit": "U014",
+    "file": "sections/experiments.tex",
+    "line": 8,
+    "sentence_index": 1,
+    "source_sentence": "Following the geometric contract defined in Section~\\ref{sec:problem_formulation}, the LiDAR coordinate frame is aligned with the vehicle body (forward $X$, leftward $Y$, upward $Z$).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "is aligned"
+    ],
+    "visible_words": 20,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M026",
+    "unit": "U014",
+    "file": "sections/experiments.tex",
+    "line": 8,
+    "sentence_index": 2,
+    "source_sentence": "Perception is bounded within the Cartesian Region of Interest:",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Perception is bounded"
+    ],
+    "visible_words": 9,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M027",
+    "unit": "U015",
+    "file": "sections/experiments.tex",
+    "line": 16,
+    "sentence_index": 1,
+    "source_sentence": "An open-boundary inward margin of $\\epsilon = 0.001\\,\\text{m}$ is enforced along all three axes.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "is enforced"
+    ],
+    "visible_words": 11,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M028",
+    "unit": "U015",
+    "file": "sections/experiments.tex",
+    "line": 16,
+    "sentence_index": 4,
+    "source_sentence": "Evaluation focuses on the three principal road categories: Car, Pedestrian, and Cyclist.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Evaluation focuses"
+    ],
+    "visible_words": 12,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M029",
+    "unit": "U016",
+    "file": "sections/experiments.tex",
+    "line": 19,
+    "sentence_index": 1,
+    "source_sentence": "Detection performance is benchmarked on oriented 2D Bird's-Eye View (BEV) footprints using 40-point interpolated Average Precision (AP $R_{40}$) on the KITTI validation set, which calculates the area under the precision--recall curve over 40 recall positions $\\mathcal{R}_{40} = \\{1/40, 2/40, \\dots, 1.0\\}$:",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "is benchmarked"
+    ],
+    "visible_words": 34,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M030",
+    "unit": "U017",
+    "file": "sections/experiments.tex",
+    "line": 23,
+    "sentence_index": 1,
+    "source_sentence": "Following KITTI matching conventions, class-specific oriented bounding box Intersection-over-Union (IoU) overlap thresholds are set to $\\tau_{\\mathrm{IoU}} = 0.70$ for Car, and $\\tau_{\\mathrm{IoU}} = 0.50$ for Pedestrian and Cyclist.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "are set"
+    ],
+    "visible_words": 22,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M031",
+    "unit": "U017",
+    "file": "sections/experiments.tex",
+    "line": 23,
+    "sentence_index": 2,
+    "source_sentence": "Detections are categorized into three difficulty regimes:",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "are categorized"
+    ],
+    "visible_words": 7,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M032",
+    "unit": "U022",
+    "file": "sections/experiments.tex",
+    "line": 33,
+    "sentence_index": 1,
+    "source_sentence": "We additionally report the unweighted mean across all nine class-difficulty combinations:",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "We additionally report"
+    ],
+    "visible_words": 11,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M033",
+    "unit": "U023",
+    "file": "sections/experiments.tex",
+    "line": 37,
+    "sentence_index": 1,
+    "source_sentence": "The MobilePIXORNeXt and historical MobilePIXOR results use the local loader-aligned BEV evaluator, while the reference detector results in Table~\\ref{tab:comparison} use the reference KITTI evaluator.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "results use"
+    ],
+    "visible_words": 24,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M034",
+    "unit": "U023",
+    "file": "sections/experiments.tex",
+    "line": 37,
+    "sentence_index": 2,
+    "source_sentence": "All report $R_{40}$ interpolation on the same validation split; the evaluator implementations are distinguished in the comparison table.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "All report"
+    ],
+    "visible_words": 17,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M035",
+    "unit": "U023",
+    "file": "sections/experiments.tex",
+    "line": 37,
+    "sentence_index": 3,
+    "source_sentence": "Here, E, M, and H denote Easy, Moderate, and Hard regimes.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 11,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M036",
+    "unit": "U024",
+    "file": "sections/experiments.tex",
+    "line": 43,
+    "sentence_index": 2,
+    "source_sentence": "The network comprises a two-layer $3 \\times 3$ convolutional stem ($32$ channels, stride 2), three hierarchical backbone stages with channel widths $(48, 96, 128)$ and block depths $(3, 4, 2)$ based on \\texttt{MobilePixorNeXt-S} blocks with large $7 \\times 7$ depthwise convolutions, inverted expansion ratio $e=2.5$, SiLU activations, and LayerScale parameters initialized to $10^{-5}$.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "The network comprises"
+    ],
+    "visible_words": 37,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M037",
+    "unit": "U024",
+    "file": "sections/experiments.tex",
+    "line": 43,
+    "sentence_index": 3,
+    "source_sentence": "Parameter-free Block-SimAM attention is embedded inside all nine residual blocks.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "attention is embedded"
+    ],
+    "visible_words": 10,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M038",
+    "unit": "U024",
+    "file": "sections/experiments.tex",
+    "line": 43,
+    "sentence_index": 4,
+    "source_sentence": "The multiscale Scale-Gated Feature Pyramid Network (SG-FPN) fuses stages C4, C3, and C2 into an optimal $F_{32}$ (32-channel) representation at stride 4 ($200 \\times 176$).",
+    "categories": [
+      "vocabulary-context",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "optimal"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Network (SG-FPN) fuses"
+    ],
+    "visible_words": 21,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M039",
+    "unit": "U024",
+    "file": "sections/experiments.tex",
+    "line": 43,
+    "sentence_index": 5,
+    "source_sentence": "Decoupled GroupedHeader towers process Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) independently, utilizing a shared initial $3 \\times 3$ Conv-BN-SiLU transformation per group.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "towers process"
+    ],
+    "visible_words": 17,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M040",
+    "unit": "U025",
+    "file": "sections/experiments.tex",
+    "line": 46,
+    "sentence_index": 5,
+    "source_sentence": "The standard schedule spans 50 epochs and ends at epoch 50, comprising 4 linear warmup epochs followed by 46 epochs of cosine annealing down to $\\eta_{\\min}$.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "schedule spans"
+    ],
+    "visible_words": 25,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M041",
+    "unit": "U025",
+    "file": "sections/experiments.tex",
+    "line": 46,
+    "sentence_index": 6,
+    "source_sentence": "The final reported checkpoint comes from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130; the checkpoint-selection comparison retains these recorded epoch indices.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "checkpoint comes"
+    ],
+    "visible_words": 28,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M042",
+    "unit": "U026",
+    "file": "sections/experiments.tex",
+    "line": 49,
+    "sentence_index": 2,
+    "source_sentence": "In the final reported run, local ground fitting, static obstacle clearance, range-adaptive point subsampling, and visibility protection were enabled; LOS rejection, shadow masking, and radiometric calibration were available but disabled.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 30,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M043",
+    "unit": "U027",
+    "file": "sections/experiments.tex",
+    "line": 52,
+    "sentence_index": 3,
+    "source_sentence": "Numerical forward and backward passes utilized Automatic Mixed Precision (AMP) in Bfloat16 (\\texttt{bf16}), while loss evaluation, coordinate regression, and rotated NMS were conducted in full FP32 precision to maintain numerical stability.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 30,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M044",
+    "unit": "U027",
+    "file": "sections/experiments.tex",
+    "line": 52,
+    "sentence_index": 4,
+    "source_sentence": "The final MobilePIXORNeXt timing and accuracy evaluation was performed on a server equipped with an NVIDIA Tesla T4 GPU (16\\,GB GDDR6 VRAM, Turing architecture), host x86\\_64 CPU, Linux OS, and PyTorch 2.11.0 with CUDA 13.0.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 40,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M045",
+    "unit": "U027",
+    "file": "sections/experiments.tex",
+    "line": 52,
+    "sentence_index": 7,
+    "source_sentence": "Following standard conventions on the competitive KITTI benchmark, all reported ablation and comparative metrics reflect controlled deterministic evaluation with a fixed random seed ($\\text{seed} = 42$) under identical validation split conditions, where variance and standard deviation ($\\pm\\,\\text{std}$) across multi-seed runs are demarcated for future multi-fold benchmarks.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "all reported ablation and comparative metrics reflect"
+    ],
+    "visible_words": 42,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M046",
+    "unit": "U028",
+    "file": "sections/introduction.tex",
+    "line": 5,
+    "sentence_index": 1,
+    "source_sentence": "Three-dimensional (3D) spatial perception from Light Detection and Ranging (LiDAR) point clouds provides essential sensory grounding for safe autonomous navigation, mobile robotics, and intelligent transportation systems.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "essential"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M047",
+    "unit": "U028",
+    "file": "sections/introduction.tex",
+    "line": 5,
+    "sentence_index": 2,
+    "source_sentence": "Unlike passive optical cameras, which remain vulnerable to ambient illumination fluctuations and projective scale ambiguities, LiDAR sensors actively emit pulsed laser beams to measure direct metric ranges, capturing high-precision geometric boundaries under arbitrary day-and-night conditions~\\cite{geiger2012kitti}.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M048",
+    "unit": "U028",
+    "file": "sections/introduction.tex",
+    "line": 5,
+    "sentence_index": 3,
+    "source_sentence": "In time-critical vehicular environments, perception systems must accurately detect, orient, and classify surrounding objects (from passenger vehicles to compact vulnerable road users such as pedestrians and cyclists) within strict latency envelopes, typically requiring sub-$100\\,\\text{ms}$ execution per scan~\\cite{yang2018pixor}.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 37,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M049",
+    "unit": "U028",
+    "file": "sections/introduction.tex",
+    "line": 5,
+    "sentence_index": 4,
+    "source_sentence": "However, deploying high-accuracy 3D object detection models on embedded vehicular platforms faces an acute operational tension between detection accuracy and hardware resource consumption.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "acute operational tension"
+    ],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M050",
+    "unit": "U028",
+    "file": "sections/introduction.tex",
+    "line": 5,
+    "sentence_index": 6,
+    "source_sentence": "Consequently, developing ultra-compact yet highly discriminative LiDAR object detection architectures that sustain real-time execution without forfeiting spatial localization fidelity remains an essential prerequisite for scalable autonomous driving.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "essential",
+      "ultra-compact",
+      "highly discriminative"
+    ],
+    "contextual_spans": [
+      "essential prerequisite"
+    ],
+    "tense_spans": [],
+    "visible_words": 27,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M051",
+    "unit": "U029",
+    "file": "sections/introduction.tex",
+    "line": 7,
+    "sentence_index": 2,
+    "source_sentence": "First, volumetric voxel-based architectures, exemplified by SECOND~\\cite{yan2018second}, and two-stage point-voxel frameworks, such as PointRCNN~\\cite{shi2019pointrcnn}, Part-$A^2$~\\cite{shi2020part}, and PV-RCNN~\\cite{shi2020pvrcnn}, achieve competitive detection accuracy by deploying 3D sparse convolutions or localized point-cloud abstractions.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 30,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M052",
+    "unit": "U029",
+    "file": "sections/introduction.tex",
+    "line": 7,
+    "sentence_index": 5,
+    "source_sentence": "While faster than volumetric methods, non-deterministic point gathering, dynamic memory allocation, and sparse scattering introduce substantial runtime overhead and memory transfer latency.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "substantial"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 22,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M053",
+    "unit": "U029",
+    "file": "sections/introduction.tex",
+    "line": 7,
+    "sentence_index": 6,
+    "source_sentence": "Third, proposal-free BEV rasterization methods, such as PIXOR~\\cite{yang2018pixor} and MobilePIXOR~\\cite{nguyen2024indoor}, eliminate learned encoders entirely by discretizing point clouds into fixed vertical occupancy grids.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "eliminate"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M054",
+    "unit": "U029",
+    "file": "sections/introduction.tex",
+    "line": 7,
+    "sentence_index": 7,
+    "source_sentence": "Although conceptually efficient, existing rasterization methods suffer from severe spatial quantization errors on standard $0.1\\,\\text{m}$ grids; by relying on crude binary occupancy slices, they discard continuous subcell offsets and high-order vertical dispersion statistics, inducing spatial staircasing and localization jitter on small objects.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 41,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M055",
+    "unit": "U029",
+    "file": "sections/introduction.tex",
+    "line": 7,
+    "sentence_index": 10,
+    "source_sentence": "The failure of existing compact detectors to simultaneously resolve fine subcell quantization errors, unphysical augmentation artifacts, multi-scale receptive field coverage, and geometric score misalignment constitutes the core bottleneck impeding sub-million-parameter LiDAR perception.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "constitutes the core bottleneck impeding"
+    ],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M056",
+    "unit": "U030",
+    "file": "sections/introduction.tex",
+    "line": 9,
+    "sentence_index": 1,
+    "source_sentence": "We address this fundamental challenge through a key scientific insight: sub-voxel geometric precision can be preserved deterministically at the representation level by coupling multi-band vertical densities and continuous elevation moments with horizontal subcell centroid displacements, bypassing learned PointNet encoders entirely without forfeiting fine spatial boundaries.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "fundamental"
+    ],
+    "contextual_spans": [
+      "key scientific insight"
+    ],
+    "tense_spans": [],
+    "visible_words": 45,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M057",
+    "unit": "U030",
+    "file": "sections/introduction.tex",
+    "line": 9,
+    "sentence_index": 2,
+    "source_sentence": "Grounded in this principle, we investigate the central research question: \\textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?}",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "ultra-compact",
+      "superior"
+    ],
+    "contextual_spans": [
+      "Grounded in this principle"
+    ],
+    "tense_spans": [],
+    "visible_words": 40,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md. Câu hỏi nghiên cứu trong \\textit{} được giữ nguyên như một giả thuyết so sánh, không coi là kết luận đã chứng minh."
+  },
+  {
+    "id": "M058",
+    "unit": "U030",
+    "file": "sections/introduction.tex",
+    "line": 9,
+    "sentence_index": 3,
+    "source_sentence": "To realize this objective, our framework couples this deterministic representation with a single-branch ConvNeXt-style backbone~\\cite{liu2022convnext} utilizing large $7 \\times 7$ depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~\\cite{yang2021simam}, expanding physical receptive fields to envelop entire vehicles without multi-branch training overhead.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "To realize this objective"
+    ],
+    "tense_spans": [],
+    "visible_words": 37,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M059",
+    "unit": "U030",
+    "file": "sections/introduction.tex",
+    "line": 9,
+    "sentence_index": 5,
+    "source_sentence": "Together, these complementary mechanisms demonstrate that disciplined geometric encoding and calibrated multi-task loss formulation bridge the performance divide between compact 2D representations and multi-million-parameter 3D networks.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "bridge the performance divide"
+    ],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M060",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 1,
+    "source_sentence": "Guided by this design philosophy, we propose \\textbf{MobilePIXORNeXt}, an ultra-compact, proposal-free, multi-class 3D LiDAR object detector containing exactly $753{,}569$ trainable parameters ($<0.76\\,\\text{M}$).",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "ultra-compact"
+    ],
+    "contextual_spans": [
+      "Guided by this design philosophy"
+    ],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M061",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 3,
+    "source_sentence": "An unordered LiDAR point cloud is deterministically transformed via the parameter-free \\textbf{Strata-BEV14} rasterizer into a 14-channel statistical BEV tensor ($800 \\times 704$ at $0.1\\,\\text{m}$ resolution) using NumPy or Numba on CPU, with point-cloud loading and rasterization taking $20.94\\,\\text{ms}$ in the measured pipeline, capturing height-band densities, vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$), surface reflectance statistics, and continuous subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ to eliminate quantization error.",
+    "categories": [
+      "vocabulary-context",
+      "words>50",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "eliminate"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 56,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M062",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 4,
+    "source_sentence": "To regularize training without unphysical artifacts, we formulate \\textbf{Physics-Consistent Ground-Truth Augmentation (PC-GTA)}, which combines local ground elevation fitting, static obstacle clearance, and range-adaptive point subsampling, with optional line-of-sight checks, raycast shadow masking, and intensity attenuation.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 8,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M063",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 5,
+    "source_sentence": "Multi-scale feature extraction is performed by the \\textbf{MobilePixorNeXt-S} backbone hierarchy across stages $C_2, C_3, C_4$, utilizing streamlined $7 \\times 7$ depthwise inverted bottleneck blocks ($e=2.5$), SiLU activations, LayerScale stabilization, and embedded parameter-free \\textbf{Block-SimAM} energy attention operating inside all nine residual blocks.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "streamlined"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 34,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M064",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 6,
+    "source_sentence": "Multi-scale semantic context and fine coordinates are balanced by the top-down \\textbf{Scale-Gated Feature Pyramid Network (SG-FPN Neck, $F_{32}$)}, which employs bilinear upsampling, depthwise refinement, and learnable scale gates to eliminate deconvolution checkerboard artifacts.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "eliminate"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M065",
+    "unit": "U031",
+    "file": "sections/introduction.tex",
+    "line": 11,
+    "sentence_index": 10,
+    "source_sentence": "By deterministically capturing continuous geometry at the input, expanding receptive fields via single-branch large-kernel convolution, and supervising rotated overlap directly, this coherent pipeline resolves each aforementioned bottleneck within a unified, edge-deployable framework.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "this coherent pipeline resolves each aforementioned bottleneck"
+    ],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M066",
+    "unit": "U032",
+    "file": "sections/introduction.tex",
+    "line": 15,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Ultra-compact proposal-free BEV detection.}",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "ultra-compact"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 4,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M067",
+    "unit": "U032",
+    "file": "sections/introduction.tex",
+    "line": 15,
+    "sentence_index": 2,
+    "source_sentence": "We develop \\textbf{MobilePIXORNeXt}, an ultra-compact ($753{,}569$ trainable parameters) LiDAR detector that eliminates learned PointNet encoders and 3D sparse convolutions.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "ultra-compact",
+      "eliminates"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M068",
+    "unit": "U032",
+    "file": "sections/introduction.tex",
+    "line": 15,
+    "sentence_index": 3,
+    "source_sentence": "The architecture integrates the deterministic 14-channel \\textbf{Strata-BEV14} representation, the streamlined \\textbf{MobilePixorNeXt-S} backbone hierarchy with embedded parameter-free \\textbf{Block-SimAM} energy attention, the \\textbf{SG-FPN} neck ($F_{32}$), and decoupled \\textbf{GroupedHeader} towers to balance multi-scale road categories.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "streamlined"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M069",
+    "unit": "U033",
+    "file": "sections/introduction.tex",
+    "line": 17,
+    "sentence_index": 2,
+    "source_sentence": "We formulate \\textbf{PC-GTA}, which combines local terrain alignment, obstacle clearance, and range-dependent point subsampling, and supports optional visibility, shadow-masking, and intensity-adjustment heuristics to reduce synthesis artifacts.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M070",
+    "unit": "U034",
+    "file": "sections/introduction.tex",
+    "line": 19,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Empirical validation and leading edge Pareto efficiency.}",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "leading"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 7,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M071",
+    "unit": "U034",
+    "file": "sections/introduction.tex",
+    "line": 19,
+    "sentence_index": 2,
+    "source_sentence": "Evaluated using BEV AP $R_{40}$ on the KITTI validation set, MobilePIXORNeXt establishes a leading accuracy-to-parameter and accuracy-to-latency trade-off.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "leading"
+    ],
+    "contextual_spans": [
+      "leading accuracy-to-parameter"
+    ],
+    "tense_spans": [],
+    "visible_words": 17,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M072",
+    "unit": "U034",
+    "file": "sections/introduction.tex",
+    "line": 19,
+    "sentence_index": 4,
+    "source_sentence": "In complete end-to-end pipeline speed, it operates at \\textbf{16.41\\,FPS} (\\textbf{60.96\\,ms} on NVIDIA Tesla T4), running faster than all evaluated real-time detectors.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 25,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M073",
+    "unit": "U034",
+    "file": "sections/introduction.tex",
+    "line": 19,
+    "sentence_index": 6,
+    "source_sentence": "Controlled ablations demonstrate that PC-GTA yields a decisive \\textbf{+6.03\\% Moderate mAP} gain ($60.22\\%$ to $66.25\\%$), OGA and IQA deliver an additional \\textbf{+3.20\\% mAP} gain, and Block-SimAM provides \\textbf{+0.88\\% mAP} at zero parameter overhead.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "decisive"
+    ],
+    "contextual_spans": [
+      "decisive"
+    ],
+    "tense_spans": [],
+    "visible_words": 34,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M074",
+    "unit": "U035",
+    "file": "sections/introduction.tex",
+    "line": 22,
+    "sentence_index": 1,
+    "source_sentence": "The remainder of this paper is structured as follows.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "The remainder of this paper is structured as follows"
+    ],
+    "tense_spans": [],
+    "visible_words": 9,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M075",
+    "unit": "U036",
+    "file": "sections/methodology.tex",
+    "line": 8,
+    "sentence_index": 3,
+    "source_sentence": "The streamlined backbone extracts multi-scale features through ConvNeXt-style stages with embedded parameter-free Block-SimAM attention, fused by a top-down Scale-Gated Feature Pyramid Network (SG-FPN) into a 32-channel shared representation at stride 4 ($200 \\times 176$).",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "streamlined"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M076",
+    "unit": "U036",
+    "file": "sections/methodology.tex",
+    "line": 8,
+    "sentence_index": 5,
+    "source_sentence": "Solid arrows trace the feedforward inference path, whereas dashed arrows indicate training-only supervision incorporating Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and dynamic loss balancing via Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M077",
+    "unit": "U037",
+    "file": "sections/methodology.tex",
+    "line": 12,
+    "sentence_index": 2,
+    "source_sentence": "Operating strictly on an efficient Bird's-Eye View (BEV) representation, the framework eliminates computationally expensive learned point-cloud feature encoders and three-dimensional sparse convolutions.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "eliminates"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 22,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M078",
+    "unit": "U038",
+    "file": "sections/methodology.tex",
+    "line": 19,
+    "sentence_index": 1,
+    "source_sentence": "An unordered LiDAR point cloud is acquired via a rotating scanner and defined as a set $\\mathcal{P} = \\{\\mathbf{p}_i\\}_{i=1}^{N_{\\mathrm{pts}}}$, where each point $\\mathbf{p}_i = (x_i, y_i, z_i, \\iota_i) \\in \\mathbb{R}^4$ encapsulates longitudinal distance $x_i$ (forward positive), lateral distance $y_i$ (leftward positive), vertical elevation $z_i$ (upward positive), and calibrated reflectance intensity $\\iota_i \\in [0, 1]$.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 36,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M079",
+    "unit": "U039",
+    "file": "sections/methodology.tex",
+    "line": 27,
+    "sentence_index": 1,
+    "source_sentence": "configured with longitudinal bounds $[0.0, 70.4]$\\,m, lateral bounds $[-40.0, 40.0]$\\,m, and vertical bounds $[-2.5, 1.0]$\\,m.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 12,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M080",
+    "unit": "U039",
+    "file": "sections/methodology.tex",
+    "line": 27,
+    "sentence_index": 2,
+    "source_sentence": "An open-boundary inward margin of $\\epsilon = 0.001$\\,m is enforced to eliminate boundary artifacts.",
+    "categories": [
+      "vocabulary-context",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "eliminate"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [
+      "is enforced"
+    ],
+    "visible_words": 12,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M081",
+    "unit": "U041",
+    "file": "sections/methodology.tex",
+    "line": 39,
+    "sentence_index": 2,
+    "source_sentence": "Operating on this contract requires a structured, dense BEV representation that captures fine 3D geometric distributions without the latency of learned point encoders, which we formulate next.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 27,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M082",
+    "unit": "U042",
+    "file": "sections/methodology.tex",
+    "line": 50,
+    "sentence_index": 2,
+    "source_sentence": "Channels 0--3 capture logarithmic point densities across four uniform vertical elevation strata ($[-2.5, 1.0]\\,\\text{m}$); Channels 4--7 encode vertical spatial moments (normalized maximum elevation $z_{\\max}$, mean elevation $z_{\\mathrm{mean}}$, elevation span $z_{\\mathrm{span}}$, and sample standard deviation $z_{\\mathrm{std}}$); Channels 8--9 capture calibrated surface reflectance statistics (maximum and mean intensity); Channel 10 records total cell logarithmic density; Channel 11 provides a binary occupancy indicator; and Channels 12--13 preserve continuous subcell horizontal centroid displacements $(\\Delta\\bar{x}, \\Delta\\bar{y}) \\in [-0.5, 0.5]$ to mitigate spatial discretization errors.",
+    "categories": [
+      "words>50"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 68,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M083",
+    "unit": "U043",
+    "file": "sections/methodology.tex",
+    "line": 56,
+    "sentence_index": 3,
+    "source_sentence": "We therefore propose \\textbf{Strata-BEV14} (Figure~\\ref{fig:strata_bev14}), a deterministic, parameter-free rasterizer that balances detail and efficiency.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "We therefore propose"
+    ],
+    "visible_words": 14,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M084",
+    "unit": "U044",
+    "file": "sections/methodology.tex",
+    "line": 60,
+    "sentence_index": 1,
+    "source_sentence": "For each occupied cell $(u, v)$ containing $N$ points $\\mathcal{P}_{u, v} = \\{\\mathbf{p}_i\\}_{i=1}^N$, vertical elevations are normalized linearly to unit interval $\\zeta_i = (z_i - z_{\\min}) / (z_{\\max} - z_{\\min}) \\in [0, 1]$, and reflectance values $\\iota_i$ are clamped to $[0, 1]$.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "are normalized",
+      "are clamped"
+    ],
+    "visible_words": 20,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M085",
+    "unit": "U047",
+    "file": "sections/methodology.tex",
+    "line": 69,
+    "sentence_index": 2,
+    "source_sentence": "\\textit{Vertical Spatial Moments ($F_4$--$F_7$)}: To encode obstacle geometry without explicit voxelization, we extract peak elevation $F_4 = \\max_i \\zeta_i$, mean elevation $F_5 = \\frac{1}{N}\\sum_i \\zeta_i$, vertical span $F_6 = \\max_i \\zeta_i - \\min_i \\zeta_i$, and the sample standard deviation:",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 4,
+    "decision": "retained-context",
+    "note": "Giữ nguyên: cần đọc theo vai trò định nghĩa, danh sách hoặc mô tả hình; không tự suy ra lỗi từ bộ đếm dấu phẩy."
+  },
+  {
+    "id": "M086",
+    "unit": "U052",
+    "file": "sections/methodology.tex",
+    "line": 122,
+    "sentence_index": 4,
+    "source_sentence": "Point-cloud loading and rasterization together take $20.94$\\,ms in the measured evaluation pipeline; this preprocessing measurement is not an encoder-only timing.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "together take"
+    ],
+    "visible_words": 20,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M087",
+    "unit": "U053",
+    "file": "sections/methodology.tex",
+    "line": 128,
+    "sentence_index": 1,
+    "source_sentence": "Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics, producing floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M088",
+    "unit": "U053",
+    "file": "sections/methodology.tex",
+    "line": 128,
+    "sentence_index": 2,
+    "source_sentence": "Our \\textbf{Physics-Consistent Ground-Truth Augmentation} (\\texttt{PC-GTA}) addresses these artifacts and improves Moderate mAP by $+6.03\\%$ over naive sampling in our ablations.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "improves Moderate mAP"
+    ],
+    "visible_words": 18,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M089",
+    "unit": "U063",
+    "file": "sections/methodology.tex",
+    "line": 186,
+    "sentence_index": 2,
+    "source_sentence": "A two-layer convolutional stem ingests 14-channel input at stride 2 ($400 \\times 352$), followed by three hierarchical stages (C2: 48 channels, depth 3; C3: 96 channels, depth 4; C4: 128 channels, depth 2) composed of \\texttt{MobilePixorNeXt-S} blocks with embedded Block-SimAM.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 36,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M090",
+    "unit": "U063",
+    "file": "sections/methodology.tex",
+    "line": 186,
+    "sentence_index": 4,
+    "source_sentence": "Independent grouped prediction towers decouple Car from Pedestrian and Cyclist to eliminate aspect-ratio conflicts while conserving model capacity (753,569 total parameters).}",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "eliminate"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 22,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M091",
+    "unit": "U064",
+    "file": "sections/methodology.tex",
+    "line": 192,
+    "sentence_index": 3,
+    "source_sentence": "In contrast, at our input grid resolution of $\\Delta_x = \\Delta_y = 0.1$\\,m, a single $7 \\times 7$ depthwise receptive field directly spans $0.7 \\times 0.7$\\,m of physical terrain at stride 1, and rapidly expands to over $5.6 \\times 5.6$\\,m by Stage 3 (stride 8)---sufficient to envelop an entire passenger vehicle in a single layer without dilation artifacts.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 48,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M092",
+    "unit": "U064",
+    "file": "sections/methodology.tex",
+    "line": 192,
+    "sentence_index": 4,
+    "source_sentence": "To achieve this wide context under strict parameter parsimony, we design the \\textbf{MobilePixorNeXt Backbone} hierarchy featuring large $7 \\times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale residual stabilization organized into repeated \\texttt{MobilePixorNeXt-S} blocks.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "we design"
+    ],
+    "visible_words": 30,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M093",
+    "unit": "U070",
+    "file": "sections/methodology.tex",
+    "line": 207,
+    "sentence_index": 1,
+    "source_sentence": "Unlike multi-branch reparameterization paradigms that require complex multi-path training topologies and post-hoc weight folding, MobilePIXORNeXt directly trains and deploys a clean single-branch large-kernel ($7 \\times 7$) depthwise convolution.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "clean single-branch"
+    ],
+    "tense_spans": [],
+    "visible_words": 25,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M094",
+    "unit": "U070",
+    "file": "sections/methodology.tex",
+    "line": 207,
+    "sentence_index": 2,
+    "source_sentence": "By pairing wide spatial receptive fields with inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization, the backbone achieves rapid optimization convergence and fast throughput ($55.94$\\,FPS on Tesla T4) without incurring auxiliary branch memory overhead during backpropagation.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "rapid optimization convergence"
+    ],
+    "tense_spans": [
+      "the backbone achieves"
+    ],
+    "visible_words": 34,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M095",
+    "unit": "U071",
+    "file": "sections/methodology.tex",
+    "line": 217,
+    "sentence_index": 2,
+    "source_sentence": "\\textbf{Top}: Complete residual transformation path from input $\\mathbf{Z}$ to output $\\mathbf{Z}'$, featuring a large-kernel $7 \\times 7$ depthwise convolution, inverted bottleneck expansion with ratio $e = 2.5$, SiLU activation, pointwise projection, parameter-free 3D spatial-energy attention $\\mathcal{S}(\\mathbf{R})$, LayerScale scaling $\\boldsymbol{\\gamma}_{\\mathrm{blk}}$ (initialized to $10^{-5}$), and an identity shortcut.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M096",
+    "unit": "U071",
+    "file": "sections/methodology.tex",
+    "line": 217,
+    "sentence_index": 3,
+    "source_sentence": "\\textbf{Bottom}: Internal operational mechanism of the SimAM operator, which calculates channel-wise spatial moments ($\\mu_c, \\nu_c$) in FP32 precision, evaluates visual saliency via inverse-energy importance $s_t = (t - \\mu_c)^2 / (4(\\nu_c + \\lambda_{\\mathrm{sim}})) + 0.5$, and produces a 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ via sigmoid scaling without introducing any learnable parameters.}",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 36,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M097",
+    "unit": "U074",
+    "file": "sections/methodology.tex",
+    "line": 232,
+    "sentence_index": 2,
+    "source_sentence": "Conversely, non-local spatial attention requires quadratic computational complexity $\\mathcal{O}((HW)^2)$, rendering it prohibitive for real-time dense BEV grids ($200 \\times 176$).",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "prohibitive"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 16,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M098",
+    "unit": "U074",
+    "file": "sections/methodology.tex",
+    "line": 232,
+    "sentence_index": 3,
+    "source_sentence": "To address this trade-off, we integrate \\textbf{Block-SimAM}~\\cite{yang2021simam}---a 3D spatial-energy attention module operating without adding a single learned parameter.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "To address this trade-off"
+    ],
+    "tense_spans": [
+      "we integrate"
+    ],
+    "visible_words": 19,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M099",
+    "unit": "U075",
+    "file": "sections/methodology.tex",
+    "line": 235,
+    "sentence_index": 1,
+    "source_sentence": "As illustrated in Figure~\\ref{fig:next_s_block}, SimAM is embedded inside each \\texttt{MobilePixorNeXt-\\allowbreak S} block across all three stages (C2, C3, C4), for nine attention operators in total.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 4,
+    "decision": "retained-context",
+    "note": "Giữ nguyên: cần đọc theo vai trò định nghĩa, danh sách hoặc mô tả hình; không tự suy ra lỗi từ bộ đếm dấu phẩy."
+  },
+  {
+    "id": "M100",
+    "unit": "U080",
+    "file": "sections/methodology.tex",
+    "line": 261,
+    "sentence_index": 2,
+    "source_sentence": "It simultaneously assigns true 3D spatial-and-channel attention weights, adaptively amplifying sparse LiDAR point clusters against flat terrain backgrounds.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "true 3D"
+    ],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M101",
+    "unit": "U080",
+    "file": "sections/methodology.tex",
+    "line": 261,
+    "sentence_index": 3,
+    "source_sentence": "Empirical evaluation confirms that embedding SimAM inside each \\texttt{MobilePixorNeXt-S} block achieves $+0.88\\%$ mAP over the no-attention configuration, outperforming stage-level adapters by up to $+2.10\\%$ mAP (Table~\\ref{tab:attention}).",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "Empirical evaluation confirms"
+    ],
+    "tense_spans": [
+      "Empirical evaluation confirms",
+      "achieves",
+      "outperforming stage-level"
+    ],
+    "visible_words": 23,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M102",
+    "unit": "U081",
+    "file": "sections/methodology.tex",
+    "line": 270,
+    "sentence_index": 1,
+    "source_sentence": "Standard Feature Pyramid Networks rely on transposed convolutions (deconvolutions) to upsample low-resolution feature maps, frequently introducing severe high-frequency checkerboard artifacts on continuous coordinate regression grids.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 25,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M103",
+    "unit": "U081",
+    "file": "sections/methodology.tex",
+    "line": 270,
+    "sentence_index": 3,
+    "source_sentence": "To resolve this, we design the \\textbf{Top-Down Scale-Gated Feature Pyramid Network} (\\texttt{SG-FPN Neck})---an efficient, unidirectional top-down fusion neck equipped with depthwise scale-gating.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "To resolve this"
+    ],
+    "tense_spans": [
+      "we design"
+    ],
+    "visible_words": 21,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M104",
+    "unit": "U083",
+    "file": "sections/methodology.tex",
+    "line": 283,
+    "sentence_index": 1,
+    "source_sentence": "As shown in Figure~\\ref{fig:scale_gated_fusion}, lateral features from Stages C4 ($128$\\,ch), C3 ($96$\\,ch), and C2 ($48$\\,ch) are projected via $1 \\times 1$ convolutions into matching lateral dimensions $\\mathbf{L}_5 \\in \\mathbb{R}^{B \\times 48 \\times 50 \\times 44}$, $\\mathbf{L}_4 \\in \\mathbb{R}^{B \\times 48 \\times 100 \\times 88}$, and $\\mathbf{L}_3 \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}$.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 24,
+    "comma_marker_proxy": 8,
+    "decision": "retained-context",
+    "note": "Giữ nguyên: cần đọc theo vai trò định nghĩa, danh sách hoặc mô tả hình; không tự suy ra lỗi từ bộ đếm dấu phẩy."
+  },
+  {
+    "id": "M105",
+    "unit": "U087",
+    "file": "sections/methodology.tex",
+    "line": 307,
+    "sentence_index": 1,
+    "source_sentence": "Autonomous driving involves drastic morphological discrepancies across object categories.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "drastic morphological discrepancies"
+    ],
+    "tense_spans": [],
+    "visible_words": 9,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M106",
+    "unit": "U087",
+    "file": "sections/methodology.tex",
+    "line": 307,
+    "sentence_index": 2,
+    "source_sentence": "Cars exhibit rigid rectangular footprints ($l \\approx 4.5$\\,m, $w \\approx 1.8$\\,m), whereas Pedestrians ($l \\approx 0.8$\\,m, $w \\approx 0.6$\\,m) and Cyclists ($l \\approx 1.8$\\,m, $w \\approx 0.7$\\,m) are compact and highly deformable.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 11,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M107",
+    "unit": "U087",
+    "file": "sections/methodology.tex",
+    "line": 307,
+    "sentence_index": 3,
+    "source_sentence": "Forcing a single shared prediction head to jointly regress all classes induces severe gradient competition and scale interference.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M108",
+    "unit": "U087",
+    "file": "sections/methodology.tex",
+    "line": 307,
+    "sentence_index": 5,
+    "source_sentence": "We resolve this via \\textbf{Shared Grouped Prediction Towers} (\\texttt{GroupedHeader}).",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "We resolve this"
+    ],
+    "tense_spans": [
+      "We resolve this"
+    ],
+    "visible_words": 8,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M109",
+    "unit": "U088",
+    "file": "sections/methodology.tex",
+    "line": 310,
+    "sentence_index": 1,
+    "source_sentence": "Classes are partitioned into two semantically compatible task groups: Group 1 for \\texttt{car} ($K_1 = 1$), and Group 2 for \\texttt{ped\\_cyc} ($K_2 = 2$).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Classes are partitioned"
+    ],
+    "visible_words": 16,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M110",
+    "unit": "U094",
+    "file": "sections/methodology.tex",
+    "line": 325,
+    "sentence_index": 2,
+    "source_sentence": "Classification targets use 2D Gaussian heatmaps centered at continuous object projections with a minimum radius of 4 cells, and regression targets are assigned within a radius of half the Gaussian peak, denoted by valid indicator mask $\\mathbf{M}_{\\mathrm{reg}}$.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Classification targets use",
+      "regression targets are assigned"
+    ],
+    "visible_words": 36,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M111",
+    "unit": "U095",
+    "file": "sections/methodology.tex",
+    "line": 331,
+    "sentence_index": 1,
+    "source_sentence": "We propose \\textbf{Oriented Geometric Alignment (OGA)} combined with \\textbf{IoU-Aware Quality Alignment (IQA)} to bridge the disparity between independent coordinate parameter regression and true oriented bounding box overlap.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "bridge the disparity"
+    ],
+    "tense_spans": [
+      "We propose"
+    ],
+    "visible_words": 27,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M112",
+    "unit": "U096",
+    "file": "sections/methodology.tex",
+    "line": 334,
+    "sentence_index": 2,
+    "source_sentence": "OGA couples two synergistic geometric objectives:",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "synergistic"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 6,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M113",
+    "unit": "U097",
+    "file": "sections/methodology.tex",
+    "line": 340,
+    "sentence_index": 1,
+    "source_sentence": "For each axis $\\mathbf{n}_k$, 1D intervals of intersection length $I_k$, union length $U_k$, and smallest enclosing hull $E_k$ are determined, yielding 1D GIoU~\\cite{rezatofighi2019giou}:",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 19,
+    "comma_marker_proxy": 4,
+    "decision": "retained-context",
+    "note": "Giữ nguyên: cần đọc theo vai trò định nghĩa, danh sách hoặc mô tả hình; không tự suy ra lỗi từ bộ đếm dấu phẩy."
+  },
+  {
+    "id": "M114",
+    "unit": "U101",
+    "file": "sections/methodology.tex",
+    "line": 368,
+    "sentence_index": 1,
+    "source_sentence": "Detaching the target prevents gradient instability while forcing the model to learn reliable confidence calibration.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "forcing the model to learn reliable confidence calibration"
+    ],
+    "tense_spans": [],
+    "visible_words": 15,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M115",
+    "unit": "U102",
+    "file": "sections/methodology.tex",
+    "line": 371,
+    "sentence_index": 2,
+    "source_sentence": "To support resource-constrained edge platforms, we formulate \\textbf{Q-OGA} as a head-free quality calibration alternative.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "we formulate"
+    ],
+    "visible_words": 14,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M116",
+    "unit": "U103",
+    "file": "sections/methodology.tex",
+    "line": 381,
+    "sentence_index": 2,
+    "source_sentence": "By training the classification head to output IoU-calibrated confidence scores intrinsically, Q-OGA eliminates the $18.59\\,\\text{K}$ parameter footprint of the explicit IQA heads and reduces forward inference latency by $1.25\\,\\text{ms}$, serving as an ultra-compact supervision strategy.",
+    "categories": [
+      "vocabulary-context",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "ultra-compact",
+      "eliminates"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [
+      "reduces forward inference latency"
+    ],
+    "visible_words": 33,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M117",
+    "unit": "U104",
+    "file": "sections/methodology.tex",
+    "line": 384,
+    "sentence_index": 1,
+    "source_sentence": "To dynamically harmonize multi-task gradient scales across six heterogeneous loss objectives $\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}$ ($J=6$), we formulate \\textbf{T-SBUW} as a principled, bounded optimization framework that eliminates fragile manual hyperparameter tuning.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [
+      "eliminates",
+      "principled"
+    ],
+    "contextual_spans": [
+      "principled, bounded optimization framework",
+      "eliminates fragile manual hyperparameter tuning"
+    ],
+    "tense_spans": [
+      "we formulate"
+    ],
+    "visible_words": 26,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M118",
+    "unit": "U110",
+    "file": "sections/methodology.tex",
+    "line": 459,
+    "sentence_index": 1,
+    "source_sentence": "The complete MobilePIXORNeXt detector contains exactly \\textbf{753,569 trainable parameters} ($< 0.76$\\,M), corresponding to an ultra-compact FP32 checkpoint size of $9.34$\\,MB:",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "ultra-compact"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M119",
+    "unit": "U112",
+    "file": "sections/methodology.tex",
+    "line": 466,
+    "sentence_index": 1,
+    "source_sentence": "This compact footprint enables full end-to-end inference at $16.41$\\,FPS ($60.96$\\,ms) and network forward throughput of $55.94$\\,FPS ($17.88$\\,ms) on commodity NVIDIA Tesla T4 GPUs.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "enables full end-to-end inference"
+    ],
+    "visible_words": 23,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M120",
+    "unit": "U113",
+    "file": "sections/related_work.tex",
+    "line": 4,
+    "sentence_index": 2,
+    "source_sentence": "PIXOR~\\cite{yang2018pixor} established the foundational paradigm of proposal-free Bird's-Eye View (BEV) detection by discretizing point clouds into fixed vertical occupancy slices and calibrated reflectance maps.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "foundational paradigm"
+    ],
+    "tense_spans": [],
+    "visible_words": 24,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M121",
+    "unit": "U113",
+    "file": "sections/related_work.tex",
+    "line": 4,
+    "sentence_index": 4,
+    "source_sentence": "In parallel, PointPillars~\\cite{lang2019pointpillars} eliminated rigid vertical slicing by organizing point clouds into vertical columns (pillars) and learning spatial feature representations via localized PointNet encoders.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "eliminated"
+    ],
+    "contextual_spans": [
+      "In parallel"
+    ],
+    "tense_spans": [],
+    "visible_words": 24,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M122",
+    "unit": "U113",
+    "file": "sections/related_work.tex",
+    "line": 4,
+    "sentence_index": 5,
+    "source_sentence": "Modern extensions such as PillarNeXt~\\cite{li2023pillarnext} and PillarNeSt~\\cite{mao2023pillarnest} systematically modernized pillar-based receptive field designs and backbone scaling for large-scale outdoor perception.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "systematically modernized"
+    ],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M123",
+    "unit": "U114",
+    "file": "sections/related_work.tex",
+    "line": 6,
+    "sentence_index": 1,
+    "source_sentence": "A fundamental operational dichotomy divides existing BEV representations between expressive PointNet-based pillar feature encoders and high-speed fixed-grid rasterization.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "fundamental"
+    ],
+    "contextual_spans": [
+      "fundamental operational dichotomy"
+    ],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M124",
+    "unit": "U114",
+    "file": "sections/related_work.tex",
+    "line": 6,
+    "sentence_index": 2,
+    "source_sentence": "On one hand, PointNet-based pillar encoders~\\cite{lang2019pointpillars,li2023pillarnext} achieve expressive geometric learning, yet the non-deterministic point gathering, dynamic memory allocation, and sparse scatter operations incur prohibitive latency and energy penalties on edge accelerators.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "prohibitive"
+    ],
+    "contextual_spans": [
+      "On one hand"
+    ],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M125",
+    "unit": "U114",
+    "file": "sections/related_work.tex",
+    "line": 6,
+    "sentence_index": 3,
+    "source_sentence": "On the other hand, fixed-grid rasterization methods~\\cite{yang2018pixor,nguyen2024indoor} bypass point gathering entirely but suffer from severe spatial quantization error on standard $0.1\\,\\text{m}$ grids; by treating cells as binary flags or raw counters, they discard continuous subcell offsets and high-order vertical distributions, causing boundary staircasing and localization jitter.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [
+      "On the other hand"
+    ],
+    "tense_spans": [],
+    "visible_words": 45,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M126",
+    "unit": "U114",
+    "file": "sections/related_work.tex",
+    "line": 6,
+    "sentence_index": 6,
+    "source_sentence": "By deterministically integrating four stratified vertical density bins, four continuous elevation moments ($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$), and two continuous subcell centroid displacement offsets ($\\Delta x_c, \\Delta y_c$) into a 14-channel layout, Strata-BEV14 preserves sub-voxel geometric fidelity while reducing Host-to-Device transfer payloads by $60\\%$ without learned encoder latency.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 38,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M127",
+    "unit": "U116",
+    "file": "sections/related_work.tex",
+    "line": 13,
+    "sentence_index": 1,
+    "source_sentence": "To overcome the latency bottleneck of volumetric processing, lightweight 2D convolutional designs have gained prominence.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "have gained prominence"
+    ],
+    "tense_spans": [],
+    "visible_words": 15,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M128",
+    "unit": "U116",
+    "file": "sections/related_work.tex",
+    "line": 13,
+    "sentence_index": 2,
+    "source_sentence": "The ConvNeXt paradigm~\\cite{liu2022convnext} demonstrated that conventional convolutions modernized with $7 \\times 7$ depthwise kernels, inverted bottleneck expansions ($e=2.5$), and LayerScale can achieve representational power competitive with Vision Transformers while preserving convolutional hardware efficiency.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M129",
+    "unit": "U116",
+    "file": "sections/related_work.tex",
+    "line": 13,
+    "sentence_index": 5,
+    "source_sentence": "To address this weakness, Yang et al.~\\cite{yang2021simam} proposed SimAM, deriving full 3D spatial-channel attention weights analytically via an energy function inspired by visual neuroscience, requiring zero trainable parameters.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "To address this weakness"
+    ],
+    "tense_spans": [],
+    "visible_words": 28,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M130",
+    "unit": "U117",
+    "file": "sections/related_work.tex",
+    "line": 15,
+    "sentence_index": 1,
+    "source_sentence": "Collectively, a shared limitation of prior mobile LiDAR detectors is the reliance on standard inverted residual bottlenecks with small $3 \\times 3$ kernels~\\cite{nguyen2024indoor}, which struggle to capture multi-scale context across disparate vehicle and pedestrian dimensions.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "Collectively, a shared limitation"
+    ],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M131",
+    "unit": "U118",
+    "file": "sections/related_work.tex",
+    "line": 20,
+    "sentence_index": 1,
+    "source_sentence": "Bounding box regression in oriented object detection has progressively evolved from unconstrained coordinate offsets toward geometrically bounded objectives.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "has progressively evolved"
+    ],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M132",
+    "unit": "U118",
+    "file": "sections/related_work.tex",
+    "line": 20,
+    "sentence_index": 3,
+    "source_sentence": "However, regressing spatial coordinates, dimensions, and angles independently ignores the geometric interdependence of bounding boxes and induces severe gradient instability.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M133",
+    "unit": "U119",
+    "file": "sections/related_work.tex",
+    "line": 22,
+    "sentence_index": 1,
+    "source_sentence": "In parallel with geometric loss formulation, joint quality calibration has emerged as an essential mechanism for accurate detection ranking.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "essential"
+    ],
+    "contextual_spans": [
+      "has emerged as an essential mechanism"
+    ],
+    "tense_spans": [],
+    "visible_words": 19,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M134",
+    "unit": "U120",
+    "file": "sections/related_work.tex",
+    "line": 24,
+    "sentence_index": 1,
+    "source_sentence": "Despite these advancements, existing oriented bounding box detectors still struggle with three pervasive limitations.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "three pervasive limitations"
+    ],
+    "tense_spans": [],
+    "visible_words": 14,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M135",
+    "unit": "U120",
+    "file": "sections/related_work.tex",
+    "line": 24,
+    "sentence_index": 2,
+    "source_sentence": "First, independent angle and corner regression objectives remain susceptible to the $\\pi$-periodicity boundary jump problem, where slight angular deviations around $\\pm \\pi/2$ or $\\pm \\pi$ trigger severe loss spikes and yaw gradient collapse.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M136",
+    "unit": "U120",
+    "file": "sections/related_work.tex",
+    "line": 24,
+    "sentence_index": 4,
+    "source_sentence": "Third, unconstrained multi-task uncertainty weighting allows task variance parameters to diverge, leading to training instability when balancing disparate loss scales across classification, geometric overlap, and orientation.",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "leading"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M137",
+    "unit": "U120",
+    "file": "sections/related_work.tex",
+    "line": 24,
+    "sentence_index": 6,
+    "source_sentence": "Specifically, OGA unifies multi-axis MGIoU projections with scale-normalized $\\pi$-symmetric corner supervision to eliminate boundary discontinuities; Q-OGA couples continuous IoU quality directly into classification supervision to achieve quality calibration with zero head overhead; IQA provides explicit multi-branch quality alignment scored via $S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$ to suppress miscalibrated false positives; and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) guarantees stable convergence by constraining multi-task weights within a normalized, bounded simplex, simultaneously resolving orientation discontinuities, quality miscalibration, and loss scale divergence.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern",
+      "words>50",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "guarantees",
+      "eliminate"
+    ],
+    "contextual_spans": [
+      "guarantees stable convergence",
+      "simultaneously resolving"
+    ],
+    "tense_spans": [],
+    "visible_words": 73,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M138",
+    "unit": "U121",
+    "file": "sections/results.tex",
+    "line": 5,
+    "sentence_index": 2,
+    "source_sentence": "In accordance with standard benchmark conventions, all reported scores reflect deterministic single-seed evaluation ($\\text{seed} = 42$); variance and standard deviation bounds ($\\pm\\,\\text{std}$) across random seeds are reserved for extended evaluation splits.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "In accordance with standard benchmark conventions"
+    ],
+    "tense_spans": [
+      "all reported scores reflect"
+    ],
+    "visible_words": 27,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M139",
+    "unit": "U121",
+    "file": "sections/results.tex",
+    "line": 5,
+    "sentence_index": 3,
+    "source_sentence": "We benchmark MobilePIXORNeXt against established LiDAR object detectors spanning compact BEV models, pillar-based networks, and 3D sparse convolutional architectures.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "We benchmark"
+    ],
+    "visible_words": 19,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M140",
+    "unit": "U122",
+    "file": "sections/results.tex",
+    "line": 12,
+    "sentence_index": 2,
+    "source_sentence": "\\textbf{(a)} Detection accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus parameter footprint (M) on a logarithmic scale, highlighting that MobilePIXORNeXt (red star) achieves $71.46\\%$ mAP with only $0.754\\,\\text{M}$ parameters, matching SECOND ($72.09\\%$, $5.33\\,\\text{M}$) and outperforming PointPillars ($70.13\\%$, $4.84\\,\\text{M}$) with $>84\\%$ fewer parameters.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M141",
+    "unit": "U122",
+    "file": "sections/results.tex",
+    "line": 12,
+    "sentence_index": 3,
+    "source_sentence": "\\textbf{(b)} Detection accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus end-to-end pipeline latency (ms) at batch size 1 (Tesla T4, except the historical MobilePIXOR result on L4), demonstrating that MobilePIXORNeXt achieves the fastest complete perception pipeline ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$) among all evaluated real-time detectors.}",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M142",
+    "unit": "U123",
+    "file": "sections/results.tex",
+    "line": 19,
+    "sentence_index": 1,
+    "source_sentence": "As visualized in the Pareto frontier plots (Figure~\\ref{fig:pareto_tradeoff}), MobilePIXORNeXt established a leading accuracy-to-parameter and accuracy-to-latency trade-off for real-time edge perception.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "leading"
+    ],
+    "contextual_spans": [
+      "leading accuracy-to-parameter"
+    ],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M143",
+    "unit": "U123",
+    "file": "sections/results.tex",
+    "line": 19,
+    "sentence_index": 4,
+    "source_sentence": "Compared to the widely deployed SECOND detector~\\cite{yan2018second} ($5.326\\,\\text{M}$ parameters), MobilePIXORNeXt trailed by merely $0.63\\%$ Moderate mAP ($71.46\\%$ vs. $72.09\\%$) despite operating with $7.1\\times$ fewer parameters.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "merely"
+    ],
+    "tense_spans": [],
+    "visible_words": 20,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M144",
+    "unit": "U124",
+    "file": "sections/results.tex",
+    "line": 24,
+    "sentence_index": 1,
+    "source_sentence": "\\caption{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated on the KITTI validation split across Car (top row, $\\text{IoU} \\ge 0.70$), Pedestrian (middle row, $\\text{IoU} \\ge 0.50$), and Cyclist (bottom row, $\\text{IoU} \\ge 0.50$) under Easy (left), Moderate (center), and Hard (right) difficulty regimes.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 7,
+    "decision": "reserved-by-author",
+    "note": "Khối hình PR do tác giả dành để tự xử lý; giữ nguyên cả caption và protected tokens."
+  },
+  {
+    "id": "M145",
+    "unit": "U124",
+    "file": "sections/results.tex",
+    "line": 24,
+    "sentence_index": 4,
+    "source_sentence": "Note that MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users, attaining $60.75\\%$ Moderate AP on Pedestrian compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.}",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "superior"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 2,
+    "decision": "reserved-by-author",
+    "note": "Khối hình PR do tác giả dành để tự xử lý; giữ nguyên cả caption và protected tokens."
+  },
+  {
+    "id": "M146",
+    "unit": "U125",
+    "file": "sections/results.tex",
+    "line": 30,
+    "sentence_index": 1,
+    "source_sentence": "In autonomous driving perception, detecting small, non-rigid objects such as pedestrians presents the most challenging operational regime due to extreme point sparsity and severe aspect-ratio disparity.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M147",
+    "unit": "U125",
+    "file": "sections/results.tex",
+    "line": 30,
+    "sentence_index": 2,
+    "source_sentence": "As evidenced in Table~\\ref{tab:comparison} and the Precision--Recall curves in Figure~\\ref{fig:pr_curves}, MobilePIXORNeXt achieved \\textbf{60.75\\% Moderate AP} on Pedestrians, outperforming PointPillars ($56.01\\%$, a $+4.74\\%$ gain) and SECOND ($56.56\\%$, a $+4.19\\%$ gain), while more than doubling the baseline MobilePIXOR ($28.16\\%$, a $+32.59\\%$ gain).",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M148",
+    "unit": "U125",
+    "file": "sections/results.tex",
+    "line": 30,
+    "sentence_index": 3,
+    "source_sentence": "We attribute this performance advantage primarily to two architectural mechanisms: (i) Strata-BEV14's continuous subcell displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$, which mitigate the $0.1\\,\\text{m}$ grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture, which isolates pedestrian regression from large vehicle footprints to alleviate gradient interference across morphologically disparate categories.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "We attribute this performance advantage primarily"
+    ],
+    "tense_spans": [],
+    "visible_words": 50,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M149",
+    "unit": "U126",
+    "file": "sections/results.tex",
+    "line": 33,
+    "sentence_index": 1,
+    "source_sentence": "For passenger vehicles (Car), MobilePIXORNeXt achieved $86.90\\%$ Moderate AP, closely trailing PointPillars ($88.02\\%$) and SECOND ($88.56\\%$) by less than $1.7\\%$, while outperforming the original PIXOR ($72.02\\%$) by $+14.88\\%$ and MobilePIXOR ($75.52\\%$) by $+11.38\\%$.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 25,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M150",
+    "unit": "U126",
+    "file": "sections/results.tex",
+    "line": 33,
+    "sentence_index": 3,
+    "source_sentence": "While two-stage 3D anchor-based detectors (PointRCNN, Part-A$^2$, PV-RCNN) achieve higher absolute accuracy on rigid vehicles, they require between $4.0\\,\\text{M}$ and $63.8\\,\\text{M}$ parameters and operate at higher latencies ($133\\text{--}195\\,\\text{ms}$), exceeding the real-time constraints of embedded edge processors.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "detectors (PointRCNN, Part-A",
+      "they require"
+    ],
+    "visible_words": 33,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M151",
+    "unit": "U127",
+    "file": "sections/results.tex",
+    "line": 40,
+    "sentence_index": 1,
+    "source_sentence": "In real-time autonomous systems, evaluating neural network forward execution time in isolation yields a misleading depiction of deployability.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "a misleading depiction of deployability"
+    ],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M152",
+    "unit": "U127",
+    "file": "sections/results.tex",
+    "line": 40,
+    "sentence_index": 2,
+    "source_sentence": "A complete perception system must account for point cloud loading, input feature tensorization, Host-to-Device (H2D) memory transfer, forward execution, coordinate decoding, and Non-Maximum Suppression (NMS).",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 25,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M153",
+    "unit": "U128",
+    "file": "sections/results.tex",
+    "line": 45,
+    "sentence_index": 1,
+    "source_sentence": "As detailed in Table~\\ref{tab:efficiency}, MobilePIXORNeXt achieved an End-to-End (E2E) pipeline latency of \\textbf{60.96\\,ms} (\\textbf{16.41\\,FPS}), delivering the lowest full-system latency among all evaluated real-time detectors.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 28,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M154",
+    "unit": "U128",
+    "file": "sections/results.tex",
+    "line": 45,
+    "sentence_index": 2,
+    "source_sentence": "It operated faster than PointPillars ($63.84\\,\\text{ms}$, $15.66\\,\\text{FPS}$), MobilePIXOR ($85.92\\,\\text{ms}$, $11.64\\,\\text{FPS}$), and SECOND ($93.70\\,\\text{ms}$, $10.67\\,\\text{FPS}$), and ran over $2.3\\times$ faster than the original PIXOR ($144.00\\,\\text{ms}$, $6.94\\,\\text{FPS}$).",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 16,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M155",
+    "unit": "U128",
+    "file": "sections/results.tex",
+    "line": 45,
+    "sentence_index": 3,
+    "source_sentence": "Percentile analysis indicates consistent latency bounds in the evaluated environment: MobilePIXORNeXt exhibited a median P50 latency of \\textbf{58.28\\,ms}, P95 of $80.85\\,\\text{ms}$, and P99 of $95.91\\,\\text{ms}$, demonstrating low latency dispersion under desktop GPU benchmarking.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Percentile analysis indicates"
+    ],
+    "visible_words": 33,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M156",
+    "unit": "U129",
+    "file": "sections/results.tex",
+    "line": 48,
+    "sentence_index": 1,
+    "source_sentence": "Stage-by-stage profiling reveals the underlying mechanics of our throughput advantage:",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "underlying mechanics of our throughput advantage"
+    ],
+    "tense_spans": [
+      "profiling reveals"
+    ],
+    "visible_words": 10,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M157",
+    "unit": "U130",
+    "file": "sections/results.tex",
+    "line": 50,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Input Preprocessing ($20.94\\,\\text{ms}$)}: Point-cloud file loading and Strata-BEV14 rasterization through the Numba CPU backend together take $20.94\\,\\text{ms}$.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "together take"
+    ],
+    "visible_words": 15,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M158",
+    "unit": "U130",
+    "file": "sections/results.tex",
+    "line": 50,
+    "sentence_index": 3,
+    "source_sentence": "The corresponding recorded preprocessing stages take $27.75\\,\\text{ms}$ for PointPillars and $27.20\\,\\text{ms}$ for SECOND; these are complete input-preparation timings rather than encoder-only microbenchmarks.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "stages take"
+    ],
+    "visible_words": 20,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M159",
+    "unit": "U131",
+    "file": "sections/results.tex",
+    "line": 51,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Host-to-Device Memory Transfer ($6.91\\,\\text{ms}$)}: Unlike 35-channel binary occupancy tensors that require transferring $78.8\\,\\text{MB}$ per scan, Strata-BEV14's compact 14-channel layout requires transferring only $31.5\\,\\text{MB}$ (a $60.0\\%$ payload reduction), which, in conjunction with pinned-memory buffer optimization, reduces H2D latency to $6.91\\,\\text{ms}$ compared with $40.63\\,\\text{ms}$ for the MobilePIXOR baseline.",
+    "categories": [
+      "comma-marker-proxy>3",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "reduces"
+    ],
+    "visible_words": 40,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M160",
+    "unit": "U132",
+    "file": "sections/results.tex",
+    "line": 52,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Model Forward Propagation ($17.88\\,\\text{ms}$)}: Network inference executes in $17.88\\,\\text{ms}$ ($55.94\\,\\text{FPS}$) on Tesla T4.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "inference executes"
+    ],
+    "visible_words": 10,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M161",
+    "unit": "U132",
+    "file": "sections/results.tex",
+    "line": 52,
+    "sentence_index": 2,
+    "source_sentence": "In optimized standalone inference, the network reaches \\textbf{115.32\\,FPS} ($8.67\\,\\text{ms}$).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "network reaches"
+    ],
+    "visible_words": 10,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M162",
+    "unit": "U133",
+    "file": "sections/results.tex",
+    "line": 53,
+    "sentence_index": 1,
+    "source_sentence": "\\item \\textbf{Decoding and Rotated NMS ($14.94\\,\\text{ms}$)}: Candidate peak selection and class-wise rotated NMS execute in $14.94\\,\\text{ms}$, maintaining GPU residency until final bounding box export.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "NMS execute"
+    ],
+    "visible_words": 21,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M163",
+    "unit": "U135",
+    "file": "sections/results.tex",
+    "line": 70,
+    "sentence_index": 1,
+    "source_sentence": "Within the near-range $0\\text{--}30\\,\\text{m}$ evaluation zone, MobilePIXORNeXt delivered substantial accuracy gains over baseline MobilePIXOR: Pedestrian AP reached \\textbf{65.23\\%} (more than double MobilePIXOR's $30.45\\%$, a $+34.78\\%$ improvement), while Cyclist AP reached \\textbf{76.32\\%} (nearly triple MobilePIXOR's $25.55\\%$, a $+50.77\\%$ improvement).",
+    "categories": [
+      "vocabulary-context",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [
+      "substantial"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 35,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M164",
+    "unit": "U135",
+    "file": "sections/results.tex",
+    "line": 70,
+    "sentence_index": 2,
+    "source_sentence": "This improvement was facilitated by Strata-BEV14's stratified height bins and continuous subcell offsets, which preserve fine morphological boundaries when object returns are dense.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "This improvement was facilitated by"
+    ],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M165",
+    "unit": "U136",
+    "file": "sections/results.tex",
+    "line": 73,
+    "sentence_index": 1,
+    "source_sentence": "At medium ranges ($30\\text{--}50\\,\\text{m}$), MobilePIXORNeXt maintained robust detection capability, achieving $11.49\\%$ Pedestrian AP (vs. $3.75\\%$) and $44.30\\%$ Cyclist AP (vs. $12.61\\%$, a $+31.69\\%$ gain).",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "robust"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 18,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M166",
+    "unit": "U136",
+    "file": "sections/results.tex",
+    "line": 73,
+    "sentence_index": 3,
+    "source_sentence": "This resilience against severe point sparsity is consistent with the regularizing effect of our physics-aware range attenuation augmentation (\\texttt{transform\\_object}) and the broader spatial context captured by large $7 \\times 7$ depthwise receptive fields.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "severe"
+    ],
+    "contextual_spans": [
+      "This resilience against severe point sparsity"
+    ],
+    "tense_spans": [],
+    "visible_words": 29,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M167",
+    "unit": "U138",
+    "file": "sections/results.tex",
+    "line": 86,
+    "sentence_index": 1,
+    "source_sentence": "Replacing MobilePIXOR's residual blocks with our ConvNeXt-style backbone ($7 \\times 7$ depthwise convolutions, inverted bottleneck expansion $e=2.5$, SiLU activations, and LayerScale) elevated Moderate mAP from $41.40\\%$ to $47.60\\%$ (\\textbf{+6.20\\% mAP}), while nearly doubling standalone forward throughput from $90.57$ to \\textbf{169.97\\,FPS}.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 36,
+    "comma_marker_proxy": 6,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M168",
+    "unit": "U138",
+    "file": "sections/results.tex",
+    "line": 86,
+    "sentence_index": 2,
+    "source_sentence": "Large depthwise kernels significantly broaden spatial receptive fields on BEV grids without inflating computational complexity.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "significantly"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 15,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M169",
+    "unit": "U139",
+    "file": "sections/results.tex",
+    "line": 91,
+    "sentence_index": 3,
+    "source_sentence": "Encoding continuous elevation moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$) and subcell centroid displacements eliminated horizontal discretization errors.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "eliminated"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 12,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M170",
+    "unit": "U140",
+    "file": "sections/results.tex",
+    "line": 95,
+    "sentence_index": 3,
+    "source_sentence": "Decoupling isolated class-specific representations, mitigating gradient interference between morphologically distinct categories such as passenger vehicles and pedestrians.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "mitigating gradient interference"
+    ],
+    "tense_spans": [],
+    "visible_words": 17,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M171",
+    "unit": "U141",
+    "file": "sections/results.tex",
+    "line": 100,
+    "sentence_index": 2,
+    "source_sentence": "The evaluated sampler combines terrain alignment, static obstacle rejection, and range-dependent point subsampling.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "evaluated sampler combines"
+    ],
+    "visible_words": 13,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M172",
+    "unit": "U143",
+    "file": "sections/results.tex",
+    "line": 108,
+    "sentence_index": 2,
+    "source_sentence": "Coupling Multi-Axis Projection GIoU with scale-normalized $\\pi$-symmetric corner distances aligned loss gradients directly with rotated bounding box overlap, while IQA confidence calibration prevented high-scoring but misaligned false positives from surviving NMS.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "prevented high-scoring but misaligned false positives"
+    ],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M173",
+    "unit": "U144",
+    "file": "sections/results.tex",
+    "line": 113,
+    "sentence_index": 1,
+    "source_sentence": "Embedding parameter-free Block-SimAM inside every residual block across stages C2, C3, and C4 culminated in our final configuration, achieving \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% mAP$_9$} (\\textbf{+0.88\\% mAP}).",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "culminated in our final configuration"
+    ],
+    "tense_spans": [],
+    "visible_words": 30,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M174",
+    "unit": "U148",
+    "file": "sections/results.tex",
+    "line": 123,
+    "sentence_index": 1,
+    "source_sentence": "As shown in Table~\\ref{tab:loss}, introducing OGA alone into baseline training increased Moderate mAP from $67.38\\%$ to $68.97\\%$ (\\textbf{+1.59\\% mAP}), with consistent gains across Car ($+0.17\\%$), Pedestrian ($+2.45\\%$), and Cyclist ($+2.14\\%$).",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 26,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M175",
+    "unit": "U148",
+    "file": "sections/results.tex",
+    "line": 123,
+    "sentence_index": 4,
+    "source_sentence": "These findings demonstrate that OGA and IQA provide complementary benefits: OGA refines continuous corner and boundary alignment during backpropagation, whereas IQA calibrates classification scores with true geometric overlap during inference ($S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$), preventing misaligned boxes from suppressing high-quality candidates during rotated NMS.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "These findings demonstrate"
+    ],
+    "tense_spans": [],
+    "visible_words": 40,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M176",
+    "unit": "U149",
+    "file": "sections/results.tex",
+    "line": 125,
+    "sentence_index": 2,
+    "source_sentence": "Models incorporating the dedicated IQA prediction branch require $0.721\\,\\text{M}$ parameters and execute at $8.19\\,\\text{ms}$ forward latency ($122.16\\,\\text{FPS}$).",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Models incorporating"
+    ],
+    "visible_words": 14,
+    "comma_marker_proxy": 0,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M177",
+    "unit": "U149",
+    "file": "sections/results.tex",
+    "line": 125,
+    "sentence_index": 4,
+    "source_sentence": "Without any extra prediction branches or post-processing score multiplications, Q-OGA reaches $69.20\\%$ Moderate mAP, outperforming standalone OGA by $+0.23\\%$ mAP and surpassing the baseline Smooth-L1 by $+1.82\\%$ mAP.",
+    "categories": [
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [
+      "Q-OGA reaches"
+    ],
+    "visible_words": 25,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M178",
+    "unit": "U149",
+    "file": "sections/results.tex",
+    "line": 125,
+    "sentence_index": 5,
+    "source_sentence": "These findings confirm that Q-OGA provides a parsimonious edge-deployment configuration when memory and latency budgets are strictly capped, whereas the explicit IQA configuration offers peak accuracy ($70.58\\%$) when resources accommodate a dedicated quality branch.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "These findings confirm",
+      "parsimonious edge-deployment configuration"
+    ],
+    "tense_spans": [],
+    "visible_words": 33,
+    "comma_marker_proxy": 4,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M179",
+    "unit": "U151",
+    "file": "sections/results.tex",
+    "line": 132,
+    "sentence_index": 2,
+    "source_sentence": "Because stage transitions undergo spatial downsampling, inserting global attention at these junctures blurs fine spatial gradients.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "Because stage transitions undergo spatial downsampling"
+    ],
+    "tense_spans": [],
+    "visible_words": 16,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M180",
+    "unit": "U152",
+    "file": "sections/results.tex",
+    "line": 137,
+    "sentence_index": 2,
+    "source_sentence": "The top subplots depict total composite training loss (left) and validation loss (right) on logarithmic scales; the remaining six panels illustrate constituent task components: Classification Focal Loss, Oriented Geometry Loss (OGA), IoU Quality Loss (IQA), Subcell Centroid Offset Loss, Footprint Size Loss, and Doubled-Angle Yaw Loss.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 46,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M181",
+    "unit": "U152",
+    "file": "sections/results.tex",
+    "line": 137,
+    "sentence_index": 3,
+    "source_sentence": "Legend curves decode the architectural progression from baseline A1 (Binary35) through Strata-BEV (A2--A3), Decoupled GroupedHeader (A4--A5), PC-GTA augmentation (A6), SG-FPN neck (A7--A8), OGA and IQA supervision (A9), to the final peak configuration A10 (Block-SimAM).",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 34,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M182",
+    "unit": "U152",
+    "file": "sections/results.tex",
+    "line": 137,
+    "sentence_index": 4,
+    "source_sentence": "Dynamic multi-task loss weighting via T-SBUW guarantees stable gradient optimization without loss divergence or oscillation, with configuration A10 consistently achieving the lowest asymptotic validation error bounds across all continuous regression objectives.}",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "guarantees"
+    ],
+    "contextual_spans": [
+      "guarantees stable gradient optimization",
+      "lowest asymptotic validation error bounds"
+    ],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M183",
+    "unit": "U153",
+    "file": "sections/results.tex",
+    "line": 142,
+    "sentence_index": 1,
+    "source_sentence": "To analyze empirical training stability and convergence behavior across the ablation sequence, Figure~\\ref{fig:loss_curves} illustrates the training and validation loss trajectories across 50 epochs for the overall composite objective alongside the six constituent multi-task components (Classification, Geometry, IoU Quality, Subcell Offset, Size, and Yaw), tracking configurations A1 through A10.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 48,
+    "comma_marker_proxy": 7,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M184",
+    "unit": "U154",
+    "file": "sections/results.tex",
+    "line": 143,
+    "sentence_index": 3,
+    "source_sentence": "The training and validation loss trajectories remained closely coupled throughout the optimization horizon without an expanding generalization gap, demonstrating that the physics-consistent point cloud augmentation (PC-GTA, A6) provides strong regularization without underfitting.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "demonstrating that",
+      "provides strong regularization without underfitting"
+    ],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M185",
+    "unit": "U155",
+    "file": "sections/results.tex",
+    "line": 144,
+    "sentence_index": 2,
+    "source_sentence": "As depicted across individual loss subplots, embedding Block-SimAM directly inside residual blocks (configuration A10) consistently maintained lower training and validation loss bounds across all regression tasks compared with intermediate ablation baselines (A1--A9), corroborating the quantitative gains observed in Table~\\ref{tab:components}.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "corroborating the quantitative gains"
+    ],
+    "tense_spans": [],
+    "visible_words": 39,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M186",
+    "unit": "U158",
+    "file": "sections/results.tex",
+    "line": 164,
+    "sentence_index": 3,
+    "source_sentence": "Extended training sharpens classification heatmaps around true positive centers, suppressing ambiguous low-confidence background peaks and accelerating candidate filtering and rotated NMS.",
+    "categories": [
+      "LLM-contextual-pattern",
+      "tense-operation-or-finding"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "Extended training sharpens"
+    ],
+    "tense_spans": [
+      "Extended training sharpens"
+    ],
+    "visible_words": 21,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M187",
+    "unit": "U165",
+    "file": "sections/results.tex",
+    "line": 190,
+    "sentence_index": 1,
+    "source_sentence": "The empirical results indicate that high-accuracy 3D LiDAR object detection does not strictly necessitate parameter-heavy point-cloud encoders or computationally demanding 3D sparse convolutions.",
+    "categories": [
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [
+      "does not strictly necessitate"
+    ],
+    "tense_spans": [],
+    "visible_words": 23,
+    "comma_marker_proxy": 1,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M188",
+    "unit": "U165",
+    "file": "sections/results.tex",
+    "line": 190,
+    "sentence_index": 2,
+    "source_sentence": "By enriching the deterministic 2D BEV representation with multi-band vertical densities, elevation dispersion moments, and continuous subcell centroid displacements, a streamlined ConvNeXt-style 2D convolutional network extracts expressive geometric features with fewer than $0.76\\,\\text{M}$ parameters.",
+    "categories": [
+      "vocabulary-context"
+    ],
+    "lexical_hits": [
+      "streamlined"
+    ],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 33,
+    "comma_marker_proxy": 3,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M189",
+    "unit": "U166",
+    "file": "sections/results.tex",
+    "line": 193,
+    "sentence_index": 1,
+    "source_sentence": "The current MobilePIXORNeXt architecture operates primarily on oriented 2D Bird's-Eye View footprints ($x, y, l, w, \\psi$), which represents the optimal perception trade-off for autonomous vehicle motion planning and collision avoidance under strict edge-computing power envelopes.",
+    "categories": [
+      "vocabulary-context",
+      "LLM-contextual-pattern"
+    ],
+    "lexical_hits": [
+      "optimal"
+    ],
+    "contextual_spans": [
+      "the optimal perception trade-off"
+    ],
+    "tense_spans": [],
+    "visible_words": 31,
+    "comma_marker_proxy": 2,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M190",
+    "unit": "U174",
+    "file": "tables/efficiency.tex",
+    "line": 3,
+    "sentence_index": 4,
+    "source_sentence": "Model forward latency measures neural network execution alone; End-to-End (E2E) pipeline latency spans raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network inference, subcell coordinate decoding, and class-wise rotated NMS.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 32,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M191",
+    "unit": "U175",
+    "file": "tables/efficiency.tex",
+    "line": 23,
+    "sentence_index": 4,
+    "source_sentence": "End-to-end (E2E) pipeline latency spans raw LiDAR point cloud loading, deterministic statistical rasterization, Host-to-Device (H2D) memory transfer, forward propagation, subcell coordinate decoding, and class-wise rotated NMS filtering.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 27,
+    "comma_marker_proxy": 5,
+    "decision": "rewritten-in-unit",
+    "note": "Bản viết lại và lý do chi tiết nằm trong rewrites.md."
+  },
+  {
+    "id": "M192",
+    "unit": "U177",
+    "file": "tables/loss.tex",
+    "line": 19,
+    "sentence_index": 2,
+    "source_sentence": "All variants share identical MobilePixorNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation.",
+    "categories": [
+      "comma-marker-proxy>3"
+    ],
+    "lexical_hits": [],
+    "contextual_spans": [],
+    "tense_spans": [],
+    "visible_words": 17,
+    "comma_marker_proxy": 4,
+    "decision": "retained-context",
+    "note": "Giữ nguyên: cần đọc theo vai trò định nghĩa, danh sách hoặc mô tả hình; không tự suy ra lỗi từ bộ đếm dấu phẩy."
+  }
+]

@@ -1,0 +1,9 @@
+% CONTRACT [Script]: goal=clarity strength=moderate
+% EXPRESSION (Line 291) [Severity: Minor] [Priority: P3] [Script]: Weak-expression candidate
+% Original: Zero-initialized gating weights and biases make   initially equal to  , corresponding to standard residual addition. The feature   passes through a   convolution, BN, and SiLU to form the shared detector representation  . The neck contains   parameters and passes the fused multi-scale features to the prediction towers.
+% Candidate: weak verb "make" is context-dependent ("make sure", "make use of"); not auto-applied
+% Changed:       none (candidate only: make)
+% Protected:     Zero-initialized, BN
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

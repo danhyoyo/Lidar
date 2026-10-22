@@ -1,0 +1,2858 @@
+[
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_check.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_check/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "deai_batch.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "before/deai_batch/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_grammar.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_grammar/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "analyze_sentences.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/analyze_sentences/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "before",
+    "script": "improve_expression.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "before/improve_expression/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_check.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_check.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--analyze"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_check/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "deai_batch.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/deai_batch.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--all-sections"
+    ],
+    "exit_code": 0,
+    "report": "after/deai_batch/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_grammar.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_grammar.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_grammar/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "analyze_sentences.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/analyze_sentences.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--max-words",
+      "50",
+      "--max-clauses",
+      "3",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/analyze_sentences/tables__setup.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "MobilePIXORNeXt.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/MobilePIXORNeXt.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/abstract.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__abstract.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/conclusion.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__conclusion.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/declarations.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__declarations.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/experiments.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__experiments.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/figure_helpers.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/figure_helpers.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__figure_helpers.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/introduction.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__introduction.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/methodology.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__methodology.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/related_work.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__related_work.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "sections/results.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/sections__results.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/attention.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/attention.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__attention.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/comparison.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/comparison.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__comparison.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/components.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/components.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__components.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/distance_our_vs_mbpixor.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/distance_our_vs_mbpixor.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__distance_our_vs_mbpixor.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/efficiency.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/efficiency.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__efficiency.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/loss.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/loss.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__loss.tex.txt",
+    "status": "ok"
+  },
+  {
+    "phase": "after",
+    "script": "improve_expression.py",
+    "file": "tables/setup.tex",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/duyennh/.agents/skills/latex-paper-en/scripts/improve_expression.py",
+      "/home/duyennh/AI_projects/research_lidar/Lidar/paper/tables/setup.tex",
+      "--goal",
+      "clarity",
+      "--strength",
+      "moderate"
+    ],
+    "exit_code": 0,
+    "report": "after/improve_expression/tables__setup.tex.txt",
+    "status": "ok"
+  }
+]

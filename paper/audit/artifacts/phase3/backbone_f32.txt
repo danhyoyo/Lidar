@@ -1,0 +1,44 @@
+                                                                                               Head: Group 1 Car
+                                                                                                                             Gaussian
+                Stem                                                    Backbone                                              Heatmap
+                                                                                                            Conv
+        Conv 3x3, 14→32 s=2,                                                                                                 1x200x176
+     Conv3x3, 32→32, s=1 BN+SiLU
+                                                                                                                               Offset
+          32 x 400 x 352, /2                                                                                Conv             2x200x176
+                                                                     Conv 3×3, 32→32
+          Conv3x3, 32→48, s=2           BN + SiLU                       BN + SiLU
+                                                                                                                                Size
+                                                                                                            Conv             2x200x176
+
+             Stage 2 / C2                                                                                                       Yaw
+                                                    L3: Conv 1×1                  Gated                     Conv             2x200x176
+ NeXt-S        NeXt-S          NeXt-S                                       G                 3×3 + BN
+                                                       48→32                    Fusion (P3)                                  Localization
+                                                                                               +SiLU
+          48 x 200 x 176, /4                                                                                                   Quality
+                                                    32 × 200 × 176                                          Conv
+                                                                                                                              1x200x176
+                                                                        Bilinear ↑2
+          Conv3x3, 48→96, s=2                                         Conv3x3, 48→32
+                                                                        BN + SiLU
+                                                                                              Head: Group 2 Pedestrian/Cyclist
+             Stage 3 / C3                                                                                                    Gaussian
+                                                    L4: Conv 1×1                                            Conv              Heatmap
+NeXt-S     NeXt-S    NeXt-S      NeXt-S                                     G     Gated
+                                                                                                                             2x200x176
+                                                       96→48                    Fusion (P4)
+                                                                                                                               Offset
+           96 x 100 x 88, /8
+                                                    48 × 100 × 88                                           Conv             2x200x176
+                                                                        Bilinear ↑2
+         Conv3x3, 96→128, s=2           BN + SiLU                                                                               Size
+                                                                     DWConv3x3, 48→48                       Conv             2x200x176
+                                                                        BN + SiLU
+             Stage 4 / C4                                                                                                       Yaw
+                                                    L5: Conv 1×1                                            Conv             2x200x176
+     NeXt-S              NeXt-S                       128→48                                  3×3 + BN
+                                                                                               +SiLU                         Localization
+          128 x 50 x 44, /16                                                                                Conv               Quality
+                                                     48 × 50 × 44                                                             1x200x176
+

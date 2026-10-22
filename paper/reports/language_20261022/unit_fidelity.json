@@ -1,0 +1,537 @@
+[
+  {
+    "unit": "U001",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U002",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U003",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U004",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U005",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U012",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U028",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U029",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U030",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U031",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U032",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U033",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U034",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U035",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U113",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U114",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U115",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U116",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U117",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U118",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U119",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U120",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U013",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U014",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U015",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U016",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U017",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U022",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U023",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U024",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U025",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U026",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U027",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U036",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U037",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U038",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U039",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U041",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U042",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U043",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U044",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U049",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U052",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U053",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U060",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U063",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U064",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U065",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U070",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U071",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U074",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U080",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U081",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U082",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U084",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U085",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U086",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U087",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U088",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U094",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U095",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U096",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U101",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U102",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U103",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U104",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U106",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U110",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U112",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U121",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U122",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U123",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U125",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U126",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U127",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U128",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U129",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U130",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U131",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U132",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U133",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U135",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U136",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U138",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U139",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U140",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U141",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U142",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U143",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U144",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U148",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U149",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U151",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U152",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U153",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U154",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U155",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U158",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U165",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U166",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U168",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U171",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U172",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U174",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U175",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U176",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  },
+  {
+    "unit": "U178",
+    "source_matches_rewrite": true,
+    "checked_in_full_source_token_audit": true
+  }
+]

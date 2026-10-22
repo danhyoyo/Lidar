@@ -1,0 +1,1515 @@
+{
+  "scope": "static source-based arithmetic; no PyTorch forward, no latency measurement",
+  "full_network": {
+    "depths": [
+      3,
+      4,
+      2
+    ],
+    "output_width": 32,
+    "fusion_width": 32,
+    "iou": true,
+    "groups": {
+      "body": {
+        "parameters": 604864,
+        "conv_macs": 6600704000
+      },
+      "neck": {
+        "parameters": 36784,
+        "conv_macs": 936883200
+      },
+      "head_car": {
+        "parameters": 55944,
+        "conv_macs": 1955430400
+      },
+      "head_ped_cyc": {
+        "parameters": 55977,
+        "conv_macs": 1956556800
+      }
+    },
+    "parameters": 753569,
+    "conv_macs": 11449574400,
+    "records": [
+      {
+        "name": "stem.0",
+        "group": "body",
+        "parameters": 4096,
+        "conv_macs": 567705600,
+        "output_shape_chw": [
+          32,
+          400,
+          352
+        ]
+      },
+      {
+        "name": "stem.1",
+        "group": "body",
+        "parameters": 9280,
+        "conv_macs": 1297612800,
+        "output_shape_chw": [
+          32,
+          400,
+          352
+        ]
+      },
+      {
+        "name": "down2",
+        "group": "body",
+        "parameters": 13920,
+        "conv_macs": 486604800,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.dw",
+        "group": "body",
+        "parameters": 2448,
+        "conv_macs": 82790400,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.expand",
+        "group": "body",
+        "parameters": 5760,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          120,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.project",
+        "group": "body",
+        "parameters": 5856,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.layer_scale",
+        "group": "body",
+        "parameters": 48,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage2.1.dw",
+        "group": "body",
+        "parameters": 2448,
+        "conv_macs": 82790400,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.expand",
+        "group": "body",
+        "parameters": 5760,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          120,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.project",
+        "group": "body",
+        "parameters": 5856,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.layer_scale",
+        "group": "body",
+        "parameters": 48,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage2.2.dw",
+        "group": "body",
+        "parameters": 2448,
+        "conv_macs": 82790400,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.2.expand",
+        "group": "body",
+        "parameters": 5760,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          120,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.2.project",
+        "group": "body",
+        "parameters": 5856,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.2.layer_scale",
+        "group": "body",
+        "parameters": 48,
+        "conv_macs": 0
+      },
+      {
+        "name": "down3",
+        "group": "body",
+        "parameters": 41664,
+        "conv_macs": 364953600,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.1.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.2.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.3.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "down4",
+        "group": "body",
+        "parameters": 110848,
+        "conv_macs": 243302400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.dw",
+        "group": "body",
+        "parameters": 6528,
+        "conv_macs": 13798400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.expand",
+        "group": "body",
+        "parameters": 40960,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          320,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.project",
+        "group": "body",
+        "parameters": 41216,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.layer_scale",
+        "group": "body",
+        "parameters": 128,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage4.1.dw",
+        "group": "body",
+        "parameters": 6528,
+        "conv_macs": 13798400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.expand",
+        "group": "body",
+        "parameters": 40960,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          320,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.project",
+        "group": "body",
+        "parameters": 41216,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.layer_scale",
+        "group": "body",
+        "parameters": 128,
+        "conv_macs": 0
+      },
+      {
+        "name": "lat_c5",
+        "group": "neck",
+        "parameters": 6144,
+        "conv_macs": 13516800,
+        "output_shape_chw": [
+          48,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "lat_c4",
+        "group": "neck",
+        "parameters": 4608,
+        "conv_macs": 40550400,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "lat_c3",
+        "group": "neck",
+        "parameters": 1536,
+        "conv_macs": 54067200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "refine_u4",
+        "group": "neck",
+        "parameters": 528,
+        "conv_macs": 3801600,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "proj_u3",
+        "group": "neck",
+        "parameters": 13888,
+        "conv_macs": 486604800,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "gate_c4",
+        "group": "neck",
+        "parameters": 480,
+        "conv_macs": 3801600,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "gate_c3",
+        "group": "neck",
+        "parameters": 320,
+        "conv_macs": 10137600,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "out_conv",
+        "group": "neck",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.shared",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.cls.private",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.cls.out",
+        "group": "head_car",
+        "parameters": 33,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.offset.private",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.offset.out",
+        "group": "head_car",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.size.private",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.size.out",
+        "group": "head_car",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.yaw.private",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.yaw.out",
+        "group": "head_car",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.iou.private",
+        "group": "head_car",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.iou.out",
+        "group": "head_car",
+        "parameters": 33,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.shared",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.cls.private",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.cls.out",
+        "group": "head_ped_cyc",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.offset.private",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.offset.out",
+        "group": "head_ped_cyc",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.size.private",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.size.out",
+        "group": "head_ped_cyc",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.yaw.private",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.yaw.out",
+        "group": "head_ped_cyc",
+        "parameters": 66,
+        "conv_macs": 2252800,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.iou.private",
+        "group": "head_ped_cyc",
+        "parameters": 9280,
+        "conv_macs": 324403200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.iou.out",
+        "group": "head_ped_cyc",
+        "parameters": 33,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      }
+    ]
+  },
+  "context_pipeline_2_4_2_H16": {
+    "depths": [
+      2,
+      4,
+      2
+    ],
+    "output_width": 16,
+    "fusion_width": 32,
+    "iou": true,
+    "groups": {
+      "body": {
+        "parameters": 590752,
+        "conv_macs": 6112409600
+      },
+      "neck": {
+        "parameters": 32144,
+        "conv_macs": 774681600
+      },
+      "head_car": {
+        "parameters": 14152,
+        "conv_macs": 491110400
+      },
+      "head_ped_cyc": {
+        "parameters": 14169,
+        "conv_macs": 491673600
+      }
+    },
+    "parameters": 651217,
+    "conv_macs": 7869875200,
+    "records": [
+      {
+        "name": "stem.0",
+        "group": "body",
+        "parameters": 4096,
+        "conv_macs": 567705600,
+        "output_shape_chw": [
+          32,
+          400,
+          352
+        ]
+      },
+      {
+        "name": "stem.1",
+        "group": "body",
+        "parameters": 9280,
+        "conv_macs": 1297612800,
+        "output_shape_chw": [
+          32,
+          400,
+          352
+        ]
+      },
+      {
+        "name": "down2",
+        "group": "body",
+        "parameters": 13920,
+        "conv_macs": 486604800,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.dw",
+        "group": "body",
+        "parameters": 2448,
+        "conv_macs": 82790400,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.expand",
+        "group": "body",
+        "parameters": 5760,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          120,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.project",
+        "group": "body",
+        "parameters": 5856,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.0.layer_scale",
+        "group": "body",
+        "parameters": 48,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage2.1.dw",
+        "group": "body",
+        "parameters": 2448,
+        "conv_macs": 82790400,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.expand",
+        "group": "body",
+        "parameters": 5760,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          120,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.project",
+        "group": "body",
+        "parameters": 5856,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          48,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "stage2.1.layer_scale",
+        "group": "body",
+        "parameters": 48,
+        "conv_macs": 0
+      },
+      {
+        "name": "down3",
+        "group": "body",
+        "parameters": 41664,
+        "conv_macs": 364953600,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.0.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.1.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.1.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.2.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.2.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage3.3.dw",
+        "group": "body",
+        "parameters": 4896,
+        "conv_macs": 41395200,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.expand",
+        "group": "body",
+        "parameters": 23040,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          240,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.project",
+        "group": "body",
+        "parameters": 23232,
+        "conv_macs": 202752000,
+        "output_shape_chw": [
+          96,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "stage3.3.layer_scale",
+        "group": "body",
+        "parameters": 96,
+        "conv_macs": 0
+      },
+      {
+        "name": "down4",
+        "group": "body",
+        "parameters": 110848,
+        "conv_macs": 243302400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.dw",
+        "group": "body",
+        "parameters": 6528,
+        "conv_macs": 13798400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.expand",
+        "group": "body",
+        "parameters": 40960,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          320,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.project",
+        "group": "body",
+        "parameters": 41216,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.0.layer_scale",
+        "group": "body",
+        "parameters": 128,
+        "conv_macs": 0
+      },
+      {
+        "name": "stage4.1.dw",
+        "group": "body",
+        "parameters": 6528,
+        "conv_macs": 13798400,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.expand",
+        "group": "body",
+        "parameters": 40960,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          320,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.project",
+        "group": "body",
+        "parameters": 41216,
+        "conv_macs": 90112000,
+        "output_shape_chw": [
+          128,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "stage4.1.layer_scale",
+        "group": "body",
+        "parameters": 128,
+        "conv_macs": 0
+      },
+      {
+        "name": "lat_c5",
+        "group": "neck",
+        "parameters": 6144,
+        "conv_macs": 13516800,
+        "output_shape_chw": [
+          48,
+          50,
+          44
+        ]
+      },
+      {
+        "name": "lat_c4",
+        "group": "neck",
+        "parameters": 4608,
+        "conv_macs": 40550400,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "lat_c3",
+        "group": "neck",
+        "parameters": 1536,
+        "conv_macs": 54067200,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "refine_u4",
+        "group": "neck",
+        "parameters": 528,
+        "conv_macs": 3801600,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "proj_u3",
+        "group": "neck",
+        "parameters": 13888,
+        "conv_macs": 486604800,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "gate_c4",
+        "group": "neck",
+        "parameters": 480,
+        "conv_macs": 3801600,
+        "output_shape_chw": [
+          48,
+          100,
+          88
+        ]
+      },
+      {
+        "name": "gate_c3",
+        "group": "neck",
+        "parameters": 320,
+        "conv_macs": 10137600,
+        "output_shape_chw": [
+          32,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "out_conv",
+        "group": "neck",
+        "parameters": 4640,
+        "conv_macs": 162201600,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.shared",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.cls.private",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.cls.out",
+        "group": "head_car",
+        "parameters": 17,
+        "conv_macs": 563200,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.offset.private",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.offset.out",
+        "group": "head_car",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.size.private",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.size.out",
+        "group": "head_car",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.yaw.private",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.yaw.out",
+        "group": "head_car",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.iou.private",
+        "group": "head_car",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "car.iou.out",
+        "group": "head_car",
+        "parameters": 17,
+        "conv_macs": 563200,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.shared",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.cls.private",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.cls.out",
+        "group": "head_ped_cyc",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.offset.private",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.offset.out",
+        "group": "head_ped_cyc",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.size.private",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.size.out",
+        "group": "head_ped_cyc",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.yaw.private",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.yaw.out",
+        "group": "head_ped_cyc",
+        "parameters": 34,
+        "conv_macs": 1126400,
+        "output_shape_chw": [
+          2,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.iou.private",
+        "group": "head_ped_cyc",
+        "parameters": 2336,
+        "conv_macs": 81100800,
+        "output_shape_chw": [
+          16,
+          200,
+          176
+        ]
+      },
+      {
+        "name": "ped_cyc.iou.out",
+        "group": "head_ped_cyc",
+        "parameters": 17,
+        "conv_macs": 563200,
+        "output_shape_chw": [
+          1,
+          200,
+          176
+        ]
+      }
+    ]
+  },
+  "same_architecture_without_attention_parameters": 753569,
+  "without_iou_parameters": 734943,
+  "iou_heads_delta": 18626,
+  "training_only_logits": 12,
+  "flop_convention_2_per_mac_excluding_nonconv": 22899148800,
+  "excluded_ops": [
+    "BN",
+    "SiLU",
+    "SimAM",
+    "interpolation",
+    "gates elementwise ops",
+    "rasterization",
+    "decode",
+    "NMS"
+  ]
+}

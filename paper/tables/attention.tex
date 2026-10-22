@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering\small
-\caption{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all nine \texttt{MobilePIXORNeXt-S} residual blocks before LayerScale scaling. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:attention}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}llrrrr@{}}
@@ -15,5 +15,5 @@ Stage-4 ($C_4$) & $F_{32}$ & 69.36 & 71.34 & 7.44 & 134.43 \\
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All configurations share the OGA loss, IQA quality head, Strata-BEV14 input, and PC-GTA data augmentation. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU on isolated batches. In the complete perception pipeline (Table~\ref{tab:efficiency}), model forward propagation operates at $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with an overall E2E pipeline speed of $16.41\,\text{FPS}$ ($60.96\,\text{ms}$). Stage-level variants append a single attention adapter at the stage boundary, whereas the proposed Block-SimAM embeds 3D parameter-free energy attention inside each of the eight \texttt{MobilePixorNeXt-S} residual blocks before LayerScale scaling.}
+{\footnotesize \textit{Note.} All configurations share OGA, the IQA quality head, Strata-BEV14 input, and PC-GTA augmentation. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU using isolated batches. In the complete pipeline (Table~\ref{tab:efficiency}), forward propagation takes $55.94\,\text{FPS}$ ($17.88\,\text{ms}$), and overall E2E speed is $16.41\,\text{FPS}$ ($60.96\,\text{ms}$). Stage-level variants add one adapter at a stage boundary. Block-SimAM applies 3D parameter-free energy attention in each of the nine \texttt{MobilePIXORNeXt-S} residual blocks before LayerScale scaling.}
 \end{table*}

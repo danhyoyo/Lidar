@@ -1,0 +1,2169 @@
+[
+  {
+    "id": "abstract:9",
+    "section_key": "abstract",
+    "claim": "On the KITTI validation set using BEV AP $R_{40}$, MobilePIXORNeXt achieved 71.46\\% Moderate mean Average Precision (mAP) and 73.42\\% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "Precision"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "On the KITTI validation set using BEV AP $R_{40}$, MobilePIXORNeXt achieved 71.46\\% Moderate mean Average Precision (mAP) and 73.42\\% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "abstract:10",
+    "section_key": "abstract",
+    "claim": "It outperformed PointPillars (70.13\\% mAP) with an 84.4\\% parameter reduction and matched SECOND (72.09\\% mAP) with 85.8\\% fewer parameters.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It outperformed PointPillars (70.13\\% mAP) with an 84.4\\% parameter reduction and matched SECOND (72.09\\% mAP) with 85.8\\% fewer parameters.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "abstract:11",
+    "section_key": "abstract",
+    "claim": "Pedestrian Moderate AP reached 60.75\\%.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Pedestrian Moderate AP reached 60.75\\%.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "abstract:12",
+    "section_key": "abstract",
+    "claim": "The complete pipeline ran in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, the fastest end-to-end throughput among the evaluated real-time detectors.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "The complete pipeline ran in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, the fastest end-to-end throughput among the evaluated real-time detectors.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:8",
+    "section_key": "introduction",
+    "claim": "Compact LiDAR detectors must sustain real-time execution while preserving localization accuracy.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Compact LiDAR detectors must sustain real-time execution while preserving localization accuracy.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:17",
+    "section_key": "introduction",
+    "claim": "This quantization can cause boundary staircasing and localization jitter on small objects.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "This quantization can cause boundary staircasing and localization jitter on small objects.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:23",
+    "section_key": "introduction",
+    "claim": "We investigated whether a deterministic representation could preserve sub-voxel geometry without learned PointNet encoders.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "We investigated whether a deterministic representation could preserve sub-voxel geometry without learned PointNet encoders.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:25",
+    "section_key": "introduction",
+    "claim": "Our research question was: \\textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?} We coupled this representation with a single-branch ConvNeXt-style backbone~\\cite{liu2022convnext} using large $7 \\times 7$ depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~\\cite{yang2021simam}.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{liu2022convnext}"
+      },
+      {
+        "type": "citation",
+        "text": "\\cite{yang2021simam}"
+      },
+      {
+        "type": "metric",
+        "text": "accuracy"
+      },
+      {
+        "type": "metric",
+        "text": "throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "Our research question was: \\textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving improved in the reported setting end-to-end throughput on commodity edge hardware?} We coupled this representation with a single-branch ConvNeXt-style backbone~\\cite{liu2022convnext} using large $7 \\times 7$ depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~\\cite{yang2021simam}.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "introduction:26",
+    "section_key": "introduction",
+    "claim": "This design expands receptive fields to cover vehicles without multi-branch training overhead.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "This design expands receptive fields to cover vehicles without multi-branch training overhead.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:33",
+    "section_key": "introduction",
+    "claim": "The tensor encodes height-band densities, vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$), surface reflectance statistics, and continuous subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ to reduce quantization error. \\textbf{Physics-Consistent Ground-Truth Augmentation (PC-GTA)} combines local ground elevation fitting, static obstacle clearance, and range-adaptive point subsampling to reduce unphysical training artifacts.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The tensor encodes height-band densities, vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$), surface reflectance statistics, and continuous subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ to reduce quantization error. \\textbf{Physics-Consistent Ground-Truth Augmentation (PC-GTA)} combines local ground elevation fitting, static obstacle clearance, and range-adaptive point subsampling to reduce unphysical training artifacts.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:36",
+    "section_key": "introduction",
+    "claim": "Its $7 \\times 7$ depthwise inverted bottleneck blocks ($e=2.5$) use SiLU activations, LayerScale stabilization, and parameter-free \\textbf{Block-SimAM} energy attention in all nine residual blocks.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "Its $7 \\times 7$ depthwise inverted bottleneck blocks ($e=2.5$) use SiLU activations, LayerScale stabilization, and parameter-free \\textbf{Block-SimAM} energy attention in all nine residual blocks.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "introduction:43",
+    "section_key": "introduction",
+    "claim": "The principal contributions of this work are summarized as follows: \\begin{itemize}     \\item \\textbf{Ultra-compact proposal-free BEV detection.} We develop \\textbf{MobilePIXORNeXt}, a compact ($753{,}569$ trainable parameters) LiDAR detector without learned PointNet encoders or 3D sparse convolutions.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The principal contributions of this work are summarized as follows: \\begin{itemize}     \\item \\textbf{Ultra-compact proposal-free BEV detection.} We develop \\textbf{MobilePIXORNeXt}, a compact ($753{,}569$ trainable parameters) LiDAR detector without learned PointNet encoders or 3D sparse convolutions.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:48",
+    "section_key": "introduction",
+    "claim": "12-parameter \\textbf{T-SBUW} balances task objectives, and \\textbf{IQA} calibrates confidence against localization quality.          \\item \\textbf{Empirical validation and leading edge Pareto efficiency.} On KITTI validation using BEV AP $R_{40}$, MobilePIXORNeXt achieved a favorable accuracy, parameter, and latency trade-off.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      },
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "12-parameter \\textbf{T-SBUW} balances task objectives, and \\textbf{IQA} calibrates confidence against localization quality.          \\item \\textbf{Empirical validation and leading edge Pareto efficiency.} On KITTI validation using BEV AP $R_{40}$, MobilePIXORNeXt achieved a favorable accuracy, parameter, and latency trade-off.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:49",
+    "section_key": "introduction",
+    "claim": "It reached \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% $\\text{mAP}_9$} with \\textbf{0.754\\,M parameters} ($9.34\\,\\text{MB}$ checkpoint).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It reached \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% $\\text{mAP}_9$} with \\textbf{0.754\\,M parameters} ($9.34\\,\\text{MB}$ checkpoint).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:50",
+    "section_key": "introduction",
+    "claim": "It outperformed PointPillars ($70.13\\%$) with an \\textbf{84.4\\% parameter reduction} and matched SECOND ($72.09\\%$) while requiring \\textbf{85.8\\% fewer parameters} ($7.1\\times$ parameter reduction).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It outperformed PointPillars ($70.13\\%$) with an \\textbf{84.4\\% parameter reduction} and matched SECOND ($72.09\\%$) while requiring \\textbf{85.8\\% fewer parameters} ($7.1\\times$ parameter reduction).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:51",
+    "section_key": "introduction",
+    "claim": "The complete pipeline ran at \\textbf{16.41\\,FPS} (\\textbf{60.96\\,ms} on NVIDIA Tesla T4), faster than the other evaluated real-time detectors.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The complete pipeline ran at \\textbf{16.41\\,FPS} (\\textbf{60.96\\,ms} on NVIDIA Tesla T4), faster than the other evaluated real-time detectors.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:52",
+    "section_key": "introduction",
+    "claim": "Pedestrian AP reached \\textbf{60.75\\% Moderate AP} (+4.74\\% over PointPillars, +4.19\\% over SECOND).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Pedestrian AP reached \\textbf{60.75\\% Moderate AP} (+4.74\\% over PointPillars, +4.19\\% over SECOND).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "introduction:53",
+    "section_key": "introduction",
+    "claim": "In controlled ablations, PC-GTA added \\textbf{+6.03\\% Moderate mAP} ($60.22\\%$ to $66.25\\%$), OGA and IQA added \\textbf{+3.20\\% mAP}, and Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters. \\end{itemize}  Section~\\ref{sec:related_work} reviews LiDAR representations, lightweight backbones, and geometric losses.",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Section~\\ref{sec:related_work}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "In controlled ablations, PC-GTA added \\textbf{+6.03\\% Moderate mAP} ($60.22\\%$ to $66.25\\%$), OGA and IQA added \\textbf{+3.20\\% mAP}, and Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters. \\end{itemize}  Section~\\ref{sec:related_work} reviews LiDAR representations, lightweight backbones, and geometric losses.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:6",
+    "section_key": "methodology",
+    "claim": "Unordered 3D LiDAR point clouds pass through the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$ without learned pillar encoders.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Unordered 3D LiDAR point clouds pass through the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$ without learned pillar encoders.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:11",
+    "section_key": "methodology",
+    "claim": "Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}     \\label{fig:r37_overview} \\end{strip}  MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}     \\label{fig:r37_overview} \\end{strip}  MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:16",
+    "section_key": "methodology",
+    "claim": "An open-boundary inward margin of $\\epsilon = 0.001$\\,m reduced boundary artifacts.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "An open-boundary inward margin of $\\epsilon = 0.001$\\,m reduced boundary artifacts.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:22",
+    "section_key": "methodology",
+    "claim": "These targets require a dense BEV representation that retains fine 3D geometry without a learned point encoder.  \\par\\vspace{-0.5\\baselineskip} \\subsection{Deterministic Strata-BEV14 Feature Representation} \\label{sec:strata_bev14}  \\par\\vspace{-0.5\\baselineskip} \\noindent \\begin{minipage}{\\columnwidth}     \\centering     \\paperfigure{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "These targets require a dense BEV representation that retains fine 3D geometry without a learned point encoder.  \\par\\vspace{-0.5\\baselineskip} \\subsection{Deterministic Strata-BEV14 Feature Representation} \\label{sec:strata_bev14}  \\par\\vspace{-0.5\\baselineskip} \\noindent \\begin{minipage}{\\columnwidth}     \\centering     \\paperfigure{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:23",
+    "section_key": "methodology",
+    "claim": "Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}     \\captionof{figure}{Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \\times 704$ grid at $0.1\\,\\text{m}$ resolution).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}     \\captionof{figure}{Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \\times 704$ grid at $0.1\\,\\text{m}$ resolution).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:28",
+    "section_key": "methodology",
+    "claim": "Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\\Delta\\bar{x}, \\Delta\\bar{y}) \\in [-0.5, 0.5]$ to reduce discretization error.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\\Delta\\bar{x}, \\Delta\\bar{y}) \\in [-0.5, 0.5]$ to reduce discretization error.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:34",
+    "section_key": "methodology",
+    "claim": "2. \\textit{Vertical Spatial Moments ($F_4$--$F_7$)}: To encode obstacle geometry without explicit voxelization, we extract peak elevation $F_4 = \\max_i \\zeta_i$, mean elevation $F_5 = \\frac{1}{N}\\sum_i \\zeta_i$, vertical span $F_6 = \\max_i \\zeta_i - \\min_i \\zeta_i$, and the sample standard deviation: \\begin{equation}     F_7 = \\begin{cases}         \\sqrt{\\max\\left(0, \\frac{1}{N} \\sum_{i=1}^N \\zeta_i^2 - F_5^2\\right)}, & \\text{if } N > 1, \\\\         0, & \\text{otherwise}.     \\end{cases}     \\label{eq:z_std_encoding} \\end{equation}  3. \\textit{Reflectance Statistics ($F_8$--$F_9$)}: Calibrated surface returns capture material discrimination (e.g., distinguishing retro-reflective license plates, pedestrian clothing, or road signs): \\begin{equation}     F_8 = \\max_{i=1,\\dots,N} \\iota_i, \\qquad F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i.     \\label{eq:intensity_encoding} \\end{equation}  4. \\textit{Occupancy and Continuous Subcell Offsets ($F_{10}$--$F_{13}$)}: Channel $F_{10} = d_{\\log}(N)$ records total point density, and $F_{11} = 1.0$ indicates occupancy.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "2. \\textit{Vertical Spatial Moments ($F_4$--$F_7$)}: To encode obstacle geometry without explicit voxelization, we extract peak elevation $F_4 = \\max_i \\zeta_i$, mean elevation $F_5 = \\frac{1}{N}\\sum_i \\zeta_i$, vertical span $F_6 = \\max_i \\zeta_i - \\min_i \\zeta_i$, and the sample standard deviation: \\begin{equation}     F_7 = \\begin{cases}         \\sqrt{\\max\\left(0, \\frac{1}{N} \\sum_{i=1}^N \\zeta_i^2 - F_5^2\\right)}, & \\text{if } N > 1, \\\\         0, & \\text{otherwise}.     \\end{cases}     \\label{eq:z_std_encoding} \\end{equation}  3. \\textit{Reflectance Statistics ($F_8$--$F_9$)}: Calibrated surface returns capture material discrimination (e.g., distinguishing retro-reflective license plates, pedestrian clothing, or road signs): \\begin{equation}     F_8 = \\max_{i=1,\\dots,N} \\iota_i, \\qquad F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i.     \\label{eq:intensity_encoding} \\end{equation}  4. \\textit{Occupancy and Continuous Subcell Offsets ($F_{10}$--$F_{13}$)}: Channel $F_{10} = d_{\\log}(N)$ records total point density, and $F_{11} = 1.0$ indicates occupancy.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:35",
+    "section_key": "methodology",
+    "claim": "For $0.1$\\,m cells, channels $F_{12}$ and $F_{13}$ retain continuous horizontal subcell centroid displacements to reduce quantization error: \\begin{align}     x_u^{\\mathrm{cell}} &= x_{\\min} + (u + 0.5)\\Delta_x, \\nonumber\\\\     y_v^{\\mathrm{cell}} &= y_{\\min} + (v + 0.5)\\Delta_y, \\nonumber\\\\     F_{12} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (x_i - x_u^{\\mathrm{cell}})}{N\\Delta_x}, -0.5, 0.5\\right), \\nonumber\\\\     F_{13} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (y_i - y_v^{\\mathrm{cell}})}{N\\Delta_y}, -0.5, 0.5\\right).     \\label{eq:offset_encoding} \\end{align} Empty cells are assigned zeros across all 14 channels, producing the structured input tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$.  \\par\\vspace{-1.5\\baselineskip} \\begin{table}[!htbp]     \\caption{Mathematical formulations and physical semantics of the fourteen deterministic feature channels in the Strata-BEV14 representation.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "For $0.1$\\,m cells, channels $F_{12}$ and $F_{13}$ retain continuous horizontal subcell centroid displacements to reduce quantization error: \\begin{align}     x_u^{\\mathrm{cell}} &= x_{\\min} + (u + 0.5)\\Delta_x, \\nonumber\\\\     y_v^{\\mathrm{cell}} &= y_{\\min} + (v + 0.5)\\Delta_y, \\nonumber\\\\     F_{12} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (x_i - x_u^{\\mathrm{cell}})}{N\\Delta_x}, -0.5, 0.5\\right), \\nonumber\\\\     F_{13} &= \\operatorname{clip}\\left(\\frac{\\sum_{i=1}^N (y_i - y_v^{\\mathrm{cell}})}{N\\Delta_y}, -0.5, 0.5\\right).     \\label{eq:offset_encoding} \\end{align} Empty cells are assigned zeros in the evaluated 14 channels, producing the structured input tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$.  \\par\\vspace{-1.5\\baselineskip} \\begin{table}[!htbp]     \\caption{Mathematical formulations and physical semantics of the fourteen deterministic feature channels in the Strata-BEV14 representation.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "methodology:36",
+    "section_key": "methodology",
+    "claim": "All statistical moments and spatial offsets are evaluated deterministically over LiDAR points within horizontal grid cells of size $\\Delta_x = \\Delta_y = 0.1\\,\\text{m}$ ($800 \\times 704$ grid) using NumPy or Numba on CPU without learned parameters.}     \\label{tab:strata_bev14}     \\centering\\small     \\setlength{\\tabcolsep}{3pt}     \\begin{tabular}{@{}c >{\\raggedright\\arraybackslash}p{0.20\\columnwidth} >{\\raggedright\\arraybackslash}p{0.55\\columnwidth}@{}}         \\toprule         \\textbf{Channel} & \\textbf{Feature Identity} & \\textbf{Mathematical Definition and Semantics} \\\\         \\midrule         $0$--$3$ & Stratified Log Counts & Four height-band densities: $F_b = d_{\\log}(N_b)$, where $b = \\min(\\lfloor 4\\zeta_i \\rfloor, 3)$. \\\\         $4$ & Maximum Elevation & $F_4 = \\max_{i} \\zeta_i$, peak normalized elevation. \\\\         $5$ & Mean Elevation & $F_5 = \\frac{1}{N} \\sum_{i=1}^N \\zeta_i$, first vertical moment. \\\\         $6$ & Elevation Span & $F_6 = \\max_{i} \\zeta_i - \\min_{i} \\zeta_i$, continuous vertical extent. \\\\         $7$ & Elevation Deviation & $F_7 = \\sqrt{\\max(0, \\frac{1}{N} \\sum_{i} \\zeta_i^2 - F_5^2)}$, spatial dispersion. \\\\         $8$ & Peak Reflectance & $F_8 = \\max_{i} \\iota_i$, highest material reflectivity. \\\\         $9$ & Mean Reflectance & $F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i$, average surface intensity. \\\\         $10$ & Global Density & $F_{10} = d_{\\log}(N)$, overall point density. \\\\         $11$ & Binary Occupancy & $F_{11} = 1.0$ if $N \\ge 1$, and $0.0$ otherwise. \\\\         $12$--$13$ & Centroid Displacements & Subcell offsets $\\Delta \\bar{x}, \\Delta \\bar{y} \\in [-0.5, 0.5]$ relative to cell center. \\\\         \\bottomrule     \\end{tabular} \\end{table}  \\par\\vspace{-1.5\\baselineskip}   \\paragraph{Technical Advantage.} Strata-BEV14 has a NumPy reference rasterizer and a Numba-compiled CPU backend.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "All statistical moments and spatial offsets are evaluated deterministically over LiDAR points within horizontal grid cells of size $\\Delta_x = \\Delta_y = 0.1\\,\\text{m}$ ($800 \\times 704$ grid) using NumPy or Numba on CPU without learned parameters.}     \\label{tab:strata_bev14}     \\centering\\small     \\setlength{\\tabcolsep}{3pt}     \\begin{tabular}{@{}c >{\\raggedright\\arraybackslash}p{0.20\\columnwidth} >{\\raggedright\\arraybackslash}p{0.55\\columnwidth}@{}}         \\toprule         \\textbf{Channel} & \\textbf{Feature Identity} & \\textbf{Mathematical Definition and Semantics} \\\\         \\midrule         $0$--$3$ & Stratified Log Counts & Four height-band densities: $F_b = d_{\\log}(N_b)$, where $b = \\min(\\lfloor 4\\zeta_i \\rfloor, 3)$. \\\\         $4$ & Maximum Elevation & $F_4 = \\max_{i} \\zeta_i$, peak normalized elevation. \\\\         $5$ & Mean Elevation & $F_5 = \\frac{1}{N} \\sum_{i=1}^N \\zeta_i$, first vertical moment. \\\\         $6$ & Elevation Span & $F_6 = \\max_{i} \\zeta_i - \\min_{i} \\zeta_i$, continuous vertical extent. \\\\         $7$ & Elevation Deviation & $F_7 = \\sqrt{\\max(0, \\frac{1}{N} \\sum_{i} \\zeta_i^2 - F_5^2)}$, spatial dispersion. \\\\         $8$ & Peak Reflectance & $F_8 = \\max_{i} \\iota_i$, highest material reflectivity. \\\\         $9$ & Mean Reflectance & $F_9 = \\frac{1}{N} \\sum_{i=1}^N \\iota_i$, average surface intensity. \\\\         $10$ & Global Density & $F_{10} = d_{\\log}(N)$, overall point density. \\\\         $11$ & Binary Occupancy & $F_{11} = 1.0$ if $N \\ge 1$, and $0.0$ otherwise. \\\\         $12$--$13$ & Centroid Displacements & Subcell offsets $\\Delta \\bar{x}, \\Delta \\bar{y} \\in [-0.5, 0.5]$ relative to cell center. \\\\         \\bottomrule     \\end{tabular} \\end{table}  \\par\\vspace{-1.5\\baselineskip}   \\paragraph{Technical Advantage.} Strata-BEV14 has a NumPy reference rasterizer and a Numba-compiled CPU backend.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "methodology:37",
+    "section_key": "methodology",
+    "claim": "Both compute the same fourteen deterministic features without learned parameters.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Both compute the same fourteen deterministic features without learned parameters.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:43",
+    "section_key": "methodology",
+    "claim": "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.  \\paragraph{Design Heuristics.} The sampler provides five consistency mechanisms when placing a box $\\mathbf{b}_{\\mathrm{insert}} = (x, y, z, l, w, h, \\psi)$ at range $d = \\sqrt{x^2 + y^2}$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.  \\paragraph{Design Heuristics.} The sampler provides five consistency mechanisms when placing a box $\\mathbf{b}_{\\mathrm{insert}} = (x, y, z, l, w, h, \\psi)$ at range $d = \\sqrt{x^2 + y^2}$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:44",
+    "section_key": "methodology",
+    "claim": "The mechanisms can be enabled independently; the settings used for the reported final run are given in Section~\\ref{sec:implementation_details}: \\begin{enumerate} \\item \\textit{Adaptive Ground Plane Fitting}: To prevent floating or sunken objects, local road elevation is estimated within a range-dependent search radius: \\begin{align}     R(d) &= \\operatorname{clip}(2.5 + 0.03\\max(0, d - 15), 2.5, 4.0)\\,\\mathrm{m},\\nonumber\\\\[0.8em]     \\hat{z}_{\\mathrm{ground}} &= \\operatorname{percentile}(\\{z_j \\mid \\mathbf{p}_j \\in \\mathcal{N}(x, y)\\}, 5),     \\label{eq:ground_fitting} \\end{align} where $\\mathcal{N}(x, y) = \\{\\mathbf{p}_j \\mid (x_j - x)^2 + (y_j - y)^2 \\le R(d)^2\\}$ denotes the local neighborhood used for ground estimation.",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Section~\\ref{sec:implementation_details}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "The mechanisms can be enabled independently; the settings used for the reported final run are given in Section~\\ref{sec:implementation_details}: \\begin{enumerate} \\item \\textit{Adaptive Ground Plane Fitting}: To prevent floating or sunken objects, local road elevation is estimated within a range-dependent search radius: \\begin{align}     R(d) &= \\operatorname{clip}(2.5 + 0.03\\max(0, d - 15), 2.5, 4.0)\\,\\mathrm{m},\\nonumber\\\\[0.8em]     \\hat{z}_{\\mathrm{ground}} &= \\operatorname{percentile}(\\{z_j \\mid \\mathbf{p}_j \\in \\mathcal{N}(x, y)\\}, 5),     \\label{eq:ground_fitting} \\end{align} where $\\mathcal{N}(x, y) = \\{\\mathbf{p}_j \\mid (x_j - x)^2 + (y_j - y)^2 \\le R(d)^2\\}$ denotes the local neighborhood used for ground estimation.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:45",
+    "section_key": "methodology",
+    "claim": "The inserted object elevation is anchored strictly flush with the terrain: $z_{\\mathrm{insert}} = \\hat{z}_{\\mathrm{ground}} + 0.5h$.  \\item \\textit{Static Obstacle Clearance}: To prevent clipping into physical structures, a candidate box is rejected if existing background points within its bounding footprint exceed a strict clearance threshold: $N_{\\mathrm{static}} \\le N_{\\mathrm{thresh}}$.  \\item \\textit{Optional Line-of-Sight (LOS) Occlusion Check}: When enabled, the optical ray from sensor origin to box center $(x, y)$ is cast.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The inserted object elevation is anchored strictly flush with the terrain: $z_{\\mathrm{insert}} = \\hat{z}_{\\mathrm{ground}} + 0.5h$.  \\item \\textit{Static Obstacle Clearance}: To prevent clipping into physical structures, a candidate box is rejected if existing background points within its bounding footprint exceed a strict clearance threshold: $N_{\\mathrm{static}} \\le N_{\\mathrm{thresh}}$.  \\item \\textit{Optional Line-of-Sight (LOS) Occlusion Check}: When enabled, the optical ray from sensor origin to box center $(x, y)$ is cast.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:57",
+    "section_key": "methodology",
+    "claim": "Independent grouped towers separate Car predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total parameters).}     \\label{fig:backbone} \\end{strip}   \\paragraph{Motivation.} BEV object footprints range from pedestrians ($l \\approx 0.6$\\,m) and cyclists ($l \\approx 1.8$\\,m) to passenger vehicles ($l \\approx 4.5$--$5.0$\\,m).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Independent grouped towers separate Car predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total parameters).}     \\label{fig:backbone} \\end{strip}   \\paragraph{Motivation.} BEV object footprints range from pedestrians ($l \\approx 0.6$\\,m) and cyclists ($l \\approx 1.8$\\,m) to passenger vehicles ($l \\approx 4.5$--$5.0$\\,m).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:60",
+    "section_key": "methodology",
+    "claim": "It expands to over $5.6 \\times 5.6$\\,m by Stage 3 (stride 8), enough to cover a passenger vehicle without dilation.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It expands to over $5.6 \\times 5.6$\\,m by Stage 3 (stride 8), enough to cover a passenger vehicle without dilation.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:64",
+    "section_key": "methodology",
+    "claim": "Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:68",
+    "section_key": "methodology",
+    "claim": "Sigmoid scaling produces the 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ without learned parameters.}     \\label{fig:next_s_block} \\end{strip}  \\paragraph{Micro-Architecture and Inverted Bottleneck.} Figure~\\ref{fig:next_s_block} illustrates the \\texttt{MobilePIXORNeXt-S} residual block.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:next_s_block}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Sigmoid scaling produces the 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ without learned parameters.}     \\label{fig:next_s_block} \\end{strip}  \\paragraph{Micro-Architecture and Inverted Bottleneck.} Figure~\\ref{fig:next_s_block} illustrates the \\texttt{MobilePIXORNeXt-S} residual block.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:70",
+    "section_key": "methodology",
+    "claim": "The operator $\\mathcal{S}(\\cdot)$ represents our Block-SimAM attention module, while $\\boldsymbol{\\gamma}_{\\mathrm{blk}} \\in \\mathbb{R}^C$ is a learned LayerScale parameter initialized to $10^{-5}$ to ensure numerical stability during deep backpropagation.  \\paragraph{Parameter-Free Block-SimAM Spatial-Energy Attention.} Efficient Channel Attention (ECA-Net)~\\cite{wang2020eca} and Squeeze-and-Excitation compute 1D channel weights by spatial pooling, applying the same weight to every location in a channel.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{wang2020eca}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "The operator $\\mathcal{S}(\\cdot)$ represents our Block-SimAM attention module, while $\\boldsymbol{\\gamma}_{\\mathrm{blk}} \\in \\mathbb{R}^C$ is a learned LayerScale parameter initialized to $10^{-5}$ to ensure numerical stability during deep backpropagation.  \\paragraph{Parameter-Free Block-SimAM Spatial-Energy Attention.} Efficient Channel Attention (ECA-Net)~\\cite{wang2020eca} and Squeeze-and-Excitation compute 1D channel weights by spatial pooling, applying the same weight to every location in a channel.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:72",
+    "section_key": "methodology",
+    "claim": "We integrated \\textbf{Block-SimAM}~\\cite{yang2021simam}, a parameter-free 3D spatial-energy attention module, to provide spatial modulation without learned attention weights.  \\paragraph{Design and Placement.} As illustrated in Figure~\\ref{fig:next_s_block}, SimAM is embedded inside each \\texttt{MobilePIXORNeXt-\\allowbreak S} block across all three stages (C2, C3, C4), for nine attention operators in total.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{yang2021simam}"
+      },
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:next_s_block}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "We integrated \\textbf{Block-SimAM}~\\cite{yang2021simam}, a parameter-free 3D spatial-energy attention module, to provide spatial modulation without learned attention weights.  \\paragraph{Design and Placement.} As illustrated in Figure~\\ref{fig:next_s_block}, SimAM is embedded inside each \\texttt{MobilePIXORNeXt-\\allowbreak S} block across all three stages (C2, C3, C4), for nine attention operators in total.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:77",
+    "section_key": "methodology",
+    "claim": "The attended 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ and output $\\mathcal{S}(\\mathbf{R})$ are: \\begin{equation}     A_{c, u, v} = \\sigma(s_t) = \\frac{1}{1 + e^{-s_t}}, \\qquad \\mathcal{S}(\\mathbf{R}) = \\mathbf{A} \\odot \\mathbf{R}.     \\label{eq:simam_modulation} \\end{equation} Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.  \\paragraph{Technical Advantage.} Block-SimAM adds \\textbf{zero parameters} ($0$\\,M), whereas stage-level adapters add learned linear projections.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "precision"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "The attended 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ and output $\\mathcal{S}(\\mathbf{R})$ are: \\begin{equation}     A_{c, u, v} = \\sigma(s_t) = \\frac{1}{1 + e^{-s_t}}, \\qquad \\mathcal{S}(\\mathbf{R}) = \\mathbf{A} \\odot \\mathbf{R}.     \\label{eq:simam_modulation} \\end{equation} Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.  \\paragraph{Technical Advantage.} Block-SimAM adds \\textbf{zero parameters} ($0$\\,M), whereas stage-level adapters add learned linear projections.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:79",
+    "section_key": "methodology",
+    "claim": "In the ablation, SimAM placement inside each \\texttt{MobilePIXORNeXt-S} block improved mAP by $+0.88\\%$ over no attention and by up to $+2.10\\%$ over stage-level adapters (Table~\\ref{tab:attention}).   \\subsection{Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)} \\label{sec:neck_architecture}    \\paragraph{Motivation.} Transposed convolutions used for feature upsampling can produce checkerboard artifacts in continuous coordinate regression maps.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:attention}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "In the ablation, SimAM placement inside each \\texttt{MobilePIXORNeXt-S} block improved mAP by $+0.88\\%$ over no attention and by up to $+2.10\\%$ over stage-level adapters (Table~\\ref{tab:attention}).   \\subsection{Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)} \\label{sec:neck_architecture}    \\paragraph{Motivation.} Transposed convolutions used for feature upsampling can produce checkerboard artifacts in continuous coordinate regression maps.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:83",
+    "section_key": "methodology",
+    "claim": "Top-down features $\\mathbf{U}_r$ and lateral features $\\mathbf{L}_r$ are dynamically gated via learnable depthwise convolutions to prevent high-level semantic distortion of fine spatial coordinates.}     \\captionof{figure}{Scale-Gated Feature Pyramid Network (SG-FPN) fusion at stride $r \\in \\{8, 4\\}$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Top-down features $\\mathbf{U}_r$ and lateral features $\\mathbf{L}_r$ are dynamically gated via learnable depthwise convolutions to prevent high-level semantic distortion of fine spatial coordinates.}     \\captionof{figure}{Scale-Gated Feature Pyramid Network (SG-FPN) fusion at stride $r \\in \\{8, 4\\}$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:85",
+    "section_key": "methodology",
+    "claim": "Depthwise $3 \\times 3$ convolution, Batch Normalization, and SiLU then produce semantic representation $\\mathbf{U}_r$ without deconvolution checkerboard artifacts.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Depthwise $3 \\times 3$ convolution, Batch Normalization, and SiLU then produce semantic representation $\\mathbf{U}_r$ without deconvolution checkerboard artifacts.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:86",
+    "section_key": "methodology",
+    "claim": "Lateral high-resolution features $\\mathbf{L}_r$ are weighted by a zero-initialized depthwise gate $\\mathbf{G}_r = 2\\sigma(\\operatorname{DWConv}_{3\\times3}(\\mathbf{L}_r + \\mathbf{U}_r))$ before element-wise summation $\\mathbf{P}^{(r)} = \\mathbf{U}_r + \\mathbf{G}_r \\odot \\mathbf{L}_r$ to retain boundary detail and suppress background responses.}     \\label{fig:scale_gated_fusion} \\end{minipage} \\par   \\paragraph{Mathematical Formulation.} As shown in Figure~\\ref{fig:scale_gated_fusion}, lateral features from Stages C4 ($128$\\,ch), C3 ($96$\\,ch), and C2 ($48$\\,ch) are projected via $1 \\times 1$ convolutions into matching lateral dimensions $\\mathbf{L}_5 \\in \\mathbb{R}^{B \\times 48 \\times 50 \\times 44}$, $\\mathbf{L}_4 \\in \\mathbb{R}^{B \\times 48 \\times 100 \\times 88}$, and $\\mathbf{L}_3 \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}$.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:scale_gated_fusion}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Lateral high-resolution features $\\mathbf{L}_r$ are weighted by a zero-initialized depthwise gate $\\mathbf{G}_r = 2\\sigma(\\operatorname{DWConv}_{3\\times3}(\\mathbf{L}_r + \\mathbf{U}_r))$ before element-wise summation $\\mathbf{P}^{(r)} = \\mathbf{U}_r + \\mathbf{G}_r \\odot \\mathbf{L}_r$ to retain boundary detail and suppress background responses.}     \\label{fig:scale_gated_fusion} \\end{minipage} \\par   \\paragraph{Mathematical Formulation.} As shown in Figure~\\ref{fig:scale_gated_fusion}, lateral features from Stages C4 ($128$\\,ch), C3 ($96$\\,ch), and C2 ($48$\\,ch) are projected via $1 \\times 1$ convolutions into matching lateral dimensions $\\mathbf{L}_5 \\in \\mathbb{R}^{B \\times 48 \\times 50 \\times 44}$, $\\mathbf{L}_4 \\in \\mathbb{R}^{B \\times 48 \\times 100 \\times 88}$, and $\\mathbf{L}_3 \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}$.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:103",
+    "section_key": "methodology",
+    "claim": "Scale-Normalized $\\pi$-Symmetric Corner Distance ($\\ell_{\\mathrm{corner}}$)}:\\par}\\noindent To ensure accurate vertex localization under doubled-angle symmetry, we evaluate the minimum L1 distance across direct and $\\pi$-permuted corner correspondences: \\begin{equation}     \\ell_{\\mathrm{corner}} = \\frac{\\min\\left\\{         \\begin{array}{l}             \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_m^*\\|_1, \\\\             \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_{5-m}^*\\|_1         \\end{array}     \\right.}{4\\max\\left(\\sqrt{(w^*)^2 + (l^*)^2}, 10^{-6}\\right)}.     \\label{eq:corner_loss} \\end{equation} Normalizing by the target bounding box diagonal ensures scale invariance across categories.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Scale-Normalized $\\pi$-Symmetric Corner Distance ($\\ell_{\\mathrm{corner}}$)}:\\par}\\noindent To ensure accurate vertex localization under doubled-angle symmetry, we evaluate the minimum L1 distance across direct and $\\pi$-permuted corner correspondences: \\begin{equation}     \\ell_{\\mathrm{corner}} = \\frac{\\min\\left\\{         \\begin{array}{l}             \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_m^*\\|_1, \\\\             \\displaystyle\\sum_{m=1}^4 \\|\\widehat{\\mathbf{c}}_m - \\mathbf{c}_{5-m}^*\\|_1         \\end{array}     \\right.}{4\\max\\left(\\sqrt{(w^*)^2 + (l^*)^2}, 10^{-6}\\right)}.     \\label{eq:corner_loss} \\end{equation} Normalizing by the target bounding box diagonal ensures scale invariance across categories.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:105",
+    "section_key": "methodology",
+    "claim": "It is supervised via Binary Cross-Entropy (BCE) using the detached MGIoU similarity as the ground-truth target: \\begin{equation}     q^* = \\operatorname{stopgrad}(\\operatorname{clip}(\\bar{g}, 0, 1)), \\qquad \\mathcal{L}_{\\mathrm{qual}} = \\operatorname{BCE}(\\hat{q}, q^*).     \\label{eq:iqa_loss} \\end{equation} Detaching the target limits gradient instability while retaining supervision for confidence calibration.  \\paragraph{Head-Free Alternative: Quality-Coupled OGA (Q-OGA).} The explicit IQA branch gave the highest ranking accuracy, adding $18.59\\,\\text{K}$ parameters and $1.25\\,\\text{ms}$ forward latency.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      },
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "It is supervised via Binary Cross-Entropy (BCE) using the detached MGIoU similarity as the ground-truth target: \\begin{equation}     q^* = \\operatorname{stopgrad}(\\operatorname{clip}(\\bar{g}, 0, 1)), \\qquad \\mathcal{L}_{\\mathrm{qual}} = \\operatorname{BCE}(\\hat{q}, q^*).     \\label{eq:iqa_loss} \\end{equation} Detaching the target limits gradient instability while retaining supervision for confidence calibration.  \\paragraph{Head-Free Alternative: Quality-Coupled OGA (Q-OGA).} The explicit IQA branch gave the highest ranking accuracy, adding $18.59\\,\\text{K}$ parameters and $1.25\\,\\text{ms}$ forward latency.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:107",
+    "section_key": "methodology",
+    "claim": "Q-OGA modulates positive classification targets ($y=1.0$) with detached continuous bounding box IoU quality $q^*$, without an auxiliary head: \\begin{equation}     y^* = (q^*)^\\beta \\quad (\\beta = 1.0).     \\label{eq:cqfl_target} \\end{equation} Classification optimization is governed by Quality-Coupled Focal Loss (CQFL): \\begin{equation}     \\mathcal{L}_{\\mathrm{CQFL}} = |y^* - \\hat{p}|^\\gamma \\left[ y^* (-\\ln \\hat{p}) + (1 - y^*) (-\\ln(1 - \\hat{p})) \\right],     \\label{eq:cqfl_loss} \\end{equation} where $\\gamma = 2.0$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Q-OGA modulates positive classification targets ($y=1.0$) with detached continuous bounding box IoU quality $q^*$, without an auxiliary head: \\begin{equation}     y^* = (q^*)^\\beta \\quad (\\beta = 1.0).     \\label{eq:cqfl_target} \\end{equation} Classification optimization is governed by Quality-Coupled Focal Loss (CQFL): \\begin{equation}     \\mathcal{L}_{\\mathrm{CQFL}} = |y^* - \\hat{p}|^\\gamma \\left[ y^* (-\\ln \\hat{p}) + (1 - y^*) (-\\ln(1 - \\hat{p})) \\right],     \\label{eq:cqfl_loss} \\end{equation} where $\\gamma = 2.0$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:109",
+    "section_key": "methodology",
+    "claim": "In the evaluation, Q-OGA reduced forward latency by $1.25\\,\\text{ms}$, providing a compact supervision option.  \\paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).} To balance six task losses $\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}$ ($J=6$), we developed \\textbf{T-SBUW} without manually tuning their relative weights.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "In the evaluation, Q-OGA reduced forward latency by $1.25\\,\\text{ms}$, providing a compact supervision option.  \\paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).} To balance six task losses $\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}$ ($J=6$), we developed \\textbf{T-SBUW} without manually tuning their relative weights.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:110",
+    "section_key": "methodology",
+    "claim": "It uses two coupled mechanisms: \\par\\noindent 1. \\textit{Bounded Softmax Weights}: Learnable logit parameters $a_k$ are soft-clamped via hyperbolic tangent with bound $b_{\\mathrm{uw}} = 3.0$, and converted to positive normalized weights via temperature-controlled softmax ($\\tau_{\\mathrm{uw}} = 2.0$): \\begin{equation}     \\begin{aligned}         \\bar{a}_k &= b_{\\mathrm{uw}} \\tanh(a_k / b_{\\mathrm{uw}}), \\\\         Z_{\\mathrm{uw}} &= \\sum_{j \\in \\mathcal{T}} \\exp(\\bar{a}_j / \\tau_{\\mathrm{uw}}), \\\\         \\omega_k &= J \\cdot \\frac{\\exp(\\bar{a}_k / \\tau_{\\mathrm{uw}})}{Z_{\\mathrm{uw}}}, \\\\         \\sum_{k \\in \\mathcal{T}} \\omega_k &= J.     \\end{aligned}     \\label{eq:tsbuw_weights} \\end{equation} This construction strictly conserves the total weight. \\par\\noindent 2. \\textit{Running Scale Calibration}: Exponential Moving Average (EMA) with momentum $\\beta_{\\mathrm{EMA}} = 0.99$ tracks the unweighted running loss magnitude $\\mu_k \\leftarrow 0.99\\mu_k + 0.01\\mathcal{L}_k$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It uses two coupled mechanisms: \\par\\noindent 1. \\textit{Bounded Softmax Weights}: Learnable logit parameters $a_k$ are soft-clamped via hyperbolic tangent with bound $b_{\\mathrm{uw}} = 3.0$, and converted to positive normalized weights via temperature-controlled softmax ($\\tau_{\\mathrm{uw}} = 2.0$): \\begin{equation}     \\begin{aligned}         \\bar{a}_k &= b_{\\mathrm{uw}} \\tanh(a_k / b_{\\mathrm{uw}}), \\\\         Z_{\\mathrm{uw}} &= \\sum_{j \\in \\mathcal{T}} \\exp(\\bar{a}_j / \\tau_{\\mathrm{uw}}), \\\\         \\omega_k &= J \\cdot \\frac{\\exp(\\bar{a}_k / \\tau_{\\mathrm{uw}})}{Z_{\\mathrm{uw}}}, \\\\         \\sum_{k \\in \\mathcal{T}} \\omega_k &= J.     \\end{aligned}     \\label{eq:tsbuw_weights} \\end{equation} This construction strictly conserves the total weight. \\par\\noindent 2. \\textit{Running Scale Calibration}: Exponential Moving Average (EMA) with momentum $\\beta_{\\mathrm{EMA}} = 0.99$ tracks the unweighted running loss magnitude $\\mu_k \\leftarrow 0.99\\mu_k + 0.01\\mathcal{L}_k$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:112",
+    "section_key": "methodology",
+    "claim": "The twelve logit parameters are utilized strictly during training and discarded at inference.    \\subsection{Coordinate Decoding and Inference Pipeline} \\label{sec:decoding_and_pipeline}  \\noindent \\captionof{algorithm}{End-to-end MobilePIXORNeXt inference and box decoding pipeline.} \\label{alg:inference_pipeline} \\vspace{2pt} {\\small \\noindent\\textbf{Require:} Raw LiDAR point cloud $\\mathcal{P} = \\{(x_i, y_i, z_i, \\iota_i)\\}_{i=1}^N$, ROI bounds $[x_{\\min}, x_{\\max}] \\times [y_{\\min}, y_{\\max}] \\times [z_{\\min}, z_{\\max}]$\\par \\noindent\\textbf{Require:} Score threshold $\\tau_{\\mathrm{score}} = 0.05$, Rotated NMS threshold $\\tau_{\\mathrm{nms}} = 0.10$, quality exponent $\\alpha = 0.5$\\par \\noindent\\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\\mathcal{B} = \\{(c_k, s_k, \\hat{x}_k, \\hat{y}_k, \\hat{l}_k, \\hat{w}_k, \\hat{\\psi}_k)\\}_{k=1}^M$\\par \\begin{enumerate}     \\setlength{\\topsep}{2pt}     \\setlength{\\itemsep}{0pt}     \\setlength{\\parsep}{0pt}     \\renewcommand{\\labelenumi}{\\textbf{\\arabic{enumi}:}}     \\item Filter raw points $\\mathcal{P}$ within inward margin $\\epsilon = 0.001$\\,m of spatial ROI.     \\item Deterministically rasterize points into 14-channel Strata-BEV14 tensor $\\mathbf{X} \\in \\mathbb{R}^{14 \\times 800 \\times 704}$ via Eq.~(\\ref{eq:density_encoding})--(\\ref{eq:offset_encoding}).     \\item Forward $\\mathbf{X}$ through ConvNeXt stem to obtain stride-2 feature $\\mathbf{F}^{(2)} \\in \\mathbb{R}^{32 \\times 400 \\times 352}$.     \\item Extract multi-scale features through Stages 2, 3, 4 via MobilePIXORNeXt-S blocks to obtain $\\mathbf{F}^{(4)}, \\mathbf{F}^{(8)}, \\mathbf{F}^{(16)}$.     \\item Fuse multi-scale features via Top-Down SG-FPN Neck into shared map $\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{32 \\times 200 \\times 176}$.     \\item Evaluate Grouped Prediction Towers for Car ($g=1$) and Pedestrian/Cyclist ($g=2$), yielding classification maps $\\mathbf{P}_{\\mathrm{cls}}$, subcell offsets $\\widehat{\\mathbf{o}}$, log-sizes $\\widehat{\\mathbf{d}}$, doubled yaws $\\widehat{\\mathbf{a}}$, and quality $\\widehat{\\mathbf{q}}$.     \\item \\textbf{for each} class $c \\in \\{\\text{Car}, \\text{Pedestrian}, \\text{Cyclist}\\}$ \\textbf{do}     \\item \\quad Identify local $3 \\times 3$ candidate peaks on classification heatmap $\\mathbf{P}_{\\mathrm{cls}, c}$.     \\item \\quad Compute IoU-aware composite ranking score: $s_{\\mathrm{det}} = (\\mathbf{P}_{\\mathrm{cls}, c})^{1 - \\alpha} \\cdot (\\widehat{\\mathbf{q}})^\\alpha$.     \\item \\quad Filter candidate cells satisfying $\\mathbf{P}_{\\mathrm{cls}, c} > \\tau_{\\mathrm{score}}$ and $s_{\\mathrm{det}} > \\tau_{\\mathrm{score}}$.     \\item \\quad Decode metric coordinates, dimensions, and heading angles via Eq.~(\\ref{eq:box_decode}).     \\item \\quad Apply Classwise Rotated Non-Maximum Suppression with IoU threshold $\\tau_{\\mathrm{nms}}$.     \\item \\textbf{end for}     \\item \\textbf{return} Final detection set $\\mathcal{B}$ sorted in descending order of composite score $s_{\\mathrm{det}}$. \\end{enumerate} }  \\par\\vspace{0.5\\baselineskip}   Algorithm~\\ref{alg:inference_pipeline} specifies inference.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "[x_{\\min}, x_{\\max}]"
+      },
+      {
+        "type": "citation",
+        "text": "[y_{\\min}, y_{\\max}]"
+      },
+      {
+        "type": "citation",
+        "text": "[z_{\\min}, z_{\\max}]"
+      },
+      {
+        "type": "figure_or_table",
+        "text": "Algorithm~\\ref{alg:inference_pipeline}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "The twelve logit parameters are utilized strictly during training and discarded at inference.    \\subsection{Coordinate Decoding and Inference Pipeline} \\label{sec:decoding_and_pipeline}  \\noindent \\captionof{algorithm}{End-to-end MobilePIXORNeXt inference and box decoding pipeline.} \\label{alg:inference_pipeline} \\vspace{2pt} {\\small \\noindent\\textbf{Require:} Raw LiDAR point cloud $\\mathcal{P} = \\{(x_i, y_i, z_i, \\iota_i)\\}_{i=1}^N$, ROI bounds $[x_{\\min}, x_{\\max}] \\times [y_{\\min}, y_{\\max}] \\times [z_{\\min}, z_{\\max}]$\\par \\noindent\\textbf{Require:} Score threshold $\\tau_{\\mathrm{score}} = 0.05$, Rotated NMS threshold $\\tau_{\\mathrm{nms}} = 0.10$, quality exponent $\\alpha = 0.5$\\par \\noindent\\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\\mathcal{B} = \\{(c_k, s_k, \\hat{x}_k, \\hat{y}_k, \\hat{l}_k, \\hat{w}_k, \\hat{\\psi}_k)\\}_{k=1}^M$\\par \\begin{enumerate}     \\setlength{\\topsep}{2pt}     \\setlength{\\itemsep}{0pt}     \\setlength{\\parsep}{0pt}     \\renewcommand{\\labelenumi}{\\textbf{\\arabic{enumi}:}}     \\item Filter raw points $\\mathcal{P}$ within inward margin $\\epsilon = 0.001$\\,m of spatial ROI.     \\item Deterministically rasterize points into 14-channel Strata-BEV14 tensor $\\mathbf{X} \\in \\mathbb{R}^{14 \\times 800 \\times 704}$ via Eq.~(\\ref{eq:density_encoding})--(\\ref{eq:offset_encoding}).     \\item Forward $\\mathbf{X}$ through ConvNeXt stem to obtain stride-2 feature $\\mathbf{F}^{(2)} \\in \\mathbb{R}^{32 \\times 400 \\times 352}$.     \\item Extract multi-scale features through Stages 2, 3, 4 via MobilePIXORNeXt-S blocks to obtain $\\mathbf{F}^{(4)}, \\mathbf{F}^{(8)}, \\mathbf{F}^{(16)}$.     \\item Fuse multi-scale features via Top-Down SG-FPN Neck into shared map $\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{32 \\times 200 \\times 176}$.     \\item Evaluate Grouped Prediction Towers for Car ($g=1$) and Pedestrian/Cyclist ($g=2$), yielding classification maps $\\mathbf{P}_{\\mathrm{cls}}$, subcell offsets $\\widehat{\\mathbf{o}}$, log-sizes $\\widehat{\\mathbf{d}}$, doubled yaws $\\widehat{\\mathbf{a}}$, and quality $\\widehat{\\mathbf{q}}$.     \\item \\textbf{for each} class $c \\in \\{\\text{Car}, \\text{Pedestrian}, \\text{Cyclist}\\}$ \\textbf{do}     \\item \\quad Identify local $3 \\times 3$ candidate peaks on classification heatmap $\\mathbf{P}_{\\mathrm{cls}, c}$.     \\item \\quad Compute IoU-aware composite ranking score: $s_{\\mathrm{det}} = (\\mathbf{P}_{\\mathrm{cls}, c})^{1 - \\alpha} \\cdot (\\widehat{\\mathbf{q}})^\\alpha$.     \\item \\quad Filter candidate cells satisfying $\\mathbf{P}_{\\mathrm{cls}, c} > \\tau_{\\mathrm{score}}$ and $s_{\\mathrm{det}} > \\tau_{\\mathrm{score}}$.     \\item \\quad Decode metric coordinates, dimensions, and heading angles via Eq.~(\\ref{eq:box_decode}).     \\item \\quad Apply Classwise Rotated Non-Maximum Suppression with IoU threshold $\\tau_{\\mathrm{nms}}$.     \\item \\textbf{end for}     \\item \\textbf{return} Final detection set $\\mathcal{B}$ sorted in descending order of composite score $s_{\\mathrm{det}}$. \\end{enumerate} }  \\par\\vspace{0.5\\baselineskip}   Algorithm~\\ref{alg:inference_pipeline} specifies inference.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "methodology:113",
+    "section_key": "methodology",
+    "claim": "For each candidate cell $(u, v)$ whose classification probability $p_{\\mathrm{cls}} > \\tau_{\\mathrm{score}} = 0.05$ is a $3 \\times 3$ local spatial maximum, bounding boxes are decoded in metric coordinates as: \\begin{align}     \\hat{x} &= x_{\\min} + u s_{\\mathrm{out}}\\Delta_x + \\hat{o}_x, \\nonumber\\\\     \\hat{y} &= y_{\\min} + v s_{\\mathrm{out}}\\Delta_y + \\hat{o}_y, \\nonumber\\\\     \\hat{w} &= \\exp(\\hat{d}_1), \\qquad \\hat{l} = \\exp(\\hat{d}_2), \\nonumber\\\\     \\hat{\\psi} &= \\frac{1}{2}\\operatorname{atan2}(\\hat{a}_2, \\hat{a}_1).     \\label{eq:box_decode} \\end{align} Predicted orientation angle $\\hat{\\psi} \\in [-\\pi/2, \\pi/2]$ is fully recovered without trigonometric ambiguity.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "For each candidate cell $(u, v)$ whose classification probability $p_{\\mathrm{cls}} > \\tau_{\\mathrm{score}} = 0.05$ is a $3 \\times 3$ local spatial maximum, bounding boxes are decoded in metric coordinates as: \\begin{align}     \\hat{x} &= x_{\\min} + u s_{\\mathrm{out}}\\Delta_x + \\hat{o}_x, \\nonumber\\\\     \\hat{y} &= y_{\\min} + v s_{\\mathrm{out}}\\Delta_y + \\hat{o}_y, \\nonumber\\\\     \\hat{w} &= \\exp(\\hat{d}_1), \\qquad \\hat{l} = \\exp(\\hat{d}_2), \\nonumber\\\\     \\hat{\\psi} &= \\frac{1}{2}\\operatorname{atan2}(\\hat{a}_2, \\hat{a}_1).     \\label{eq:box_decode} \\end{align} Predicted orientation angle $\\hat{\\psi} \\in [-\\pi/2, \\pi/2]$ is fully recovered without trigonometric ambiguity.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "methodology:115",
+    "section_key": "methodology",
+    "claim": "The output is capped at 500 boxes per scan.  \\paragraph{Parameter Distribution Breakdown.} Our complete model contains \\textbf{753,569 trainable parameters} ($< 0.76$\\,M), with an FP32 checkpoint size of $9.34$\\,MB: \\begin{itemize}     \\item \\textbf{Backbone Body}: $604,864$ parameters ($80.3\\%$).     \\item \\textbf{Scale-Gated Neck (SG-FPN)}: $36,784$ parameters ($4.9\\%$).     \\item \\textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\\%$), divided into $55,944$ parameters for Group \\texttt{car} and $55,977$ parameters for Group \\texttt{ped\\_cyc}.     \\item \\textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\\%$), eliminated during deployment. \\end{itemize} The complete pipeline achieved $16.41$\\,FPS ($60.96$\\,ms), while standalone network throughput reached $55.94$\\,FPS ($17.88$\\,ms) on NVIDIA Tesla T4 GPUs.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "The output is capped at 500 boxes per scan.  \\paragraph{Parameter Distribution Breakdown.} Our complete model contains \\textbf{753,569 trainable parameters} ($< 0.76$\\,M), with an FP32 checkpoint size of $9.34$\\,MB: \\begin{itemize}     \\item \\textbf{Backbone Body}: $604,864$ parameters ($80.3\\%$).     \\item \\textbf{Scale-Gated Neck (SG-FPN)}: $36,784$ parameters ($4.9\\%$).     \\item \\textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\\%$), divided into $55,944$ parameters for Group \\texttt{car} and $55,977$ parameters for Group \\texttt{ped\\_cyc}.     \\item \\textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\\%$), eliminated during deployment. \\end{itemize} The complete pipeline achieved $16.41$\\,FPS ($60.96$\\,ms), while standalone network throughput reached $55.94$\\,FPS ($17.88$\\,ms) on NVIDIA Tesla T4 GPUs.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "experiments:4",
+    "section_key": "experiments",
+    "claim": "Ground-truth sampling databases were generated exclusively from the $3{,}712$ training frames to prevent validation data leakage.  \\paragraph{Spatial Region of Interest (ROI) and Target Parameterization.} Following Section~\\ref{sec:problem_formulation}, we aligned the LiDAR coordinate frame with the vehicle body (forward $X$, leftward $Y$, upward $Z$).",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Section~\\ref{sec:problem_formulation}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Ground-truth sampling databases were generated exclusively from the $3{,}712$ training frames to prevent validation data leakage.  \\paragraph{Spatial Region of Interest (ROI) and Target Parameterization.} Following Section~\\ref{sec:problem_formulation}, we aligned the LiDAR coordinate frame with the vehicle body (forward $X$, leftward $Y$, upward $Z$).",
+    "forbidden_wording": []
+  },
+  {
+    "id": "experiments:5",
+    "section_key": "experiments",
+    "claim": "We restricted perception to the Cartesian Region of Interest: \\begin{equation}     \\begin{aligned}         x &\\in [0.0, 70.4]\\,\\text{m}, \\\\         y &\\in [-40.0, 40.0]\\,\\text{m}, \\\\         z &\\in [-2.5, 1.0]\\,\\text{m}.     \\end{aligned} \\end{equation} We applied an open-boundary inward margin of $\\epsilon = 0.001\\,\\text{m}$ along all three axes.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "We restricted perception to the Cartesian Region of Interest: \\begin{equation}     \\begin{aligned}         x &\\in [0.0, 70.4]\\,\\text{m}, \\\\         y &\\in [-40.0, 40.0]\\,\\text{m}, \\\\         z &\\in [-2.5, 1.0]\\,\\text{m}.     \\end{aligned} \\end{equation} We applied an open-boundary inward margin of $\\epsilon = 0.001\\,\\text{m}$ along all three axes.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "experiments:9",
+    "section_key": "experiments",
+    "claim": "This metric averages interpolated precision at 40 recall positions $\\mathcal{R}_{40} = \\{1/40, 2/40, \\dots, 1.0\\}$: \\begin{equation}     \\mathrm{AP}|_{R_{40}} = \\frac{1}{40} \\sum_{r \\in \\mathcal{R}_{40}} \\max_{r' \\ge r} p(r'). \\end{equation} Following KITTI matching conventions, we set oriented bounding box Intersection-over-Union (IoU) thresholds to $\\tau_{\\mathrm{IoU}} = 0.70$ for Car and $\\tau_{\\mathrm{IoU}} = 0.50$ for Pedestrian and Cyclist.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "precision"
+      },
+      {
+        "type": "metric",
+        "text": "recall"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "This metric averages interpolated precision at 40 recall positions $\\mathcal{R}_{40} = \\{1/40, 2/40, \\dots, 1.0\\}$: \\begin{equation}     \\mathrm{AP}|_{R_{40}} = \\frac{1}{40} \\sum_{r \\in \\mathcal{R}_{40}} \\max_{r' \\ge r} p(r'). \\end{equation} Following KITTI matching conventions, we set oriented bounding box Intersection-over-Union (IoU) thresholds to $\\tau_{\\mathrm{IoU}} = 0.70$ for Car and $\\tau_{\\mathrm{IoU}} = 0.50$ for Pedestrian and Cyclist.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "experiments:10",
+    "section_key": "experiments",
+    "claim": "We grouped detections into three difficulty regimes: \\begin{itemize}     \\item \\textbf{Easy}: 2D bounding box height $\\ge 40\\,\\text{px}$, maximum occlusion level = 0 (fully visible), maximum truncation $\\le 15\\%$.     \\item \\textbf{Moderate}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 1 (partially occluded), maximum truncation $\\le 30\\%$.     \\item \\textbf{Hard}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 2 (difficult to see), maximum truncation $\\le 50\\%$. \\end{itemize} Following autonomous driving literature, \\textbf{Moderate macro mAP} ($\\mathrm{mAP}_{\\mathrm{M}}$) was adopted as the primary benchmark ranking criterion: \\begin{equation}     \\mathrm{mAP}_{\\mathrm{M}} = \\frac{1}{3} \\sum_{c \\in \\{\\mathrm{Car}, \\mathrm{Ped}, \\mathrm{Cyc}\\}} \\mathrm{AP}_{c, \\mathrm{M}}. \\end{equation} We also reported the unweighted mean across all nine class-difficulty combinations: \\begin{equation}     \\mathrm{mAP}_{9} = \\frac{1}{9} \\sum_{c \\in \\mathcal{C}} \\sum_{d \\in \\{\\mathrm{E}, \\mathrm{M}, \\mathrm{H}\\}} \\mathrm{AP}_{c, d}. \\end{equation} MobilePIXORNeXt and historical MobilePIXOR results were computed with the local loader-aligned BEV evaluator.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "We grouped detections into three difficulty regimes: \\begin{itemize}     \\item \\textbf{Easy}: 2D bounding box height $\\ge 40\\,\\text{px}$, maximum occlusion level = 0 (fully visible), maximum truncation $\\le 15\\%$.     \\item \\textbf{Moderate}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 1 (partially occluded), maximum truncation $\\le 30\\%$.     \\item \\textbf{Hard}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 2 (difficult to see), maximum truncation $\\le 50\\%$. \\end{itemize} Following autonomous driving literature, \\textbf{Moderate macro mAP} ($\\mathrm{mAP}_{\\mathrm{M}}$) was adopted as the primary benchmark ranking criterion: \\begin{equation}     \\mathrm{mAP}_{\\mathrm{M}} = \\frac{1}{3} \\sum_{c \\in \\{\\mathrm{Car}, \\mathrm{Ped}, \\mathrm{Cyc}\\}} \\mathrm{AP}_{c, \\mathrm{M}}. \\end{equation} We also reported the unweighted mean in the evaluated nine class-difficulty combinations: \\begin{equation}     \\mathrm{mAP}_{9} = \\frac{1}{9} \\sum_{c \\in \\mathcal{C}} \\sum_{d \\in \\{\\mathrm{E}, \\mathrm{M}, \\mathrm{H}\\}} \\mathrm{AP}_{c, d}. \\end{equation} MobilePIXORNeXt and historical MobilePIXOR results were computed with the local loader-aligned BEV evaluator.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "experiments:16",
+    "section_key": "experiments",
+    "claim": "Parameter-free Block-SimAM attention was embedded in all nine residual blocks.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "Parameter-free Block-SimAM attention was embedded in all nine residual blocks.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "experiments:28",
+    "section_key": "experiments",
+    "claim": "Section~\\ref{sec:ablations} evaluates its empirical convergence behavior.  \\paragraph{Data Augmentation Pipeline.} Training used Physics-Consistent Ground-Truth Augmentation (\\texttt{PC-GTA}; Section~\\ref{sec:pc_gta}).",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Section~\\ref{sec:ablations}"
+      },
+      {
+        "type": "section",
+        "text": "Section~\\ref{sec:pc_gta}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Section~\\ref{sec:ablations} evaluates its empirical convergence behavior.  \\paragraph{Data Augmentation Pipeline.} Training used Physics-Consistent Ground-Truth Augmentation (\\texttt{PC-GTA}; Section~\\ref{sec:pc_gta}).",
+    "forbidden_wording": []
+  },
+  {
+    "id": "experiments:41",
+    "section_key": "experiments",
+    "claim": "All KITTI ablation and comparison metrics came from deterministic single-seed evaluation ($\\text{seed} = 42$) on the same validation split.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "All KITTI ablation and comparison metrics came from deterministic single-seed evaluation ($\\text{seed} = 42$) on the same validation split.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:2",
+    "section_key": "results",
+    "claim": "All scores came from deterministic single-seed evaluation ($\\text{seed} = 42$).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "All scores came from deterministic single-seed evaluation ($\\text{seed} = 42$).",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:5",
+    "section_key": "results",
+    "claim": "MobilePIXORNeXt (red star) achieves $71.46\\%$ mAP with $0.754\\,\\text{M}$ parameters, matching SECOND ($72.09\\%$, $5.33\\,\\text{M}$) and exceeding PointPillars ($70.13\\%$, $4.84\\,\\text{M}$) with $>84\\%$ fewer parameters. \\textbf{(b)} Accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus end-to-end latency (ms) at batch size 1 (Tesla T4, except historical MobilePIXOR on L4).",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "Accuracy"
+      },
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "MobilePIXORNeXt (red star) achieves $71.46\\%$ mAP with $0.754\\,\\text{M}$ parameters, matching SECOND ($72.09\\%$, $5.33\\,\\text{M}$) and exceeding PointPillars ($70.13\\%$, $4.84\\,\\text{M}$) with $>84\\%$ fewer parameters. \\textbf{(b)} Accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus end-to-end latency (ms) at batch size 1 (Tesla T4, except historical MobilePIXOR on L4).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:6",
+    "section_key": "results",
+    "claim": "MobilePIXORNeXt has the lowest complete pipeline latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$) among the evaluated real-time detectors.} \\label{fig:pareto_tradeoff} \\end{figure*}  \\newpage  \\textit{1.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "MobilePIXORNeXt has the lowest complete pipeline latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$) among the evaluated real-time detectors.} \\label{fig:pareto_tradeoff} \\end{figure*}  \\newpage  \\textit{1.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:8",
+    "section_key": "results",
+    "claim": "With $0.754\\,\\text{M}$ trainable parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_{9}$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "With $0.754\\,\\text{M}$ trainable parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_{9}$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:9",
+    "section_key": "results",
+    "claim": "Compared with PointPillars~\\cite{lang2019pointpillars} ($4.835\\,\\text{M}$ parameters), MobilePIXORNeXt achieved higher Moderate mAP ($71.46\\%$ vs. $70.13\\%$, a $+1.33\\%$ margin) and $\\text{mAP}_{9}$ ($73.42\\%$ vs. $72.25\\%$) with an $84.4\\%$ parameter reduction.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{lang2019pointpillars}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "Compared with PointPillars~\\cite{lang2019pointpillars} ($4.835\\,\\text{M}$ parameters), MobilePIXORNeXt achieved higher Moderate mAP ($71.46\\%$ vs. $70.13\\%$, a $+1.33\\%$ margin) and $\\text{mAP}_{9}$ ($73.42\\%$ vs. $72.25\\%$) with an $84.4\\%$ parameter reduction.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:10",
+    "section_key": "results",
+    "claim": "MobilePIXORNeXt trailed SECOND~\\cite{yan2018second} ($5.326\\,\\text{M}$ parameters) by $0.63\\%$ Moderate mAP ($71.46\\%$ vs. $72.09\\%$) with $7.1\\times$ fewer parameters.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{yan2018second}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "MobilePIXORNeXt trailed SECOND~\\cite{yan2018second} ($5.326\\,\\text{M}$ parameters) by $0.63\\%$ Moderate mAP ($71.46\\%$ vs. $72.09\\%$) with $7.1\\times$ fewer parameters.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:11",
+    "section_key": "results",
+    "claim": "Relative to MobilePIXOR~\\cite{nguyen2024indoor} ($41.40\\%$ mAP), MobilePIXORNeXt improved Moderate mAP by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$ in $\\text{mAP}_{9}$ ($73.42\\%$ vs. $42.27\\%$).  \\begin{figure*}[!t] \\centering \\paperfigure[width=\\textwidth]{pr_all_difficulties.pdf}{65mm}{Precision-Recall benchmark curves across classes and difficulties on the KITTI validation set.} \\caption{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated on the KITTI validation split across Car (top row, $\\text{IoU} \\ge 0.70$), Pedestrian (middle row, $\\text{IoU} \\ge 0.50$), and Cyclist (bottom row, $\\text{IoU} \\ge 0.50$) under Easy (left), Moderate (center), and Hard (right) difficulty regimes.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{nguyen2024indoor}"
+      },
+      {
+        "type": "citation",
+        "text": "[width=\\textwidth]"
+      },
+      {
+        "type": "metric",
+        "text": "Precision"
+      },
+      {
+        "type": "metric",
+        "text": "Recall"
+      },
+      {
+        "type": "metric",
+        "text": "Precision"
+      },
+      {
+        "type": "metric",
+        "text": "Recall"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "Relative to MobilePIXOR~\\cite{nguyen2024indoor} ($41.40\\%$ mAP), MobilePIXORNeXt improved Moderate mAP by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$ in $\\text{mAP}_{9}$ ($73.42\\%$ vs. $42.27\\%$).  \\begin{figure*}[!t] \\centering \\paperfigure[width=\\textwidth]{pr_all_difficulties.pdf}{65mm}{Precision-Recall benchmark curves across classes and difficulties on the KITTI validation set.} \\caption{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated on the KITTI validation split across Car (top row, $\\text{IoU} \\ge 0.70$), Pedestrian (middle row, $\\text{IoU} \\ge 0.50$), and Cyclist (bottom row, $\\text{IoU} \\ge 0.50$) under Easy (left), Moderate (center), and Hard (right) difficulty regimes.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:14",
+    "section_key": "results",
+    "claim": "Note that MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users, attaining $60.75\\%$ Moderate AP on Pedestrian compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.} \\label{fig:pr_curves} \\end{figure*}   \\textit{2.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "recall"
+      },
+      {
+        "type": "metric",
+        "text": "precision"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Note that MobilePIXORNeXt consistently maintains improved in the reported setting recall and precision envelopes on vulnerable road users, attaining $60.75\\%$ Moderate AP on Pedestrian compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.} \\label{fig:pr_curves} \\end{figure*}   \\textit{2.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:16",
+    "section_key": "results",
+    "claim": "Table~\\ref{tab:comparison} and Figure~\\ref{fig:pr_curves} report MobilePIXORNeXt's \\textbf{60.75\\% Moderate AP} on Pedestrians.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:comparison}"
+      },
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:pr_curves}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Table~\\ref{tab:comparison} and Figure~\\ref{fig:pr_curves} report MobilePIXORNeXt's \\textbf{60.75\\% Moderate AP} on Pedestrians.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:17",
+    "section_key": "results",
+    "claim": "This exceeded PointPillars ($56.01\\%$) by $+4.74\\%$ and SECOND ($56.56\\%$) by $+4.19\\%$, and more than doubled MobilePIXOR ($28.16\\%$, a $+32.59\\%$ gain).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "This exceeded PointPillars ($56.01\\%$) by $+4.74\\%$ and SECOND ($56.56\\%$) by $+4.19\\%$, and more than doubled MobilePIXOR ($28.16\\%$, a $+32.59\\%$ gain).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:19",
+    "section_key": "results",
+    "claim": "The first is Strata-BEV14's continuous subcell displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$, which reduce quantization error from the $0.1\\,\\text{m}$ grid for small objects.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add a citation, figure/table, metric, or section anchor before using strong wording"
+    ],
+    "allowed_wording": "The first is Strata-BEV14's continuous subcell displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$, which reduce quantization error from the $0.1\\,\\text{m}$ grid for small objects.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:20",
+    "section_key": "results",
+    "claim": "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories.  \\textit{3.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories.  \\textit{3.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:21",
+    "section_key": "results",
+    "claim": "Balanced Multi-Class Detection.} For Car, MobilePIXORNeXt achieved $86.90\\%$ Moderate AP.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Balanced Multi-Class Detection.} For Car, MobilePIXORNeXt achieved $86.90\\%$ Moderate AP.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:22",
+    "section_key": "results",
+    "claim": "It trailed PointPillars ($88.02\\%$) and SECOND ($88.56\\%$) by less than $1.7\\%$, while exceeding PIXOR ($72.02\\%$) by $+14.88\\%$ and MobilePIXOR ($75.52\\%$) by $+11.38\\%$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It trailed PointPillars ($88.02\\%$) and SECOND ($88.56\\%$) by less than $1.7\\%$, while exceeding PIXOR ($72.02\\%$) by $+14.88\\%$ and MobilePIXOR ($75.52\\%$) by $+11.38\\%$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:23",
+    "section_key": "results",
+    "claim": "For Cyclists, MobilePIXORNeXt reached $66.73\\%$ Moderate AP, exceeding PointPillars ($66.34\\%$) and trailing SECOND ($71.16\\%$).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "For Cyclists, MobilePIXORNeXt reached $66.73\\%$ Moderate AP, exceeding PointPillars ($66.34\\%$) and trailing SECOND ($71.16\\%$).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:25",
+    "section_key": "results",
+    "claim": "Their parameter counts ranged from $4.0\\,\\text{M}$ to $63.8\\,\\text{M}$, and their higher latencies ($133\\text{--}195\\,\\text{ms}$) limited deployment under embedded real-time constraints.  \\subsection{Inference Latency and Real-Time Complexity} \\label{sec:latency_analysis} \\input{tables/efficiency}  \\paragraph{Pipeline Latency vs.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "Latency"
+      },
+      {
+        "type": "metric",
+        "text": "Latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Their parameter counts ranged from $4.0\\,\\text{M}$ to $63.8\\,\\text{M}$, and their higher latencies ($133\\text{--}195\\,\\text{ms}$) limited deployment under embedded real-time constraints.  \\subsection{Inference Latency and Real-Time Complexity} \\label{sec:latency_analysis} \\input{tables/efficiency}  \\paragraph{Pipeline Latency vs.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:26",
+    "section_key": "results",
+    "claim": "Model Forward Throughput.} Network forward time covers only part of a real-time perception pipeline.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "Throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Model Forward Throughput.} Network forward time covers only part of a real-time perception pipeline.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:30",
+    "section_key": "results",
+    "claim": "End-to-End Pipeline Latency Comparison.} Table~\\ref{tab:efficiency} reports MobilePIXORNeXt's End-to-End (E2E) latency of \\textbf{60.96\\,ms} (\\textbf{16.41\\,FPS}), the lowest among the evaluated real-time detectors.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:efficiency}"
+      },
+      {
+        "type": "metric",
+        "text": "Latency"
+      },
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "strong",
+    "missing_evidence": [],
+    "allowed_wording": "End-to-End Pipeline Latency Comparison.} Table~\\ref{tab:efficiency} reports MobilePIXORNeXt's End-to-End (E2E) latency of \\textbf{60.96\\,ms} (\\textbf{16.41\\,FPS}), the lowest among the evaluated real-time detectors.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:38",
+    "section_key": "results",
+    "claim": "The Strata-BEV14 14-channel layout required $31.5\\,\\text{MB}$, reducing payload by $60.0\\%$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The Strata-BEV14 14-channel layout required $31.5\\,\\text{MB}$, reducing payload by $60.0\\%$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:41",
+    "section_key": "results",
+    "claim": "Data remained on the GPU until final bounding box export. \\end{itemize}   \\subsection{Distance-Stratified Detection Performance} \\label{sec:distance_stratified}    \\paragraph{Range-Dependent Accuracy on Vulnerable Road Users.} Because LiDAR beam divergence causes point density to drop quadratically over distance ($N \\propto 1/r^2$), detector reliability degrades rapidly at intermediate and long ranges.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "Accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Data remained on the GPU until final bounding box export. \\end{itemize}   \\subsection{Distance-Stratified Detection Performance} \\label{sec:distance_stratified}    \\paragraph{Range-Dependent Accuracy on Vulnerable Road Users.} Because LiDAR beam divergence causes point density to drop quadratically over distance ($N \\propto 1/r^2$), detector reliability degrades rapidly at intermediate and long ranges.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:43",
+    "section_key": "results",
+    "claim": "Near-Range Safety Envelope ($0\\text{--}30\\,\\text{m}$).} Compared with MobilePIXOR in the near-range $0\\text{--}30\\,\\text{m}$ zone, MobilePIXORNeXt Pedestrian AP reached \\textbf{65.23\\%}, more than double MobilePIXOR's $30.45\\%$ (a $+34.78\\%$ improvement).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Near-Range Safety Envelope ($0\\text{--}30\\,\\text{m}$).} Compared with MobilePIXOR in the near-range $0\\text{--}30\\,\\text{m}$ zone, MobilePIXORNeXt Pedestrian AP reached \\textbf{65.23\\%}, more than double MobilePIXOR's $30.45\\%$ (a $+34.78\\%$ improvement).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:44",
+    "section_key": "results",
+    "claim": "Cyclist AP reached \\textbf{76.32\\%}, nearly triple MobilePIXOR's $25.55\\%$ (a $+50.77\\%$ improvement).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Cyclist AP reached \\textbf{76.32\\%}, nearly triple MobilePIXOR's $25.55\\%$ (a $+50.77\\%$ improvement).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:45",
+    "section_key": "results",
+    "claim": "These gains are consistent with Strata-BEV14's stratified height bins and continuous subcell offsets preserving fine boundaries when object returns are dense.  \\textit{2.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "These gains are consistent with Strata-BEV14's stratified height bins and continuous subcell offsets preserving fine boundaries when object returns are dense.  \\textit{2.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:46",
+    "section_key": "results",
+    "claim": "Intermediate and Long Ranges ($30\\text{--}70.4\\,\\text{m}$).} At medium ranges ($30\\text{--}50\\,\\text{m}$), MobilePIXORNeXt achieved $11.49\\%$ Pedestrian AP (vs. $3.75\\%$) and $44.30\\%$ Cyclist AP (vs. $12.61\\%$, a $+31.69\\%$ gain).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Intermediate and Long Ranges ($30\\text{--}70.4\\,\\text{m}$).} At medium ranges ($30\\text{--}50\\,\\text{m}$), MobilePIXORNeXt achieved $11.49\\%$ Pedestrian AP (vs. $3.75\\%$) and $44.30\\%$ Cyclist AP (vs. $12.61\\%$, a $+31.69\\%$ gain).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:47",
+    "section_key": "results",
+    "claim": "Far-range ($50\\text{--}70.4\\,\\text{m}$) Cyclist AP was $14.94\\%$ (vs. $0.56\\%$).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Far-range ($50\\text{--}70.4\\,\\text{m}$) Cyclist AP was $14.94\\%$ (vs. $0.56\\%$).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:50",
+    "section_key": "results",
+    "claim": "Moderate mAP rose from $41.40\\%$ to $47.60\\%$ (\\textbf{+6.20\\% mAP}), and standalone throughput nearly doubled from $90.57$ to \\textbf{169.97\\,FPS}.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Moderate mAP rose from $41.40\\%$ to $47.60\\%$ (\\textbf{+6.20\\% mAP}), and standalone throughput nearly doubled from $90.57$ to \\textbf{169.97\\,FPS}.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:53",
+    "section_key": "results",
+    "claim": "TriBand-BEV~\\cite{khoshkdahan2026triband} partitions points into three coarse height bands; while it delivers the highest inference throughput ($188.4\\,\\text{FPS}$) and lowest Host-to-Device transfer payload ($6.76\\,\\text{MB}$), its Moderate mAP drops to $44.42\\%$ ($-5.72\\%$ below Strata-BEV14).",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{khoshkdahan2026triband}"
+      },
+      {
+        "type": "metric",
+        "text": "throughput"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "TriBand-BEV~\\cite{khoshkdahan2026triband} partitions points into three coarse height bands; while it delivers the highest inference throughput ($188.4\\,\\text{FPS}$) and lowest Host-to-Device transfer payload ($6.76\\,\\text{MB}$), its Moderate mAP drops to $44.42\\%$ ($-5.72\\%$ below Strata-BEV14).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:54",
+    "section_key": "results",
+    "claim": "The lack of continuous elevation moments and horizontal subcell centroid offsets degrades small object localization (Pedestrian AP $38.05\\%$, Cyclist AP $21.12\\%$).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The lack of continuous elevation moments and horizontal subcell centroid offsets degrades small object localization (Pedestrian AP $38.05\\%$, Cyclist AP $21.12\\%$).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:55",
+    "section_key": "results",
+    "claim": "Conventional 35-channel binary occupancy slicing (A1) achieves $47.60\\%$ mAP but requires transferring $78.85\\,\\text{MB}$ per scan, imposing significant Host-to-Device transfer latency ($40.63\\,\\text{ms}$) while still discarding sub-voxel point coordinates.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Conventional 35-channel binary occupancy slicing (A1) achieves $47.60\\%$ mAP but requires transferring $78.85\\,\\text{MB}$ per scan, imposing reported Host-to-Device transfer latency ($40.63\\,\\text{ms}$) while still discarding sub-voxel point coordinates.",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:56",
+    "section_key": "results",
+    "claim": "The 8-channel Strata-BEV8 representation (A2) yields comparable accuracy ($47.37\\%$) with fewer channels.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "The 8-channel Strata-BEV8 representation (A2) yields comparable accuracy ($47.37\\%$) with fewer channels.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:57",
+    "section_key": "results",
+    "claim": "In contrast, our 14-channel Strata-BEV14 representation (A3) achieves the highest Moderate mAP of $50.14\\%$ ($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35) at $169.0\\,\\text{FPS}$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "In contrast, our 14-channel Strata-BEV14 representation (A3) achieves the highest Moderate mAP of $50.14\\%$ ($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35) at $169.0\\,\\text{FPS}$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:58",
+    "section_key": "results",
+    "claim": "Continuous vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$) and subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ retain critical 3D geometry otherwise lost through horizontal discretization without incurring PointNet encoder overhead.  \\input{tables/encoding}  \\par\\vspace{0.5\\baselineskip} \\textit{3.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Continuous vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$) and subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ retain critical 3D geometry otherwise lost through horizontal discretization without incurring PointNet encoder overhead.  \\input{tables/encoding}  \\par\\vspace{0.5\\baselineskip} \\textit{3.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:59",
+    "section_key": "results",
+    "claim": "Decoupled Grouped Prediction Towers (A3 $\\to$ A4 $\\to$ A5).} Separating Car and Ped/Cyc prediction heads (A4) raised mAP to $51.30\\%$ over A3.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Decoupled Grouped Prediction Towers (A3 $\\to$ A4 $\\to$ A5).} Separating Car and Ped/Cyc prediction heads (A4) raised mAP to $51.30\\%$ over A3.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:60",
+    "section_key": "results",
+    "claim": "Increasing grouped head width from 16 to 32 channels (A5) raised Moderate mAP to $60.22\\%$ (\\textbf{+8.92\\% mAP}) and $61.11\\%$ $\\text{mAP}_9$ relative to configuration A4.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Increasing grouped head width from 16 to 32 channels (A5) raised Moderate mAP to $60.22\\%$ (\\textbf{+8.92\\% mAP}) and $61.11\\%$ $\\text{mAP}_9$ relative to configuration A4.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:61",
+    "section_key": "results",
+    "claim": "Class separation may reduce gradient interference between categories with different footprints, such as vehicles and pedestrians.   \\par\\vspace{0.5\\baselineskip} \\textit{4.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Class separation may reduce gradient interference between categories with different footprints, such as vehicles and pedestrians.   \\par\\vspace{0.5\\baselineskip} \\textit{4.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:62",
+    "section_key": "results",
+    "claim": "Physics-Consistent Ground-Truth Augmentation (A5 $\\to$ A6).} Physics-consistent augmentation (\\texttt{PC-GTA}) improved Moderate mAP by \\textbf{+6.03\\% mAP} over A5, from $60.22\\%$ to $66.25\\%$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Physics-Consistent Ground-Truth Augmentation (A5 $\\to$ A6).} Physics-consistent augmentation (\\texttt{PC-GTA}) improved Moderate mAP by \\textbf{+6.03\\% mAP} over A5, from $60.22\\%$ to $66.25\\%$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:63",
+    "section_key": "results",
+    "claim": "It also raised $\\text{mAP}_9$ from $61.11\\%$ to $68.45\\%$ (\\textbf{+7.34\\% mAP}).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It also raised $\\text{mAP}_9$ from $61.11\\%$ to $68.45\\%$ (\\textbf{+7.34\\% mAP}).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:66",
+    "section_key": "results",
+    "claim": "Multiscale Neck and Scale Gating (A6 $\\to$ A7 $\\to$ A8).} Increasing neck width from 24 to 32 channels (A7) raised Moderate mAP to $68.12\\%$ (\\textbf{+1.87\\% mAP}).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Multiscale Neck and Scale Gating (A6 $\\to$ A7 $\\to$ A8).} Increasing neck width from 24 to 32 channels (A7) raised Moderate mAP to $68.12\\%$ (\\textbf{+1.87\\% mAP}).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:68",
+    "section_key": "results",
+    "claim": "Geometric Supervision and Localization Quality (A8 $\\to$ A9).} Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA) raised Moderate mAP from $67.38\\%$ to $70.58\\%$ (\\textbf{+3.20\\% mAP}).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Geometric Supervision and Localization Quality (A8 $\\to$ A9).} Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA) raised Moderate mAP from $67.38\\%$ to $70.58\\%$ (\\textbf{+3.20\\% mAP}).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:70",
+    "section_key": "results",
+    "claim": "IQA calibrated confidence against overlap to reduce the retention of high-scoring, misaligned boxes during NMS.   \\par\\vspace{0.5\\baselineskip} \\textit{7.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "IQA calibrated confidence against overlap to reduce the retention of high-scoring, misaligned boxes during NMS.   \\par\\vspace{0.5\\baselineskip} \\textit{7.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:71",
+    "section_key": "results",
+    "claim": "Block-SimAM Energy Attention (A9 $\\to$ A10).} Embedding parameter-free Block-SimAM in every residual block across stages C2, C3, and C4 produced the final configuration, with \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% mAP$_9$} (\\textbf{+0.88\\% mAP}).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Block-SimAM Energy Attention (A9 $\\to$ A10).} Embedding parameter-free Block-SimAM in every residual block across stages C2, C3, and C4 produced the final configuration, with \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% mAP$_9$} (\\textbf{+0.88\\% mAP}).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:74",
+    "section_key": "results",
+    "claim": "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants at 115.32 vs.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants at 115.32 vs.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:76",
+    "section_key": "results",
+    "claim": "With OGA, Moderate mAP rose from $67.38\\%$ to $68.97\\%$ (\\textbf{+1.59\\% mAP}), with gains for Car ($+0.17\\%$), Pedestrian ($+2.45\\%$), and Cyclist ($+2.14\\%$).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "With OGA, Moderate mAP rose from $67.38\\%$ to $68.97\\%$ (\\textbf{+1.59\\% mAP}), with gains for Car ($+0.17\\%$), Pedestrian ($+2.45\\%$), and Cyclist ($+2.14\\%$).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:77",
+    "section_key": "results",
+    "claim": "IQA alone raised mAP to $70.31\\%$ (\\textbf{+2.93\\% mAP}).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "IQA alone raised mAP to $70.31\\%$ (\\textbf{+2.93\\% mAP}).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:78",
+    "section_key": "results",
+    "claim": "Together, OGA and IQA achieved \\textbf{70.58\\% Moderate mAP}, with the highest Car ($84.87\\%$) and Pedestrian ($59.63\\%$) scores.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Together, OGA and IQA achieved \\textbf{70.58\\% Moderate mAP}, with the highest Car ($84.87\\%$) and Pedestrian ($59.63\\%$) scores.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:79",
+    "section_key": "results",
+    "claim": "The gains are consistent with complementary roles: OGA supervises corner and boundary alignment during training; IQA calibrates scores against overlap during inference ($S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$) to reduce suppression of well-localized candidates by misaligned boxes during rotated NMS.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The gains are consistent with complementary roles: OGA supervises corner and boundary alignment during training; IQA calibrates scores against overlap during inference ($S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$) to reduce suppression of well-localized candidates by misaligned boxes during rotated NMS.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:83",
+    "section_key": "results",
+    "claim": "Without extra prediction branches or post-processing score multiplication, Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Without extra prediction branches or post-processing score multiplication, Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:84",
+    "section_key": "results",
+    "claim": "Q-OGA therefore offers a smaller, faster configuration for constrained deployment, while explicit IQA achieved the highest accuracy ($70.58\\%$) with a dedicated quality branch.  \\paragraph{3D Spatial-Energy Attention Integration and Placement.} Table~\\ref{tab:attention} investigates the placement of parameter-free SimAM energy attention.  \\input{tables/attention}  Stage-level SimAM at downsampling boundaries ($C_2, C_3, C_4$) reduced mAP to $69.44\\%$, $69.80\\%$, and $69.36\\%$, below the no-attention score ($70.58\\%$).",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:attention}"
+      },
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "strong",
+    "missing_evidence": [],
+    "allowed_wording": "Q-OGA therefore offers a smaller, faster configuration for constrained deployment, while explicit IQA achieved the highest accuracy ($70.58\\%$) with a dedicated quality branch.  \\paragraph{3D Spatial-Energy Attention Integration and Placement.} Table~\\ref{tab:attention} investigates the placement of parameter-free SimAM energy attention.  \\input{tables/attention}  Stage-level SimAM at downsampling boundaries ($C_2, C_3, C_4$) reduced mAP to $69.44\\%$, $69.80\\%$, and $69.36\\%$, below the no-attention score ($70.58\\%$).",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:86",
+    "section_key": "results",
+    "claim": "Block-SimAM inside every residual block instead achieved \\textbf{71.46\\% Moderate mAP} (\\textbf{+0.88\\% gain} over no attention) and \\textbf{73.42\\% mAP$_9$}.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Block-SimAM inside every residual block instead achieved \\textbf{71.46\\% Moderate mAP} (\\textbf{+0.88\\% gain} over no attention) and \\textbf{73.42\\% mAP$_9$}.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:87",
+    "section_key": "results",
+    "claim": "It modulates the residual update before LayerScale addition ($\\mathbf{Z}' = \\mathbf{Z} + \\boldsymbol{\\gamma}_{\\mathrm{blk}} \\odot \\mathcal{S}(\\mathbf{R})$) without changing inter-stage feature resolution, allowing modulation of sparse returns within each block.  \\begin{figure}[t]     \\centering     \\paperfigure[width=\\linewidth]{training_curves_all_losses_2.pdf}{75mm}{Training and validation loss trajectories across 50 epochs.}     \\caption{Training and validation loss trajectories over 50 epochs on KITTI for configurations A1 through A10 (Table~\\ref{tab:components}).",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "[width=\\linewidth]"
+      },
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:components}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "It modulates the residual update before LayerScale addition ($\\mathbf{Z}' = \\mathbf{Z} + \\boldsymbol{\\gamma}_{\\mathrm{blk}} \\odot \\mathcal{S}(\\mathbf{R})$) without changing inter-stage feature resolution, allowing modulation of sparse returns within each block.  \\begin{figure}[t]     \\centering     \\paperfigure[width=\\linewidth]{training_curves_all_losses_2.pdf}{75mm}{Training and validation loss trajectories across 50 epochs.}     \\caption{Training and validation loss trajectories over 50 epochs on KITTI for configurations A1 through A10 (Table~\\ref{tab:components}).",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:91",
+    "section_key": "results",
+    "claim": "The plotted losses weighted by T-SBUW show no divergence or oscillation.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The plotted losses weighted by T-SBUW show no divergence or oscillation.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:92",
+    "section_key": "results",
+    "claim": "Configuration A10 has the lowest late-training validation losses across the continuous regression tasks.}     \\label{fig:loss_curves} \\end{figure}  \\paragraph{Multi-Task Optimization Dynamics and Convergence.} Figure~\\ref{fig:loss_curves} plots training and validation losses over 50 epochs for configurations A1 through A10.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:loss_curves}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Configuration A10 has the lowest late-training validation losses across the continuous regression tasks.}     \\label{fig:loss_curves} \\end{figure}  \\paragraph{Multi-Task Optimization Dynamics and Convergence.} Figure~\\ref{fig:loss_curves} plots training and validation losses over 50 epochs for configurations A1 through A10.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:94",
+    "section_key": "results",
+    "claim": "We used these trajectories to assess training stability and convergence.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "We used these trajectories to assess training stability and convergence.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:95",
+    "section_key": "results",
+    "claim": "Across 50 epochs, total and task losses converged without visible oscillation or destabilizing spikes.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Across 50 epochs, total and task losses converged without visible oscillation or destabilizing spikes.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:97",
+    "section_key": "results",
+    "claim": "Training and validation curves remained close without a widening gap.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Training and validation curves remained close without a widening gap.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:98",
+    "section_key": "results",
+    "claim": "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:99",
+    "section_key": "results",
+    "claim": "Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW, Eq.~(\\ref{eq:tsbuw_weights})--(\\ref{eq:balanced_loss})) balanced task loss scales without visible spikes between classification and coordinate regression.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW, Eq.~(\\ref{eq:tsbuw_weights})--(\\ref{eq:balanced_loss})) balanced task loss scales without visible spikes between classification and coordinate regression.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:100",
+    "section_key": "results",
+    "claim": "Block-SimAM (configuration A10) had lower training and validation losses across regression tasks than intermediate configurations (A1--A9), consistent with the accuracy gains in Table~\\ref{tab:components}.  \\paragraph{Checkpoint Selection Sensitivity: Best AP vs.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:components}"
+      },
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "strong",
+    "missing_evidence": [],
+    "allowed_wording": "Block-SimAM (configuration A10) had lower training and validation losses across regression tasks than intermediate configurations (A1--A9), consistent with the accuracy gains in Table~\\ref{tab:components}.  \\paragraph{Checkpoint Selection Sensitivity: Best AP vs.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:101",
+    "section_key": "results",
+    "claim": "Best Validation Loss.} Table~\\ref{tab:ap_vs_loss} examines detector sensitivity to checkpoint selection criteria, comparing the checkpoint selected by validation AP from the extended run (Epoch 50) against the checkpoint selected by minimum validation loss (Epoch 47).  \\begin{table}[t] \\centering\\scriptsize \\caption{Checkpoint selection sensitivity comparison on the KITTI validation benchmark, evaluating trade-offs between validation AP maximization (Epoch 130) and validation loss minimization (Epoch 47) under identical $R_{40}$ Moderate evaluation criteria.",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table~\\ref{tab:ap_vs_loss}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "Best Validation Loss.} Table~\\ref{tab:ap_vs_loss} examines detector sensitivity to checkpoint selection criteria, comparing the checkpoint selected by validation AP from the extended run (Epoch 50) against the checkpoint selected by minimum validation loss (Epoch 47).  \\begin{table}[t] \\centering\\scriptsize \\caption{Checkpoint selection sensitivity comparison on the KITTI validation benchmark, evaluating trade-offs between validation AP maximization (Epoch 130) and validation loss minimization (Epoch 47) under identical $R_{40}$ Moderate evaluation criteria.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:102",
+    "section_key": "results",
+    "claim": "Best overall trade-offs are in \\textbf{bold}.} \\label{tab:ap_vs_loss} \\setlength{\\tabcolsep}{1.5pt} \\begin{tabular*}{\\columnwidth}{@{\\extracolsep{\\fill}}lcrrrrr@{}} \\toprule \\textbf{Selection} & \\textbf{Epoch} & \\textbf{Car} & \\textbf{Ped.} & \\textbf{Cyc.} & \\textbf{mAP$_{\\mathrm{M}}$} & \\textbf{E2E} \\\\ \\midrule \\textbf{Best AP} & \\textbf{130} & \\textbf{86.90} & 60.75 & 66.73 & \\textbf{71.46} & \\textbf{60.96} \\\\ Best loss & 47 & 82.71 & \\textbf{62.30} & \\textbf{69.43} & \\textbf{71.48} & 81.23 \\\\ \\bottomrule \\end{tabular*} \\end{table}  The two selection criteria yielded similar accuracy ($71.46\\%$ vs. $71.48\\%$ Moderate mAP).",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "improved in the reported setting overall trade-offs are in \\textbf{bold}.} \\label{tab:ap_vs_loss} \\setlength{\\tabcolsep}{1.5pt} \\begin{tabular*}{\\columnwidth}{@{\\extracolsep{\\fill}}lcrrrrr@{}} \\toprule \\textbf{Selection} & \\textbf{Epoch} & \\textbf{Car} & \\textbf{Ped.} & \\textbf{Cyc.} & \\textbf{mAP$_{\\mathrm{M}}$} & \\textbf{E2E} \\\\ \\midrule \\textbf{improved in the reported setting AP} & \\textbf{130} & \\textbf{86.90} & 60.75 & 66.73 & \\textbf{71.46} & \\textbf{60.96} \\\\ improved in the reported setting loss & 47 & 82.71 & \\textbf{62.30} & \\textbf{69.43} & \\textbf{71.48} & 81.23 \\\\ \\bottomrule \\end{tabular*} \\end{table}  The two selection criteria yielded similar accuracy ($71.46\\%$ vs. $71.48\\%$ Moderate mAP).",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:103",
+    "section_key": "results",
+    "claim": "The Best AP checkpoint had $20.27\\,\\text{ms}$ lower end-to-end latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$ vs. $81.23\\,\\text{ms}$, $12.31\\,\\text{FPS}$).",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "The improved in the reported setting AP checkpoint had $20.27\\,\\text{ms}$ lower end-to-end latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$ vs. $81.23\\,\\text{ms}$, $12.31\\,\\text{FPS}$).",
+    "forbidden_wording": [
+      "unbounded superiority, novelty, or significance wording"
+    ]
+  },
+  {
+    "id": "results:104",
+    "section_key": "results",
+    "claim": "A possible explanation is that extended training sharpened classification heatmaps around positive centers, reducing ambiguous background peaks and the work required for candidate filtering and rotated NMS.  \\subsection{Qualitative Visualizations and Analysis} \\label{sec:qualitative_analysis}  \\paragraph{Visual Inspection on Representative Driving Scenarios.} Figure~\\ref{fig:qualitative_detections} presents MobilePIXORNeXt predictions on three KITTI validation frames (top to bottom: \\texttt{007038}, \\texttt{005571}, and \\texttt{006761}).",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Figure~\\ref{fig:qualitative_detections}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [],
+    "allowed_wording": "A possible explanation is that extended training sharpened classification heatmaps around positive centers, reducing ambiguous background peaks and the work required for candidate filtering and rotated NMS.  \\subsection{Qualitative Visualizations and Analysis} \\label{sec:qualitative_analysis}  \\paragraph{Visual Inspection on Representative Driving Scenarios.} Figure~\\ref{fig:qualitative_detections} presents MobilePIXORNeXt predictions on three KITTI validation frames (top to bottom: \\texttt{007038}, \\texttt{005571}, and \\texttt{006761}).",
+    "forbidden_wording": []
+  },
+  {
+    "id": "results:109",
+    "section_key": "results",
+    "claim": "The two views reveal the spatial arrangement of these predictions. \\end{itemize}  \\subsection{Discussion and Practical Limitations} \\label{sec:discussion_limitations}  \\paragraph{Discussion and Insights.} The results showed that accurate 3D LiDAR detection was possible without large point-cloud encoders or 3D sparse convolutions.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "The two views reveal the spatial arrangement of these predictions. \\end{itemize}  \\subsection{Discussion and Practical Limitations} \\label{sec:discussion_limitations}  \\paragraph{Discussion and Insights.} The results showed that accurate 3D LiDAR detection was possible without large point-cloud encoders or 3D sparse convolutions.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "results:112",
+    "section_key": "results",
+    "claim": "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone.  \\paragraph{Limitations and Future Scope.} MobilePIXORNeXt primarily predicts oriented 2D Bird's-Eye View footprints ($x, y, l, w, \\psi$) for motion planning and collision avoidance under edge-computing constraints.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone.  \\paragraph{Limitations and Future Scope.} MobilePIXORNeXt primarily predicts oriented 2D Bird's-Eye View footprints ($x, y, l, w, \\psi$) for motion planning and collision avoidance under edge-computing constraints.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:1",
+    "section_key": "conclusion",
+    "claim": "We presented MobilePIXORNeXt, a compact, proposal-free 3D LiDAR object detector for real-time edge perception on resource-constrained platforms.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "We presented MobilePIXORNeXt, a compact, proposal-free 3D LiDAR object detector for real-time edge perception on resource-constrained platforms.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:3",
+    "section_key": "conclusion",
+    "claim": "It preserved continuous vertical distribution moments, material surface reflectivity, and horizontal subcell centroid displacements without learned parameters.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It preserved continuous vertical distribution moments, material surface reflectivity, and horizontal subcell centroid displacements without learned parameters.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:8",
+    "section_key": "conclusion",
+    "claim": "With $753{,}569$ parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_9$ across Car, Pedestrian, and Cyclist.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "With $753{,}569$ parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_9$ across Car, Pedestrian, and Cyclist.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:9",
+    "section_key": "conclusion",
+    "claim": "It exceeded PointPillars by $1.33\\%$ Moderate mAP with an $84.4\\%$ parameter reduction and matched SECOND ($72.09\\%$ mAP) with an $85.8\\%$ parameter reduction ($7.1\\times$ fewer parameters).",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "It exceeded PointPillars by $1.33\\%$ Moderate mAP with an $84.4\\%$ parameter reduction and matched SECOND ($72.09\\%$ mAP) with an $85.8\\%$ parameter reduction ($7.1\\times$ fewer parameters).",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:10",
+    "section_key": "conclusion",
+    "claim": "Pedestrian Moderate AP reached $60.75\\%$, exceeding PointPillars by $4.74\\%$ and SECOND by $4.19\\%$.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Pedestrian Moderate AP reached $60.75\\%$, exceeding PointPillars by $4.74\\%$ and SECOND by $4.19\\%$.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:11",
+    "section_key": "conclusion",
+    "claim": "On an NVIDIA Tesla T4 GPU, MobilePIXORNeXt's complete input-to-detection pipeline ran in $60.96\\,\\text{ms}$ ($16.41\\,\\text{FPS}$), the lowest latency among the evaluated real-time detectors.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "On an NVIDIA Tesla T4 GPU, MobilePIXORNeXt's complete input-to-detection pipeline ran in $60.96\\,\\text{ms}$ ($16.41\\,\\text{FPS}$), the lowest latency among the evaluated real-time detectors.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:12",
+    "section_key": "conclusion",
+    "claim": "In controlled ablations, PC-GTA improved mAP by $+6.03\\%$, consistent with its intended reduction of unphysical synthesis artifacts.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "In controlled ablations, PC-GTA improved mAP by $+6.03\\%$, consistent with its intended reduction of unphysical synthesis artifacts.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "conclusion:13",
+    "section_key": "conclusion",
+    "claim": "OGA and IQA added $+3.20\\%$ mAP through rotated geometric overlap alignment and confidence score calibration.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "OGA and IQA added $+3.20\\%$ mAP through rotated geometric overlap alignment and confidence score calibration.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:9",
+    "section_key": "related_work",
+    "claim": "However, binary flags or raw cell counts on $0.1\\,\\text{m}$ grids omit continuous subcell offsets and higher-order vertical distributions, causing boundary staircasing and localization jitter.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "However, binary flags or raw cell counts on $0.1\\,\\text{m}$ grids omit continuous subcell offsets and higher-order vertical distributions, causing boundary staircasing and localization jitter.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:13",
+    "section_key": "related_work",
+    "claim": "This 14-channel layout preserves sub-voxel geometry.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "This 14-channel layout preserves sub-voxel geometry.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:14",
+    "section_key": "related_work",
+    "claim": "Strata-BEV14 also reduces Host-to-Device transfer payloads by $60\\%$ without a learned encoder.  \\subsection{Lightweight Convolutional Backbones and Efficient Spatial Attention} \\label{sec:rel_backbone_attention}  Spatial feature extraction from sparse BEV planes must balance receptive field coverage against parameter and latency limits.",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "latency"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [],
+    "allowed_wording": "Strata-BEV14 also reduces Host-to-Device transfer payloads by $60\\%$ without a learned encoder.  \\subsection{Lightweight Convolutional Backbones and Efficient Spatial Attention} \\label{sec:rel_backbone_attention}  Spatial feature extraction from sparse BEV planes must balance receptive field coverage against parameter and latency limits.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:17",
+    "section_key": "related_work",
+    "claim": "These methods achieve high accuracy on KITTI~\\cite{geiger2012kitti}, but their parameter counts ($4.0\\text{--}63.8\\,\\text{M}$) and memory access latencies ($130\\text{--}195\\,\\text{ms}$) limit real-time use on power-constrained edge accelerators.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{geiger2012kitti}"
+      },
+      {
+        "type": "metric",
+        "text": "accuracy"
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "These methods achieve high accuracy on KITTI~\\cite{geiger2012kitti}, but their parameter counts ($4.0\\text{--}63.8\\,\\text{M}$) and memory access latencies ($130\\text{--}195\\,\\text{ms}$) limit real-time use on power-constrained edge accelerators.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:23",
+    "section_key": "related_work",
+    "claim": "Yang et al.~\\cite{yang2021simam} proposed SimAM, deriving 3D spatial-channel attention analytically from an energy function inspired by visual neuroscience, without trainable parameters.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{yang2021simam}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "Yang et al.~\\cite{yang2021simam} proposed SimAM, deriving 3D spatial-channel attention analytically from an energy function inspired by visual neuroscience, without trainable parameters.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "related_work:27",
+    "section_key": "related_work",
+    "claim": "Large $7 \\times 7$ depthwise kernels expand receptive fields, and attention modulates feature updates within each residual block without additional attention parameters.  \\subsection{Geometric Supervision, Loss Formulations, and Quality Calibration} \\label{sec:rel_supervision_losses}  Oriented bounding box regression has developed from independent coordinate losses toward geometric objectives.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Large $7 \\times 7$ depthwise kernels expand receptive fields, and attention modulates feature updates within each residual block without additional attention parameters.  \\subsection{Geometric Supervision, Loss Formulations, and Quality Calibration} \\label{sec:rel_supervision_losses}  Oriented bounding box regression has developed from independent coordinate losses toward geometric objectives.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:31",
+    "section_key": "related_work",
+    "claim": "Le et al.~\\cite{le2026mgiou} later formulated Marginalized Generalized Intersection over Union (MGIoU), a projection-based objective for convex parametric shapes and arbitrarily oriented boxes without rotational singularities.",
+    "evidence_anchor": [
+      {
+        "type": "citation",
+        "text": "\\cite{le2026mgiou}"
+      }
+    ],
+    "claim_strength": "supported",
+    "missing_evidence": [
+      "verify that the cited source supports this manuscript sentence"
+    ],
+    "allowed_wording": "Le et al.~\\cite{le2026mgiou} later formulated Marginalized Generalized Intersection over Union (MGIoU), a projection-based objective for convex parametric shapes and arbitrarily oriented boxes without rotational singularities.",
+    "forbidden_wording": []
+  },
+  {
+    "id": "related_work:37",
+    "section_key": "related_work",
+    "claim": "Independent angle and corner losses are sensitive to the $\\pi$-periodicity boundary: small angular deviations near $\\pm \\pi/2$ or $\\pm \\pi$ can cause loss spikes and unstable yaw gradients.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Independent angle and corner losses are sensitive to the $\\pi$-periodicity boundary: small angular deviations near $\\pm \\pi/2$ or $\\pm \\pi$ can cause loss spikes and unstable yaw gradients.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  },
+  {
+    "id": "related_work:42",
+    "section_key": "related_work",
+    "claim": "Q-OGA incorporates continuous IoU quality into classification supervision without an additional head.",
+    "evidence_anchor": [],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "add an evidence anchor or soften the claim boundary"
+    ],
+    "allowed_wording": "Q-OGA incorporates continuous IoU quality into classification supervision without an additional head.",
+    "forbidden_wording": [
+      "unqualified conclusion without visible evidence"
+    ]
+  }
+]

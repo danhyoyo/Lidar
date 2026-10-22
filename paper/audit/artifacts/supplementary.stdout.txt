@@ -1,0 +1,457 @@
+{
+  "references": {
+    "labels": 73,
+    "reference_occurrences": 63,
+    "undefined_references": [],
+    "duplicate_labels": {},
+    "unreferenced_labels_all": {
+      "sec:introduction": [
+        {
+          "file": "MobilePIXORNeXt.tex",
+          "line": 57
+        }
+      ],
+      "sec:rel_bev_encoding": [
+        {
+          "file": "sections/related_work.tex",
+          "line": 2
+        }
+      ],
+      "sec:rel_backbone_attention": [
+        {
+          "file": "sections/related_work.tex",
+          "line": 9
+        }
+      ],
+      "sec:rel_supervision_losses": [
+        {
+          "file": "sections/related_work.tex",
+          "line": 18
+        }
+      ],
+      "eq:spatial_roi": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 25
+        }
+      ],
+      "eq:grid_assignment": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 30
+        }
+      ],
+      "eq:target_tuple": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 37
+        }
+      ],
+      "eq:z_std_encoding": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 75
+        }
+      ],
+      "eq:intensity_encoding": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 81
+        }
+      ],
+      "eq:ground_fitting": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 137
+        }
+      ],
+      "eq:shadow_mask": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 155
+        }
+      ],
+      "eq:inverse_square": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 161
+        }
+      ],
+      "eq:next_block": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 227
+        }
+      ],
+      "eq:spatial_moments": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 243
+        }
+      ],
+      "eq:simam_energy": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 251
+        }
+      ],
+      "eq:simam_modulation": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 256
+        }
+      ],
+      "eq:scale_gating": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 289
+        }
+      ],
+      "sec:grouped_heads": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 294
+        }
+      ],
+      "eq:gt_targets": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 323
+        }
+      ],
+      "eq:projection_axes": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 338
+        }
+      ],
+      "eq:mgiou_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 347
+        }
+      ],
+      "eq:corner_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 358
+        }
+      ],
+      "eq:iqa_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 366
+        }
+      ],
+      "sec:decoding_and_pipeline": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 406
+        }
+      ],
+      "eq:joint_score": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 454
+        }
+      ],
+      "sec:dataset_and_metrics": [
+        {
+          "file": "sections/experiments.tex",
+          "line": 2
+        }
+      ],
+      "sec:benchmark_comparison": [
+        {
+          "file": "sections/results.tex",
+          "line": 2
+        }
+      ],
+      "sec:latency_analysis": [
+        {
+          "file": "sections/results.tex",
+          "line": 36
+        }
+      ],
+      "sec:distance_stratified": [
+        {
+          "file": "sections/results.tex",
+          "line": 58
+        }
+      ],
+      "sec:qualitative_analysis": [
+        {
+          "file": "sections/results.tex",
+          "line": 169
+        }
+      ],
+      "sec:discussion_limitations": [
+        {
+          "file": "sections/results.tex",
+          "line": 189
+        }
+      ]
+    },
+    "unreferenced_equation_labels": {
+      "eq:spatial_roi": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 25
+        }
+      ],
+      "eq:grid_assignment": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 30
+        }
+      ],
+      "eq:target_tuple": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 37
+        }
+      ],
+      "eq:z_std_encoding": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 75
+        }
+      ],
+      "eq:intensity_encoding": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 81
+        }
+      ],
+      "eq:ground_fitting": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 137
+        }
+      ],
+      "eq:shadow_mask": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 155
+        }
+      ],
+      "eq:inverse_square": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 161
+        }
+      ],
+      "eq:next_block": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 227
+        }
+      ],
+      "eq:spatial_moments": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 243
+        }
+      ],
+      "eq:simam_energy": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 251
+        }
+      ],
+      "eq:simam_modulation": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 256
+        }
+      ],
+      "eq:scale_gating": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 289
+        }
+      ],
+      "eq:gt_targets": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 323
+        }
+      ],
+      "eq:projection_axes": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 338
+        }
+      ],
+      "eq:mgiou_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 347
+        }
+      ],
+      "eq:corner_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 358
+        }
+      ],
+      "eq:iqa_loss": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 366
+        }
+      ],
+      "eq:joint_score": [
+        {
+          "file": "sections/methodology.tex",
+          "line": 454
+        }
+      ]
+    },
+    "bib_entries": 20,
+    "unique_cited_keys": 20,
+    "undefined_citations": [],
+    "uncited_bib_entries": [],
+    "duplicate_bib_keys": []
+  },
+  "lexical_density": [
+    {
+      "section": "abstract",
+      "file": "sections/abstract.tex",
+      "word_count": 209,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "introduction",
+      "file": "sections/introduction.tex",
+      "word_count": 946,
+      "lexical_hits": 1,
+      "matched_word_count": 1,
+      "lexical_density_percent": 0.105708,
+      "hits": [
+        {
+          "term": "superior",
+          "match": "superior",
+          "line": 9,
+          "matched_words": 1
+        }
+      ]
+    },
+    {
+      "section": "related_work",
+      "file": "sections/related_work.tex",
+      "word_count": 696,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "methodology",
+      "file": "sections/methodology.tex",
+      "word_count": 2507,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "experiments",
+      "file": "sections/experiments.tex",
+      "word_count": 700,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "results",
+      "file": "sections/results.tex",
+      "word_count": 1750,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "conclusion",
+      "file": "sections/conclusion.tex",
+      "word_count": 303,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    },
+    {
+      "section": "declarations",
+      "file": "sections/declarations.tex",
+      "word_count": 251,
+      "lexical_hits": 0,
+      "matched_word_count": 0,
+      "lexical_density_percent": 0.0,
+      "hits": []
+    }
+  ],
+  "figure_calls": 10,
+  "attached_units": [
+    {
+      "file": "sections/methodology.tex",
+      "line": 7,
+      "quote": "32mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 49,
+      "quote": "10mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 184,
+      "quote": "42mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 216,
+      "quote": "60mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 216,
+      "quote": "60mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 275,
+      "quote": "34mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 300,
+      "quote": "75mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 11,
+      "quote": "48mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 23,
+      "quote": "65mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 138,
+      "quote": "75mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 176,
+      "quote": "65mm"
+    }
+  ],
+  "changed_sources": []
+}

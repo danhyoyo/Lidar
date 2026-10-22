@@ -1,0 +1,1000 @@
+[
+  {
+    "source": "sections/abstract.tex",
+    "line": 1,
+    "text": "Three-dimensional object detection from Light Detection and Ranging (LiDAR) point clouds supports autonomous navigation, but volumetric and pillar-based architectures can exceed the computational budgets of edge accelerators. We developed MobilePIXORNeXt, a compact, proposal-free Bird's-Eye View (BEV) detector with 753,569 parameters. The framework replaced learned point encoders with Strata-BEV14, a parameter-free deterministic NumPy/Numba CPU rasterizer. It extracted 14 statistical feature channels encoding stratified height distributions, elevation moments, surface reflectance, and continuous subcell centroid displacement offsets. Measured input preprocessing took 20.94 milliseconds, including point-cloud loading and rasterization. A single-branch ConvNeXt-style backbone with parameter-free 3D spatial-energy attention (Block-SimAM) extracted spatial features. A Scale-Gated Feature Pyramid Network fused these features for decoupled grouped prediction heads. Training used Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment, balanced by 12-parameter Temperature-Softmax Bounded Uncertainty Weighting. On the KITTI validation set using BEV AP $R_{40}$, MobilePIXORNeXt achieved 71.46\\% Moderate mean Average Precision (mAP) and 73.42\\% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories. It outperformed PointPillars (70.13\\% mAP) with an 84.4\\% parameter reduction and matched SECOND (72.09\\% mAP) with 85.8\\% fewer parameters. Pedestrian Moderate AP reached 60.75\\%. The complete pipeline ran in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, the fastest end-to-end throughput among the evaluated real-time detectors. These results support deterministic statistical encoding and oriented geometric supervision for accurate LiDAR perception on resource-constrained embedded systems.",
+    "matches": [
+      "outperformed",
+      "reduction",
+      "matched",
+      "fastest",
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/conclusion.tex",
+    "line": 5,
+    "text": "We presented MobilePIXORNeXt, a compact, proposal-free 3D LiDAR object detector for real-time edge perception on resource-constrained platforms. The deterministic Strata-BEV14 rasterizer replaced learned PointNet pillar encoders and 3D sparse convolutions. It preserved continuous vertical distribution moments, material surface reflectivity, and horizontal subcell centroid displacements without learned parameters. A single-branch ConvNeXt-style backbone with parameter-free Block-SimAM 3D energy attention processed multi-scale spatial features. A Scale-Gated Feature Pyramid Network fused these features for decoupled grouped prediction towers. Training used Physics-Consistent Ground-Truth Augmentation (PC-GTA), Oriented Geometric Alignment (OGA), and IoU-Aware Quality Alignment (IQA), balanced by 12-parameter Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).",
+    "matches": [
+      "real-time",
+      "preserved",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/conclusion.tex",
+    "line": 7,
+    "text": "Evaluation on the KITTI validation benchmark using Moderate BEV AP $R_{40}$ showed a favorable trade-off between detection accuracy, model size, and latency. With $753{,}569$ parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_9$ across Car, Pedestrian, and Cyclist. It exceeded PointPillars by $1.33\\%$ Moderate mAP with an $84.4\\%$ parameter reduction and matched SECOND ($72.09\\%$ mAP) with an $85.8\\%$ parameter reduction ($7.1\\times$ fewer parameters). Pedestrian Moderate AP reached $60.75\\%$, exceeding PointPillars by $4.74\\%$ and SECOND by $4.19\\%$. On an NVIDIA Tesla T4 GPU, MobilePIXORNeXt's complete input-to-detection pipeline ran in $60.96\\,\\text{ms}$ ($16.41\\,\\text{FPS}$), the lowest latency among the evaluated real-time detectors. In controlled ablations, PC-GTA improved mAP by $+6.03\\%$, consistent with its intended reduction of unphysical synthesis artifacts. OGA and IQA added $+3.20\\%$ mAP through rotated geometric overlap alignment and confidence score calibration.",
+    "matches": [
+      "reduction",
+      "matched",
+      "reduction",
+      "lowest",
+      "real-time",
+      "controlled",
+      "improved",
+      "reduction"
+    ]
+  },
+  {
+    "source": "sections/declarations.tex",
+    "line": 11,
+    "text": "The authors declare that no funds, grants, or other financial support were received during the preparation of this manuscript.",
+    "matches": [
+      "no "
+    ]
+  },
+  {
+    "source": "sections/declarations.tex",
+    "line": 14,
+    "text": "The authors declare that they have no competing financial or non-financial interests that are directly or indirectly related to the work submitted for publication.",
+    "matches": [
+      "no "
+    ]
+  },
+  {
+    "source": "sections/declarations.tex",
+    "line": 29,
+    "text": "All authors contributed to the study conception, architecture design, and empirical evaluation.",
+    "matches": [
+      "All"
+    ]
+  },
+  {
+    "source": "sections/declarations.tex",
+    "line": 34,
+    "text": "All authors read, reviewed, and approved the final manuscript for publication.",
+    "matches": [
+      "All"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 5,
+    "text": "We evaluated the detector on the KITTI 3D Object Detection dataset~\\cite{geiger2012kitti}. The dataset contains $7{,}481$ calibrated LiDAR scans with synchronized rectified camera images and 3D bounding box annotations from road scenes. We used the 50/50 split introduced by Chen et al.~\\cite{yang2018pixor}, with $3{,}712$ training frames and $3{,}769$ validation frames. Ground-truth sampling databases were generated exclusively from the $3{,}712$ training frames to prevent validation data leakage.",
+    "matches": [
+      "prevent"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 16,
+    "text": "We applied an open-boundary inward margin of $\\epsilon = 0.001\\,\\text{m}$ along all three axes. A horizontal grid resolution of $\\Delta_x = \\Delta_y = 0.1\\,\\text{m}$ produced an input tensor of $H_{\\mathrm{in}} \\times W_{\\mathrm{in}} = 800 \\times 704$ cells. An output stride of $s_{\\mathrm{out}} = 4$ gave feature maps of size $H_{\\mathrm{out}} \\times W_{\\mathrm{out}} = 200 \\times 176$. We evaluated Car, Pedestrian, and Cyclist detections.",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 23,
+    "text": "Following KITTI matching conventions, we set oriented bounding box Intersection-over-Union (IoU) thresholds to $\\tau_{\\mathrm{IoU}} = 0.70$ for Car and $\\tau_{\\mathrm{IoU}} = 0.50$ for Pedestrian and Cyclist. We grouped detections into three difficulty regimes:",
+    "matches": [
+      "matching"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 25,
+    "text": "\\item \\textbf{Easy}: 2D bounding box height $\\ge 40\\,\\text{px}$, maximum occlusion level = 0 (fully visible), maximum truncation $\\le 15\\%$.",
+    "matches": []
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 26,
+    "text": "\\item \\textbf{Moderate}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 1 (partially occluded), maximum truncation $\\le 30\\%$.",
+    "matches": []
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 27,
+    "text": "\\item \\textbf{Hard}: 2D bounding box height $\\ge 25\\,\\text{px}$, maximum occlusion level = 2 (difficult to see), maximum truncation $\\le 50\\%$.",
+    "matches": []
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 33,
+    "text": "We also reported the unweighted mean across all nine class-difficulty combinations:",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 43,
+    "text": "MobilePIXORNeXt processes 14-channel Strata-BEV14 tensors. We used a two-layer $3 \\times 3$ convolutional stem ($32$ channels, stride 2) and three backbone stages with channel widths $(48, 96, 128)$ and block depths $(3, 4, 2)$. The stages used \\texttt{MobilePIXORNeXt-S} blocks with $7 \\times 7$ depthwise convolutions, an inverted expansion ratio of $e=2.5$, SiLU activations, and LayerScale initialized to $10^{-5}$. Parameter-free Block-SimAM attention was embedded in all nine residual blocks. The Scale-Gated Feature Pyramid Network (SG-FPN) fused stages C4, C3, and C2 into a $F_{32}$ (32-channel) representation at stride 4 ($200 \\times 176$). Decoupled GroupedHeader towers processed Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) independently, with an initial $3 \\times 3$ Conv-BN-SiLU transformation per group. The detector contained $753{,}569$ trainable parameters, with an FP32 checkpoint size of $9.34\\,\\text{MB}$.",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 46,
+    "text": "We optimized the model with AdamW using fused CUDA kernels. The base learning rate was $\\eta_0 = 7 \\times 10^{-4}$, with a minimum of $\\eta_{\\min} = 1.0 \\times 10^{-6}$. Weight decay of $\\lambda = 0.001$ applied only to multidimensional weight matrices ($\\ge 2\\mathrm{D}$ tensors). Biases, Batch Normalization affine parameters, and task-uncertainty logits were exempt ($\\lambda = 0.0$). Gradients were clipped to a maximum $L_2$ norm of $10.0$. The standard schedule covered 50 epochs, ending at epoch 50, after 4 linear warmup epochs and 46 cosine annealing epochs down to $\\eta_{\\min}$. The reported checkpoint came from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130. The checkpoint-selection comparison retains these recorded epoch indices. Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW, Section~\\ref{sec:losses_and_oga}) balanced the task losses. Section~\\ref{sec:ablations} evaluates its empirical convergence behavior.",
+    "matches": [
+      "convergence"
+    ]
+  },
+  {
+    "source": "sections/experiments.tex",
+    "line": 52,
+    "text": "Training used a physical batch size of 16 on a single GPU; validation used a batch size of 32. DataLoader processes used 6 persistent worker threads, pinned memory, and a prefetch factor of 2. Forward and backward passes used Automatic Mixed Precision (AMP) in Bfloat16 (\\texttt{bf16}). Loss evaluation, coordinate regression, and rotated NMS used full FP32 precision for numerical stability. Final MobilePIXORNeXt timing and accuracy evaluation used an NVIDIA Tesla T4 GPU (16\\,GB GDDR6 VRAM, Turing architecture), an x86\\_64 host CPU, Linux OS, and PyTorch 2.11.0 with CUDA 13.0. Peak allocated GPU memory was $98.44\\,\\text{MB}$. Historical MobilePIXOR timing was recorded on an NVIDIA L4 and is identified separately in Table~\\ref{tab:efficiency}. All KITTI ablation and comparison metrics came from deterministic single-seed evaluation ($\\text{seed} = 42$) on the same validation split. Variance and standard deviation ($\\pm\\,\\text{std}$) across seeds were left for future multi-fold evaluation. Table~\\ref{tab:setup} summarizes the implementation settings.",
+    "matches": [
+      "All"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 5,
+    "text": "Three-dimensional (3D) spatial perception from Light Detection and Ranging (LiDAR) point clouds supports autonomous navigation, mobile robotics, and intelligent transportation systems. Passive optical cameras are sensitive to ambient illumination and projective scale ambiguity. LiDAR sensors instead emit laser pulses to measure metric ranges and capture geometric boundaries during both day and night~\\cite{geiger2012kitti}. Vehicle perception systems must detect, orient, and classify nearby objects, including passenger vehicles, pedestrians, and cyclists, within strict latency limits. Execution typically must remain below $100\\,\\text{ms}$ per scan~\\cite{yang2018pixor}. Deploying accurate 3D object detectors on embedded vehicle platforms therefore requires balancing detection accuracy against hardware resource use. Onboard edge accelerators have limited memory bandwidth, cache capacity, and arithmetic throughput under thermal and power constraints. Compact LiDAR detectors must sustain real-time execution while preserving localization accuracy.",
+    "matches": [
+      "real-time",
+      "preserving"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 7,
+    "text": "Existing detectors extract 3D bounding boxes from unstructured point clouds using three main approaches. Volumetric voxel architectures such as SECOND~\\cite{yan2018second} and two-stage point-voxel frameworks such as PointRCNN~\\cite{shi2019pointrcnn}, Part-$A^2$~\\cite{shi2020part}, and PV-RCNN~\\cite{shi2020pvrcnn} use 3D sparse convolutions or local point-cloud abstractions. These methods achieve competitive accuracy, but their parameter counts ($4.0\\text{--}63.8\\,\\text{M}$) and memory access latencies ($100\\text{--}195\\,\\text{ms}$) limit deployment on embedded edge processors. Pillar-based detectors include PointPillars~\\cite{lang2019pointpillars}, PillarNeXt~\\cite{li2023pillarnext}, and PillarNeSt~\\cite{mao2023pillarnest}. They project points into vertical pillars and apply PointNet encoders to construct Bird's-Eye View (BEV) 2D feature representations. They are faster than volumetric methods, although point gathering, dynamic memory allocation, and sparse scattering add runtime and memory transfer overhead. Proposal-free BEV methods such as PIXOR~\\cite{yang2018pixor} and MobilePIXOR~\\cite{nguyen2024indoor} replace learned encoders with fixed vertical occupancy grids. Binary occupancy slices on standard $0.1\\,\\text{m}$ grids omit continuous subcell offsets and higher-order vertical dispersion statistics. This quantization can cause boundary staircasing and localization jitter on small objects. PillarHist~\\cite{zhou2025pillarhist} explored height histograms, and TriBand-BEV~\\cite{khoshkdahan2026triband} explored multi-band vertical slicing. Neither combines continuous subcell displacements with continuous vertical spatial moments. Other limitations include physical artifacts from naive cut-and-paste augmentation and insufficient receptive fields in small backbones. Uncalibrated classification heatmaps can also allow misaligned boxes to suppress well-localized candidates during Non-Maximum Suppression (NMS)~\\cite{li2020gfl}. Compact detectors must address these representation, augmentation, context, and ranking limitations within a sub-million-parameter budget.",
+    "matches": [
+      "cause"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 9,
+    "text": "We investigated whether a deterministic representation could preserve sub-voxel geometry without learned PointNet encoders. The representation combines multi-band vertical densities, continuous elevation moments, and horizontal subcell centroid displacements to retain fine spatial boundaries. Our research question was: \\textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?} We coupled this representation with a single-branch ConvNeXt-style backbone~\\cite{liu2022convnext} using large $7 \\times 7$ depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~\\cite{yang2021simam}. This design expands receptive fields to cover vehicles without multi-branch training overhead. Physics-consistent synthesis regularizes distant returns, while multi-axis geometric supervision and localization-quality ranking align training and detection scores with rotated box overlap. Together, these mechanisms aim to narrow the accuracy gap between compact 2D representations and multi-million-parameter 3D networks.",
+    "matches": [
+      "preserve",
+      "without",
+      "superior",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 11,
+    "text": "We propose \\textbf{MobilePIXORNeXt}, a compact, proposal-free, multi-class 3D LiDAR object detector with $753{,}569$ trainable parameters ($<0.76\\,\\text{M}$). Figure~\\ref{fig:r37_overview} shows the end-to-end data flow. The parameter-free \\textbf{Strata-BEV14} rasterizer transforms an unordered LiDAR point cloud into a 14-channel statistical BEV tensor ($800 \\times 704$ at $0.1\\,\\text{m}$ resolution) using NumPy or Numba on CPU. Point-cloud loading and rasterization took $20.94\\,\\text{ms}$ in the measured pipeline. The tensor encodes height-band densities, vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$), surface reflectance statistics, and continuous subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ to reduce quantization error. \\textbf{Physics-Consistent Ground-Truth Augmentation (PC-GTA)} combines local ground elevation fitting, static obstacle clearance, and range-adaptive point subsampling to reduce unphysical training artifacts. It also supports optional line-of-sight checks, raycast shadow masking, and intensity attenuation. The \\textbf{MobilePIXORNeXt-S} backbone extracts multi-scale features across stages $C_2, C_3, C_4$. Its $7 \\times 7$ depthwise inverted bottleneck blocks ($e=2.5$) use SiLU activations, LayerScale stabilization, and parameter-free \\textbf{Block-SimAM} energy attention in all nine residual blocks. The top-down \\textbf{Scale-Gated Feature Pyramid Network (SG-FPN Neck, $F_{32}$)} balances semantic context and fine coordinates through bilinear upsampling, depthwise refinement, and learnable scale gates, avoiding deconvolution checkerboard artifacts. Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) predictions use independent \\textbf{GroupedHeader} towers with an initial $3 \\times 3$ Conv-BN-SiLU block. Training uses \\textbf{Oriented Geometric Alignment (OGA)}, which combines Multi-Axis Projection Generalized IoU (MGIoU)~\\cite{le2026mgiou} with scale-normalized $\\pi$-symmetric corner distance. 12-parameter \\textbf{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)} balances the task losses. At inference, \\textbf{IoU-Aware Quality Alignment (IQA)} combines scores as $s_{\\mathrm{det}} = \\sqrt{p_{\\mathrm{cls}}\\hat{q}}$ before class-wise rotated Non-Maximum Suppression (NMS). The pipeline combines continuous input geometry, single-branch large-kernel convolution, and direct supervision of rotated overlap for edge deployment.",
+    "matches": [
+      "reduce",
+      "reduce",
+      "all"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 15,
+    "text": "\\item \\textbf{Ultra-compact proposal-free BEV detection.} We develop \\textbf{MobilePIXORNeXt}, a compact ($753{,}569$ trainable parameters) LiDAR detector without learned PointNet encoders or 3D sparse convolutions. It combines the deterministic 14-channel \\textbf{Strata-BEV14} representation with the \\textbf{MobilePIXORNeXt-S} backbone and parameter-free \\textbf{Block-SimAM} energy attention. The \\textbf{SG-FPN} neck ($F_{32}$) fuses features for decoupled \\textbf{GroupedHeader} towers to handle road categories at different scales.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/introduction.tex",
+    "line": 19,
+    "text": "\\item \\textbf{Empirical validation and leading edge Pareto efficiency.} On KITTI validation using BEV AP $R_{40}$, MobilePIXORNeXt achieved a favorable accuracy, parameter, and latency trade-off. It reached \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% $\\text{mAP}_9$} with \\textbf{0.754\\,M parameters} ($9.34\\,\\text{MB}$ checkpoint). It outperformed PointPillars ($70.13\\%$) with an \\textbf{84.4\\% parameter reduction} and matched SECOND ($72.09\\%$) while requiring \\textbf{85.8\\% fewer parameters} ($7.1\\times$ parameter reduction). The complete pipeline ran at \\textbf{16.41\\,FPS} (\\textbf{60.96\\,ms} on NVIDIA Tesla T4), faster than the other evaluated real-time detectors. Pedestrian AP reached \\textbf{60.75\\% Moderate AP} (+4.74\\% over PointPillars, +4.19\\% over SECOND). In controlled ablations, PC-GTA added \\textbf{+6.03\\% Moderate mAP} ($60.22\\%$ to $66.25\\%$), OGA and IQA added \\textbf{+3.20\\% mAP}, and Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters.",
+    "matches": [
+      "leading",
+      "outperformed",
+      "reduction",
+      "matched",
+      "reduction",
+      "real-time",
+      "controlled",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 8,
+    "text": "\\captionof{figure}{End-to-end architecture and tensor flow of MobilePIXORNeXt. Unordered 3D LiDAR point clouds pass through the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$ without learned pillar encoders. ConvNeXt-style stages with parameter-free Block-SimAM attention extract multi-scale features. A top-down Scale-Gated Feature Pyramid Network (SG-FPN) fuses them into a 32-channel shared representation at stride 4 ($200 \\times 176$). Decoupled GroupedHeader towers process Car and Pedestrian/Cyclist categories independently. Solid arrows show the feedforward inference path. Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 12,
+    "text": "MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms. Its Bird's-Eye View (BEV) representation avoids learned point-cloud encoders and three-dimensional sparse convolutions. Figure~\\ref{fig:r37_overview} shows the data flow from the raw point cloud to decoded oriented bounding boxes.",
+    "matches": [
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 27,
+    "text": "We used longitudinal bounds $[0.0, 70.4]$\\,m, lateral bounds $[-40.0, 40.0]$\\,m, and vertical bounds $[-2.5, 1.0]$\\,m. An open-boundary inward margin of $\\epsilon = 0.001$\\,m reduced boundary artifacts. A horizontal resolution of $\\Delta_x = \\Delta_y = 0.1$\\,m gave a grid of $H_{\\mathrm{in}} \\times W_{\\mathrm{in}} = 800 \\times 704$ cells. A point $\\mathbf{p}_i$ maps to grid coordinate $(u_i, v_i)$ as:",
+    "matches": [
+      "reduced"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 39,
+    "text": "where $(x_k^*, y_k^*) \\in \\mathbb{R}^2$ denotes continuous metric center coordinates and $(l_k^*, w_k^*) \\in \\mathbb{R}^2$ denotes length and width. The heading $\\psi_k^* \\in [-\\pi/2, \\pi/2]$ uses a $\\pi$-symmetric doubled-angle representation, and $s_k \\in [0, 1]$ is the calibrated confidence score. These targets require a dense BEV representation that retains fine 3D geometry without a learned point encoder.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 49,
+    "text": "\\paperfigure{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene. Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}",
+    "matches": [
+      "eliminate"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 50,
+    "text": "\\captionof{figure}{Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \\times 704$ grid at $0.1\\,\\text{m}$ resolution). Channels 0--3 encode logarithmic point densities across four vertical strata ($[-2.5, 1.0]\\,\\text{m}$). Channels 4--7 encode normalized maximum elevation $z_{\\max}$, mean elevation $z_{\\mathrm{mean}}$, elevation span $z_{\\mathrm{span}}$, and sample standard deviation $z_{\\mathrm{std}}$. Channels 8--9 encode maximum and mean reflectance intensity. Channel 10 records total cell logarithmic density, and Channel 11 records binary occupancy. Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\\Delta\\bar{x}, \\Delta\\bar{y}) \\in [-0.5, 0.5]$ to reduce discretization error. Brighter values indicate higher point concentrations, reflectance, or vertical dispersion.}",
+    "matches": [
+      "preserve",
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 69,
+    "text": "2. \\textit{Vertical Spatial Moments ($F_4$--$F_7$)}: To encode obstacle geometry without explicit voxelization, we extract peak elevation $F_4 = \\max_i \\zeta_i$, mean elevation $F_5 = \\frac{1}{N}\\sum_i \\zeta_i$, vertical span $F_6 = \\max_i \\zeta_i - \\min_i \\zeta_i$, and the sample standard deviation:",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 84,
+    "text": "4. \\textit{Occupancy and Continuous Subcell Offsets ($F_{10}$--$F_{13}$)}: Channel $F_{10} = d_{\\log}(N)$ records total point density, and $F_{11} = 1.0$ indicates occupancy. For $0.1$\\,m cells, channels $F_{12}$ and $F_{13}$ retain continuous horizontal subcell centroid displacements to reduce quantization error:",
+    "matches": [
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 92,
+    "text": "Empty cells are assigned zeros across all 14 channels, producing the structured input tensor $\\mathbf{X} \\in \\mathbb{R}^{B \\times 14 \\times 800 \\times 704}$.",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 96,
+    "text": "\\caption{Mathematical formulations and physical semantics of the fourteen deterministic feature channels in the Strata-BEV14 representation. All statistical moments and spatial offsets are evaluated deterministically over LiDAR points within horizontal grid cells of size $\\Delta_x = \\Delta_y = 0.1\\,\\text{m}$ ($800 \\times 704$ grid) using NumPy or Numba on CPU without learned parameters.}",
+    "matches": [
+      "All",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 109,
+    "text": "$8$ & Peak Reflectance & $F_8 = \\max_{i} \\iota_i$, highest material reflectivity. \\\\",
+    "matches": [
+      "highest"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 122,
+    "text": "Strata-BEV14 has a NumPy reference rasterizer and a Numba-compiled CPU backend. Both compute the same fourteen deterministic features without learned parameters. The Numba backend accumulates point statistics, normalizes occupied cells, and can write CHW output directly for model input. Point-cloud loading and rasterization took $20.94$\\,ms together in the measured pipeline. This measurement includes the complete preprocessing stage.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 128,
+    "text": "Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics. It can produce floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities. We developed \\textbf{Physics-Consistent Ground-Truth Augmentation} (\\texttt{PC-GTA}) to address these artifacts. It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.",
+    "matches": [
+      "improved"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 133,
+    "text": "\\item \\textit{Adaptive Ground Plane Fitting}: To prevent floating or sunken objects, local road elevation is estimated within a range-dependent search radius:",
+    "matches": [
+      "prevent"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 142,
+    "text": "\\item \\textit{Static Obstacle Clearance}: To prevent clipping into physical structures, a candidate box is rejected if existing background points within its bounding footprint exceed a strict clearance threshold: $N_{\\mathrm{static}} \\le N_{\\mathrm{thresh}}$.",
+    "matches": [
+      "prevent"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 186,
+    "text": "\\captionof{figure}{MobilePIXORNeXt feedforward hierarchy with layer dimensions, channel widths, and receptive fields. A two-layer stem processes 14-channel input at stride 2 ($400 \\times 352$). Three stages follow: C2 has 48 channels and depth 3; C3 has 96 channels and depth 4; C4 has 128 channels and depth 2. Each stage uses \\texttt{MobilePIXORNeXt-S} blocks with Block-SimAM. The Scale-Gated FPN (SG-FPN) uses lateral $1 \\times 1$ projections, bilinear $2\\times$ upsampling, depthwise $3 \\times 3$ refinement, and learnable scale gates $\\mathbf{G}_r$. It produces a shared 32-channel feature map ($F_{32}$) at stride 4 ($200 \\times 176$). Independent grouped towers separate Car predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total parameters).}",
+    "matches": [
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 192,
+    "text": "BEV object footprints range from pedestrians ($l \\approx 0.6$\\,m) and cyclists ($l \\approx 1.8$\\,m) to passenger vehicles ($l \\approx 4.5$--$5.0$\\,m). Small $3 \\times 3$ convolutions require deeper networks to cover this spatial context, increasing latency and parameter count. At an input resolution of $\\Delta_x = \\Delta_y = 0.1$\\,m, a $7 \\times 7$ depthwise receptive field spans $0.7 \\times 0.7$\\,m at stride 1. It expands to over $5.6 \\times 5.6$\\,m by Stage 3 (stride 8), enough to cover a passenger vehicle without dilation. We designed \\textbf{MobilePIXORNeXt Backbone} with large $7 \\times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale stabilization in repeated \\texttt{MobilePIXORNeXt-S} blocks to obtain this context within a small parameter budget.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 207,
+    "text": "MobilePIXORNeXt uses a single-branch large-kernel ($7 \\times 7$) depthwise convolution during both training and deployment. It avoids the multi-path training topology and post-hoc weight folding of multi-branch reparameterization. Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation. The backbone achieved $55.94$\\,FPS on Tesla T4 and contained $604,864$ parameters.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 217,
+    "text": "\\captionof{figure}{The \\texttt{MobilePIXORNeXt-S} residual block and parameter-free Block-SimAM attention. \\textbf{Top}: Residual path from input $\\mathbf{Z}$ to output $\\mathbf{Z}'$. It applies a $7 \\times 7$ depthwise convolution, inverted bottleneck expansion with ratio $e = 2.5$, and SiLU activation, followed by pointwise projection. Parameter-free 3D spatial-energy attention $\\mathcal{S}(\\mathbf{R})$ precedes LayerScale scaling $\\boldsymbol{\\gamma}_{\\mathrm{blk}}$ (initialized to $10^{-5}$) and the identity shortcut. \\textbf{Bottom}: SimAM computes channel-wise spatial moments ($\\mu_c, \\nu_c$) in FP32 precision and inverse-energy importance $s_t = (t - \\mu_c)^2 / (4(\\nu_c + \\lambda_{\\mathrm{sim}})) + 0.5$. Sigmoid scaling produces the 3D modulation tensor $\\mathbf{A} \\in [0, 1]^{B \\times C \\times H \\times W}$ without learned parameters.}",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 229,
+    "text": "Here, $W_{\\mathrm{exp}} \\in \\mathbb{R}^{2.5C \\times C \\times 1 \\times 1}$ and $W_{\\mathrm{red}} \\in \\mathbb{R}^{C \\times 2.5C \\times 1 \\times 1}$ are pointwise $1 \\times 1$ convolutions. The operator $\\mathcal{S}(\\cdot)$ represents our Block-SimAM attention module, while $\\boldsymbol{\\gamma}_{\\mathrm{blk}} \\in \\mathbb{R}^C$ is a learned LayerScale parameter initialized to $10^{-5}$ to ensure numerical stability during deep backpropagation.",
+    "matches": [
+      "ensure"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 232,
+    "text": "Efficient Channel Attention (ECA-Net)~\\cite{wang2020eca} and Squeeze-and-Excitation compute 1D channel weights by spatial pooling, applying the same weight to every location in a channel. Non-local spatial attention instead has quadratic complexity $\\mathcal{O}((HW)^2)$, which is costly on dense BEV grids ($200 \\times 176$). We integrated \\textbf{Block-SimAM}~\\cite{yang2021simam}, a parameter-free 3D spatial-energy attention module, to provide spatial modulation without learned attention weights.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 235,
+    "text": "As illustrated in Figure~\\ref{fig:next_s_block}, SimAM is embedded inside each \\texttt{MobilePIXORNeXt-\\allowbreak S} block across all three stages (C2, C3, C4), for nine attention operators in total. It operates on the intermediate tensor $\\mathbf{R} \\in \\mathbb{R}^{B \\times C \\times H \\times W}$ after projection BN and before LayerScale shortcut addition.",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 258,
+    "text": "Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.",
+    "matches": [
+      "prevent"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 261,
+    "text": "Block-SimAM adds \\textbf{zero parameters} ($0$\\,M), whereas stage-level adapters add learned linear projections. Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds. In the ablation, SimAM placement inside each \\texttt{MobilePIXORNeXt-S} block improved mAP by $+0.88\\%$ over no attention and by up to $+2.10\\%$ over stage-level adapters (Table~\\ref{tab:attention}).",
+    "matches": [
+      "improved",
+      "no "
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 275,
+    "text": "\\paperfigure{scale_gated_fusion.pdf}{34mm}{Scale-Gated Feature Pyramid Network (SG-FPN). Top-down features $\\mathbf{U}_r$ and lateral features $\\mathbf{L}_r$ are dynamically gated via learnable depthwise convolutions to prevent high-level semantic distortion of fine spatial coordinates.}",
+    "matches": [
+      "prevent"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 276,
+    "text": "\\captionof{figure}{Scale-Gated Feature Pyramid Network (SG-FPN) fusion at stride $r \\in \\{8, 4\\}$. Bilinear interpolation upsamples top-down features. Depthwise $3 \\times 3$ convolution, Batch Normalization, and SiLU then produce semantic representation $\\mathbf{U}_r$ without deconvolution checkerboard artifacts. Lateral high-resolution features $\\mathbf{L}_r$ are weighted by a zero-initialized depthwise gate $\\mathbf{G}_r = 2\\sigma(\\operatorname{DWConv}_{3\\times3}(\\mathbf{L}_r + \\mathbf{U}_r))$ before element-wise summation $\\mathbf{P}^{(r)} = \\mathbf{U}_r + \\mathbf{G}_r \\odot \\mathbf{L}_r$ to retain boundary detail and suppress background responses.}",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 283,
+    "text": "As shown in Figure~\\ref{fig:scale_gated_fusion}, lateral features from Stages C4 ($128$\\,ch), C3 ($96$\\,ch), and C2 ($48$\\,ch) are projected via $1 \\times 1$ convolutions into matching lateral dimensions $\\mathbf{L}_5 \\in \\mathbb{R}^{B \\times 48 \\times 50 \\times 44}$, $\\mathbf{L}_4 \\in \\mathbb{R}^{B \\times 48 \\times 100 \\times 88}$, and $\\mathbf{L}_3 \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}$.",
+    "matches": [
+      "matching"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 350,
+    "text": "To ensure accurate vertex localization under doubled-angle symmetry, we evaluate the minimum L1 distance across direct and $\\pi$-permuted corner correspondences:",
+    "matches": [
+      "ensure"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 360,
+    "text": "Normalizing by the target bounding box diagonal ensures scale invariance across categories. The composite geometric loss is $\\mathcal{L}_{\\mathrm{geo}} = \\ell_{\\mathrm{proj}} + \\beta_{\\mathrm{corner}} \\ell_{\\mathrm{corner}}$ with $\\beta_{\\mathrm{corner}} = 1.0$.",
+    "matches": [
+      "ensures"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 371,
+    "text": "The explicit IQA branch gave the highest ranking accuracy, adding $18.59\\,\\text{K}$ parameters and $1.25\\,\\text{ms}$ forward latency. We developed \\textbf{Q-OGA} as a head-free alternative for resource-constrained platforms. Q-OGA modulates positive classification targets ($y=1.0$) with detached continuous bounding box IoU quality $q^*$, without an auxiliary head:",
+    "matches": [
+      "highest",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 381,
+    "text": "where $\\gamma = 2.0$. Training the classification head to predict IoU-calibrated scores removes the explicit IQA heads' $18.59\\,\\text{K}$ parameters. In the evaluation, Q-OGA reduced forward latency by $1.25\\,\\text{ms}$, providing a compact supervision option.",
+    "matches": [
+      "reduced"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 384,
+    "text": "To balance six task losses $\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}$ ($J=6$), we developed \\textbf{T-SBUW} without manually tuning their relative weights. It uses two coupled mechanisms:",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 385,
+    "text": "\\par\\noindent 1. \\textit{Bounded Softmax Weights}: Learnable logit parameters $a_k$ are soft-clamped via hyperbolic tangent with bound $b_{\\mathrm{uw}} = 3.0$, and converted to positive normalized weights via temperature-controlled softmax ($\\tau_{\\mathrm{uw}} = 2.0$):",
+    "matches": [
+      "controlled"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 415,
+    "text": "\\noindent\\textbf{Ensure:} Final decoded 3D oriented bounding boxes $\\mathcal{B} = \\{(c_k, s_k, \\hat{x}_k, \\hat{y}_k, \\hat{l}_k, \\hat{w}_k, \\hat{\\psi}_k)\\}_{k=1}^M$\\par",
+    "matches": [
+      "Ensure"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 449,
+    "text": "Predicted orientation angle $\\hat{\\psi} \\in [-\\pi/2, \\pi/2]$ is fully recovered without trigonometric ambiguity.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 461,
+    "text": "\\item \\textbf{Backbone Body}: $604,864$ parameters ($80.3\\%$).",
+    "matches": []
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 462,
+    "text": "\\item \\textbf{Scale-Gated Neck (SG-FPN)}: $36,784$ parameters ($4.9\\%$).",
+    "matches": []
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 463,
+    "text": "\\item \\textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\\%$), divided into $55,944$ parameters for Group \\texttt{car} and $55,977$ parameters for Group \\texttt{ped\\_cyc}.",
+    "matches": []
+  },
+  {
+    "source": "sections/methodology.tex",
+    "line": 464,
+    "text": "\\item \\textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\\%$), eliminated during deployment.",
+    "matches": [
+      "eliminated"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 6,
+    "text": "BEV representations commonly use either learned PointNet-based pillar encoders or fixed-grid rasterization. Pillar encoders~\\cite{lang2019pointpillars,li2023pillarnext} learn geometric features but require point gathering, dynamic memory allocation, and sparse scattering, which add latency and energy costs on edge accelerators. Fixed-grid methods~\\cite{yang2018pixor,nguyen2024indoor} avoid learned point encoding. However, binary flags or raw cell counts on $0.1\\,\\text{m}$ grids omit continuous subcell offsets and higher-order vertical distributions, causing boundary staircasing and localization jitter. PillarHist~\\cite{zhou2025pillarhist} investigated quantization-aware height histograms, and TriBand-BEV~\\cite{khoshkdahan2026triband} explored multi-band vertical slicing for pedestrian detection. These methods do not combine continuous subcell centroid displacements with continuous vertical statistical moments in a compact tensor. MobilePIXORNeXt uses Strata-BEV14 (Section~\\ref{sec:strata_bev14}) to combine four stratified density bins, four continuous elevation moments ($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$), and two subcell centroid displacement offsets ($\\Delta x_c, \\Delta y_c$). This 14-channel layout preserves sub-voxel geometry. Strata-BEV14 also reduces Host-to-Device transfer payloads by $60\\%$ without a learned encoder.",
+    "matches": [
+      "causing",
+      "preserves",
+      "reduces",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 11,
+    "text": "Spatial feature extraction from sparse BEV planes must balance receptive field coverage against parameter and latency limits. For 3D LiDAR perception, SECOND~\\cite{yan2018second} used sparse convolutions to process non-empty voxels. PointRCNN~\\cite{shi2019pointrcnn}, Part-$A^2$~\\cite{shi2020part}, and PV-RCNN~\\cite{shi2020pvrcnn} developed two-stage point processing, part-aware aggregation, and voxel-set abstractions. These methods achieve high accuracy on KITTI~\\cite{geiger2012kitti}, but their parameter counts ($4.0\\text{--}63.8\\,\\text{M}$) and memory access latencies ($130\\text{--}195\\,\\text{ms}$) limit real-time use on power-constrained edge accelerators.",
+    "matches": [
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 13,
+    "text": "Lightweight 2D convolutions offer an alternative to volumetric processing. ConvNeXt~\\cite{liu2022convnext} combined $7 \\times 7$ depthwise kernels, inverted bottleneck expansions ($e=2.5$), and LayerScale. It demonstrated accuracy competitive with Vision Transformers while retaining convolutional hardware efficiency. Lightweight attention mechanisms further modulate geometric features. Efficient Channel Attention (ECA-Net)~\\cite{wang2020eca} modeled 1D cross-channel interactions with low complexity but did not modulate individual spatial locations. Yang et al.~\\cite{yang2021simam} proposed SimAM, deriving 3D spatial-channel attention analytically from an energy function inspired by visual neuroscience, without trainable parameters.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 15,
+    "text": "Prior mobile LiDAR detectors commonly use inverted residual bottlenecks with small $3 \\times 3$ kernels~\\cite{nguyen2024indoor}, which limit context across vehicle and pedestrian scales. External attention modules or distillation at coarse downsampling boundaries~\\cite{tran2026rubber} add overhead while leaving receptive field limits within blocks unresolved under sparse point distributions. MobilePIXORNeXt combines the MobilePIXORNeXt-S backbone with parameter-free Block-SimAM (Sections~\\ref{sec:backbone_architecture}--\\ref{sec:next_s_block}) and a Top-Down Scale-Gated FPN (Section~\\ref{sec:neck_architecture}). Large $7 \\times 7$ depthwise kernels expand receptive fields, and attention modulates feature updates within each residual block without additional attention parameters.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 20,
+    "text": "Oriented bounding box regression has developed from independent coordinate losses toward geometric objectives. Early detectors used decoupled Smooth-L1 losses. Independent regression of coordinates, dimensions, and angles ignores their geometric dependence and can destabilize gradients. Rezatofighi et al.~\\cite{rezatofighi2019giou} introduced Generalized Intersection over Union (GIoU) to provide scale-invariant feedback when boxes do not overlap. Le et al.~\\cite{le2026mgiou} later formulated Marginalized Generalized Intersection over Union (MGIoU), a projection-based objective for convex parametric shapes and arbitrarily oriented boxes without rotational singularities.",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "sections/related_work.tex",
+    "line": 24,
+    "text": "Three supervision limitations remain in oriented detection. Independent angle and corner losses are sensitive to the $\\pi$-periodicity boundary: small angular deviations near $\\pm \\pi/2$ or $\\pm \\pi$ can cause loss spikes and unstable yaw gradients. Auxiliary quality heads add parameters and can increase gradient competition across classes. Unconstrained uncertainty weights can also diverge when classification, overlap, and orientation losses have different scales. MobilePIXORNeXt combines Oriented Geometric Alignment (OGA), its head-free alternative Q-OGA, and IoU-Aware Quality Alignment (IQA) (Section~\\ref{sec:losses_and_oga}) to address these issues. OGA combines multi-axis MGIoU projections with scale-normalized $\\pi$-symmetric corner supervision to avoid orientation boundary discontinuities. Q-OGA incorporates continuous IoU quality into classification supervision without an additional head. IQA provides explicit multi-branch quality prediction and uses $S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$ to rank detections. Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) constrains task weights to a normalized, bounded simplex to limit loss scale imbalance during optimization.",
+    "matches": [
+      "cause",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 5,
+    "text": "Table~\\ref{tab:comparison} compares detectors on KITTI validation using Moderate BEV AP $R_{40}$. All scores came from deterministic single-seed evaluation ($\\text{seed} = 42$). Variance and standard deviation ($\\pm\\,\\text{std}$) across random seeds were left for extended evaluation. We compared MobilePIXORNeXt with compact BEV models, pillar-based networks, and 3D sparse convolutional detectors.",
+    "matches": [
+      "All"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 12,
+    "text": "\\caption{MobilePIXORNeXt accuracy, parameter count, and latency on KITTI validation using Moderate BEV AP $R_{40}$. \\textbf{(a)} Accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus parameter count (M, logarithmic scale). MobilePIXORNeXt (red star) achieves $71.46\\%$ mAP with $0.754\\,\\text{M}$ parameters, matching SECOND ($72.09\\%$, $5.33\\,\\text{M}$) and exceeding PointPillars ($70.13\\%$, $4.84\\,\\text{M}$) with $>84\\%$ fewer parameters. \\textbf{(b)} Accuracy ($\\text{mAP}_{\\mathrm{M}}$, \\%) versus end-to-end latency (ms) at batch size 1 (Tesla T4, except historical MobilePIXOR on L4). MobilePIXORNeXt has the lowest complete pipeline latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$) among the evaluated real-time detectors.}",
+    "matches": [
+      "matching",
+      "lowest",
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 19,
+    "text": "Figure~\\ref{fig:pareto_tradeoff} summarizes MobilePIXORNeXt's observed accuracy, parameter, and latency trade-offs. With $0.754\\,\\text{M}$ trainable parameters ($9.34\\,\\text{MB}$ checkpoint), MobilePIXORNeXt achieved $71.46\\%$ Moderate mAP and $73.42\\%$ $\\text{mAP}_{9}$. Compared with PointPillars~\\cite{lang2019pointpillars} ($4.835\\,\\text{M}$ parameters), MobilePIXORNeXt achieved higher Moderate mAP ($71.46\\%$ vs. $70.13\\%$, a $+1.33\\%$ margin) and $\\text{mAP}_{9}$ ($73.42\\%$ vs. $72.25\\%$) with an $84.4\\%$ parameter reduction. MobilePIXORNeXt trailed SECOND~\\cite{yan2018second} ($5.326\\,\\text{M}$ parameters) by $0.63\\%$ Moderate mAP ($71.46\\%$ vs. $72.09\\%$) with $7.1\\times$ fewer parameters. Relative to MobilePIXOR~\\cite{nguyen2024indoor} ($41.40\\%$ mAP), MobilePIXORNeXt improved Moderate mAP by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$ in $\\text{mAP}_{9}$ ($73.42\\%$ vs. $42.27\\%$).",
+    "matches": [
+      "reduction",
+      "improved"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 24,
+    "text": "\\caption{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated on the KITTI validation split across Car (top row, $\\text{IoU} \\ge 0.70$), Pedestrian (middle row, $\\text{IoU} \\ge 0.50$), and Cyclist (bottom row, $\\text{IoU} \\ge 0.50$) under Easy (left), Moderate (center), and Hard (right) difficulty regimes. Red solid curves depict the proposed MobilePIXORNeXt (R37), blue dashed curves denote PointPillars, and green dotted curves represent SECOND. Shaded areas denote Average Precision integrals. Note that MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users, attaining $60.75\\%$ Moderate AP on Pedestrian compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.}",
+    "matches": [
+      "superior"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 30,
+    "text": "Sparse returns and aspect-ratio differences make small, non-rigid objects such as pedestrians difficult to detect. Table~\\ref{tab:comparison} and Figure~\\ref{fig:pr_curves} report MobilePIXORNeXt's \\textbf{60.75\\% Moderate AP} on Pedestrians. This exceeded PointPillars ($56.01\\%$) by $+4.74\\%$ and SECOND ($56.56\\%$) by $+4.19\\%$, and more than doubled MobilePIXOR ($28.16\\%$, a $+32.59\\%$ gain). Two mechanisms may explain this advantage. The first is Strata-BEV14's continuous subcell displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$, which reduce quantization error from the $0.1\\,\\text{m}$ grid for small objects. The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories.",
+    "matches": [
+      "gain",
+      "reduce",
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 33,
+    "text": "For Car, MobilePIXORNeXt achieved $86.90\\%$ Moderate AP. It trailed PointPillars ($88.02\\%$) and SECOND ($88.56\\%$) by less than $1.7\\%$, while exceeding PIXOR ($72.02\\%$) by $+14.88\\%$ and MobilePIXOR ($75.52\\%$) by $+11.38\\%$. For Cyclists, MobilePIXORNeXt reached $66.73\\%$ Moderate AP, exceeding PointPillars ($66.34\\%$) and trailing SECOND ($71.16\\%$). Two-stage 3D anchor-based detectors (PointRCNN, Part-A$^2$, PV-RCNN) achieved higher vehicle accuracy. Their parameter counts ranged from $4.0\\,\\text{M}$ to $63.8\\,\\text{M}$, and their higher latencies ($133\\text{--}195\\,\\text{ms}$) limited deployment under embedded real-time constraints.",
+    "matches": [
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 35,
+    "text": "\\subsection{Inference Latency and Real-Time Complexity}",
+    "matches": [
+      "Real-Time"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 40,
+    "text": "Network forward time covers only part of a real-time perception pipeline. Full-system latency includes point cloud loading, tensorization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and Non-Maximum Suppression (NMS). Table~\\ref{tab:efficiency} reports sequential latency at batch size 1 over $3{,}759$ timed frames, excluding 10 warmup frames from the $3{,}769$-frame validation split. MobilePIXORNeXt and reference detectors were evaluated on Tesla T4; historical MobilePIXOR timing was measured on L4.",
+    "matches": [
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 45,
+    "text": "Table~\\ref{tab:efficiency} reports MobilePIXORNeXt's End-to-End (E2E) latency of \\textbf{60.96\\,ms} (\\textbf{16.41\\,FPS}), the lowest among the evaluated real-time detectors. MobilePIXORNeXt ran faster than PointPillars ($63.84\\,\\text{ms}$, $15.66\\,\\text{FPS}$), MobilePIXOR ($85.92\\,\\text{ms}$, $11.64\\,\\text{FPS}$), and SECOND ($93.70\\,\\text{ms}$, $10.67\\,\\text{FPS}$). It also ran over $2.3\\times$ faster than PIXOR ($144.00\\,\\text{ms}$, $6.94\\,\\text{FPS}$). Percentile analysis showed low latency dispersion in the evaluated desktop GPU environment: median P50 latency was \\textbf{58.28\\,ms}, P95 was $80.85\\,\\text{ms}$, and P99 was $95.91\\,\\text{ms}$.",
+    "matches": [
+      "lowest",
+      "real-time"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 51,
+    "text": "\\item \\textbf{Host-to-Device Memory Transfer ($6.91\\,\\text{ms}$)}: Binary occupancy tensors with a 35-channel layout require $78.8\\,\\text{MB}$ per scan. The Strata-BEV14 14-channel layout required $31.5\\,\\text{MB}$, reducing payload by $60.0\\%$. With pinned-memory buffers, H2D latency fell to $6.91\\,\\text{ms}$, compared with $40.63\\,\\text{ms}$ for MobilePIXOR.",
+    "matches": [
+      "reducing"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 63,
+    "text": "Because LiDAR beam divergence causes point density to drop quadratically over distance ($N \\propto 1/r^2$), detector reliability degrades rapidly at intermediate and long ranges. Table~\\ref{tab:distance_ap} benchmarks Moderate AP across three discrete distance intervals: Near ($0\\text{--}30\\,\\text{m}$), Intermediate ($30\\text{--}50\\,\\text{m}$), and Far ($50\\text{--}70.4\\,\\text{m}$).",
+    "matches": [
+      "causes"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 70,
+    "text": "Compared with MobilePIXOR in the near-range $0\\text{--}30\\,\\text{m}$ zone, MobilePIXORNeXt Pedestrian AP reached \\textbf{65.23\\%}, more than double MobilePIXOR's $30.45\\%$ (a $+34.78\\%$ improvement). Cyclist AP reached \\textbf{76.32\\%}, nearly triple MobilePIXOR's $25.55\\%$ (a $+50.77\\%$ improvement). These gains are consistent with Strata-BEV14's stratified height bins and continuous subcell offsets preserving fine boundaries when object returns are dense.",
+    "matches": [
+      "improvement",
+      "improvement",
+      "gains",
+      "preserving"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 73,
+    "text": "At medium ranges ($30\\text{--}50\\,\\text{m}$), MobilePIXORNeXt achieved $11.49\\%$ Pedestrian AP (vs. $3.75\\%$) and $44.30\\%$ Cyclist AP (vs. $12.61\\%$, a $+31.69\\%$ gain). Far-range ($50\\text{--}70.4\\,\\text{m}$) Cyclist AP was $14.94\\%$ (vs. $0.56\\%$). These results are consistent with range-adaptive augmentation (\\texttt{transform\\_object}) and the wider context of $7 \\times 7$ depthwise receptive fields helping under sparse returns.",
+    "matches": [
+      "gain"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 86,
+    "text": "We replaced MobilePIXOR's residual blocks with a ConvNeXt-style backbone using $7 \\times 7$ depthwise convolutions, inverted expansion $e=2.5$, SiLU, and LayerScale. Moderate mAP rose from $41.40\\%$ to $47.60\\%$ (\\textbf{+6.20\\% mAP}), and standalone throughput nearly doubled from $90.57$ to \\textbf{169.97\\,FPS}. Large depthwise kernels broaden BEV receptive fields with limited computational cost.",
+    "matches": []
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 91,
+    "text": "To assess how input rasterization affects detection accuracy and latency, Table~\\ref{tab:encoding} compares four distinct BEV representations under identical MobilePIXORNeXt backbone and single-head architecture. TriBand-BEV~\\cite{khoshkdahan2026triband} partitions points into three coarse height bands; while it delivers the highest inference throughput ($188.4\\,\\text{FPS}$) and lowest Host-to-Device transfer payload ($6.76\\,\\text{MB}$), its Moderate mAP drops to $44.42\\%$ ($-5.72\\%$ below Strata-BEV14). The lack of continuous elevation moments and horizontal subcell centroid offsets degrades small object localization (Pedestrian AP $38.05\\%$, Cyclist AP $21.12\\%$). Conventional 35-channel binary occupancy slicing (A1) achieves $47.60\\%$ mAP but requires transferring $78.85\\,\\text{MB}$ per scan, imposing significant Host-to-Device transfer latency ($40.63\\,\\text{ms}$) while still discarding sub-voxel point coordinates. The 8-channel Strata-BEV8 representation (A2) yields comparable accuracy ($47.37\\%$) with fewer channels. In contrast, our 14-channel Strata-BEV14 representation (A3) achieves the highest Moderate mAP of $50.14\\%$ ($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35) at $169.0\\,\\text{FPS}$. Continuous vertical spatial moments ($z_{\\max}, z_{\\mathrm{mean}}, z_{\\mathrm{span}}, z_{\\mathrm{std}}$) and subcell centroid displacement offsets $(\\Delta\\bar{x}, \\Delta\\bar{y})$ retain critical 3D geometry otherwise lost through horizontal discretization without incurring PointNet encoder overhead.",
+    "matches": [
+      "highest",
+      "lowest",
+      "significant",
+      "highest",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 97,
+    "text": "Separating Car and Ped/Cyc prediction heads (A4) raised mAP to $51.30\\%$ over A3. Increasing grouped head width from 16 to 32 channels (A5) raised Moderate mAP to $60.22\\%$ (\\textbf{+8.92\\% mAP}) and $61.11\\%$ $\\text{mAP}_9$ relative to configuration A4. Class separation may reduce gradient interference between categories with different footprints, such as vehicles and pedestrians.",
+    "matches": [
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 102,
+    "text": "Physics-consistent augmentation (\\texttt{PC-GTA}) improved Moderate mAP by \\textbf{+6.03\\% mAP} over A5, from $60.22\\%$ to $66.25\\%$. It also raised $\\text{mAP}_9$ from $61.11\\%$ to $68.45\\%$ (\\textbf{+7.34\\% mAP}). The evaluated sampler combined terrain alignment, static obstacle rejection, and range-dependent point subsampling. Optional LOS, shadow-masking, and radiometric mechanisms were disabled in the final run.",
+    "matches": [
+      "improved"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 106,
+    "text": "Increasing neck width from 24 to 32 channels (A7) raised Moderate mAP to $68.12\\%$ (\\textbf{+1.87\\% mAP}). The Top-Down Scale-Gated FPN (A8) replaced transposed convolutions with bilinear upsampling and learnable depthwise gating to avoid deconvolution checkerboard artifacts in continuous regression maps.",
+    "matches": []
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 110,
+    "text": "Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA) raised Moderate mAP from $67.38\\%$ to $70.58\\%$ (\\textbf{+3.20\\% mAP}). Multi-Axis Projection GIoU and scale-normalized $\\pi$-symmetric corner distances aligned geometric supervision with rotated box overlap. IQA calibrated confidence against overlap to reduce the retention of high-scoring, misaligned boxes during NMS.",
+    "matches": [
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 115,
+    "text": "Embedding parameter-free Block-SimAM in every residual block across stages C2, C3, and C4 produced the final configuration, with \\textbf{71.46\\% Moderate mAP} and \\textbf{73.42\\% mAP$_9$} (\\textbf{+0.88\\% mAP}).",
+    "matches": []
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 117,
+    "text": "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants at 115.32 vs. 144.05 standalone FPS.",
+    "matches": [
+      "gained"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 125,
+    "text": "Table~\\ref{tab:loss} reports the OGA and IQA ablation. With OGA, Moderate mAP rose from $67.38\\%$ to $68.97\\%$ (\\textbf{+1.59\\% mAP}), with gains for Car ($+0.17\\%$), Pedestrian ($+2.45\\%$), and Cyclist ($+2.14\\%$). IQA alone raised mAP to $70.31\\%$ (\\textbf{+2.93\\% mAP}). Together, OGA and IQA achieved \\textbf{70.58\\% Moderate mAP}, with the highest Car ($84.87\\%$) and Pedestrian ($59.63\\%$) scores. The gains are consistent with complementary roles: OGA supervises corner and boundary alignment during training; IQA calibrates scores against overlap during inference ($S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}}\\hat{q}}$) to reduce suppression of well-localized candidates by misaligned boxes during rotated NMS.",
+    "matches": [
+      "gains",
+      "highest",
+      "gains",
+      "reduce"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 127,
+    "text": "Table~\\ref{tab:loss} compares explicit quality prediction with head-free quality coupling. IQA models contained $0.721\\,\\text{M}$ parameters and required $8.19\\,\\text{ms}$ per forward pass ($122.16\\,\\text{FPS}$). Q-OGA (Eq.~(\\ref{eq:cqfl_target})--(\\ref{eq:cqfl_loss})) omitted the IQA heads, using $0.702\\,\\text{M}$ parameters (saving $18.59\\,\\text{K}$) and running at $6.94\\,\\text{ms}$ ($144.16\\,\\text{FPS}$). Without extra prediction branches or post-processing score multiplication, Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$. Q-OGA therefore offers a smaller, faster configuration for constrained deployment, while explicit IQA achieved the highest accuracy ($70.58\\%$) with a dedicated quality branch.",
+    "matches": [
+      "Without",
+      "highest"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 134,
+    "text": "Stage-level SimAM at downsampling boundaries ($C_2, C_3, C_4$) reduced mAP to $69.44\\%$, $69.80\\%$, and $69.36\\%$, below the no-attention score ($70.58\\%$). Attention at these transitions may blur fine spatial gradients after downsampling. Block-SimAM inside every residual block instead achieved \\textbf{71.46\\% Moderate mAP} (\\textbf{+0.88\\% gain} over no attention) and \\textbf{73.42\\% mAP$_9$}. It modulates the residual update before LayerScale addition ($\\mathbf{Z}' = \\mathbf{Z} + \\boldsymbol{\\gamma}_{\\mathrm{blk}} \\odot \\mathcal{S}(\\mathbf{R})$) without changing inter-stage feature resolution, allowing modulation of sparse returns within each block.",
+    "matches": [
+      "reduced",
+      "gain",
+      "no ",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 139,
+    "text": "\\caption{Training and validation loss trajectories over 50 epochs on KITTI for configurations A1 through A10 (Table~\\ref{tab:components}). The top panels show total training loss (left) and validation loss (right) on logarithmic scales. Six task panels show Classification Focal Loss, Oriented Geometry Loss (OGA), IoU Quality Loss (IQA), Subcell Centroid Offset Loss, Footprint Size Loss, and Doubled-Angle Yaw Loss. The legend traces baseline A1 (Binary35), Strata-BEV (A2--A3), Decoupled GroupedHeader (A4--A5), PC-GTA (A6), SG-FPN (A7--A8), OGA and IQA (A9), and final configuration A10 (Block-SimAM). The plotted losses weighted by T-SBUW show no divergence or oscillation. Configuration A10 has the lowest late-training validation losses across the continuous regression tasks.}",
+    "matches": [
+      "no ",
+      "lowest"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 143,
+    "text": "\\paragraph{Multi-Task Optimization Dynamics and Convergence.}",
+    "matches": [
+      "Convergence"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 144,
+    "text": "Figure~\\ref{fig:loss_curves} plots training and validation losses over 50 epochs for configurations A1 through A10. It includes the total objective and six tasks: Classification, Geometry, IoU Quality, Subcell Offset, Size, and Yaw. We used these trajectories to assess training stability and convergence.",
+    "matches": [
+      "convergence"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 145,
+    "text": "Across 50 epochs, total and task losses converged without visible oscillation or destabilizing spikes. Total loss fell from $10^4$ to approximately $1.0$ within the first 15 epochs, then decreased during cosine annealing. Training and validation curves remained close without a widening gap. This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting.",
+    "matches": [
+      "converged",
+      "without",
+      "without",
+      "without"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 146,
+    "text": "Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW, Eq.~(\\ref{eq:tsbuw_weights})--(\\ref{eq:balanced_loss})) balanced task loss scales without visible spikes between classification and coordinate regression. Block-SimAM (configuration A10) had lower training and validation losses across regression tasks than intermediate configurations (A1--A9), consistent with the accuracy gains in Table~\\ref{tab:components}.",
+    "matches": [
+      "without",
+      "gains"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 148,
+    "text": "\\paragraph{Checkpoint Selection Sensitivity: Best AP vs. Best Validation Loss.}",
+    "matches": [
+      "Best",
+      "Best"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 153,
+    "text": "\\caption{Checkpoint selection sensitivity comparison on the KITTI validation benchmark, evaluating trade-offs between validation AP maximization (Epoch 130) and validation loss minimization (Epoch 47) under identical $R_{40}$ Moderate evaluation criteria. Best overall trade-offs are in \\textbf{bold}.}",
+    "matches": [
+      "Best"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 160,
+    "text": "\\textbf{Best AP} & \\textbf{130} & \\textbf{86.90} & 60.75 & 66.73 & \\textbf{71.46} & \\textbf{60.96} \\\\",
+    "matches": [
+      "Best"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 161,
+    "text": "Best loss & 47 & 82.71 & \\textbf{62.30} & \\textbf{69.43} & \\textbf{71.48} & 81.23 \\\\",
+    "matches": [
+      "Best"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 166,
+    "text": "The two selection criteria yielded similar accuracy ($71.46\\%$ vs. $71.48\\%$ Moderate mAP). The Best AP checkpoint had $20.27\\,\\text{ms}$ lower end-to-end latency ($60.96\\,\\text{ms}$, $16.41\\,\\text{FPS}$ vs. $81.23\\,\\text{ms}$, $12.31\\,\\text{FPS}$). A possible explanation is that extended training sharpened classification heatmaps around positive centers, reducing ambiguous background peaks and the work required for candidate filtering and rotated NMS.",
+    "matches": [
+      "Best",
+      "reducing"
+    ]
+  },
+  {
+    "source": "sections/results.tex",
+    "line": 192,
+    "text": "The results showed that accurate 3D LiDAR detection was possible without large point-cloud encoders or 3D sparse convolutions. The deterministic 2D BEV representation retained multi-band densities, elevation dispersion, and continuous subcell centroid displacements. A ConvNeXt-style 2D network extracted geometric features with fewer than $0.76\\,\\text{M}$ parameters. Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone.",
+    "matches": [
+      "without",
+      "gains"
+    ]
+  },
+  {
+    "source": "tables/attention.tex",
+    "line": 3,
+    "text": "\\caption{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all nine \\texttt{MobilePIXORNeXt-S} residual blocks before LayerScale scaling. Best values are in \\textbf{bold}, and second-best are \\underline{underlined}.}",
+    "matches": [
+      "all",
+      "Best",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/attention.tex",
+    "line": 10,
+    "text": "None (No attention) & $F_{32}$ & \\underline{70.58} & \\underline{72.66} & \\underline{8.19} & \\underline{122.16} \\\\",
+    "matches": [
+      "No "
+    ]
+  },
+  {
+    "source": "tables/attention.tex",
+    "line": 18,
+    "text": "{\\footnotesize \\textit{Note.} All configurations share OGA, the IQA quality head, Strata-BEV14 input, and PC-GTA augmentation. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU using isolated batches. In the complete pipeline (Table~\\ref{tab:efficiency}), forward propagation takes $55.94\\,\\text{FPS}$ ($17.88\\,\\text{ms}$), and overall E2E speed is $16.41\\,\\text{FPS}$ ($60.96\\,\\text{ms}$). Stage-level variants add one adapter at a stage boundary. Block-SimAM applies 3D parameter-free energy attention in each of the nine \\texttt{MobilePIXORNeXt-S} residual blocks before LayerScale scaling.}",
+    "matches": [
+      "All"
+    ]
+  },
+  {
+    "source": "tables/comparison.tex",
+    "line": 3,
+    "text": "\\caption{Quantitative object detection comparison on the KITTI validation set for Bird's-Eye View (BEV) bounding box estimation. Average Precision (AP, \\%) is evaluated using 40-point interpolation ($R_{40}$) at Moderate difficulty ($\\text{IoU} \\ge 0.70$ for Car; $\\text{IoU} \\ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact models are in \\textbf{bold}, and second-best values are \\underline{underlined}.}",
+    "matches": [
+      "real-time",
+      "Best",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/comparison.tex",
+    "line": 23,
+    "text": "{\\footnotesize \\textit{Note.} $\\text{mAP}_{\\mathrm{M}}$ is the unweighted mean across the three target classes at Moderate difficulty. $\\text{mAP}_{9}$ denotes the macro-average over all nine class-difficulty combinations (Easy, Moderate, Hard). Dashes (--) indicate classes unsupported by single-class PIXOR. All results use the same KITTI validation split. MobilePIXORNeXt and historical MobilePIXOR use local loader-aligned BEV AP; PIXOR, PointPillars, SECOND, and the heavier references use reference KITTI AP. GPU timings are specified separately in Table~\\ref{tab:efficiency}.}",
+    "matches": [
+      "all",
+      "All"
+    ]
+  },
+  {
+    "source": "tables/components.tex",
+    "line": 3,
+    "text": "\\caption{Architectural ablations on KITTI validation using Moderate BEV AP $R_{40}$. Panel (a) lists additions from baseline MobilePIXOR (A0) to the final MobilePIXORNeXt configuration (A10). Panel (b) reports accuracy ($\\text{mAP}_{\\mathrm{M}}$, $\\text{mAP}_9$) and standalone forward latency and throughput (ms, FPS) on an NVIDIA Tesla T4 GPU. Best values are in \\textbf{bold}, and second-best are \\underline{underlined}.}",
+    "matches": [
+      "Best",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/components.tex",
+    "line": 41,
+    "text": "A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \\textbf{71.46} & \\textbf{73.42} & 8.67 & 115.32 \\\\",
+    "matches": [
+      "all"
+    ]
+  },
+  {
+    "source": "tables/distance_our_vs_mbpixor.tex",
+    "line": 3,
+    "text": "\\caption{Distance-stratified detection performance (Moderate AP, \\%) on Vulnerable Road Users (Pedestrian and Cyclist) across Near ($0\\text{--}30\\,\\text{m}$), Intermediate ($30\\text{--}50\\,\\text{m}$), and Far ($50\\text{--}70.4\\,\\text{m}$) range intervals on the KITTI validation benchmark using BEV AP $R_{40}$. Best results across competing compact models are in \\textbf{bold}.}",
+    "matches": [
+      "Best"
+    ]
+  },
+  {
+    "source": "tables/efficiency.tex",
+    "line": 3,
+    "text": "\\caption{Pipeline latency and throughput on KITTI validation (3,769 frames, including 3,759 timed frames after 10 warmup frames). Measurements use Tesla T4, except historical MobilePIXOR on NVIDIA L4. Batch size is 1, with FP32 precision. Forward latency covers network execution alone. End-to-End (E2E) latency includes raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Best values among compact models are in \\textbf{bold}, and second-best are \\underline{underlined}.}",
+    "matches": [
+      "Best",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/efficiency.tex",
+    "line": 23,
+    "text": "{\\footnotesize \\textit{Note.} Model latency measures network execution in the evaluation pipeline on Tesla T4. Standalone throughput without pipeline synchronization reaches $115.32\\,\\text{FPS}$ ($8.67\\,\\text{ms}$, Table~\\ref{tab:components}). End-to-end (E2E) latency includes LiDAR loading, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Percentiles (P50, P95, P99) cover 3,759 timed frames after 10 warmup frames. Historical MobilePIXOR latency was measured on L4 and retains that hardware provenance.}",
+    "matches": [
+      "without"
+    ]
+  },
+  {
+    "source": "tables/encoding.tex",
+    "line": 3,
+    "text": "\\caption{Ablation of Bird's-Eye View (BEV) input representation paradigms on the KITTI validation benchmark under the official $R_{40}$ evaluation protocol. All models are trained under strictly identical conditions (MobilePIXORNeXt backbone, F24 neck, single head, standard augmentation, baseline loss, seed 42) and benchmarked on an NVIDIA L4 GPU. Best results across all configurations are in \\textbf{bold}, and second-best are \\underline{underlined}.}",
+    "matches": [
+      "All",
+      "Best",
+      "all",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/encoding.tex",
+    "line": 17,
+    "text": "{\\footnotesize \\textit{Note.} All variants share the identical MobilePIXORNeXt-S backbone, F24 SumFPN neck, single-head H16, standard augmentation, and baseline Smooth-L1 loss. Standalone inference speed is measured in FP32 on an NVIDIA L4 GPU under batch size 1 ($800 \\times 704$ input grid). TriBand-BEV~\\cite{khoshkdahan2026triband} provides the fastest forward execution ($188.43\\,\\text{FPS}$) due to its compact 3-channel input ($6.76\\,\\text{MB}$), but suffers significant accuracy degradation ($44.42\\%$ Moderate mAP) due to the lack of continuous elevation moments and horizontal subcell centroid offsets. Strata-BEV14 achieves the highest accuracy ($50.14\\%$ Moderate mAP and $52.00\\%$ $\\text{mAP}_9$) while maintaining real-time throughput ($169.01\\,\\text{FPS}$) and reducing H2D memory payload by $60.0\\%$ relative to Binary35 ($31.54\\,\\text{MB}$ vs. $78.85\\,\\text{MB}$).}",
+    "matches": [
+      "All",
+      "fastest",
+      "significant",
+      "highest",
+      "real-time",
+      "reducing"
+    ]
+  },
+  {
+    "source": "tables/loss.tex",
+    "line": 3,
+    "text": "\\caption{Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}} \\hat{q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \\textbf{bold}, and second-best are \\underline{underlined}.}",
+    "matches": [
+      "without",
+      "Best",
+      "best"
+    ]
+  },
+  {
+    "source": "tables/loss.tex",
+    "line": 19,
+    "text": "{\\footnotesize \\textit{Note.} All variants share identical MobilePIXORNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\\mathrm{det}} = \\sqrt{P_{\\mathrm{cls}} \\cdot \\hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18.59\\,\\text{K}$ parameters and $1.25\\,\\text{ms}$ forward latency compared with explicit IQA models.}",
+    "matches": [
+      "All",
+      "without"
+    ]
+  }
+]

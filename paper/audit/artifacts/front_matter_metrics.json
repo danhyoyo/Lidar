@@ -1,0 +1,32 @@
+{
+  "abstract_words_whitespace": 223,
+  "abstract_words_lexical": 222,
+  "abstract_word_limit": [
+    150,
+    250
+  ],
+  "word_count_rule": "split on whitespace after math rendering and escaped-percent normalization; hyphenated compounds stay intact",
+  "abstract_citation_commands": 0,
+  "keywords": [
+    "LiDAR object detection",
+    "Bird's-eye view representation",
+    "Compact convolutional neural networks",
+    "Parameter-free attention",
+    "Oriented bounding box regression"
+  ],
+  "keyword_count": 5,
+  "abstract_uppercase_tokens": [
+    "AP",
+    "BEV",
+    "BEV14",
+    "CPU",
+    "GPU",
+    "KITTI",
+    "NVIDIA",
+    "SECOND",
+    "T4"
+  ],
+  "declarations_section_present": true,
+  "official_statements_and_declarations_heading_present": false,
+  "abstract_rendered_for_count": "Three-dimensional object detection from Light Detection and Ranging (LiDAR) point clouds supports autonomous navigation, but volumetric and pillar-based architectures can exceed the computational budgets of edge accelerators. We developed MobilePIXORNeXt, a compact, proposal-free Bird's-Eye View (BEV) detector with 753,569 parameters. The framework replaced learned point encoders with Strata-BEV14, a parameter-free deterministic NumPy/Numba CPU rasterizer. It extracted 14 statistical feature channels encoding stratified height distributions, elevation moments, surface reflectance, and continuous subcell centroid displacement offsets. Measured input preprocessing took 20.94 milliseconds, including point-cloud loading and rasterization. A single-branch ConvNeXt-style backbone with parameter-free 3D spatial-energy attention (Block-SimAM) extracted spatial features. A Scale-Gated Feature Pyramid Network fused these features for decoupled grouped prediction heads. Training used Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment, balanced by 12-parameter Temperature-Softmax Bounded Uncertainty Weighting. On the KITTI validation set using BEV AP R_40, MobilePIXORNeXt achieved 71.46% Moderate mean Average Precision (mAP) and 73.42% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories. It outperformed PointPillars (70.13% mAP) with an 84.4% parameter reduction and matched SECOND (72.09% mAP) with 85.8% fewer parameters. Pedestrian Moderate AP reached 60.75%. The complete pipeline ran in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, the fastest end-to-end throughput among the evaluated real-time detectors. These results support deterministic statistical encoding and oriented geometric supervision for accurate LiDAR perception on resource-constrained embedded systems."
+}

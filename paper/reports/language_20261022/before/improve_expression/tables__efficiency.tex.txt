@@ -1,0 +1,2 @@
+% CONTRACT [Script]: goal=clarity strength=moderate
+% EXPRESSION: No weak-expression patterns detected.

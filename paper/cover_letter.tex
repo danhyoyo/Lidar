@@ -1,0 +1,68 @@
+\documentclass[10.5pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{microtype}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{flushright}\small
+    \textbf{Date:} October 22, 2026
+\end{flushright}
+
+\vspace{-0.5em}
+\noindent
+\textbf{To:}\\
+The Editor-in-Chief\\
+\textit{Arabian Journal for Science and Engineering} (AJSE), Springer Nature
+
+\vspace{0.6em}
+\noindent
+\textbf{Subject: Submission of Original Research Article entitled ``MobilePIXORNeXt: Compact LiDAR Object Detection with Oriented Geometry and Localization Quality''}
+
+\vspace{0.6em}
+\noindent
+Dear Editor-in-Chief,
+
+\vspace{0.4em}\noindent
+We submit our original research manuscript entitled \textbf{``MobilePIXORNeXt: Compact LiDAR Object Detection with Oriented Geometry and Localization Quality''} for consideration as a regular research article in the \textit{Arabian Journal for Science and Engineering} (AJSE), within the Computer Science and Engineering track.
+
+\vspace{0.5em}\noindent
+\textbf{Background and Motivation:}\\
+Three-dimensional LiDAR perception is fundamental for autonomous navigation, but mainstream detectors rely on heavy point encoders or 3D convolutions (4.0--63.8M parameters), exceeding edge budgets. On-road vehicular safety decisions operate predominantly on the Special Euclidean manifold $SE(2)$. These results demonstrate that deterministic statistical encoding coupled with oriented geometric alignment enables accurate, real-time perception on edge vehicular platforms.
+
+\vspace{0.5em}\noindent
+\textbf{Core Contributions and Findings:}
+\begin{itemize}\setlength{\itemsep}{0.1em}\setlength{\parskip}{0pt}
+    \item \textbf{Deterministic Representation:} Strata-BEV14 rasterizes 14 statistical BEV channels (vertical densities, elevation moments, subcell centroid offsets) in $20.94\,\text{ms}$ on CPU without learned encoders.
+    \item \textbf{Compact Backbone with 3D Energy Attention:} MobilePIXORNeXt-S integrates $7 \times 7$ depthwise convolutions with parameter-free Block-SimAM 3D energy attention and a Scale-Gated Feature Pyramid Network with decoupled grouped heads.
+    \item \textbf{Physical Augmentation and Geometric Alignment:} Physics-Consistent Ground-Truth Augmentation (PC-GTA) prevents unphysical synthesis ($+6.03\,\text{pp}$ mAP), while Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA) supervise rotated bounding box overlaps ($+3.20\,\text{pp}$ mAP).
+    \item \textbf{Empirical Milestones:} With $753{,}569$ parameters ($<0.76\,\text{M}$), MobilePIXORNeXt achieves $71.46\%$ Moderate mAP on KITTI, exceeding PointPillars by $1.33\,\text{pp}$ with an $84.41\%$ parameter reduction, running in $60.96\,\text{ms}$ ($16.41\,\text{FPS}$) on Tesla T4 GPU.
+\end{itemize}
+
+\vspace{0.5em}\noindent
+\textbf{Journal Fit:}\\
+This work aligns with the journal's scope in intelligent transportation systems, embedded systems, and applied robotics, offering practical utility for real-time vehicular computing.
+
+\vspace{0.5em}\noindent
+\textbf{Statements and Declarations:}
+\begin{itemize}\setlength{\itemsep}{0.1em}\setlength{\parskip}{0pt}
+    \item \textbf{Originality \& Exclusivity:} The manuscript represents original research and has not been published elsewhere; it is not under concurrent consideration by any other journal or conference.
+    \item \textbf{Authorship Approval:} All authors have read and approved the final manuscript for submission.
+    \item \textbf{Competing Interests:} The authors declare that they have no competing financial or non-financial interests.
+    \item \textbf{Data and Code Availability:} The benchmark data are available from the public KITTI repository, and the source code will be made available upon publication.
+    \item \textbf{AI Assistance Disclosure:} Generative AI assistance was employed solely for English copy-editing and grammar verification; all conceptual ideas, mathematical formulations, software development, and experimental analyses were performed entirely by the authors.
+\end{itemize}
+
+\vspace{0.6em}\noindent
+Thank you for your consideration of our manuscript.
+
+\vspace{1em}\noindent
+Sincerely,\\[0.4em]
+\textbf{Hoang Ngoc Tran, Ph.D.} (Corresponding Author, \href{mailto:hoang2531992@gmail.com}{hoang2531992@gmail.com})\\
+FPT University, Can Tho, Vietnam (on behalf of Duyen Huu Nguyen, Anh Duc Bui, and Nhan Trong Phan)
+
+\end{document}

@@ -1,0 +1,76 @@
+                                                                                                      Precision-Recall comparison | local BEV AP R40
+
+
+
+                                         Car | Easy | IoU 0.70                                                                     Pedestrian | Easy | IoU 0.50                                                       Cyclist | Easy | IoU 0.50
+            1.0                                                                                            1.0                                                                             1.0
+
+
+
+            0.8                                                                                            0.8                                                                             0.8
+
+
+
+            0.6                                                                                            0.6                                                                             0.6
+
+Precision                                                                                      Precision                                                                       Precision
+            0.4                                                                                            0.4                                                                             0.4
+
+                     MobilePIXOR / Binary35 (AP 81.00)                                                              MobilePIXOR / Binary35 (AP 31.61)                                               MobilePIXOR / Binary35 (AP 28.13)
+            0.2      PointPillars (AP 92.60)                                                               0.2      PointPillars (AP 60.70)                                                0.2      PointPillars (AP 82.20)
+                     SECOND (AP 92.74)                                                                              SECOND (AP 60.45)                                                               SECOND (AP 83.71)
+                     PIXOR (AP 84.57)                                                                               PIXOR: N/A (Car-only)                                                           PIXOR: N/A (Car-only)
+                     Block-SimAM C3-C5 / F32 (our) (AP 91.48)                                                       Block-SimAM C3-C5 / F32 (our) (AP 66.82)                                        Block-SimAM C3-C5 / F32 (our) (AP 84.21)
+            0.0                                                                                            0.0                                                                             0.0
+               0.0          0.2                0.4            0.6           0.8          1.0                  0.0          0.2                0.4            0.6   0.8   1.0                  0.0          0.2                0.4            0.6   0.8   1.0
+                                                     Recall                                                                                         Recall                                                                          Recall
+
+                                      Car | Moderate | IoU 0.70                                                                Pedestrian | Moderate | IoU 0.50                                                   Cyclist | Moderate | IoU 0.50
+            1.0                                                                                            1.0                                                                             1.0
+
+
+
+            0.8                                                                                            0.8                                                                             0.8
+
+
+
+            0.6                                                                                            0.6                                                                             0.6
+
+Precision                                                                                      Precision                                                                       Precision
+            0.4                                                                                            0.4                                                                             0.4
+
+                     MobilePIXOR / Binary35 (AP 75.52)                                                              MobilePIXOR / Binary35 (AP 28.16)                                               MobilePIXOR / Binary35 (AP 20.53)
+            0.2      PointPillars (AP 88.60)                                                               0.2      PointPillars (AP 55.83)                                                0.2      PointPillars (AP 66.38)
+                     SECOND (AP 89.36)                                                                              SECOND (AP 56.47)                                                               SECOND (AP 70.70)
+                     PIXOR (AP 74.41)                                                                               PIXOR: N/A (Car-only)                                                           PIXOR: N/A (Car-only)
+                     Block-SimAM C3-C5 / F32 (our) (AP 86.90)                                                       Block-SimAM C3-C5 / F32 (our) (AP 60.75)                                        Block-SimAM C3-C5 / F32 (our) (AP 66.73)
+            0.0                                                                                            0.0                                                                             0.0
+               0.0          0.2                0.4            0.6           0.8          1.0                  0.0          0.2                0.4            0.6   0.8   1.0                  0.0          0.2                0.4            0.6   0.8   1.0
+                                                     Recall                                                                                         Recall                                                                          Recall
+
+                                         Car | Hard | IoU 0.70                                                                     Pedestrian | Hard | IoU 0.50                                                       Cyclist | Hard | IoU 0.50
+            1.0                                                                                            1.0                                                                             1.0
+
+
+
+            0.8                                                                                            0.8                                                                             0.8
+
+
+
+            0.6                                                                                            0.6                                                                             0.6
+
+Precision                                                                                      Precision                                                                       Precision
+            0.4                                                                                            0.4                                                                             0.4
+
+                     MobilePIXOR / Binary35 (AP 71.44)                                                              MobilePIXOR / Binary35 (AP 25.04)                                               MobilePIXOR / Binary35 (AP 19.05)
+            0.2      PointPillars (AP 85.84)                                                               0.2      PointPillars (AP 51.79)                                                0.2      PointPillars (AP 62.27)
+                     SECOND (AP 86.44)                                                                              SECOND (AP 51.97)                                                               SECOND (AP 66.58)
+                     PIXOR (AP 68.40)                                                                               PIXOR: N/A (Car-only)                                                           PIXOR: N/A (Car-only)
+                     Block-SimAM C3-C5 / F32 (our) (AP 84.45)                                                       Block-SimAM C3-C5 / F32 (our) (AP 56.09)                                        Block-SimAM C3-C5 / F32 (our) (AP 63.33)
+            0.0                                                                                            0.0                                                                             0.0
+               0.0          0.2                0.4            0.6           0.8          1.0                  0.0          0.2                0.4            0.6   0.8   1.0                  0.0          0.2                0.4            0.6   0.8   1.0
+                                                     Recall                                                                                         Recall                                                                          Recall
+
+
+                                                                    3,769 common validation frames | shared local BEV evaluator | native score filters / NMS retained | interpolated precision envelope
+

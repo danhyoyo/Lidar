@@ -1,0 +1,30 @@
+{
+  "issues": 15,
+  "canonical_severities": {
+    "moderate": 4,
+    "major": 8,
+    "minor": 3
+  },
+  "display_severities": {
+    "MAJOR": 12,
+    "MINOR": 3
+  },
+  "quotes_verified": 15,
+  "source_file_and_line_verified": 15,
+  "major_latex_examples": 12,
+  "gate_blockers": [
+    "T04",
+    "T05",
+    "T06",
+    "M03",
+    "M05",
+    "M06"
+  ],
+  "scores_in_range": true,
+  "equation_labels_covered": 26,
+  "source_files_checked": 70,
+  "source_files_changed": [],
+  "manuscript_edited": false,
+  "model_executed": false,
+  "new_training_or_benchmark": false
+}

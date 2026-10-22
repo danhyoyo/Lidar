@@ -1,0 +1,102 @@
+                                                                Training loss                                                                                                                  Validation loss
+                                                   4
+                                              10
+                                                                                                                                                                  104
+
+                                              103
+                                                                                                                                                                  103
+
+
+
+
+                           Loss (log scale)                                                                                                    Loss (log scale)
+                                              102
+
+                                                                                                                                                                  102
+                                              101
+
+                                                                                                                                                                  101
+                                                   0
+                                              10
+
+                                                                                                                                                                  100
+                                                       0   10   20              30                 40          50                                                       0     10               20               30   40   50
+                                                                      Epoch                                                                                                                             Epoch
+
+                                                                Classification                                                                                                                        Geometry
+                                                                                                                                            2 × 100
+                                              104
+
+
+
+                                              103
+                                                                                                                                                                  100
+
+
+
+
+                           Loss (log scale)                                                                         Loss (log scale)
+                                              102
+                                                                                                                                       6 × 10−1
+
+                                              101
+                                                                                                                                       4 × 10−1
+
+
+                                              100                                                                                      3 × 10−1
+
+
+                                                       0   10   20              30                 40          50                                                       0     10               20               30   40   50
+                                                                      Epoch                                                                                                                             Epoch
+
+                                                                       IoU                                                                                                                             Offset
+                   7 × 10−1
+
+
+
+
+                   6 × 10−1
+
+
+
+
+Loss (log scale)                                                                                                                       Loss (log scale)
+                                                                                                                                                            10−1
+
+
+
+                   5 × 10−1
+
+
+                                                                                                                                                            10−2
+
+
+                                                       0   10   20              30                 40          50                                                       0     10               20               30   40   50
+                                                                      Epoch                                                                                                                             Epoch
+
+                                                                       Size                                                                                                                             Yaw
+
+                                              100                                                                                                                 100
+
+
+
+
+                   Loss (log scale)     10−1                                                                                           Loss (log scale)
+
+
+                                                                                                                                                            10−1
+
+
+
+
+                                                       0   10   20              30                 40          50                                                       0     10               20               30   40   50
+                                                                      Epoch                                                                                                                             Epoch
+
+
+
+
+                                                                 A1 · MobilePIXORNeXt / Binary35        A5 · Strata-BEV14 / Grouped H32                                     A8 · Hybrid GT / SG-FPN
+                                                                 A2 · MobilePIXORNeXt / Strata-BEV8     A6 · Hybrid GT / F24                                                A9 · OGA + IQA
+                                                                 A3 · Strata-BEV14 / Single H16         A7 · Hybrid GT / F32                                                A10 · OGA + IQA + Block-SimAM
+                                                                 A4 · Strata-BEV14 / Grouped H16
+

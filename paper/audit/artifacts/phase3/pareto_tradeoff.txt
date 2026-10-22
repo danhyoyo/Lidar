@@ -1,0 +1,37 @@
+                                 (a) Accuracy vs. Parameter Footprint                                                 (b) Accuracy vs. End-to-End Pipeline Latency
+                         80                                                                                    80
+                                                                            Part-A2                                                                                               Part-A2
+                                        PointRCNN                                                                                                                                           PV-RCNN
+                         75   MobilePIXORNeXt (Ours)     SECOND        PV-RCNN
+                                                                                                               75                      SECOND
+                                                                                                                            MobilePIXORNeXt (Ours)                                           PointRCNN
+
+
+
+
+                                                                                           KITTI Moderate mAP (%) ↑
+                         70                                                                                    70
+
+
+
+
+KITTI Moderate mAP (%)
+                                                        PointPillars                                                         PointPillars
+                         65                                                                                    65
+                         60                                                                                    60
+
+
+
+
+                                                                                                                                             Real-Time Limit (10 FPS)
+                         55                                                                                    55
+                         50                                                                                    50
+                         45                                                                                    45
+                         40    MobilePIXOR                                                                     40                      MobilePIXOR
+
+                         35                                                                                    35
+                                  100                         101                                                      60        80         100                          120      140       160   180    200
+                                        Model Parameters (M) [log scale]                                                       End-to-End Latency on Tesla T4 (ms) ↓
+                                                       Pareto Frontier                MobilePIXOR                       SECOND                                          PV-RCNN
+                                                       MobilePIXORNeXt (Ours)         PointPillars                      PointRCNN                                       Part-A2
+

@@ -1,0 +1,3 @@
+% WARN: include file not found: tables/setup (experiments.tex:54)
+% CONTRACT [Script]: goal=clarity strength=moderate
+% EXPRESSION: No weak-expression patterns detected.

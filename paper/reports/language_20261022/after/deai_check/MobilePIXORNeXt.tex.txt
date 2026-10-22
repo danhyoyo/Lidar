@@ -1,0 +1,61 @@
+======================================================================
+DE-AI WRITING TRACE ANALYSIS REPORT (Enhanced)
+======================================================================
+File: /home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex
+Total lines: 1090
+
+----------------------------------------------------------------------
+PRIORITY RANKING
+----------------------------------------------------------------------
+1. result: 2.3% (8 traces)
+2. method: 1.3% (6 traces)
+
+----------------------------------------------------------------------
+DETAILED TRACE LISTING
+----------------------------------------------------------------------
+
+METHOD:
+  sections/methodology.tex:142 [burstiness]
+    3 consecutive paragraphs open with 'item textit'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  sections/methodology.tex:144 [burstiness]
+    3 consecutive paragraphs open with 'item textit'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  sections/methodology.tex:8 [tense]
+    \captionof{figure}{End-to-end architecture and tensor flow of MobilePIXORNeXt. U
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/methodology.tex:8 [tense]
+    \captionof{figure}{End-to-end architecture and tensor flow of MobilePIXORNeXt. U
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/methodology.tex:50 [tense]
+    \captionof{figure}{Fourteen deterministic feature channels in the Strata-BEV14 r
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/methodology.tex:84 [tense]
+    4. \textit{Occupancy and Continuous Subcell Offsets ( -- )}: Channel   records t
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+
+RESULT:
+  sections/results.tex:89 [burstiness]
+    3 consecutive paragraphs open with 'par vspace'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  sections/results.tex:93 [burstiness]
+    3 consecutive paragraphs open with 'par vspace'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  sections/results.tex:98 [burstiness]
+    3 consecutive paragraphs open with 'par vspace'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  sections/results.tex:102 [burstiness]
+    3 consecutive paragraphs open with 'par vspace'
+    -> Suggestion: Vary the opening syntax across consecutive paragraphs.
+  tables/comparison.tex:23 [tense]
+    {\footnotesize \textit{Note.}   is the unweighted mean across the three target c
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/results.tex:12 [tense]
+    Accuracy ( , \%) versus parameter count (M, logarithmic scale). MobilePIXORNeXt 
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/results.tex:183 [tense]
+    \item \textbf{Nearby Road Users}: Frame \texttt{006761} shows predicted footprin
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.
+  sections/results.tex:183 [tense]
+    \item \textbf{Nearby Road Users}: Frame \texttt{006761} shows predicted footprin
+    -> Suggestion: Methods/Results narrate the study in past tense; change present-tense reporting verbs (e.g. 'shows' -> 'showed') unless the subject is a figure/table.

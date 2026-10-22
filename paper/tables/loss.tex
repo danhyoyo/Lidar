@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering\small
-\caption{Factorial evaluation of geometric supervision strategies (Baseline Smooth-L1 vs. OGA) and localization quality prediction (with and without the explicit IQA Head) alongside the head-free Q-OGA formulation on the KITTI validation benchmark at Moderate difficulty ($R_{40}$). Candidate detections in models with IQA are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:loss}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\raggedright\arraybackslash}p{0.26\textwidth}ccrrrrr@{}}
@@ -16,5 +16,5 @@ Q-OGA (Quality-Coupled Focal Loss) & No & \textbf{0.702} & \textbf{6.94} & \unde
 \bottomrule
 \end{tabular*}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All variants share identical MobilePixorNeXt backbone, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18.59\,\text{K}$ parameters and $1.25\,\text{ms}$ forward latency compared with explicit IQA models.}
+{\footnotesize \textit{Note.} All variants share identical MobilePIXORNeXt baseline backbone with legacy stage depths $(2, 4, 2)$, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation ($0.721\,\text{M}$ parameters with IQA, $0.702\,\text{M}$ without IQA). The final consolidated configuration A10 ($[3, 4, 2]$) contains $753{,}569$ parameters ($0.754\,\text{M}$), confirming that Block-SimAM adds zero parameters. When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18{,}626$ parameters ($18.63\,\text{K}$) and $1.25\,\text{ms}$ forward latency compared with explicit IQA models.}
 \end{table*}

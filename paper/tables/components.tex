@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering\small
-\caption{Systematic architectural ablation progression across the proposed design pillars on the KITTI validation benchmark under the official Moderate BEV ($R_{40}$) protocol. Panel (a) outlines incremental component additions from baseline MobilePIXOR (A0) to the peak MobilePIXORNeXt configuration (A10); Panel (b) reports resulting detection accuracies ($\text{mAP}_{\mathrm{M}}$, $\text{mAP}_9$) and standalone model forward inference throughput (ms, FPS) measured on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Architectural ablations on KITTI validation using Moderate BEV AP $R_{40}$. Panel (a) lists additions from baseline MobilePIXOR (A0) to the final MobilePIXORNeXt configuration (A10). Panel (b) reports accuracy ($\text{mAP}_{\mathrm{M}}$, $\text{mAP}_9$) and standalone forward latency and throughput (ms, FPS) on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:components}
 \textbf{(a) Architectural configurations and component progression}\par\smallskip
 \begingroup\footnotesize\setlength{\tabcolsep}{4pt}
@@ -9,16 +9,16 @@
 \textbf{Step} & \textbf{Backbone} & \shortstack[l]{\textbf{BEV}\\ \textbf{Input}} & \shortstack[l]{\textbf{Head}\\ \textbf{Architecture}} & \shortstack[l]{\textbf{GT}\\ \textbf{Sampling}} & \shortstack[l]{\textbf{Fusion /}\\ \textbf{Neck}} & \shortstack[l]{\textbf{Supervision /}\\ \textbf{Attention}} \\
 \midrule
 A0 & MobilePIXOR & Binary35  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A1 & MobilePixorNeXt & Binary35  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A2 & MobilePixorNeXt & Strata-BEV8  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A3 & MobilePixorNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A4 & MobilePixorNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A5 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A6 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F24 / SumFPN & Baseline Smooth-L1 \\
-A7 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SumFPN & Baseline Smooth-L1 \\
-A8 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & Baseline Smooth-L1 \\
-A9 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA Head \\
-A10 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA + Block-SimAM \\
+A1 & MobilePIXORNeXt & Binary35  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A2 & MobilePIXORNeXt & Strata-BEV8  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A3 & MobilePIXORNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A4 & MobilePIXORNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A5 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
+A6 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F24 / SumFPN & Baseline Smooth-L1 \\
+A7 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SumFPN & Baseline Smooth-L1 \\
+A8 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & Baseline Smooth-L1 \\
+A9 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA Head \\
+A10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA + Block-SimAM \\
 \bottomrule
 \end{tabular}\endgroup
 \par\medskip
@@ -30,11 +30,11 @@ A10 & MobilePixorNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA
 \midrule
 A0 & Baseline MobilePIXOR starting checkpoint & 41.40 & 42.27 & 11.05 & 90.57 \\
 A1 & + ConvNeXt-style backbone ($7\times 7$ DW, SiLU, Inverted Bottleneck) & 47.60 & 49.08 & \textbf{5.88} & \textbf{169.97} \\
-A2 & + 8-channel RichBEV statistical representation & 47.37 & 48.95 & 6.06 & 165.02 \\
+A2 & + 8-channel Strata-BEV8 statistical representation & 47.37 & 48.95 & 6.06 & 165.02 \\
 A3 & + 14-channel Strata-BEV14 (subcell offsets, height moments) & 50.14 & 52.00 & \underline{5.92} & \underline{169.01} \\
-A4 & + Decoupled Grouped Header (Car vs. Ped/Cyc, 16 channels) & 51.30 & 53.96 & 6.92 & 144.58 \\
-A5 & + Expanded Grouped Header capacity (H32, 32 channels) & 60.22 & 61.11 & 6.70 & 149.15 \\
-A6 & + Physics-Aware Ground-Truth Augmentation (PC-GTA) & 66.25 & 68.45 & 7.45 & 134.25 \\
+A4 & + Decoupled GroupedHeader (Car vs. Ped/Cyc, 16 channels) & 51.30 & 53.96 & 6.92 & 144.58 \\
+A5 & + Expanded GroupedHeader capacity (H32, 32 channels) & 60.22 & 61.11 & 6.70 & 149.15 \\
+A6 & + Physics-Consistent Ground-Truth Augmentation (PC-GTA) & 66.25 & 68.45 & 7.45 & 134.25 \\
 A7 & + Expanded neck fusion layer ($F_{32}$, 32 channels) & 68.12 & 70.05 & 6.72 & 148.82 \\
 A8 & + Bilinear Depthwise Scale-Gated Neck (SG-FPN) & 67.38 & 69.46 & 6.94 & 144.16 \\
 A9 & + Oriented Geometric Alignment (OGA) and IQA supervision & \underline{70.58} & \underline{72.66} & 8.19 & 122.16 \\
@@ -42,5 +42,5 @@ A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \textbf{
 \bottomrule
 \end{tabular*}\endgroup
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} Step identifiers A0--A10 correspond to the experimental progression from baseline R01 to peak configuration. Standalone model forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU on isolated batches excluding I/O and NMS. In the complete perception pipeline (Table~\ref{tab:efficiency}), model forward execution operates at $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) due to runtime evaluation harness synchronization, with a full system E2E latency of $60.96\,\text{ms}$ ($16.41\,\text{FPS}$).}
+{\footnotesize \textit{Note.} Step identifiers A0--A10 trace additions from baseline R01 to the final configuration. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU, excluding I/O and NMS. In the complete pipeline (Table~\ref{tab:efficiency}), forward execution takes $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with evaluation-harness synchronization. Full-system E2E latency is $60.96\,\text{ms}$ ($16.41\,\text{FPS}$).}
 \end{table*}

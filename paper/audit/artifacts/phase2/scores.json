@@ -1,0 +1,56 @@
+[
+  {
+    "reviewer": 1,
+    "criterion": "Ký hiệu và convention",
+    "score": 3,
+    "reason": "Ký hiệu phần lớn được định nghĩa; R4/ray và level/stride cần sửa; corner order thiếu."
+  },
+  {
+    "reviewer": 1,
+    "criterion": "Chiều tensor và khớp triển khai final",
+    "score": 3,
+    "reason": "Numeric shape chain khớp; SG-FPN operator chưa đúng; context có nhiều snapshot cũ."
+  },
+  {
+    "reviewer": 1,
+    "criterion": "Loss, trọng số và numerical rigor",
+    "score": 2,
+    "reason": "Adaptive/fixed weights đã có; primitive reductions, EMA lifecycle và Q-OGA còn thiếu."
+  },
+  {
+    "reviewer": 1,
+    "criterion": "Pseudocode và inference contract",
+    "score": 2,
+    "reason": "Sai thứ tự peak/joint score tạo output khác trên counterexample cụ thể."
+  },
+  {
+    "reviewer": 1,
+    "criterion": "Động lực hình học/toán học",
+    "score": 3,
+    "reason": "Moments,projection/corner có động lực; gate/attention và các heuristic cần evidence đúng mức."
+  },
+  {
+    "reviewer": 1,
+    "criterion": "Mức đóng góp lý thuyết",
+    "score": 3,
+    "reason": "Có engineering/objective integration; không yêu cầu theorem, chưa xác minh novelty toàn literature."
+  },
+  {
+    "reviewer": 2,
+    "criterion": "Reproducibility checklist",
+    "score": 3,
+    "reason": "Geometry/optimizer/augmentation chính rõ; recipe/ownership/training GPU còn thiếu."
+  },
+  {
+    "reviewer": 2,
+    "criterion": "Ablation và kiểm soát thực nghiệm",
+    "score": 2,
+    "reason": "Có nhiều rows và factorial loss; thiếu isolated weighting/geometry và manifests cho SimAM."
+  },
+  {
+    "reviewer": 2,
+    "criterion": "Complexity, memory và latency",
+    "score": 3,
+    "reason": "Params/memory/pipeline timing tốt; standalone provenance và CPU/training hardware chưa đủ; thiếu MAC count."
+  }
+]

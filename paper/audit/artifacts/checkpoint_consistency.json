@@ -1,0 +1,24 @@
+{
+  "file": "sections/results.tex",
+  "records": [
+    {
+      "role": "prose",
+      "line": 149,
+      "epoch": 50,
+      "quote": "extended run (Epoch 50)"
+    },
+    {
+      "role": "caption",
+      "line": 153,
+      "epoch": 130,
+      "quote": "validation AP maximization (Epoch 130)"
+    },
+    {
+      "role": "table_row",
+      "line": 160,
+      "epoch": 130,
+      "quote": "\\textbf{Best AP} & \\textbf{130}"
+    }
+  ],
+  "consistent": false
+}

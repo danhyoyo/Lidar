@@ -1,0 +1,480 @@
+{
+  "subtractions": [
+    {
+      "name": "ours-PointPillars Moderate",
+      "a": "71.46",
+      "b": "70.13",
+      "operation": "subtract",
+      "exact": "1.33",
+      "unit": "pp",
+      "claimed": "1.33",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "ours-SECOND Moderate",
+      "a": "71.46",
+      "b": "72.09",
+      "operation": "subtract",
+      "exact": "-0.63",
+      "unit": "pp",
+      "claimed": "-0.63",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "ours-MobilePIXOR Moderate",
+      "a": "71.46",
+      "b": "41.40",
+      "operation": "subtract",
+      "exact": "30.06",
+      "unit": "pp",
+      "claimed": "30.06",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "ours-MobilePIXOR mAP9",
+      "a": "73.42",
+      "b": "42.27",
+      "operation": "subtract",
+      "exact": "31.15",
+      "unit": "pp",
+      "claimed": "31.15",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Pedestrian vs PointPillars",
+      "a": "60.75",
+      "b": "56.01",
+      "operation": "subtract",
+      "exact": "4.74",
+      "unit": "pp",
+      "claimed": "4.74",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Pedestrian vs SECOND",
+      "a": "60.75",
+      "b": "56.56",
+      "operation": "subtract",
+      "exact": "4.19",
+      "unit": "pp",
+      "claimed": "4.19",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Pedestrian vs MobilePIXOR",
+      "a": "60.75",
+      "b": "28.16",
+      "operation": "subtract",
+      "exact": "32.59",
+      "unit": "pp",
+      "claimed": "32.59",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Car vs PIXOR",
+      "a": "86.90",
+      "b": "72.02",
+      "operation": "subtract",
+      "exact": "14.88",
+      "unit": "pp",
+      "claimed": "14.88",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Car vs MobilePIXOR",
+      "a": "86.90",
+      "b": "75.52",
+      "operation": "subtract",
+      "exact": "11.38",
+      "unit": "pp",
+      "claimed": "11.38",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "backbone A0-A1",
+      "a": "47.60",
+      "b": "41.40",
+      "operation": "subtract",
+      "exact": "6.20",
+      "unit": "pp",
+      "claimed": "6.20",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "encoding vs TriBand",
+      "a": "50.14",
+      "b": "44.42",
+      "operation": "subtract",
+      "exact": "5.72",
+      "unit": "pp",
+      "claimed": "5.72",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "encoding vs Binary35",
+      "a": "50.14",
+      "b": "47.60",
+      "operation": "subtract",
+      "exact": "2.54",
+      "unit": "pp",
+      "claimed": "2.54",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "group head width",
+      "a": "60.22",
+      "b": "51.30",
+      "operation": "subtract",
+      "exact": "8.92",
+      "unit": "pp",
+      "claimed": "8.92",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "PC-GTA Moderate",
+      "a": "66.25",
+      "b": "60.22",
+      "operation": "subtract",
+      "exact": "6.03",
+      "unit": "pp",
+      "claimed": "6.03",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "PC-GTA mAP9",
+      "a": "68.45",
+      "b": "61.11",
+      "operation": "subtract",
+      "exact": "7.34",
+      "unit": "pp",
+      "claimed": "7.34",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "fusion width",
+      "a": "68.12",
+      "b": "66.25",
+      "operation": "subtract",
+      "exact": "1.87",
+      "unit": "pp",
+      "claimed": "1.87",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SG-FPN isolated progression",
+      "a": "67.38",
+      "b": "68.12",
+      "operation": "subtract",
+      "exact": "-0.74",
+      "unit": "pp",
+      "claimed": "-0.74",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "width+neck combined",
+      "a": "67.38",
+      "b": "66.25",
+      "operation": "subtract",
+      "exact": "1.13",
+      "unit": "pp",
+      "claimed": "1.13",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "OGA+IQA",
+      "a": "70.58",
+      "b": "67.38",
+      "operation": "subtract",
+      "exact": "3.20",
+      "unit": "pp",
+      "claimed": "3.20",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SimAM Moderate final",
+      "a": "71.46",
+      "b": "70.58",
+      "operation": "subtract",
+      "exact": "0.88",
+      "unit": "pp",
+      "claimed": "0.88",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SimAM mAP9 final",
+      "a": "73.42",
+      "b": "72.66",
+      "operation": "subtract",
+      "exact": "0.76",
+      "unit": "pp",
+      "claimed": "0.76",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SimAM vs stage2",
+      "a": "71.46",
+      "b": "69.44",
+      "operation": "subtract",
+      "exact": "2.02",
+      "unit": "pp",
+      "claimed": "2.02",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SimAM vs stage3",
+      "a": "71.46",
+      "b": "69.80",
+      "operation": "subtract",
+      "exact": "1.66",
+      "unit": "pp",
+      "claimed": "1.66",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "SimAM vs stage4",
+      "a": "71.46",
+      "b": "69.36",
+      "operation": "subtract",
+      "exact": "2.10",
+      "unit": "pp",
+      "claimed": "2.10",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "OGA alone",
+      "a": "68.97",
+      "b": "67.38",
+      "operation": "subtract",
+      "exact": "1.59",
+      "unit": "pp",
+      "claimed": "1.59",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "IQA alone",
+      "a": "70.31",
+      "b": "67.38",
+      "operation": "subtract",
+      "exact": "2.93",
+      "unit": "pp",
+      "claimed": "2.93",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "OGA added with IQA",
+      "a": "70.58",
+      "b": "70.31",
+      "operation": "subtract",
+      "exact": "0.27",
+      "unit": "pp",
+      "claimed": "0.27",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "IQA added with OGA",
+      "a": "70.58",
+      "b": "68.97",
+      "operation": "subtract",
+      "exact": "1.61",
+      "unit": "pp",
+      "claimed": "1.61",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "factorial interaction",
+      "a": "3.20",
+      "b": "4.52",
+      "operation": "subtract",
+      "exact": "-1.32",
+      "unit": "pp",
+      "claimed": "-1.32",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Q-OGA vs OGA",
+      "a": "69.20",
+      "b": "68.97",
+      "operation": "subtract",
+      "exact": "0.23",
+      "unit": "pp",
+      "claimed": "0.23",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "Q-OGA vs baseline",
+      "a": "69.20",
+      "b": "67.38",
+      "operation": "subtract",
+      "exact": "1.82",
+      "unit": "pp",
+      "claimed": "1.82",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "quality head time",
+      "a": "8.19",
+      "b": "6.94",
+      "operation": "subtract",
+      "exact": "1.25",
+      "unit": "ms",
+      "claimed": "1.25",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "attention time",
+      "a": "8.67",
+      "b": "8.19",
+      "operation": "subtract",
+      "exact": "0.48",
+      "unit": "ms",
+      "claimed": "0.48",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "checkpoint E2E",
+      "a": "81.23",
+      "b": "60.96",
+      "operation": "subtract",
+      "exact": "20.27",
+      "unit": "ms",
+      "claimed": "20.27",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "near Pedestrian",
+      "a": "65.23",
+      "b": "30.45",
+      "operation": "subtract",
+      "exact": "34.78",
+      "unit": "pp",
+      "claimed": "34.78",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "near Cyclist",
+      "a": "76.32",
+      "b": "25.55",
+      "operation": "subtract",
+      "exact": "50.77",
+      "unit": "pp",
+      "claimed": "50.77",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "mid Pedestrian",
+      "a": "11.49",
+      "b": "3.75",
+      "operation": "subtract",
+      "exact": "7.74",
+      "unit": "pp",
+      "claimed": "7.74",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "mid Cyclist",
+      "a": "44.30",
+      "b": "12.61",
+      "operation": "subtract",
+      "exact": "31.69",
+      "unit": "pp",
+      "claimed": "31.69",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "far Pedestrian",
+      "a": "0.80",
+      "b": "0.99",
+      "operation": "subtract",
+      "exact": "-0.19",
+      "unit": "pp",
+      "claimed": "-0.19",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "far Cyclist",
+      "a": "14.94",
+      "b": "0.56",
+      "operation": "subtract",
+      "exact": "14.38",
+      "unit": "pp",
+      "claimed": "14.38",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "context R37 Moderate conflict",
+      "a": "71.50",
+      "b": "71.46",
+      "operation": "subtract",
+      "exact": "0.04",
+      "unit": "pp",
+      "claimed": "0.04",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "context R37 mAP9 conflict",
+      "a": "73.45",
+      "b": "73.42",
+      "operation": "subtract",
+      "exact": "0.03",
+      "unit": "pp",
+      "claimed": "0.03",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "context R37 attention delta",
+      "a": "71.50",
+      "b": "70.58",
+      "operation": "subtract",
+      "exact": "0.92",
+      "unit": "pp",
+      "claimed": "0.92",
+      "arithmetic_matches": true
+    },
+    {
+      "name": "context R37 mAP9 attention delta",
+      "a": "73.45",
+      "b": "72.66",
+      "operation": "subtract",
+      "exact": "0.79",
+      "unit": "pp",
+      "claimed": "0.79",
+      "arithmetic_matches": true
+    }
+  ],
+  "parameter_reductions": {
+    "pointpillars": {
+      "baseline_count": 4834888,
+      "ours_count": 753569,
+      "exact_count_percent": "84.41393058122545961767883765",
+      "raw_rounded_1dp": "84.4",
+      "raw_rounded_2dp": "84.41",
+      "rounded_table_percent": "84.40537745604963805584281282",
+      "table_rounded_1dp": "84.4",
+      "parameter_ratio": "6.415985795594033194040625344"
+    },
+    "second": {
+      "baseline_count": 5325576,
+      "ours_count": 753569,
+      "exact_count_percent": "85.85000007510924639888718141",
+      "raw_rounded_1dp": "85.9",
+      "raw_rounded_2dp": "85.85",
+      "rounded_table_percent": "85.84303417198648141194141945",
+      "table_rounded_1dp": "85.8",
+      "parameter_ratio": "7.067137846700169460261767668"
+    }
+  },
+  "relative_percent_examples": {
+    "PointPillars_margin": "1.896477969485241693996862969",
+    "PC_GTA_gain": "10.01328462304882098970441714"
+  },
+  "payload": {
+    "binary35_bytes": 78848000,
+    "hist14_bytes": 31539200,
+    "reduction_percent": 60
+  },
+  "fps_from_ms": {
+    "60.96": "16.40419947506561679790026247",
+    "17.88": "55.92841163310961968680089485",
+    "8.67": "115.3402537485582468281430219"
+  }
+}

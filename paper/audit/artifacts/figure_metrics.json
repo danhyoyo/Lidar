@@ -1,0 +1,76 @@
+{
+  "actual_figure_calls": 10,
+  "missing_actual_assets": [],
+  "figures": [
+    {
+      "file": "sections/methodology.tex",
+      "line": 7,
+      "asset": "pipeline_overview.pdf",
+      "exists": true,
+      "bytes": 2337354
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 49,
+      "asset": "strata_bev14.pdf",
+      "exists": true,
+      "bytes": 1292192
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 184,
+      "asset": "backbone_f32.pdf",
+      "exists": true,
+      "bytes": 77972
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 216,
+      "asset": "next_simam_block.pdf",
+      "exists": true,
+      "bytes": 158925
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 275,
+      "asset": "scale_gated_fusion.pdf",
+      "exists": true,
+      "bytes": 68039
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 300,
+      "asset": "geometry_output_2x2.pdf",
+      "exists": true,
+      "bytes": 132405
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 11,
+      "asset": "pareto_tradeoff.pdf",
+      "exists": true,
+      "bytes": 38737
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 23,
+      "asset": "pr_all_difficulties.pdf",
+      "exists": true,
+      "bytes": 215947
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 138,
+      "asset": "training_curves_all_losses_2.pdf",
+      "exists": true,
+      "bytes": 57015
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 176,
+      "asset": "qualitative_detections.pdf",
+      "exists": true,
+      "bytes": 808373
+    }
+  ]
+}

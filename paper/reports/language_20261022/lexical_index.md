@@ -1,0 +1,413 @@
+# Từ và cụm từ cần đọc theo ngữ cảnh
+
+Đây là chỉ mục toàn bộ dòng nguồn chứa các từ được tác giả nêu hoặc từ tăng cường được xem xét trong lượt sửa. Không có danh sách cấm áp dụng mù quáng. `forbidden-terms.md` của skill thực tế liệt kê thuật ngữ cần bảo vệ, không phải từ vựng phải xóa.
+
+## L001 — [sections/abstract.tex:1](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/abstract.tex:1)
+
+Từ/cụm: severe, critical, ultra-compact.
+
+```latex
+Three-dimensional object detection from Light Detection and Ranging (LiDAR) point clouds is critical for autonomous navigation; however, conventional volumetric and pillar-based architectures impose severe computational challenges on edge accelerators. We propose MobilePIXORNeXt, an ultra-compact, proposal-free Bird's-Eye View (BEV) detector operating under 753,569 parameters. The framework replaces learned point encoders with Strata-BEV14, a parameter-free deterministic NumPy/Numba CPU rasterizer that extracts 14 statistical feature channels---capturing stratified height distributions, elevation moments, surface reflectance, and continuous subcell centroid displacement offsets---with a measured input preprocessing time of 20.94 milliseconds, including point-cloud loading and rasterization. Spatial features are extracted by a single-branch ConvNeXt-style backbone with embedded parameter-free 3D spatial-energy attention (Block-SimAM), fused through a Scale-Gated Feature Pyramid Network, and predicted by decoupled grouped heads. Training is supervised by Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment, dynamically balanced via 12-parameter Temperature-Softmax Bounded Uncertainty Weighting. On the KITTI validation set using BEV AP $R_{40}$, MobilePIXORNeXt achieves 71.46\% Moderate mean Average Precision (mAP) and 73.42\% overall 9-cell mAP across Car, Pedestrian, and Cyclist categories. It outperforms PointPillars (70.13\% mAP) with an 84.4\% parameter reduction and matches SECOND (72.09\% mAP) with 85.8\% fewer parameters, while reaching 60.75\% Moderate AP on pedestrians. The complete pipeline executes in 60.96 milliseconds (16.41 frames per second) on an NVIDIA Tesla T4 GPU, delivering the fastest end-to-end throughput among evaluated real-time detectors. Our findings demonstrate that deterministic statistical encoding and oriented geometric supervision enable high-accuracy LiDAR perception on resource-constrained embedded systems.
+```
+
+Đã biên tập trong U001; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L002 — [sections/conclusion.tex:5](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex:5)
+
+Từ/cụm: ultra-compact, eliminates.
+
+```latex
+In this work, we presented MobilePIXORNeXt, an ultra-compact, proposal-free 3D LiDAR object detector designed for real-time edge perception on resource-constrained platforms. By introducing the deterministic Strata-BEV14 rasterizer, the architecture eliminates computationally intensive PointNet pillar encoders and 3D sparse convolutions, preserving continuous vertical distribution moments, material surface reflectivity, and horizontal subcell centroid displacements with zero learned parameters. Multi-scale spatial features are processed via a single-branch ConvNeXt-style backbone hierarchy with embedded parameter-free Block-SimAM 3D energy attention, unified by a Scale-Gated Feature Pyramid Network into decoupled grouped prediction towers. Training is governed by Physics-Consistent Ground-Truth Augmentation (PC-GTA) alongside Oriented Geometric Alignment (OGA) and IoU-Aware Quality Alignment (IQA), dynamically balanced via 12-parameter Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).
+```
+
+Đã biên tập trong U002; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L003 — [sections/conclusion.tex:7](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/conclusion.tex:7)
+
+Từ/cụm: leading.
+
+```latex
+Evaluations on the KITTI validation benchmark using Moderate BEV AP $R_{40}$ demonstrate that MobilePIXORNeXt establishes a leading Pareto trade-off between detection accuracy, model compactness, and operational latency. Containing exactly $753{,}569$ parameters ($9.34\,\text{MB}$ checkpoint), the model achieves $71.46\%$ Moderate mAP and $73.42\%$ $\text{mAP}_9$ across Car, Pedestrian, and Cyclist. These results surpass PointPillars by $1.33\%$ Moderate mAP with an $84.4\%$ parameter reduction, while matching the detection performance of SECOND ($72.09\%$ mAP) with an $85.8\%$ parameter reduction ($7.1\times$ fewer parameters). On vulnerable road users, the network achieves $60.75\%$ Moderate AP on pedestrians, outperforming PointPillars by $4.74\%$ and SECOND by $4.19\%$. In full-system benchmarking on an NVIDIA Tesla T4 GPU, MobilePIXORNeXt executes the complete input-to-detection pipeline in $60.96\,\text{ms}$ ($16.41\,\text{FPS}$), achieving the lowest operational latency among evaluated real-time detectors. Controlled ablation experiments confirm that PC-GTA yields a $+6.03\%$ mAP improvement by mitigating unphysical synthesis artifacts, while OGA and IQA deliver an additional $+3.20\%$ mAP gain through rotated geometric overlap alignment and confidence score calibration.
+```
+
+Đã biên tập trong U003; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L004 — [sections/declarations.tex:29](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex:29)
+
+Từ/cụm: significantly.
+
+```latex
+All authors contributed significantly to the study conception, architecture design, and empirical evaluation. 
+```
+
+Đã biên tập trong U012; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L005 — [sections/declarations.tex:33](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/declarations.tex:33)
+
+Từ/cụm: critical.
+
+```latex
+\textbf{Hoang Ngoc Tran}: Research supervision, conceptual validation, project administration, critical revision, and final review of the manuscript. 
+```
+
+Giữ: critical revision là vai trò đóng góp học thuật cụ thể, không phải tính từ quảng bá.
+
+## L006 — [sections/experiments.tex:43](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/experiments.tex:43)
+
+Từ/cụm: optimal.
+
+```latex
+The proposed MobilePIXORNeXt architecture processes 14-channel Strata-BEV14 tensors. The network comprises a two-layer $3 \times 3$ convolutional stem ($32$ channels, stride 2), three hierarchical backbone stages with channel widths $(48, 96, 128)$ and block depths $(3, 4, 2)$ based on \texttt{MobilePixorNeXt-S} blocks with large $7 \times 7$ depthwise convolutions, inverted expansion ratio $e=2.5$, SiLU activations, and LayerScale parameters initialized to $10^{-5}$. Parameter-free Block-SimAM attention is embedded inside all nine residual blocks. The multiscale Scale-Gated Feature Pyramid Network (SG-FPN) fuses stages C4, C3, and C2 into an optimal $F_{32}$ (32-channel) representation at stride 4 ($200 \times 176$). Decoupled GroupedHeader towers process Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) independently, utilizing a shared initial $3 \times 3$ Conv-BN-SiLU transformation per group. The complete detector contains exactly $753{,}569$ trainable parameters, corresponding to an FP32 checkpoint size of $9.34\,\text{MB}$.
+```
+
+Đã biên tập trong U024; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L007 — [sections/introduction.tex:5](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:5)
+
+Từ/cụm: essential, ultra-compact, highly discriminative.
+
+```latex
+Three-dimensional (3D) spatial perception from Light Detection and Ranging (LiDAR) point clouds provides essential sensory grounding for safe autonomous navigation, mobile robotics, and intelligent transportation systems. Unlike passive optical cameras, which remain vulnerable to ambient illumination fluctuations and projective scale ambiguities, LiDAR sensors actively emit pulsed laser beams to measure direct metric ranges, capturing high-precision geometric boundaries under arbitrary day-and-night conditions~\cite{geiger2012kitti}. In time-critical vehicular environments, perception systems must accurately detect, orient, and classify surrounding objects (from passenger vehicles to compact vulnerable road users such as pedestrians and cyclists) within strict latency envelopes, typically requiring sub-$100\,\text{ms}$ execution per scan~\cite{yang2018pixor}. However, deploying high-accuracy 3D object detection models on embedded vehicular platforms faces an acute operational tension between detection accuracy and hardware resource consumption. Commodity onboard edge accelerators operate under stringent thermal and electrical power budgets, where memory bandwidth, cache capacity, and arithmetic throughput are strictly constrained. Consequently, developing ultra-compact yet highly discriminative LiDAR object detection architectures that sustain real-time execution without forfeiting spatial localization fidelity remains an essential prerequisite for scalable autonomous driving.
+```
+
+Đã biên tập trong U028; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L008 — [sections/introduction.tex:7](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:7)
+
+Từ/cụm: severe, substantial, eliminate.
+
+```latex
+To extract 3D bounding boxes from unstructured point clouds, existing detection paradigms fall into three primary methodological families, each exhibiting inherent architectural trade-offs on resource-constrained platforms. First, volumetric voxel-based architectures, exemplified by SECOND~\cite{yan2018second}, and two-stage point-voxel frameworks, such as PointRCNN~\cite{shi2019pointrcnn}, Part-$A^2$~\cite{shi2020part}, and PV-RCNN~\cite{shi2020pvrcnn}, achieve competitive detection accuracy by deploying 3D sparse convolutions or localized point-cloud abstractions. Nevertheless, their multi-million parameter footprints ($4.0\text{--}63.8\,\text{M}$) and heavy memory access latencies ($100\text{--}195\,\text{ms}$) exceed the operational limits of embedded edge processors. Second, pillar-based detectors, pioneered by PointPillars~\cite{lang2019pointpillars} and modernized by PillarNeXt~\cite{li2023pillarnext} and PillarNeSt~\cite{mao2023pillarnest}, project points into vertical pillars processed via PointNet encoders to construct Bird's-Eye View (BEV) 2D feature representations. While faster than volumetric methods, non-deterministic point gathering, dynamic memory allocation, and sparse scattering introduce substantial runtime overhead and memory transfer latency. Third, proposal-free BEV rasterization methods, such as PIXOR~\cite{yang2018pixor} and MobilePIXOR~\cite{nguyen2024indoor}, eliminate learned encoders entirely by discretizing point clouds into fixed vertical occupancy grids. Although conceptually efficient, existing rasterization methods suffer from severe spatial quantization errors on standard $0.1\,\text{m}$ grids; by relying on crude binary occupancy slices, they discard continuous subcell offsets and high-order vertical dispersion statistics, inducing spatial staircasing and localization jitter on small objects. While recent studies such as PillarHist~\cite{zhou2025pillarhist} explore height histograms and TriBand-BEV~\cite{khoshkdahan2026triband} explores multi-band vertical slicing, they still omit continuous subcell displacements combined with continuous vertical spatial moments. In addition, naive cut-and-paste data augmentation creates physical artifacts, small-scale backbones experience receptive-field starvation across disparate object dimensions, and uncalibrated classification heatmaps cause misaligned false positives to suppress well-localized candidates during Non-Maximum Suppression (NMS)~\cite{li2020gfl}. The failure of existing compact detectors to simultaneously resolve fine subcell quantization errors, unphysical augmentation artifacts, multi-scale receptive field coverage, and geometric score misalignment constitutes the core bottleneck impeding sub-million-parameter LiDAR perception.
+```
+
+Đã biên tập trong U029; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L009 — [sections/introduction.tex:9](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:9)
+
+Từ/cụm: fundamental, ultra-compact, superior.
+
+```latex
+We address this fundamental challenge through a key scientific insight: sub-voxel geometric precision can be preserved deterministically at the representation level by coupling multi-band vertical densities and continuous elevation moments with horizontal subcell centroid displacements, bypassing learned PointNet encoders entirely without forfeiting fine spatial boundaries. Grounded in this principle, we investigate the central research question: \textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?} To realize this objective, our framework couples this deterministic representation with a single-branch ConvNeXt-style backbone~\cite{liu2022convnext} utilizing large $7 \times 7$ depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~\cite{yang2021simam}, expanding physical receptive fields to envelop entire vehicles without multi-branch training overhead. Concurrently, physics-consistent data synthesis regularizes distant returns, while multi-axis geometric supervision and localization-quality ranking align backpropagation gradients directly with rotated bounding box overlap. Together, these complementary mechanisms demonstrate that disciplined geometric encoding and calibrated multi-task loss formulation bridge the performance divide between compact 2D representations and multi-million-parameter 3D networks.
+```
+
+Đã biên tập trong U030; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L010 — [sections/introduction.tex:11](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:11)
+
+Từ/cụm: streamlined, ultra-compact, eliminate.
+
+```latex
+Guided by this design philosophy, we propose \textbf{MobilePIXORNeXt}, an ultra-compact, proposal-free, multi-class 3D LiDAR object detector containing exactly $753{,}569$ trainable parameters ($<0.76\,\text{M}$). Figure~\ref{fig:r37_overview} illustrates the end-to-end data flow of our framework. An unordered LiDAR point cloud is deterministically transformed via the parameter-free \textbf{Strata-BEV14} rasterizer into a 14-channel statistical BEV tensor ($800 \times 704$ at $0.1\,\text{m}$ resolution) using NumPy or Numba on CPU, with point-cloud loading and rasterization taking $20.94\,\text{ms}$ in the measured pipeline, capturing height-band densities, vertical spatial moments ($z_{\max}, z_{\mathrm{mean}}, z_{\mathrm{span}}, z_{\mathrm{std}}$), surface reflectance statistics, and continuous subcell centroid displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$ to eliminate quantization error. To regularize training without unphysical artifacts, we formulate \textbf{Physics-Consistent Ground-Truth Augmentation (PC-GTA)}, which combines local ground elevation fitting, static obstacle clearance, and range-adaptive point subsampling, with optional line-of-sight checks, raycast shadow masking, and intensity attenuation. Multi-scale feature extraction is performed by the \textbf{MobilePixorNeXt-S} backbone hierarchy across stages $C_2, C_3, C_4$, utilizing streamlined $7 \times 7$ depthwise inverted bottleneck blocks ($e=2.5$), SiLU activations, LayerScale stabilization, and embedded parameter-free \textbf{Block-SimAM} energy attention operating inside all nine residual blocks. Multi-scale semantic context and fine coordinates are balanced by the top-down \textbf{Scale-Gated Feature Pyramid Network (SG-FPN Neck, $F_{32}$)}, which employs bilinear upsampling, depthwise refinement, and learnable scale gates to eliminate deconvolution checkerboard artifacts. Predictions are decoupled into Car ($K_1=1$) and Pedestrian/Cyclist ($K_2=2$) categories via independent \textbf{GroupedHeader} towers sharing an initial $3 \times 3$ Conv-BN-SiLU block. During training, the network is supervised by \textbf{Oriented Geometric Alignment (OGA)}---coupling Multi-Axis Projection Generalized IoU (MGIoU)~\cite{le2026mgiou} with scale-normalized $\pi$-symmetric corner distance---and dynamically balanced via 12-parameter \textbf{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)}. At inference, predicted boxes are ranked using composite scores from \textbf{IoU-Aware Quality Alignment (IQA)} ($s_{\mathrm{det}} = \sqrt{p_{\mathrm{cls}}\hat{q}}$) before class-wise rotated Non-Maximum Suppression (NMS). By deterministically capturing continuous geometry at the input, expanding receptive fields via single-branch large-kernel convolution, and supervising rotated overlap directly, this coherent pipeline resolves each aforementioned bottleneck within a unified, edge-deployable framework.
+```
+
+Đã biên tập trong U031; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L011 — [sections/introduction.tex:15](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:15)
+
+Từ/cụm: streamlined, ultra-compact, eliminates.
+
+```latex
+    \item \textbf{Ultra-compact proposal-free BEV detection.} We develop \textbf{MobilePIXORNeXt}, an ultra-compact ($753{,}569$ trainable parameters) LiDAR detector that eliminates learned PointNet encoders and 3D sparse convolutions. The architecture integrates the deterministic 14-channel \textbf{Strata-BEV14} representation, the streamlined \textbf{MobilePixorNeXt-S} backbone hierarchy with embedded parameter-free \textbf{Block-SimAM} energy attention, the \textbf{SG-FPN} neck ($F_{32}$), and decoupled \textbf{GroupedHeader} towers to balance multi-scale road categories.
+```
+
+Đã biên tập trong U032; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L012 — [sections/introduction.tex:19](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/introduction.tex:19)
+
+Từ/cụm: decisive, leading.
+
+```latex
+    \item \textbf{Empirical validation and leading edge Pareto efficiency.} Evaluated using BEV AP $R_{40}$ on the KITTI validation set, MobilePIXORNeXt establishes a leading accuracy-to-parameter and accuracy-to-latency trade-off. It achieves \textbf{71.46\% Moderate mAP} and \textbf{73.42\% $\text{mAP}_9$} with only \textbf{0.754\,M parameters} ($9.34\,\text{MB}$ checkpoint), outperforming PointPillars ($70.13\%$) with an \textbf{84.4\% parameter reduction} and matching the accuracy of SECOND ($72.09\%$) while requiring \textbf{85.8\% fewer parameters} ($7.1\times$ parameter reduction). In complete end-to-end pipeline speed, it operates at \textbf{16.41\,FPS} (\textbf{60.96\,ms} on NVIDIA Tesla T4), running faster than all evaluated real-time detectors. On vulnerable road users, it attains \textbf{60.75\% Moderate AP} on Pedestrian (+4.74\% over PointPillars, +4.19\% over SECOND). Controlled ablations demonstrate that PC-GTA yields a decisive \textbf{+6.03\% Moderate mAP} gain ($60.22\%$ to $66.25\%$), OGA and IQA deliver an additional \textbf{+3.20\% mAP} gain, and Block-SimAM provides \textbf{+0.88\% mAP} at zero parameter overhead.
+```
+
+Đã biên tập trong U034; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L013 — [sections/methodology.tex:8](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:8)
+
+Từ/cụm: streamlined.
+
+```latex
+    \captionof{figure}{End-to-end architecture and tensor flow of the MobilePIXORNeXt LiDAR object detector. Unordered 3D LiDAR point clouds are transformed via the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\mathbf{X} \in \mathbb{R}^{B \times 14 \times 800 \times 704}$ without learned pillar encoders. The streamlined backbone extracts multi-scale features through ConvNeXt-style stages with embedded parameter-free Block-SimAM attention, fused by a top-down Scale-Gated Feature Pyramid Network (SG-FPN) into a 32-channel shared representation at stride 4 ($200 \times 176$). Decoupled GroupedHeader towers process Car and Pedestrian/Cyclist categories independently. Solid arrows trace the feedforward inference path, whereas dashed arrows indicate training-only supervision incorporating Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and dynamic loss balancing via Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
+```
+
+Đã biên tập trong U036; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L014 — [sections/methodology.tex:12](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:12)
+
+Từ/cụm: eliminates.
+
+```latex
+MobilePIXORNeXt is a compact, proposal-free, multi-class three-dimensional (3D) object detector designed for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms. Operating strictly on an efficient Bird's-Eye View (BEV) representation, the framework eliminates computationally expensive learned point-cloud feature encoders and three-dimensional sparse convolutions. Figure~\ref{fig:r37_overview} illustrates the overall detection pipeline, detailing the end-to-end data flow from the raw point cloud to the final decoded oriented bounding boxes.
+```
+
+Đã biên tập trong U037; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L015 — [sections/methodology.tex:27](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:27)
+
+Từ/cụm: eliminate.
+
+```latex
+configured with longitudinal bounds $[0.0, 70.4]$\,m, lateral bounds $[-40.0, 40.0]$\,m, and vertical bounds $[-2.5, 1.0]$\,m. An open-boundary inward margin of $\epsilon = 0.001$\,m is enforced to eliminate boundary artifacts. Discretizing the horizontal plane with a uniform spatial resolution of $\Delta_x = \Delta_y = 0.1$\,m produces a discrete grid of size $H_{\mathrm{in}} \times W_{\mathrm{in}} = 800 \times 704$ cells. A point $\mathbf{p}_i$ is deterministically indexed into grid coordinate $(u_i, v_i)$ via:
+```
+
+Đã biên tập trong U039; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L016 — [sections/methodology.tex:49](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:49)
+
+Từ/cụm: eliminate.
+
+```latex
+    \paperfigure{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene. Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}
+```
+
+Giữ nguyên nội dung fallback trong custom macro được bảo vệ; không thay đổi hợp đồng macro.
+
+## L017 — [sections/methodology.tex:186](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:186)
+
+Từ/cụm: eliminate.
+
+```latex
+    \captionof{figure}{Structural topology of the MobilePIXORNeXt feedforward hierarchy, illustrating layer dimensions, channel widths, and receptive field expansion. A two-layer convolutional stem ingests 14-channel input at stride 2 ($400 \times 352$), followed by three hierarchical stages (C2: 48 channels, depth 3; C3: 96 channels, depth 4; C4: 128 channels, depth 2) composed of \texttt{MobilePixorNeXt-S} blocks with embedded Block-SimAM. The Scale-Gated FPN (SG-FPN) combines deep semantic context with fine spatial coordinates via lateral $1 \times 1$ projections, bilinear $2\times$ upsampling with depthwise $3 \times 3$ refinement, and learnable scale gates $\mathbf{G}_r$ into a shared 32-channel feature map ($F_{32}$) at stride 4 ($200 \times 176$). Independent grouped prediction towers decouple Car from Pedestrian and Cyclist to eliminate aspect-ratio conflicts while conserving model capacity (753,569 total parameters).}
+```
+
+Đã biên tập trong U063; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L018 — [sections/methodology.tex:206](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:206)
+
+Từ/cụm: streamlined.
+
+```latex
+\paragraph{Streamlined Single-Branch Depthwise Design.}
+```
+
+Giữ theo ngữ cảnh: thuật ngữ, tiêu đề hoặc thao tác kỹ thuật có nghĩa cụ thể; không thay từ theo danh sách máy móc.
+
+## L019 — [sections/methodology.tex:232](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:232)
+
+Từ/cụm: prohibitive.
+
+```latex
+Standard attention modules such as Efficient Channel Attention (ECA-Net)~\cite{wang2020eca} or Squeeze-and-Excitation compute 1D channel attention weights by pooling across spatial dimensions, thereby treating all spatial locations identically. Conversely, non-local spatial attention requires quadratic computational complexity $\mathcal{O}((HW)^2)$, rendering it prohibitive for real-time dense BEV grids ($200 \times 176$). To address this trade-off, we integrate \textbf{Block-SimAM}~\cite{yang2021simam}---a 3D spatial-energy attention module operating without adding a single learned parameter.
+```
+
+Đã biên tập trong U074; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L020 — [sections/methodology.tex:270](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:270)
+
+Từ/cụm: severe.
+
+```latex
+Standard Feature Pyramid Networks rely on transposed convolutions (deconvolutions) to upsample low-resolution feature maps, frequently introducing severe high-frequency checkerboard artifacts on continuous coordinate regression grids. While bidirectional multiscale networks (such as PANet or BiFPN) introduce cyclic bottom-up pathways that substantially inflate memory latency on edge accelerators, direct unweighted elementwise addition in conventional FPN causes semantic feature dilution. To resolve this, we design the \textbf{Top-Down Scale-Gated Feature Pyramid Network} (\texttt{SG-FPN Neck})---an efficient, unidirectional top-down fusion neck equipped with depthwise scale-gating.
+```
+
+Đã biên tập trong U081; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L021 — [sections/methodology.tex:307](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:307)
+
+Từ/cụm: severe.
+
+```latex
+Autonomous driving involves drastic morphological discrepancies across object categories. Cars exhibit rigid rectangular footprints ($l \approx 4.5$\,m, $w \approx 1.8$\,m), whereas Pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and Cyclists ($l \approx 1.8$\,m, $w \approx 0.7$\,m) are compact and highly deformable. Forcing a single shared prediction head to jointly regress all classes induces severe gradient competition and scale interference. Conversely, dedicating entirely separate heads to each class inflates parameter size. We resolve this via \textbf{Shared Grouped Prediction Towers} (\texttt{GroupedHeader}).
+```
+
+Đã biên tập trong U087; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L022 — [sections/methodology.tex:334](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:334)
+
+Từ/cụm: synergistic.
+
+```latex
+For every cell $(u, v)$ where $\mathbf{M}_{\mathrm{reg}} = 1$, predicted and ground-truth boxes are decoded into four 2D corners $\{\widehat{\mathbf{c}}_m\}_{m=1}^4$ and $\{\mathbf{c}_m^*\}_{m=1}^4$. OGA couples two synergistic geometric objectives:
+```
+
+Đã biên tập trong U096; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L023 — [sections/methodology.tex:381](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:381)
+
+Từ/cụm: ultra-compact, eliminates.
+
+```latex
+where $\gamma = 2.0$. By training the classification head to output IoU-calibrated confidence scores intrinsically, Q-OGA eliminates the $18.59\,\text{K}$ parameter footprint of the explicit IQA heads and reduces forward inference latency by $1.25\,\text{ms}$, serving as an ultra-compact supervision strategy.
+```
+
+Đã biên tập trong U103; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L024 — [sections/methodology.tex:384](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:384)
+
+Từ/cụm: eliminates, principled.
+
+```latex
+To dynamically harmonize multi-task gradient scales across six heterogeneous loss objectives $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$), we formulate \textbf{T-SBUW} as a principled, bounded optimization framework that eliminates fragile manual hyperparameter tuning. The formulation operates via two coupled mechanisms:
+```
+
+Đã biên tập trong U104; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L025 — [sections/methodology.tex:459](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:459)
+
+Từ/cụm: ultra-compact.
+
+```latex
+The complete MobilePIXORNeXt detector contains exactly \textbf{753,569 trainable parameters} ($< 0.76$\,M), corresponding to an ultra-compact FP32 checkpoint size of $9.34$\,MB:
+```
+
+Đã biên tập trong U110; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L026 — [sections/methodology.tex:464](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/methodology.tex:464)
+
+Từ/cụm: eliminated.
+
+```latex
+    \item \textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\%$), eliminated during deployment.
+```
+
+Giữ theo ngữ cảnh: thuật ngữ, tiêu đề hoặc thao tác kỹ thuật có nghĩa cụ thể; không thay từ theo danh sách máy móc.
+
+## L027 — [sections/related_work.tex:4](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex:4)
+
+Từ/cụm: eliminated.
+
+```latex
+Dense horizontal projection provides an efficient pathway to apply high-throughput 2D convolutional networks to unstructured 3D LiDAR point clouds. PIXOR~\cite{yang2018pixor} established the foundational paradigm of proposal-free Bird's-Eye View (BEV) detection by discretizing point clouds into fixed vertical occupancy slices and calibrated reflectance maps. Building upon this formulation, Nguyen et al.~\cite{nguyen2024indoor} introduced MobilePIXOR, replacing heavyweight convolutional layers with inverted residual blocks and Gaussian heatmap supervision for indoor robotic perception. In parallel, PointPillars~\cite{lang2019pointpillars} eliminated rigid vertical slicing by organizing point clouds into vertical columns (pillars) and learning spatial feature representations via localized PointNet encoders. Modern extensions such as PillarNeXt~\cite{li2023pillarnext} and PillarNeSt~\cite{mao2023pillarnest} systematically modernized pillar-based receptive field designs and backbone scaling for large-scale outdoor perception.
+```
+
+Đã biên tập trong U113; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L028 — [sections/related_work.tex:6](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex:6)
+
+Từ/cụm: severe, fundamental, prohibitive.
+
+```latex
+A fundamental operational dichotomy divides existing BEV representations between expressive PointNet-based pillar feature encoders and high-speed fixed-grid rasterization. On one hand, PointNet-based pillar encoders~\cite{lang2019pointpillars,li2023pillarnext} achieve expressive geometric learning, yet the non-deterministic point gathering, dynamic memory allocation, and sparse scatter operations incur prohibitive latency and energy penalties on edge accelerators. On the other hand, fixed-grid rasterization methods~\cite{yang2018pixor,nguyen2024indoor} bypass point gathering entirely but suffer from severe spatial quantization error on standard $0.1\,\text{m}$ grids; by treating cells as binary flags or raw counters, they discard continuous subcell offsets and high-order vertical distributions, causing boundary staircasing and localization jitter. While recent studies such as PillarHist~\cite{zhou2025pillarhist} investigate quantization-aware height histograms and TriBand-BEV~\cite{khoshkdahan2026triband} explores multi-band vertical slicing to assist pedestrian detection, a shared limitation across these paradigms is the absence of continuous subcell centroid displacements coupled with continuous vertical statistical moments inside a compact, hardware-friendly tensor. MobilePIXORNeXt overcomes this limitation through the Strata-BEV14 representation (Section~\ref{sec:strata_bev14}). By deterministically integrating four stratified vertical density bins, four continuous elevation moments ($\mu_z, \sigma_z, z_{\min}, z_{\max}$), and two continuous subcell centroid displacement offsets ($\Delta x_c, \Delta y_c$) into a 14-channel layout, Strata-BEV14 preserves sub-voxel geometric fidelity while reducing Host-to-Device transfer payloads by $60\%$ without learned encoder latency.
+```
+
+Đã biên tập trong U114; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L029 — [sections/related_work.tex:20](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex:20)
+
+Từ/cụm: severe.
+
+```latex
+Bounding box regression in oriented object detection has progressively evolved from unconstrained coordinate offsets toward geometrically bounded objectives. Early detectors primarily relied on decoupled Smooth-L1 loss functions. However, regressing spatial coordinates, dimensions, and angles independently ignores the geometric interdependence of bounding boxes and induces severe gradient instability. To provide scale-invariant geometric feedback, Rezatofighi et al.~\cite{rezatofighi2019giou} introduced Generalized Intersection over Union (GIoU) to address gradient vanishing when candidate bounding boxes do not overlap. More recently, Le et al.~\cite{le2026mgiou} formulated Marginalized Generalized Intersection over Union (MGIoU), establishing a unified projection-based framework to optimize convex parametric shapes and arbitrary oriented bounding boxes without rotational singularities.
+```
+
+Đã biên tập trong U118; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L030 — [sections/related_work.tex:22](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex:22)
+
+Từ/cụm: essential.
+
+```latex
+In parallel with geometric loss formulation, joint quality calibration has emerged as an essential mechanism for accurate detection ranking. Li et al.~\cite{li2020gfl} introduced Generalized Focal Loss (GFL), demonstrating that uncalibrated classification scores frequently disagree with actual localization quality, causing low-quality boxes with high confidence to suppress well-localized candidates during Non-Maximum Suppression (NMS). Additionally, Kendall et al.~\cite{kendall2018uncertainty} introduced multi-task uncertainty weighting, utilizing homoscedastic task variance to balance heterogeneous loss objectives across classification and geometric regression tasks.
+```
+
+Đã biên tập trong U119; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L031 — [sections/related_work.tex:24](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/related_work.tex:24)
+
+Từ/cụm: severe, guarantees, eliminate, leading.
+
+```latex
+Despite these advancements, existing oriented bounding box detectors still struggle with three pervasive limitations. First, independent angle and corner regression objectives remain susceptible to the $\pi$-periodicity boundary jump problem, where slight angular deviations around $\pm \pi/2$ or $\pm \pi$ trigger severe loss spikes and yaw gradient collapse. Second, conventional quality calibration mechanisms rely on auxiliary decoupled prediction heads that inflate model parameters and exacerbate gradient contention across heterogeneous object classes. Third, unconstrained multi-task uncertainty weighting allows task variance parameters to diverge, leading to training instability when balancing disparate loss scales across classification, geometric overlap, and orientation. MobilePIXORNeXt addresses these multi-task supervision bottlenecks through a unified framework combining Oriented Geometric Alignment (OGA), its head-free alternative Q-OGA, and IoU-Aware Quality Alignment (IQA) (Section~\ref{sec:losses_and_oga}). Specifically, OGA unifies multi-axis MGIoU projections with scale-normalized $\pi$-symmetric corner supervision to eliminate boundary discontinuities; Q-OGA couples continuous IoU quality directly into classification supervision to achieve quality calibration with zero head overhead; IQA provides explicit multi-branch quality alignment scored via $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}}\hat{q}}$ to suppress miscalibrated false positives; and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) guarantees stable convergence by constraining multi-task weights within a normalized, bounded simplex, simultaneously resolving orientation discontinuities, quality miscalibration, and loss scale divergence.
+```
+
+Đã biên tập trong U120; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L032 — [sections/results.tex:19](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:19)
+
+Từ/cụm: leading.
+
+```latex
+As visualized in the Pareto frontier plots (Figure~\ref{fig:pareto_tradeoff}), MobilePIXORNeXt established a leading accuracy-to-parameter and accuracy-to-latency trade-off for real-time edge perception. Operating with only $0.754\,\text{M}$ trainable parameters ($9.34\,\text{MB}$ checkpoint size), MobilePIXORNeXt achieved $71.46\%$ Moderate mAP and $73.42\%$ $\text{mAP}_{9}$. Compared to PointPillars~\cite{lang2019pointpillars} ($4.835\,\text{M}$ parameters), MobilePIXORNeXt achieved higher Moderate mAP ($71.46\%$ vs. $70.13\%$, a $+1.33\%$ margin) and higher $\text{mAP}_{9}$ ($73.42\%$ vs. $72.25\%$) while requiring an $84.4\%$ reduction in parameter count. Compared to the widely deployed SECOND detector~\cite{yan2018second} ($5.326\,\text{M}$ parameters), MobilePIXORNeXt trailed by merely $0.63\%$ Moderate mAP ($71.46\%$ vs. $72.09\%$) despite operating with $7.1\times$ fewer parameters. Compared to its direct lineage baseline MobilePIXOR~\cite{nguyen2024indoor} ($41.40\%$ mAP), MobilePIXORNeXt achieved an absolute improvement of $+30.06\%$ Moderate mAP ($71.46\%$ vs. $41.40\%$) and $+31.15\%$ $\text{mAP}_{9}$ ($73.42\%$ vs. $42.27\%$).
+```
+
+Đã biên tập trong U123; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L033 — [sections/results.tex:24](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:24)
+
+Từ/cụm: superior.
+
+```latex
+\caption{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated on the KITTI validation split across Car (top row, $\text{IoU} \ge 0.70$), Pedestrian (middle row, $\text{IoU} \ge 0.50$), and Cyclist (bottom row, $\text{IoU} \ge 0.50$) under Easy (left), Moderate (center), and Hard (right) difficulty regimes. Red solid curves depict the proposed MobilePIXORNeXt (R37), blue dashed curves denote PointPillars, and green dotted curves represent SECOND. Shaded areas denote Average Precision integrals. Note that MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users, attaining $60.75\%$ Moderate AP on Pedestrian compared to $56.01\%$ for PointPillars and $56.56\%$ for SECOND.}
+```
+
+Giữ theo phạm vi tác giả tự xử lý hình PR.
+
+## L034 — [sections/results.tex:30](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:30)
+
+Từ/cụm: severe.
+
+```latex
+In autonomous driving perception, detecting small, non-rigid objects such as pedestrians presents the most challenging operational regime due to extreme point sparsity and severe aspect-ratio disparity. As evidenced in Table~\ref{tab:comparison} and the Precision--Recall curves in Figure~\ref{fig:pr_curves}, MobilePIXORNeXt achieved \textbf{60.75\% Moderate AP} on Pedestrians, outperforming PointPillars ($56.01\%$, a $+4.74\%$ gain) and SECOND ($56.56\%$, a $+4.19\%$ gain), while more than doubling the baseline MobilePIXOR ($28.16\%$, a $+32.59\%$ gain). We attribute this performance advantage primarily to two architectural mechanisms: (i) Strata-BEV14's continuous subcell displacement offsets $(\Delta\bar{x}, \Delta\bar{y})$, which mitigate the $0.1\,\text{m}$ grid quantization error that inherently impairs small object localization; and (ii) the decoupled GroupedHeader architecture, which isolates pedestrian regression from large vehicle footprints to alleviate gradient interference across morphologically disparate categories.
+```
+
+Đã biên tập trong U125; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L035 — [sections/results.tex:70](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:70)
+
+Từ/cụm: substantial.
+
+```latex
+Within the near-range $0\text{--}30\,\text{m}$ evaluation zone, MobilePIXORNeXt delivered substantial accuracy gains over baseline MobilePIXOR: Pedestrian AP reached \textbf{65.23\%} (more than double MobilePIXOR's $30.45\%$, a $+34.78\%$ improvement), while Cyclist AP reached \textbf{76.32\%} (nearly triple MobilePIXOR's $25.55\%$, a $+50.77\%$ improvement). This improvement was facilitated by Strata-BEV14's stratified height bins and continuous subcell offsets, which preserve fine morphological boundaries when object returns are dense.
+```
+
+Đã biên tập trong U135; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L036 — [sections/results.tex:73](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:73)
+
+Từ/cụm: robust, severe.
+
+```latex
+At medium ranges ($30\text{--}50\,\text{m}$), MobilePIXORNeXt maintained robust detection capability, achieving $11.49\%$ Pedestrian AP (vs. $3.75\%$) and $44.30\%$ Cyclist AP (vs. $12.61\%$, a $+31.69\%$ gain). In the far-range zone ($50\text{--}70.4\,\text{m}$), Cyclist AP remained at $14.94\%$ (vs. $0.56\%$). This resilience against severe point sparsity is consistent with the regularizing effect of our physics-aware range attenuation augmentation (\texttt{transform\_object}) and the broader spatial context captured by large $7 \times 7$ depthwise receptive fields.
+```
+
+Đã biên tập trong U136; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L037 — [sections/results.tex:86](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:86)
+
+Từ/cụm: significantly.
+
+```latex
+Replacing MobilePIXOR's residual blocks with our ConvNeXt-style backbone ($7 \times 7$ depthwise convolutions, inverted bottleneck expansion $e=2.5$, SiLU activations, and LayerScale) elevated Moderate mAP from $41.40\%$ to $47.60\%$ (\textbf{+6.20\% mAP}), while nearly doubling standalone forward throughput from $90.57$ to \textbf{169.97\,FPS}. Large depthwise kernels significantly broaden spatial receptive fields on BEV grids without inflating computational complexity.
+```
+
+Đã biên tập trong U138; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L038 — [sections/results.tex:91](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:91)
+
+Từ/cụm: eliminated.
+
+```latex
+Replacing 35-channel binary slicing (A1, $47.60\%$) with 8-channel RichBEV (A2, $47.37\%$) maintained comparable accuracy with fewer channels. Upgrading to our 14-channel Strata-BEV14 (A3) increased Moderate mAP to $50.14\%$ (\textbf{+2.54\% mAP}). Encoding continuous elevation moments ($z_{\max}, z_{\mathrm{mean}}, z_{\mathrm{span}}, z_{\mathrm{std}}$) and subcell centroid displacements eliminated horizontal discretization errors.
+```
+
+Đã biên tập trong U139; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L039 — [sections/results.tex:137](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:137)
+
+Từ/cụm: guarantees.
+
+```latex
+    \caption{Multi-task training and validation loss trajectories across 50 epochs on the KITTI benchmark evaluated across ablation configurations A1 through A10 (Table~\ref{tab:components}). The top subplots depict total composite training loss (left) and validation loss (right) on logarithmic scales; the remaining six panels illustrate constituent task components: Classification Focal Loss, Oriented Geometry Loss (OGA), IoU Quality Loss (IQA), Subcell Centroid Offset Loss, Footprint Size Loss, and Doubled-Angle Yaw Loss. Legend curves decode the architectural progression from baseline A1 (Binary35) through Strata-BEV (A2--A3), Decoupled GroupedHeader (A4--A5), PC-GTA augmentation (A6), SG-FPN neck (A7--A8), OGA and IQA supervision (A9), to the final peak configuration A10 (Block-SimAM). Dynamic multi-task loss weighting via T-SBUW guarantees stable gradient optimization without loss divergence or oscillation, with configuration A10 consistently achieving the lowest asymptotic validation error bounds across all continuous regression objectives.}
+```
+
+Đã biên tập trong U152; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L040 — [sections/results.tex:190](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:190)
+
+Từ/cụm: streamlined.
+
+```latex
+The empirical results indicate that high-accuracy 3D LiDAR object detection does not strictly necessitate parameter-heavy point-cloud encoders or computationally demanding 3D sparse convolutions. By enriching the deterministic 2D BEV representation with multi-band vertical densities, elevation dispersion moments, and continuous subcell centroid displacements, a streamlined ConvNeXt-style 2D convolutional network extracts expressive geometric features with fewer than $0.76\,\text{M}$ parameters. In addition, enforcing physical realism in data augmentation (\texttt{PC-GTA}) and resolving multi-task gradient competition through decoupled grouped heads provided larger empirical performance gains than model depth scaling alone.
+```
+
+Đã biên tập trong U165; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.
+
+## L041 — [sections/results.tex:193](/home/duyennh/AI_projects/research_lidar/Lidar/paper/sections/results.tex:193)
+
+Từ/cụm: optimal.
+
+```latex
+The current MobilePIXORNeXt architecture operates primarily on oriented 2D Bird's-Eye View footprints ($x, y, l, w, \psi$), which represents the optimal perception trade-off for autonomous vehicle motion planning and collision avoidance under strict edge-computing power envelopes. Although 3D bounding box estimation ($z, h$) is supported via our optional vertical prediction head, full 3D height estimation on heavily sloped terrains remains an active area of investigation. Future research will explore range-conditioned frequency modulations (RC-SGFPN) and hardware-specific TensorRT INT8 quantization for ultra-low-power micro-mobility microcontrollers.
+```
+
+Đã biên tập trong U166; các cụm được bảo vệ/giả thuyết so sánh có thể được giữ vì ngữ cảnh.

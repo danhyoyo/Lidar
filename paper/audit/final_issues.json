@@ -1,0 +1,2641 @@
+[
+  {
+    "id": "E01",
+    "title": "Abstract c\u00f2n c\u00e1c vi\u1ebft t\u1eaft ch\u01b0a t\u1ef1 gi\u1ea3i th\u00edch",
+    "quote": "NumPy/Numba CPU rasterizer",
+    "explanation": "CPU v\u00e0 GPU ch\u01b0a \u0111\u01b0\u1ee3c vi\u1ebft \u0111\u1ea7y \u0111\u1ee7; AP xu\u1ea5t hi\u1ec7n trong BEV AP tr\u01b0\u1edbc khi \u0111\u01b0\u1ee3c gi\u1ea3i th\u00edch ri\u00eang. C\u1ee5m mean Average Precision (mAP) kh\u00f4ng \u0111\u1ecbnh ngh\u0129a r\u00f5 AP \u1edf l\u1ea7n xu\u1ea5t hi\u1ec7n tr\u01b0\u1edbc \u0111\u00f3; R40 c\u0169ng ch\u01b0a \u0111\u01b0\u1ee3c gi\u1ea3i th\u00edch l\u00e0 n\u1ed9i suy 40 \u0111i\u1ec3m. LiDAR v\u00e0 BEV \u0111\u00e3 \u0111\u01b0\u1ee3c \u0111\u1ecbnh ngh\u0129a. KITTI l\u00e0 t\u00ean benchmark, kh\u00f4ng c\u1ea7n t\u1ef1 b\u1ecba m\u1ed9t t\u00ean m\u1edf r\u1ed9ng. \u0110\u00e2y l\u00e0 l\u1ed7i t\u1ef1 ch\u1ee9a c\u1ee7a abstract, kh\u00f4ng ph\u1ea3i thi\u1ebfu to\u00e0n b\u1ed9 c\u1ea5u tr\u00fac abstract.",
+    "comment_type": "presentation",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_file": "sections/abstract.tex",
+    "source_line": 1,
+    "entry_line_path": "MobilePIXORNeXt.tex:53 \u2192 sections/abstract.tex:1",
+    "root_cause_key": "e01-abstract",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "Vi\u1ebft \u0111\u1ea7y \u0111\u1ee7 central processing unit (CPU), graphics processing unit (GPU), Average Precision (AP) \u1edf l\u1ea7n \u0111\u1ea7u ho\u1eb7c b\u1ecf vi\u1ebft t\u1eaft kh\u00f4ng c\u1ea7n thi\u1ebft; di\u1ec5n gi\u1ea3i R40 b\u1eb1ng 40-point interpolated AP. Gi\u1eef abstract trong 150\u2013250 t\u1eeb sau s\u1eeda.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "sections/abstract.tex:1; CPU / BEV AP R40 / NVIDIA Tesla T4 GPU"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E02",
+    "title": "T\u00ean heading khai b\u00e1o kh\u00e1c h\u01b0\u1edbng d\u1eabn AJSE hi\u1ec7n h\u00e0nh",
+    "quote": "\\section*{Declarations}",
+    "explanation": "M\u1ee5c Declarations th\u1ef1c s\u1ef1 c\u00f3 m\u1eb7t, g\u1ed3m Funding, Competing Interests, Ethics/Consent, Data Availability, Code Availability v\u00e0 Author Contributions. V\u00ec v\u1eady kh\u00f4ng \u0111\u01b0\u1ee3c b\u00e1o thi\u1ebfu declarations. Tuy nhi\u00ean h\u01b0\u1edbng d\u1eabn AJSE hi\u1ec7n h\u00e0nh d\u00f9ng heading Statements and Declarations. \u0110\u00e2y l\u00e0 kh\u00e1c bi\u1ec7t h\u00ecnh th\u1ee9c nh\u1ecf; kh\u00f4ng c\u00f3 b\u1eb1ng ch\u1ee9ng c\u00e1c khai b\u00e1o li\u00ean quan b\u1ecb b\u1ecf tr\u1ed1ng.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/declarations.tex",
+    "source_file": "sections/declarations.tex",
+    "source_line": 8,
+    "entry_line_path": "MobilePIXORNeXt.tex:76 \u2192 sections/declarations.tex:8",
+    "root_cause_key": "e02-t\u00ean",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "\u0110\u1ed3ng b\u1ed9 heading th\u00e0nh \\section*{Statements and Declarations} khi chu\u1ea9n b\u1ecb g\u00f3i n\u1ed9p; gi\u1eef c\u00e1c n\u1ed9i dung \u00e1p d\u1ee5ng hi\u1ec7n c\u00f3. Kh\u00f4ng t\u1ef1 th\u00eam tuy\u00ean b\u1ed1 v\u1ec1 t\u00e0i tr\u1ee3/\u0111\u1ea1o \u0111\u1ee9c ch\u01b0a \u0111\u01b0\u1ee3c t\u00e1c gi\u1ea3 x\u00e1c nh\u1eadn.",
+    "display_severity": "MINOR",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "sections/declarations.tex:8"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E03",
+    "title": "Headline so s\u00e1nh ch\u01b0a ph\u1ea3n \u00e1nh ranh gi\u1edbi evaluator v\u00e0 m\u1ee9c ch\u00eanh l\u1ec7ch",
+    "quote": "and matched SECOND (72.09\\% mAP)",
+    "explanation": "Abstract v\u00e0 contribution cu\u1ed1i Introduction d\u00f9ng outperformed/matched. Note c\u1ee7a Table 3 c\u00f4ng khai r\u1eb1ng MobilePIXORNeXt d\u00f9ng local loader-aligned BEV AP, c\u00f2n PointPillars/SECOND d\u00f9ng reference KITTI AP. C\u00f9ng R40 v\u00e0 c\u00f9ng split ch\u01b0a ch\u1ee9ng minh hai evaluator t\u01b0\u01a1ng \u0111\u01b0\u01a1ng m\u1ecdi quy t\u1eafc. 71.46 c\u0169ng th\u1ea5p h\u01a1n 72.09 l\u00e0 0.63 \u0111i\u1ec3m; matched d\u1ec5 b\u1ecb hi\u1ec3u l\u00e0 t\u01b0\u01a1ng \u0111\u01b0\u01a1ng \u0111\u00e3 \u0111\u01b0\u1ee3c ch\u1ee9ng minh. Note \u0111\u00e3 c\u00f3 l\u00e0 \u0111i\u1ec3m t\u00edch c\u1ef1c, n\u00ean ch\u01b0a c\u00f3 c\u01a1 s\u1edf k\u1ebft lu\u1eadn s\u1ed1 AP sai ho\u1eb7c so s\u00e1nh b\u1ecb ng\u1ee5y t\u1ea1o.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_file": "sections/abstract.tex",
+    "source_line": 1,
+    "entry_line_path": "MobilePIXORNeXt.tex:53,58 \u2192 abstract.tex:1 / introduction.tex:19; main:66 \u2192 tables/comparison.tex:23",
+    "root_cause_key": "e03-headline",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "N\u00eau r\u00f5 local/reference khi tr\u00ecnh b\u00e0y so s\u00e1nh headline v\u00e0 d\u00f9ng approached/trailed by 0.63 percentage points cho SECOND. Tr\u01b0\u1edbc m\u1ed9t kh\u1eb3ng \u0111\u1ecbnh v\u01b0\u1ee3t tr\u1ed9i theo benchmark chung, \u0111\u00e1nh gi\u00e1 b\u1eb1ng c\u00f9ng evaluator ho\u1eb7c cung c\u1ea5p \u0111\u1ed1i chi\u1ebfu t\u01b0\u01a1ng \u0111\u01b0\u01a1ng gi\u1eefa hai evaluator.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "sections/introduction.tex:19"
+      },
+      {
+        "type": "figure_or_table",
+        "text": "Table 3, tables/comparison.tex:23: local vs reference evaluator"
+      },
+      {
+        "type": "metric",
+        "text": "71.46 vs 72.09; 71.46 vs 70.13"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E04",
+    "title": "\u0110\u1ed9 t\u0103ng AP/mAP \u0111ang vi\u1ebft b\u1eb1ng ph\u1ea7n tr\u0103m thay v\u00ec \u0111i\u1ec3m ph\u1ea7n tr\u0103m",
+    "quote": "+6.03\\% Moderate mAP",
+    "explanation": "Contribution ghi t\u0103ng t\u1eeb 60.22% l\u00ean 66.25% l\u00e0 +6.03%. \u0110\u00e2y l\u00e0 ch\u00eanh l\u1ec7ch tuy\u1ec7t \u0111\u1ed1i 6.03 \u0111i\u1ec3m ph\u1ea7n tr\u0103m; t\u0103ng t\u01b0\u01a1ng \u0111\u1ed1i l\u00e0 kho\u1ea3ng 10.01%. T\u01b0\u01a1ng t\u1ef1 +3.20, +0.88, +4.74 v\u00e0 +4.19 trong c\u00f9ng contribution l\u00e0 \u0111i\u1ec3m AP/mAP. L\u1ed7i n\u00e0y l\u00e0m sai \u0111\u01a1n v\u1ecb c\u1ee7a \u0111\u1ed9 c\u1ea3i thi\u1ec7n, d\u00f9 c\u00e1c gi\u00e1 tr\u1ecb AP g\u1ed1c v\u1eabn h\u1ee3p l\u1ec7.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_file": "sections/introduction.tex",
+    "source_line": 19,
+    "entry_line_path": "MobilePIXORNeXt.tex:58 \u2192 sections/introduction.tex:19",
+    "root_cause_key": "e04-\u0111\u1ed9",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "Ghi percentage points ho\u1eb7c AP/mAP points cho hi\u1ec7u AP. R\u00e0 c\u00e1c m\u1ee9c t\u0103ng/gi\u1ea3m AP trong Results/captions theo c\u00f9ng quy t\u1eafc. Gi\u1eef % cho c\u00e1c t\u1ef7 l\u1ec7 t\u01b0\u01a1ng \u0111\u1ed1i \u0111\u00fang, nh\u01b0 84.4% parameter reduction; kh\u00f4ng thay to\u00e0n b\u1ed9 k\u00fd hi\u1ec7u % m\u1ed9t c\u00e1ch m\u00e1y m\u00f3c.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "metric",
+        "text": "66.25 \u2212 60.22 = 6.03 points; 100 \u00d7 (66.25 \u2212 60.22)/60.22 \u2248 10.01%"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E05",
+    "title": "H\u00ecnh pipeline v\u00e0 caption b\u1ecb t\u00e1ch sang hai trang trong PDF",
+    "quote": "\\captionof{figure}{End-to-end architecture and tensor flow of MobilePIXORNeXt.",
+    "explanation": "PDF hi\u1ec7n t\u1ea1i \u0111\u1eb7t s\u01a1 \u0111\u1ed3 Fig. 1 \u1edf cu\u1ed1i trang 4 nh\u01b0ng caption b\u1eaft \u0111\u1ea7u \u1edf \u0111\u1ea7u trang 5. Ng\u01b0\u1eddi \u0111\u1ecdc kh\u00f4ng xem \u0111\u01b0\u1ee3c h\u00ecnh v\u00e0 ch\u00fa gi\u1ea3i trong m\u1ed9t \u0111\u01a1n v\u1ecb tr\u00ecnh b\u00e0y. \u0110\u00e2y l\u00e0 v\u1ea5n \u0111\u1ec1 quan s\u00e1t tr\u1ef1c ti\u1ebfp tr\u00ean PDF, kh\u00f4ng ph\u1ea3i suy \u0111o\u00e1n t\u1eeb c\u1ea3nh b\u00e1o LaTeX. H\u00ecnh v\u1eabn t\u1ed3n t\u1ea1i v\u00e0 kh\u00f4ng b\u1ecb coi l\u00e0 asset thi\u1ebfu.",
+    "comment_type": "presentation",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 8,
+    "entry_line_path": "MobilePIXORNeXt.tex:62 \u2192 sections/methodology.tex:5\u201310",
+    "root_cause_key": "e05-h\u00ecnh",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "Gi\u1eef s\u01a1 \u0111\u1ed3 v\u00e0 caption trong c\u00f9ng m\u1ed9t kh\u1ed1i kh\u00f4ng b\u1ecb ng\u1eaft trang; \u0111i\u1ec1u ch\u1ec9nh v\u1ecb tr\u00ed/k\u00edch th\u01b0\u1edbc figure ho\u1eb7c c\u00e1ch d\u00f9ng strip/float. Sau khi s\u1eeda \u1edf l\u01b0\u1ee3t bi\u00ean t\u1eadp ri\u00eang, ki\u1ec3m tra PDF \u0111\u1ec3 b\u1ea3o \u0111\u1ea3m c\u1ea3 hai c\u00f9ng m\u1ed9t trang.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "analysis_artifact",
+        "text": "page04_pipeline_image.png and page05_pipeline.png"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E06",
+    "title": "Caption pipeline m\u00f4 t\u1ea3 c\u00e1c th\u00e0nh ph\u1ea7n ch\u01b0a \u0111\u01b0\u1ee3c ph\u00e2n bi\u1ec7t r\u00f5 trong s\u01a1 \u0111\u1ed3",
+    "quote": "Dashed arrows show training-only Oriented Geometric Alignment (OGA)",
+    "explanation": "Caption n\u00f3i dashed arrows cho \u0111\u01b0\u1eddng training, \u0111\u1ed3ng th\u1eddi m\u00f4 t\u1ea3 ConvNeXt stages, SG-FPN v\u00e0 hai GroupedHeader. Trong artwork pipeline, detector ch\u1ee7 y\u1ebfu l\u00e0 m\u1ed9t h\u1ed9p Proposed Detector; m\u0169i t\u00ean t\u1eeb c\u00e1c output xu\u1ed1ng FL + Smooth L1 + OGA + BCE + T-SBUW l\u00e0 n\u00e9t li\u1ec1n, trong khi n\u00e9t \u0111\u1ee9t n\u1ed5i b\u1eadt \u1edf khung v\u00e0 m\u1ed9t \u0111\u01b0\u1eddng h\u1ed3i ti\u1ebfp. Kh\u00f4ng c\u00f3 legend gi\u00fap \u0111\u1ecdc \u0111\u00fang to\u00e0n b\u1ed9 m\u00f4 t\u1ea3. \u0110\u00e2y l\u00e0 v\u1ea5n \u0111\u1ec1 caption\u2013artwork correspondence, kh\u00f4ng ph\u1ea3i k\u1ebft lu\u1eadn thu\u1eadt to\u00e1n sai.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 8,
+    "entry_line_path": "MobilePIXORNeXt.tex:62 \u2192 sections/methodology.tex:7\u20138; figures/pipeline_overview.pdf",
+    "root_cause_key": "e06-caption",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "Th\u00eam legend v\u00e0 d\u00f9ng nh\u1ea5t qu\u00e1n ki\u1ec3u \u0111\u01b0\u1eddng training/inference; th\u1ec3 hi\u1ec7n ho\u1eb7c \u0111\u00e1nh d\u1ea5u kh\u1ed1i backbone\u2013SG-FPN\u2013grouped heads, ho\u1eb7c thu h\u1eb9p caption theo \u0111\u00fang m\u1ee9c chi ti\u1ebft \u0111ang v\u1ebd. M\u1edf r\u1ed9ng FL/BCE trong caption n\u1ebfu ti\u1ebfp t\u1ee5c d\u00f9ng c\u00e1c nh\u00e3n n\u00e0y.",
+    "display_severity": "MINOR",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Fig. 1, figures/pipeline_overview.pdf; PDF pages 4\u20135"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E07",
+    "title": "Ngu\u1ed3n GPU c\u1ee7a c\u00f9ng c\u00e1c s\u1ed1 standalone FPS ch\u01b0a th\u1ed1ng nh\u1ea5t gi\u1eefa hai b\u1ea3ng",
+    "quote": "on an NVIDIA Tesla T4 GPU.",
+    "explanation": "Table 6 caption v\u00e0 note g\u00e1n standalone timing cho Tesla T4. Table 7 caption v\u00e0 note g\u00e1n timing cho L4. Ba c\u1eb7p encoding t\u01b0\u01a1ng \u1ee9ng l\u1ea1i tr\u00f9ng FPS \u0111\u1ebfn hai ch\u1eef s\u1ed1 th\u1eadp ph\u00e2n: Binary35/A1 = 169.97; Strata-BEV8/A2 = 165.02; Strata-BEV14/A3 = 169.01. \u0110\u00e2y l\u00e0 m\u00e2u thu\u1eabn provenance c\u00f3 th\u1ec3 th\u1ea5y ngay t\u1eeb c\u00e1c b\u1ea3ng, kh\u00f4ng ch\u1ee9ng minh hai GPU kh\u00f4ng th\u1ec3 t\u00ecnh c\u1edd cho c\u00f9ng k\u1ebft qu\u1ea3. Kh\u00f4ng \u0111\u01b0\u1ee3c t\u1ef1 ch\u1ecdn T4 ho\u1eb7c L4 l\u00e0m gi\u00e1 tr\u1ecb \u0111\u00fang khi ch\u01b0a \u0111\u1ed1i chi\u1ebfu log.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "tables/components.tex",
+    "source_file": "tables/components.tex",
+    "source_line": 3,
+    "entry_line_path": "MobilePIXORNeXt.tex:66 \u2192 sections/results.tex:83 \u2192 tables/components.tex:3,32\u201334,45; results.tex:93 \u2192 tables/encoding.tex:3,11\u201313,17",
+    "root_cause_key": "e07-ngu\u1ed3n",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": true,
+    "fix": "\u0110\u1ed1i chi\u1ebfu log profiling v\u00e0 c\u1ea5u h\u00ecnh c\u1ee7a t\u1eebng h\u00e0ng; b\u1ed5 sung GPU, precision, batch size v\u00e0 \u0111i\u1ec1u ki\u1ec7n standalone th\u1ef1c t\u1ebf. N\u1ebfu Table 6 c\u00f3 s\u1ed1 \u0111o t\u1eeb nhi\u1ec1u GPU, \u0111\u00e1nh d\u1ea5u theo h\u00e0ng; n\u1ebfu ch\u00e9p l\u1ea1i s\u1ed1 t\u1eeb Table 7 th\u00ec gi\u1eef \u0111\u00fang provenance L4. Kh\u00f4ng s\u1eeda ch\u1ec9 b\u1eb1ng \u0111\u1ed5i t\u00ean GPU khi ch\u01b0a x\u00e1c minh log.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table 6 (T4) vs Table 7 (L4)"
+      },
+      {
+        "type": "metric",
+        "text": "169.97 / 165.02 / 169.01 FPS repeated across hardware labels"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E08",
+    "title": "Caption PR kh\u00e1i qu\u00e1t \u01b0u th\u1ebf Pedestrian th\u00e0nh to\u00e0n b\u1ed9 vulnerable road users",
+    "quote": "consistently maintains superior recall and precision envelopes on vulnerable road users",
+    "explanation": "Caption Fig. 8 d\u00f9ng vulnerable road users nh\u01b0 m\u1ed9t k\u1ebft lu\u1eadn chung, nh\u01b0ng Table 3 cho Cyclist Moderate c\u1ee7a m\u00f4 h\u00ecnh l\u00e0 66.73%, th\u1ea5p h\u01a1n SECOND 71.16%. Pedestrian Moderate 60.75% \u0111\u00fang l\u00e0 cao h\u01a1n c\u1ea3 hai baseline. M\u1ed9t v\u00ed d\u1ee5 Pedestrian kh\u00f4ng h\u1ed7 tr\u1ee3 ph\u00e1t bi\u1ec3u nh\u1ea5t qu\u00e1n cho c\u1ea3 Pedestrian v\u00e0 Cyclist, v\u00e0 th\u1ee9 h\u1ea1ng AP c\u0169ng kh\u00f4ng t\u1ef1 ch\u1ee9ng minh th\u1ed1ng tr\u1ecb t\u1eebng \u0111i\u1ec3m tr\u00ean PR curve.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_file": "sections/results.tex",
+    "source_line": 24,
+    "entry_line_path": "MobilePIXORNeXt.tex:66 \u2192 sections/results.tex:24; tables/comparison.tex:14\u201315",
+    "root_cause_key": "e08-caption",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "Gi\u1edbi h\u1ea1n k\u1ebft lu\u1eadn caption v\u00e0o Pedestrian v\u00e0 c\u00e1c difficulty \u0111\u01b0\u1ee3c figure ch\u1ee9ng minh; n\u00eau ri\u00eang trade-off Cyclist. B\u1ecf consistently superior n\u1ebfu kh\u00f4ng c\u00f3 b\u1eb1ng ch\u1ee9ng th\u1ed1ng tr\u1ecb PR theo \u0111i\u1ec3m.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Fig. 8 caption and Table 3"
+      },
+      {
+        "type": "metric",
+        "text": "Cyclist Moderate: ours 66.73%, SECOND 71.16%"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E09",
+    "title": "Tuy\u00ean b\u1ed1 kh\u00f4ng c\u00f3 \u1ea3nh c\u00e1 nh\u00e2n c\u1ea7n \u0111\u01b0\u1ee3c gi\u1edbi h\u1ea1n r\u00f5 v\u1edbi \u1ea3nh \u0111\u01b0\u1eddng ph\u1ed1 minh h\u1ecda",
+    "quote": "This manuscript does not contain any personal identifying information, individual patient records, or individual photographs.",
+    "explanation": "Fig. 1 c\u00f3 \u1ea3nh \u0111\u01b0\u1eddng ph\u1ed1 v\u1edbi ng\u01b0\u1eddi \u0111i b\u1ed9/\u0111i xe; Fig. 10 c\u0169ng ch\u1ee9a camera scenes. C\u1ee5m individual photographs c\u00f3 th\u1ec3 \u0111\u01b0\u1ee3c hi\u1ec3u r\u1ed9ng l\u00e0 kh\u00f4ng c\u00f3 h\u00ecnh \u1ea3nh con ng\u01b0\u1eddi, trong khi \u1ea3nh th\u1ef1c s\u1ef1 hi\u1ec7n di\u1ec7n. Vi\u1ec7c d\u00f9ng benchmark c\u00f4ng khai kh\u00f4ng t\u1ef1 ch\u1ee9ng minh c\u00f3 vi ph\u1ea1m \u0111\u1ed3ng thu\u1eadn; audit n\u00e0y kh\u00f4ng \u0111\u01b0a ra k\u1ebft lu\u1eadn nh\u01b0 v\u1eady v\u00e0 kh\u00f4ng suy \u0111o\u00e1n danh t\u00ednh ng\u01b0\u1eddi trong \u1ea3nh.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "sections/declarations.tex",
+    "source_file": "sections/declarations.tex",
+    "source_line": 20,
+    "entry_line_path": "MobilePIXORNeXt.tex:76 \u2192 sections/declarations.tex:19\u201320; main:62,66 \u2192 Figs. 1,10",
+    "root_cause_key": "e09-tuy\u00ean",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "T\u00e1c gi\u1ea3 ki\u1ec3m tra ph\u1ea1m vi ph\u00e1t bi\u1ec3u consent v\u1edbi c\u00e1c h\u00ecnh \u0111\u01b0\u1ee3c \u0111\u01b0a v\u00e0o b\u00e0i; m\u00f4 t\u1ea3 \u0111\u00fang vi\u1ec7c s\u1eed d\u1ee5ng \u1ea3nh benchmark \u0111\u00e3 c\u00f4ng b\u1ed1 v\u00e0 \u0111i\u1ec1u ki\u1ec7n ngu\u1ed3n \u00e1p d\u1ee5ng. Gi\u1eef ph\u1ea7n patient records/clinical data n\u1ebfu ph\u00f9 h\u1ee3p, tr\u00e1nh kh\u1eb3ng \u0111\u1ecbnh r\u1ed9ng h\u01a1n n\u1ed9i dung \u0111\u00e3 x\u00e1c minh.",
+    "display_severity": "MINOR",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Fig. 1 street photo; Fig. 10 camera overlays, PDF page 23"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "E10",
+    "title": "B\u1ea3ng checkpoint thi\u1ebfu \u0111\u01a1n v\u1ecb \u1edf c\u00e1c c\u1ed9t s\u1ed1",
+    "quote": "\\textbf{E2E}",
+    "explanation": "Table 10 d\u00f9ng header Car, Ped., Cyc., mAP_M v\u00e0 E2E m\u00e0 caption kh\u00f4ng g\u00e1n \u0111\u01a1n v\u1ecb %/ms. Caption n\u00eau R40 Moderate nh\u01b0ng kh\u00f4ng l\u00e0m r\u00f5 60.96/81.23 l\u00e0 milliseconds. C\u00e1c b\u1ea3ng kh\u00e1c c\u00f3 \u0111\u01a1n v\u1ecb \u1edf header; ri\u00eang b\u1ea3ng n\u00e0y ch\u01b0a t\u1ef1 ch\u1ee9a khi \u0111\u1ecdc \u0111\u1ed9c l\u1eadp.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_file": "sections/results.tex",
+    "source_line": 158,
+    "entry_line_path": "MobilePIXORNeXt.tex:66 \u2192 sections/results.tex:153,158\u2013161",
+    "root_cause_key": "e10-b\u1ea3ng",
+    "review_lane": "editor_in_chief",
+    "gate_blocker": false,
+    "fix": "\u0110\u1ed5i header th\u00e0nh Car AP_M (%), Ped. AP_M (%), Cyc. AP_M (%), mAP_M (%) v\u00e0 E2E (ms), ho\u1eb7c khai b\u00e1o c\u00e1c \u0111\u01a1n v\u1ecb n\u00e0y r\u00f5 trong caption. Ki\u1ec3m tra l\u1ea1i chi\u1ec1u r\u1ed9ng c\u1ed9t sau b\u1ed5 sung.",
+    "display_severity": "MINOR",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Table 10 caption/header, sections/results.tex:153,158"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "S01",
+    "title": "19 nh\u00e3n ph\u01b0\u01a1ng tr\u00ecnh kh\u00f4ng \u0111\u01b0\u1ee3c vi\u1ec7n d\u1eabn trong v\u0103n b\u1ea3n",
+    "quote": "\\label{eq:spatial_roi}",
+    "explanation": "check_references.py b\u00e1o 19 nh\u00e3n eq: ch\u01b0a c\u00f3 ref/eqref; supplementary_audit.py x\u00e1c nh\u1eadn c\u00f9ng t\u1eadp. T\u1ed5ng nh\u00e3n kh\u00f4ng \u0111\u01b0\u1ee3c vi\u1ec7n d\u1eabn l\u00e0 31 n\u1ebfu k\u1ec3 c\u1ea3 12 nh\u00e3n section. Nh\u00e3n kh\u00f4ng \u0111\u01b0\u1ee3c d\u00f9ng kh\u00f4ng ph\u1ea3i undefined reference v\u00e0 kh\u00f4ng t\u1ef1 l\u00e0m h\u1ecfng bi\u00ean d\u1ecbch. \u0110\u00e2y l\u00e0 g\u1ee3i \u00fd v\u1ec7 sinh \u0111\u00e1nh s\u1ed1, kh\u00f4ng ph\u1ea3i l\u00fd do desk reject.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "script",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 25,
+    "entry_line_path": "MobilePIXORNeXt.tex:62 \u2192 sections/methodology.tex; xem Appendix A cho \u0111\u1ee7 19 d\u00f2ng",
+    "root_cause_key": "s01-19",
+    "review_lane": "pre_submission_readiness",
+    "gate_blocker": false,
+    "fix": "Gi\u1eef \u0111\u00e1nh s\u1ed1 cho c\u00f4ng th\u1ee9c c\u1ea7n d\u1eabn l\u1ea1i v\u00e0 b\u1ed5 sung vi\u1ec7n d\u1eabn h\u1eefu \u00edch; v\u1edbi c\u00f4ng th\u1ee9c kh\u00f4ng c\u1ea7n tham chi\u1ebfu, c\u00e2n nh\u1eafc m\u00f4i tr\u01b0\u1eddng kh\u00f4ng \u0111\u00e1nh s\u1ed1. Kh\u00f4ng x\u00f3a nh\u00e3n section ch\u1ec9 v\u00ec hi\u1ec7n ch\u01b0a d\u00f9ng.",
+    "display_severity": "MINOR",
+    "evidence_anchor": [
+      {
+        "type": "analysis_artifact",
+        "text": "references.json; reference_metrics.json"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "S02",
+    "title": "Epoch c\u1ee7a checkpoint Best AP kh\u00f4ng kh\u1edbp gi\u1eefa prose, caption v\u00e0 h\u00e0ng b\u1ea3ng",
+    "quote": "extended run (Epoch 50)",
+    "explanation": "Supplementary script tr\u00edch xu\u1ea5t Epoch 50 \u1edf Results:149, nh\u01b0ng Epoch 130 \u1edf caption:153 v\u00e0 h\u00e0ng Best AP:160. So s\u00e1nh s\u1ed1 nguy\u00ean tr\u1ea3 v\u1ec1 consistent=false. \u0110\u00e2y l\u00e0 ki\u1ec3m tra nh\u1ea5t qu\u00e1n s\u1ed1 t\u1ef1 \u0111\u1ed9ng; kh\u00f4ng ph\u1ea3i reviewer suy lu\u1eadn v\u1ec1 l\u1ecbch hu\u1ea5n luy\u1ec7n. Kh\u00f4ng d\u00f9ng ph\u00e1t hi\u1ec7n n\u00e0y \u0111\u1ec3 m\u1edf r\u1ed9ng th\u00e0nh \u0111\u00e1nh gi\u00e1 \u0111\u1ed9 \u0111\u00fang c\u1ee7a ph\u01b0\u01a1ng ph\u00e1p.",
+    "comment_type": "presentation",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "script",
+    "source_section": "sections/results.tex",
+    "source_file": "sections/results.tex",
+    "source_line": 149,
+    "entry_line_path": "MobilePIXORNeXt.tex:66 \u2192 sections/results.tex:149,153,160",
+    "root_cause_key": "s02-epoch",
+    "review_lane": "pre_submission_readiness",
+    "gate_blocker": false,
+    "fix": "X\u00e1c nh\u1eadn epoch t\u1eeb metadata checkpoint v\u00e0 \u0111\u1ed3ng b\u1ed9 ba v\u1ecb tr\u00ed; n\u1ebfu caption/h\u00e0ng b\u1ea3ng \u0111\u00fang th\u00ec s\u1eeda Epoch 50 \u1edf c\u00e2u d\u1eabn th\u00e0nh Epoch 130. Kh\u00f4ng \u0111\u1ed5i checkpoint ho\u1eb7c s\u1ed1 AP d\u1ef1a ch\u1ec9 tr\u00ean l\u1ed7i m\u00f4 t\u1ea3 n\u00e0y.",
+    "display_severity": "MAJOR",
+    "evidence_anchor": [
+      {
+        "type": "analysis_artifact",
+        "text": "checkpoint_consistency.json"
+      }
+    ],
+    "quote_verified": true
+  },
+  {
+    "id": "T01",
+    "reviewer": 1,
+    "title": "SG-FPN m\u00f4 t\u1ea3 sai ph\u00e9p gi\u1ea3m k\u00eanh v\u00e0 tr\u1ed9n hai h\u1ec7 ch\u1ec9 s\u1ed1 pyramid/stride",
+    "quote": "depthwise $3 \\times 3$ refinement, BN, and SiLU produce $\\mathbf{U}_4$ and $\\mathbf{U}_3$",
+    "explanation": "L5/L4 c\u00f3 48 k\u00eanh, L3 c\u00f3 32 k\u00eanh. Upsample P4 v\u1eabn c\u00f3 48 k\u00eanh; m\u1ed9t depthwise convolution thu\u1ea7n t\u00fay kh\u00f4ng th\u1ef1c hi\u1ec7n ph\u00e9p 48\u219232 nh\u01b0 m\u00f4 t\u1ea3. Code d\u00f9ng DWConv48\u219248 cho U4 nh\u01b0ng Conv2d th\u01b0\u1eddng 48\u219232 cho U3. Ngo\u00e0i ra Eq. scale_gating d\u00f9ng r\u2208{8,4} trong khi L3/L4/L5 \u0111\u01b0\u1ee3c \u0111\u1eb7t theo pyramid level: L_r ch\u01b0a \u0111\u01b0\u1ee3c \u00e1nh x\u1ea1 r\u00f5, v\u00e0 L4 d\u1ec5 b\u1ecb hi\u1ec3u v\u1eeba l\u00e0 lateral stride 8 v\u1eeba l\u00e0 lateral stride 4 trong c\u00f4ng th\u1ee9c t\u1ed5ng qu\u00e1t. Ph\u00e9p c\u1ed9ng trong code \u0111\u00fang; m\u00f4 t\u1ea3 ch\u01b0a \u0111\u1ee7 \u0111\u1ec3 t\u00e1i d\u1ef1ng \u0111\u00fang to\u00e1n t\u1eed.",
+    "comment_type": "methodology",
+    "severity": "moderate",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 285,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t01",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:173\u2013180"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/models/backbones/mobilepixornext.py:188\u2013208,273\u2013288"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "parameter_and_mac_audit.json"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "Ghi ri\u00eang hai ph\u00e9p upsample/refine, s\u1eed d\u1ee5ng ch\u1ec9 s\u1ed1 stride nh\u1ea5t qu\u00e1n, n\u00eau align_corners=False. Gi\u1eef head input 32 theo resolved config; kh\u00f4ng \u0111\u1ed5i v\u1ec1 16 ch\u1ec9 \u0111\u1ec3 kh\u1edbp context c\u0169.",
+    "latex_example": "% Report-only proposal; preserve the existing figure/equation labels when editing.\n\\begin{align*}\n\\mathbf L^{(16)}&=\\operatorname{Conv}_{1\\times1}^{128\\to48}(\\mathbf F^{(16)}),\\\\\n\\mathbf L^{(8)}&=\\operatorname{Conv}_{1\\times1}^{96\\to48}(\\mathbf F^{(8)}),\\\\\n\\mathbf L^{(4)}&=\\operatorname{Conv}_{1\\times1}^{48\\to32}(\\mathbf F^{(4)}),\\\\\n\\mathbf U^{(8)}&=\\operatorname{SiLU}\\!\\left(\\operatorname{BN}\\!\\left(\n \\operatorname{DWConv}_{3\\times3}^{48\\to48}(\\operatorname{Up}_2(\\mathbf L^{(16)}))\\right)\\right),\\\\\n\\mathbf P^{(8)}&=\\mathbf U^{(8)}+\\mathbf G^{(8)}\\odot\\mathbf L^{(8)},\\\\\n\\mathbf U^{(4)}&=\\operatorname{SiLU}\\!\\left(\\operatorname{BN}\\!\\left(\n \\operatorname{Conv}_{3\\times3}^{48\\to32}(\\operatorname{Up}_2(\\mathbf P^{(8)}))\\right)\\right),\\\\\n\\mathbf G^{(r)}&=2\\sigma\\!\\left(\\operatorname{DWConv}_{3\\times3}\n (\\mathbf L^{(r)}+\\mathbf U^{(r)})\\right),\\quad r\\in\\{8,4\\},\\\\\n\\mathbf P^{(4)}&=\\mathbf U^{(4)}+\\mathbf G^{(4)}\\odot\\mathbf L^{(4)}.\n\\end{align*}\nHere, $\\operatorname{Up}_2$ uses bilinear interpolation with\n\\texttt{align\\_corners=False}. Only the stride-8 refinement is depthwise;\nthe stride-4 projection uses a standard convolution to reduce 48 channels to 32.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T02",
+    "reviewer": 1,
+    "title": "Tia che khu\u1ea5t d\u00f9ng point c\u00f3 reflectance nh\u01b0 vector h\u00ecnh h\u1ecdc 3D",
+    "quote": "$\\mathbf{r}(t) = t \\cdot \\mathbf{p}$",
+    "explanation": "Point p_i \u0111\u00e3 \u0111\u01b0\u1ee3c \u0111\u1ecbnh ngh\u0129a trong R4 v\u1edbi th\u00e0nh ph\u1ea7n reflectance. Trong ray\u2013box intersection v\u00e0 kho\u1ea3ng c\u00e1ch shadow, r(t)=t p v\u00e0 norm(p) kh\u00f4ng ch\u1ec9 r\u00f5 ph\u00e9p l\u1ea5y XYZ; n\u1ebfu d\u00f9ng tuple \u0111\u00e3 \u0111\u1ecbnh ngh\u0129a th\u00ec ray l\u00e0 R4 v\u00e0 norm tr\u1ed9n m\u00e9t v\u1edbi intensity. Code th\u1ef1c t\u1ebf d\u00f9ng norm(points[:, :3]). Context c\u0169ng l\u1eb7p l\u1ea1i c\u00e1ch vi\u1ebft r(t)=t p n\u00ean kh\u00f4ng th\u1ec3 coi context l\u00e0 c\u0103n c\u1ee9 \u0111\u1ec3 gi\u1eef nguy\u00ean s\u1ef1 nh\u1eadp nh\u1eb1ng chi\u1ec1u n\u00e0y. LOS/shadow t\u1eaft \u1edf final run: \u0111\u00e2y l\u00e0 l\u1ed7i \u0111\u1eb7c t\u1ea3 nh\u00e1nh t\u00f9y ch\u1ecdn, kh\u00f4ng ch\u1ee9ng minh k\u1ebft qu\u1ea3 final sai.",
+    "comment_type": "methodology",
+    "severity": "moderate",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 146,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t02",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/sections/methodology.tex:19,146\u2013155"
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md:94,293\u2013295"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/augmentor/hybrid_physics.py:49\u201355"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "Ph\u00e2n bi\u1ec7t point c\u00f3 thu\u1ed9c t\u00ednh v\u1edbi vector t\u1ecda \u0111\u1ed9 XYZ. Chu\u1ea9n kho\u1ea3ng c\u00e1ch v\u00e0 ray ch\u1ec9 t\u00e1c \u0111\u1ed9ng l\u00ean XYZ; intensity kh\u00f4ng b\u1ecb nh\u00e2n theo tham s\u1ed1 ray.",
+    "latex_example": "For an attributed point $\\mathbf p=(x,y,z,\\iota)$, define its geometric\nprojection $\\mathbf p^{\\mathrm{xyz}}=(x,y,z)^\\top\\in\\mathbb R^3$.\nThe sensor ray and the distance behind the box exit are\n\\[\n \\mathbf r_{\\mathbf p}(t)=t\\mathbf p^{\\mathrm{xyz}},\\qquad\n d_{\\mathrm{behind}}=(1-t_{\\mathrm{leave}})\n       \\lVert\\mathbf p^{\\mathrm{xyz}}\\rVert_2.\n\\]\nShadow masking applies to ray--box hits with $d_{\\mathrm{behind}}>0.05\\,\\mathrm m$.\nReflectance $\\iota$ is an attribute and is excluded from these geometric operations.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T03",
+    "reviewer": 1,
+    "title": "Ho\u00e1n v\u1ecb corner 5\u2212m c\u1ea7n quy \u01b0\u1edbc th\u1ee9 t\u1ef1 \u0111\u1ec9nh t\u01b0\u1eddng minh",
+    "quote": "\\mathbf{c}_{5-m}^*",
+    "explanation": "\u0110\u1ea3o th\u1ee9 t\u1ef1 [4,3,2,1] bi\u1ec3u di\u1ec5n quay \u03c0 \u0111\u00fang v\u1edbi th\u1ee9 t\u1ef1 code [++, +\u2212, \u2212+, \u2212\u2212], nh\u01b0ng kh\u00f4ng \u0111\u00fang v\u1edbi th\u1ee9 t\u1ef1 ch\u1ea1y quanh chu vi th\u00f4ng d\u1ee5ng [++, +\u2212, \u2212\u2212, \u2212+]. B\u00e0i ch\u1ec9 n\u00f3i b\u1ed1n corners, ch\u01b0a \u0111\u1ecbnh ngh\u0129a th\u1ee9 t\u1ef1 tr\u01b0\u1edbc Eq. corner_loss. Script witness cho th\u1ea5y reverse-order error g\u1ea7n 0 v\u1edbi code order nh\u01b0ng l\u1edbn v\u1edbi cyclic order. C\u00f4ng th\u1ee9c v\u00e0 code kh\u00f4ng sai n\u1ebfu gi\u1eef \u0111\u00fang th\u1ee9 t\u1ef1; thi\u1ebfu convention s\u1ebd khi\u1ebfn ng\u01b0\u1eddi t\u00e1i l\u1eadp c\u00e0i m\u1ed9t loss kh\u00e1c.",
+    "comment_type": "methodology",
+    "severity": "moderate",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 355,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t03",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:320\u2013322"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/oriented_geometry_loss.py:22,44\u201362,81\u2013103"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "mathematical_witnesses.json"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "\u0110\u1ecbnh ngh\u0129a local axes, corners v\u00e0 permutation tr\u01b0\u1edbc loss; ho\u1eb7c chuy\u1ec3n c\u1ea3 c\u00f4ng th\u1ee9c l\u1eabn code sang th\u1ee9 t\u1ef1 cyclic v\u1edbi ph\u00e9p d\u1ecbch hai \u0111\u1ec9nh. Kh\u00f4ng ch\u1ec9 \u0111\u1ed5i m\u1ed9t v\u1ebf c\u00f4ng th\u1ee9c.",
+    "latex_example": "Let $\\mathbf e_l=(\\cos\\psi,\\sin\\psi)^\\top$ and\n$\\mathbf e_w=(-\\sin\\psi,\\cos\\psi)^\\top$. With center $\\mathbf c$, define\n\\[\n\\begin{aligned}\n\\mathbf c_1&=\\mathbf c+\\tfrac l2\\mathbf e_l+\\tfrac w2\\mathbf e_w,&\n\\mathbf c_2&=\\mathbf c+\\tfrac l2\\mathbf e_l-\\tfrac w2\\mathbf e_w,\\\\\n\\mathbf c_3&=\\mathbf c-\\tfrac l2\\mathbf e_l+\\tfrac w2\\mathbf e_w,&\n\\mathbf c_4&=\\mathbf c-\\tfrac l2\\mathbf e_l-\\tfrac w2\\mathbf e_w.\n\\end{aligned}\n\\]\nUnder this ordering, the $\\pi$-rotation correspondence is\n$\\pi(m)=5-m$. The predicted and target corners use the same ordering.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T04",
+    "reviewer": 1,
+    "title": "Loss t\u1ed5ng c\u00f3 tr\u1ecdng s\u1ed1 nh\u01b0ng c\u00e1c loss c\u01a1 s\u1edf v\u00e0 normalization ch\u01b0a \u0111\u1ee7 \u0111\u1eb7c t\u1ea3",
+    "quote": "\\mathcal{T} = \\{\\mathrm{cls}, \\mathrm{off}, \\mathrm{size}, \\mathrm{yaw}, \\mathrm{geo}, \\mathrm{qual}\\}",
+    "explanation": "C\u00e1c tr\u1ecdng s\u1ed1 kh\u00f4ng b\u1ecb thi\u1ebfu to\u00e0n b\u1ed9: group weights 0.5/0.5, beta_corner=1, T-SBUW b=3, tau=2, EMA=0.99 \u0111\u00e3 \u0111\u01b0\u1ee3c n\u00eau. Tuy nhi\u00ean Methods ch\u01b0a vi\u1ebft \u0111\u1ea7y \u0111\u1ee7 classification focal, ba masked regression losses v\u00e0 ph\u00e9p gi\u1ea3m tr\u00ean positive mask. Context m\u00f4 t\u1ea3 L1/N_pos, c\u00f2n code OGA d\u00f9ng Smooth-L1 chia cho t\u1ed5ng mask \u0111\u00e3 expand qua 2 k\u00eanh (2N_pos+1e-4). BCE quality ch\u1ec9 gi\u1ea3m tr\u00ean reg_mask. EMA c\u00f2n c\u00f3 first-batch initialization v\u00e0 ch\u1ec9 update khi training. Hai ng\u01b0\u1eddi ch\u1ec9 \u0111\u1ecdc paper/context c\u00f3 th\u1ec3 c\u00e0i kh\u00e1c objective; kh\u00f4ng n\u00ean kh\u1eafc ph\u1ee5c b\u1eb1ng th\u00eam c\u00e1c lambda t\u00f9y \u00fd.",
+    "comment_type": "missing_information",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 384,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t04",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:307\u2013314,324\u2013339"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/strategies/oga.py:28\u201337,70\u2013115"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/l1_loss.py:10\u201314"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/uncertainty_weighting.py:108\u2013121"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/focal_loss.py:14\u201339"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "B\u1ed5 sung loss primitives, mask/reduction, tr\u1ea1ng th\u00e1i EMA v\u00e0 h\u1ec7 s\u1ed1 quality=1. \u0110\u1ed1i chi\u1ebfu context \u0111\u1ec3 s\u1eeda ch\u1ed7 L1 th\u00e0nh Smooth-L1 khi d\u00f9ng OGA hi\u1ec7n t\u1ea1i. Ghi r\u00f5 weights l\u00e0 adaptive ch\u1ee9 kh\u00f4ng ph\u1ea3i s\u00e1u h\u1eb1ng lambda c\u1ed1 \u0111\u1ecbnh.",
+    "latex_example": "For group $g$, let $\\Omega_g$ be its regression-positive cells,\n$N_g=|\\Omega_g|$, and let $Y_{gic}\\in[0,1]$ be the Gaussian class target.\nFor $t\\in\\{\\mathrm{off},\\mathrm{size},\\mathrm{yaw}\\}$,\n\\[\n\\mathcal L_{g,t}=\\frac{\\sum_{i\\in\\Omega_g}\\sum_{d=1}^{2}\n \\rho(\\hat y_{g,i,d}^{(t)}-y_{g,i,d}^{(t)})}{2N_g+10^{-4}},\\quad\n\\rho(e)=\\begin{cases}e^2/2,&|e|<1,\\\\ |e|-1/2,&\\text{otherwise.}\\end{cases}\n\\]\nWith $p_{gic}=\\operatorname{clip}(\\sigma(z_{gic}),10^{-4},1-10^{-4})$\nand $N_g^{\\mathrm{peak}}=\\#\\{(i,c):Y_{gic}=1\\}$,\n\\[\n\\mathcal L_{g,\\mathrm{cls}}=-\\frac{\n \\sum_{Y_{gic}=1}(1-p_{gic})^2\\log p_{gic}\n +\\sum_{Y_{gic}<1}(1-Y_{gic})^4p_{gic}^{2}\\log(1-p_{gic})}\n {\\max(N_g^{\\mathrm{peak}},1)}.\n\\]\nThe quality BCE is averaged over $\\Omega_g$ only, with unit fixed coefficient;\nthe geometry loss is also averaged over regression-positive cells.\nEmpty regression sets contribute zero regression, geometry and quality loss.\nFor each group and task, the first training batch initializes the detached\nEMA to $\\max(\\mathcal L_{g,t},10^{-4})$; later training batches update it with\nmomentum 0.99. The EMA is frozen during validation.\nThe effective task coefficient is\n\\[\n \\lambda_{g,t}^{\\mathrm{eff}}=\n \\frac12\\,\\overline\\mu_g\\,\n \\frac{\\omega_{g,t}}{\\max(\\mu_{g,t},10^{-4})},\\qquad\n \\overline\\mu_g=\\frac16\\sum_{t\\in\\mathcal T}\\mu_{g,t}.\n\\]\nThe fixed corner coefficient and quality coefficient are both 1.0.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T05",
+    "reviewer": 1,
+    "title": "Q-OGA kh\u00f4ng ch\u1ec9 thay positive classification target nh\u01b0 paper \u0111ang m\u00f4 t\u1ea3",
+    "quote": "Q-OGA modulates positive classification targets",
+    "explanation": "Context m\u00f4 t\u1ea3 th\u00eam soft-min \u03c0-corner v\u00e0 range-adaptive regression weighting. Code q_oga th\u1ef1c hi\u1ec7n c\u1ea3 hai, trong khi Methods ch\u1ec9 cho positive CQFL term. Negative Gaussian-neighbor term, normalization, J=5 kh\u00f4ng c\u00f3 IQA v\u00e0 range weights/soft-min temperature ch\u01b0a \u0111\u01b0\u1ee3c khai b\u00e1o cho nh\u00e1nh n\u00e0y. V\u00ec v\u1eady l\u1ee3i \u00edch Q-OGA kh\u00f4ng th\u1ec3 hi\u1ec3u l\u00e0 ch\u1ec9 b\u1ecf IQA head. C\u00f3 th\u00eam m\u1ed9t sai kh\u00e1c hi\u1ec7n t\u1ea1i trong code: grid_pos d\u00f9ng +0.5 cell r\u1ed3i c\u1ed9ng target offset theo grid origin, n\u00ean RDA d\u00f9ng v\u1ecb tr\u00ed l\u1ec7ch +0.2 m m\u1ed7i tr\u1ee5c; c\u1ea7n x\u00e1c minh ch\u1ee7 \u0111\u00edch tr\u01b0\u1edbc khi ghi m\u1ed9t c\u00f4ng th\u1ee9c true-center nh\u01b0 \u0111\u00e3 kh\u1edbp tri\u1ec3n khai.",
+    "comment_type": "missing_information",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 371,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t05",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:341\u2013348"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/quality_focal_loss.py:38\u201362"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/strategies/q_oga.py:23,35\u201344,174\u2013219"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/losses/smooth_corner_loss.py:29\u201358"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "mathematical_witnesses.json"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "M\u00f4 t\u1ea3 Q-OGA l\u00e0 bi\u1ebfn th\u1ec3 objective \u0111\u1ea7y \u0111\u1ee7, khai b\u00e1o soft-min/RDA v\u00e0 negative CQFL. N\u1ebfu ch\u1ec9 mu\u1ed1n so s\u00e1nh head-free quality coupling, ch\u1ea1y th\u00eam variant ch\u1ec9 \u0111\u1ed5i coupling. Ki\u1ec3m tra v\u00e0 s\u1eeda/gi\u1ea3i th\u00edch offset origin c\u1ee7a RDA \u1edf l\u01b0\u1ee3t code ri\u00eang; kh\u00f4ng \u00e2m th\u1ea7m vi\u1ebft l\u1ea1i code trong audit.",
+    "latex_example": "% Complete objective description; the range-coordinate convention must first\n% be reconciled with q_oga.py:177--182 (current implementation adds half a cell).\nFor positive peaks, use the quality-coupled term in Eq.~(\\ref{eq:cqfl_loss}).\nFor $Y<1$, retain $(1-Y)^4p^2[-\\log(1-p)]$ and normalize the sum of positive\nand negative terms by $\\max(N^{\\mathrm{peak}},1)$.\nQ-OGA additionally uses\n\\[\n d_{\\mathrm{sm}}=-\\tau_{\\mathrm{sm}}\\log\n   \\left(e^{-d_{\\mathrm{dir}}/\\tau_{\\mathrm{sm}}}\n        +e^{-d_{\\pi}/\\tau_{\\mathrm{sm}}}\\right),\n \\qquad \\tau_{\\mathrm{sm}}=0.05,\n\\]\nwhere $d_{\\mathrm{dir}}$ and $d_\\pi$ are mean L1 corner distances in metres.\nDivide $d_{\\mathrm{sm}}$ by the target diagonal before averaging.\nThe coordinate losses are weighted by\n\\[\n w_i=1+1.5\\left[\\operatorname{clip}\n       (r_i/70.4,0,1.5)\\right]^2.\n\\]\nFive tasks $\\{\\mathrm{cls},\\mathrm{off},\\mathrm{size},\\mathrm{yaw},\\mathrm{geo}\\}$\nare balanced separately per group; no IQA branch is used.\n% Author action: define r_i from the verified coordinate convention.\n% With the current code, its coordinate is c_i^*+(0.2,0.2) m, not exactly c_i^*.\n% Do not publish a true-center formula without reconciling that difference.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T06",
+    "reviewer": 1,
+    "title": "Algorithm ch\u1ecdn peak tr\u00ean classification nh\u01b0ng code ch\u1ecdn peak tr\u00ean joint score",
+    "quote": "Identify local $3 \\times 3$ candidate peaks on classification heatmap",
+    "explanation": "Algorithm b\u01b0\u1edbc 8\u21929 v\u00e0 prose cu\u1ed1i Methods ch\u1ecdn local maxima c\u1ee7a p_cls tr\u01b0\u1edbc khi k\u1ebft h\u1ee3p q. Code t\u00ednh ranking_scores tr\u01b0\u1edbc r\u1ed3i max_pool2d tr\u00ean ranking_scores. Hai th\u1ee9 t\u1ef1 kh\u00f4ng giao ho\u00e1n: v\u1edbi hai cell k\u1ec1 nhau p=[0.9,0.8], q=[0.04,0.81], classification ch\u1ecdn cell 0, joint score=[0.1897,0.8050] ch\u1ecdn cell 1; c\u1ea3 hai cell \u0111\u1ec1u v\u01b0\u1ee3t ng\u01b0\u1ee1ng 0.05. Context c\u0169ng ghi th\u1ee9 t\u1ef1 c\u0169 nh\u01b0 paper n\u00ean ph\u1ea3i \u0111\u1ed1i chi\u1ebfu tr\u1ef1c ti\u1ebfp postprocess.py.",
+    "comment_type": "methodology",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 428,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t06",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:129\u2013139"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/postprocess.py:175\u2013178,223\u2013229"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "mathematical_witnesses.json"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "T\u00ednh joint score r\u1ed3i l\u1ea5y peak t\u1eebng class trong group; gi\u1eef hai \u0111i\u1ec1u ki\u1ec7n threshold, decode v\u00e0 class-wise NMS. Th\u00eam global sort/top-500 v\u00e0o pseudocode \u0111\u1ec3 t\u1ef1 ch\u1ee9a; s\u1eeda c\u1ea3 c\u00e2u prose \u1edf d\u00f2ng 441.",
+    "latex_example": "% Replacement for peak/scoring/filtering steps, matching postprocess.py.\n\\begin{enumerate}\n\\item For each class $c$ in its task group, compute\n $S_c=P_{\\mathrm{cls},c}^{1-\\alpha}\\hat q^{\\alpha}$, with $\\alpha=0.5$.\n\\item Form the candidate mask\n\\[\n M_c=\\bigl[S_c=\\operatorname{MaxPool}_{3\\times3}(S_c)\\bigr]\n \\land[P_{\\mathrm{cls},c}>0.05]\\land[S_c>0.05].\n\\]\n\\item Decode cells selected by $M_c$ using Eq.~(\\ref{eq:box_decode}).\n\\item Apply rotated NMS separately per class at IoU threshold 0.10.\n\\item Merge groups, sort by $S_c$, and retain at most 500 detections globally.\n\\end{enumerate}\nThe output consists of oriented BEV footprints; this configuration does not\npredict the height and vertical position required for full 3D boxes.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T07",
+    "reviewer": 1,
+    "title": "F7 l\u00e0 population standard deviation, kh\u00f4ng ph\u1ea3i sample standard deviation",
+    "quote": "and the sample standard deviation:",
+    "explanation": "Eq. z_std_encoding d\u00f9ng 1/N n\u00ean l\u00e0 \u0111\u1ed9 l\u1ec7ch chu\u1ea9n c\u1ee7a t\u1eadp \u0111i\u1ec3m trong cell (population moment), trong khi ch\u1eef sample th\u01b0\u1eddng ch\u1ec9 estimator chia N\u22121. Context v\u00e0 rasterizer c\u00f9ng d\u00f9ng population moment. V\u1edbi normalized heights [0,1], c\u00f4ng th\u1ee9c cho 0.5 c\u00f2n sample standard deviation l\u00e0 kho\u1ea3ng 0.7071. Kh\u00f4ng c\u1ea7n \u0111\u1ed5i c\u00f4ng th\u1ee9c/code \u0111\u1ec3 s\u1eeda m\u1ed9t t\u00ean g\u1ecdi.",
+    "comment_type": "presentation",
+    "severity": "minor",
+    "display_severity": "MINOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 69,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t07",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/code_context.md:253\u2013254"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/utils_1/bev_backend.py:168\u2013176"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "mathematical_witnesses.json"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "\u0110\u1ed5i sample standard deviation \u1edf prose v\u00e0 caption th\u00e0nh within-cell population standard deviation ho\u1eb7c vertical dispersion; gi\u1eef ph\u00e9p t\u00ednh hi\u1ec7n t\u1ea1i.",
+    "latex_example": null,
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "T08",
+    "reviewer": 1,
+    "title": "\u0110\u1ed1i ch\u1ee9ng stage-level SimAM \u0111\u01b0\u1ee3c m\u00f4 t\u1ea3 c\u00f3 linear projections nh\u01b0ng code ch\u1ec9 th\u00eam scalar beta",
+    "quote": "stage-level adapters add learned linear projections",
+    "explanation": "ResidualLightAttention hi\u1ec7n c\u00f3 m\u1ed9t beta scalar v\u00e0 m\u1ed9t SimAMCore kh\u00f4ng tham s\u1ed1; kh\u00f4ng c\u00f3 learned channel-linear projection. \u0110i\u1ec1u n\u00e0y kh\u00f4ng ph\u1ee7 \u0111\u1ecbnh Block-SimAM c\u00f3 zero parameters, nh\u01b0ng l\u00fd do so s\u00e1nh chi ph\u00ed adapter c\u1ea7n m\u00f4 t\u1ea3 \u0111\u00fang. N\u1ebfu b\u1ea3ng attention d\u00f9ng m\u1ed9t implementation l\u1ecbch s\u1eed kh\u00e1c, ph\u1ea3i kh\u00f3a revision thay v\u00ec g\u00e1n code hi\u1ec7n t\u1ea1i cho b\u1ea3ng \u0111\u00f3.",
+    "comment_type": "claim_accuracy",
+    "severity": "minor",
+    "display_severity": "MINOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 261,
+    "review_lane": "notation_and_numeric_consistency",
+    "root_cause_key": "t08",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Code/detector/core/models/backbones/light_attention.py:40\u201355,73\u201374"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "M\u00f4 t\u1ea3 adapter hi\u1ec7n t\u1ea1i l\u00e0 X+beta(SimAM(X)\u2212X) v\u1edbi m\u1ed9t scalar trainable; ho\u1eb7c d\u1eabn \u0111\u00fang revision c\u1ee7a adapter \u0111\u01b0\u1ee3c d\u00f9ng trong c\u00e1c run l\u1ecbch s\u1eed.",
+    "latex_example": null,
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M01",
+    "reviewer": 2,
+    "title": "PC-GTA c\u00f2n thi\u1ebfu recipe v\u00e0 ng\u01b0\u1ee1ng quy\u1ebft \u0111\u1ecbnh \u0111\u1ee7 \u0111\u1ec3 t\u00e1i l\u1eadp",
+    "quote": "GT sampling was applied with probability $0.5$",
+    "explanation": "Paper \u0111\u00e3 n\u00eau b\u1eadt/t\u1eaft physics, x\u00e1c su\u1ea5t GT/global transforms v\u00e0 ground-radius. Tuy v\u1eady N_thresh kh\u00f4ng \u0111\u01b0\u1ee3c g\u00e1n gi\u00e1 tr\u1ecb; thi\u1ebfu quota m\u1ed7i class, source-relative placement, jitter, collision margin, visibility survival/minimum points v\u00e0 quy t\u1eafc h\u1ed7 tr\u1ee3 ground. LIMIT_WHOLE_SCENE=true tr\u1eeb s\u1ed1 object hi\u1ec7n c\u00f3 kh\u1ecfi quota 15/10/10. C\u1ea7n ph\u00e2n bi\u1ec7t visibility flag=true v\u1edbi guard th\u1ef1c thi: protect=flag AND (shadow OR extra_width>0 OR margin<=1e-8); final shadow=false, extra_width=0, margin=0.1 n\u00ean kh\u00f4ng ch\u1ea1y ki\u1ec3m tra visibility ri\u00eang. C\u00e1c bi\u1ebfn n\u00e0y thay \u0111\u1ed5i c\u1ea3nh training v\u00e0 l\u00e0 m\u1ed9t ph\u1ea7n c\u1ee7a module c\u00f3 gain +6.03. Resolved config v\u00e0 sampler cho ph\u00e9p kh\u00f4i ph\u1ee5c c\u1ee5 th\u1ec3; master config m\u1eb7c \u0111\u1ecbnh kh\u00f4ng ph\u1ea3i recipe final.",
+    "comment_type": "missing_information",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/experiments.tex",
+    "source_file": "sections/experiments.tex",
+    "source_line": 49,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "m01",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/sections/methodology.tex:142"
+      },
+      {
+        "type": "section",
+        "text": "Result/iqa_comparison_20261019/config.inference.json:augmentation"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/augmentor/hybrid_sampler.py:89\u2013106,153\u2013178,246\u2013247"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/augmentor/hybrid_physics.py:12\u201325,64\u201368"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "C\u00f4ng b\u1ed1 resolved augmentation dictionary ho\u1eb7c b\u1ea3ng recipe v\u00e0 version sampler. Ph\u00e2n bi\u1ec7t c\u01a1 ch\u1ebf \u0111\u00e3 d\u00f9ng v\u1edbi LOS/shadow/radiometric t\u1eaft; kh\u00f4ng g\u00e1n gain package cho c\u00e1c nh\u00e1nh b\u1ecb t\u1eaft.",
+    "latex_example": "PC-GTA uses target scene quotas of 15 Cars, 10 Pedestrians and 10 Cyclists,\nwith scene-level probability 0.5 and source-relative placement.\nThe requested count for each class is its quota minus the existing count,\nclamped below at zero (sampling rate 1.0).\nThe radial scale is uniform on $[0.9,1.1]$ and azimuth jitter is uniform on\n$[-5^\\circ,5^\\circ]$. We use a 0.1\\,m box collision margin, six placement\nattempts and a candidate multiplier of three. The static obstacle count\nthreshold is two, using the sampler's elevated clearance column.\nWhen the visibility check is active, it requires at least\n$\\min(n_{\\mathrm{before}},5)$ surviving points and 50\\% of the original points.\nIts configuration flag is enabled, but the current implementation bypasses\nthe explicit check when shadow masking is off, removal widths are zero,\nand collision margin is positive, as in the final configuration.\nGround support requires 6, 4, or 2 nearby low returns at ranges\n$d\\le15$\\,m, $15<d\\le30$\\,m, or $d>30$\\,m, respectively.\nAccepted ground elevations lie in $[-2.5,-0.8]$\\,m, with support within\n0.35\\,m above the estimated ground. Density subsampling preserves a minimum\nof five source points when available. LOS rejection, shadow masking and\nradiometric calibration are disabled in the reported final run.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M02",
+    "reviewer": 2,
+    "title": "Target assignment ch\u01b0a c\u00f4ng b\u1ed1 ownership cho regression head d\u00f9ng chung",
+    "quote": "Regression targets were assigned within half the Gaussian peak radius",
+    "explanation": "Paper cho radius nh\u01b0ng ch\u01b0a ghi gaussian_overlap=0.1, Gaussian sigma, quantized peak v\u00e0 nearest_center ownership khi nhi\u1ec1u GT d\u00f9ng c\u00f9ng cell. Pedestrian/Cyclist d\u00f9ng chung offset/size/yaw n\u00ean m\u1ed9t cell ch\u1ec9 gi\u1eef \u0111\u01b0\u1ee3c m\u1ed9t GT regression target. Code d\u1ef1 tr\u1eef quantized peak cho owner g\u1ea7n nh\u1ea5t, r\u1ed3i g\u00e1n c\u00e1c cell kh\u00e1c theo nearest center; exact ties gi\u1eef GT \u0111\u1ebfn tr\u01b0\u1edbc. C\u00e1ch di\u1ec5n gi\u1ea3i anchor center trong Fig. 6 caption c\u0169ng d\u1ec5 g\u00e2y th\u00eam +0.2 m v\u00ec Eq. gt_targets/code d\u00f9ng grid origin kh\u00f4ng c\u00f3 +0.5.",
+    "comment_type": "missing_information",
+    "severity": "moderate",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 325,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "m02",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Result/iqa_comparison_20261019/config.inference.json:data.regression_assignment"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/dataset.py:434\u2013446"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/utils_1/gaussian.py:37\u201339"
+      },
+      {
+        "type": "section",
+        "text": "Code/detector/core/datasets/utils_1/target_backend.py:29\u201377"
+      },
+      {
+        "type": "section",
+        "text": "paper/sections/methodology.tex:301,321"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "N\u00eau nearest_center v\u00e0 tie/peak reservation; ph\u00e2n bi\u1ec7t raster-cell centroid offset v\u1edbi regression anchor-grid offset. Kh\u00f4ng th\u00eam +0.5 v\u00e0o decode v\u00ec \u0111\u00f3 s\u1ebd thay \u0111\u1ed5i code contract.",
+    "latex_example": "The heatmap radius uses a minimum overlap of 0.1 and is bounded below\nby four cells. A Gaussian of diameter $2r+1$ uses standard deviation\n$(2r+1)/6$; the regression support radius is $r/2$.\nThe continuous projected center is quantized by integer truncation for its\nclassification peak. Each shared regression cell is assigned to the nearest\nGT center within the task group. Quantized peak cells are reserved for their\nnearest owner; exact ties preserve the canonical GT order.\nThe regression anchor is\n\\[\n \\mathbf a_{uv}=(x_{\\min}+u s_{\\mathrm{out}}\\Delta_x,\n                 y_{\\min}+v s_{\\mathrm{out}}\\Delta_y),\\qquad\n \\mathbf o^*=\\mathbf c^*-\\mathbf a_{uv}.\n\\]\nThis anchor is distinct from the input raster cell center used for\n$F_{12}$ and $F_{13}$; no half-output-cell term is added at decoding.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M03",
+    "reviewer": 2,
+    "title": "Ablation ch\u01b0a ch\u1ee9ng minh ki\u1ec3m so\u00e1t architecture, schedule v\u00e0 checkpoint policy",
+    "quote": "All variants share identical MobilePIXORNeXt backbone",
+    "explanation": "Table loss ghi OGA+IQA/no-attention 0.721M v\u00e0 AP 70.58; final l\u00e0 0.753569M v\u1edbi gain +0.88, m\u1eb7c d\u00f9 ch\u00ednh SimAMCore kh\u00f4ng th\u00eam parameter. V\u1edbi \u0111\u00fang final shared H32/F32 topology, script \u0111\u1ebfm c\u1ea3 c\u00f3/kh\u00f4ng SimAM \u0111\u1ec1u 753569; hai IQA heads chi\u1ebfm 18626 tham s\u1ed1, kh\u00e1c m\u00f4 t\u1ea3 18.59K. B\u00e0i c\u0169ng t\u00e1ch 50-epoch standard/curves kh\u1ecfi final 160-epoch run ch\u1ecdn epoch 130 nh\u01b0ng kh\u00f4ng cung c\u1ea5p run manifest t\u1eebng h\u00e0ng ablation. Ch\u01b0a th\u1ec3 t\u00e1ch gain attention kh\u1ecfi thay \u0111\u1ed5i depth/head/schedule; kh\u00f4ng c\u00f3 log A9 \u0111\u1ee7 \u0111\u1ec3 k\u1ebft lu\u1eadn ch\u00ednh x\u00e1c bi\u1ebfn n\u00e0o \u0111\u00e3 thay \u0111\u1ed5i. C\u00f9ng split v\u00e0 seed 42 kh\u00f4ng \u0111\u1ee7 \u0111\u1ec3 kh\u1eb3ng \u0111\u1ecbnh controlled ablation.",
+    "comment_type": "methodology",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "tables/loss.tex",
+    "source_file": "tables/loss.tex",
+    "source_line": 19,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "m03",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/tables/loss.tex:12\u201319"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/components.tex:40\u201345"
+      },
+      {
+        "type": "section",
+        "text": "paper/sections/experiments.tex:43,46"
+      },
+      {
+        "type": "section",
+        "text": "paper/sections/results.tex:139"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "parameter_and_mac_audit.json"
+      },
+      {
+        "type": "section",
+        "text": "Result/benchmark_T4_20261018/sources/ours_best_ap.json:model.parameter_counts"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "Xu\u1ea5t m\u1ed7i run's resolved config/hash, params, depth, head architecture, optimizer/schedule, selection epoch/policy v\u00e0 GPU. Ch\u1ea1y c\u1eb7p final architecture attention off/on v\u1edbi c\u00f9ng training budget ho\u1eb7c gi\u1edbi h\u1ea1n Table components l\u00e0 progression. X\u00e1c minh param delta c\u1ee7a IQA thay v\u00ec s\u1eeda s\u1ed1 l\u00e0m tr\u00f2n theo ph\u1ecfng \u0111o\u00e1n.",
+    "latex_example": "% Safe description until run manifests and matched controls are available.\nTable~\\ref{tab:components} records an architectural progression.\nThe final checkpoint was selected at epoch 130 from a 160-epoch schedule;\nthe illustrated training curves cover 50 epochs.\nThe currently reported rows do not establish an architecture- and\nschedule-matched estimate of the isolated Block-SimAM effect.\nSuch an estimate requires identical stage depths, shared-head topology,\ntraining budget and checkpoint selection, with only Block-SimAM toggled.\n% For the verified final topology only: both attention settings have 753,569\n% detector parameters; removing both IQA branches removes 18,626 parameters.\n% Do not replace historical row counts until their actual configs are recovered.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M04",
+    "reviewer": 2,
+    "title": "T-SBUW v\u00e0 c\u00e1c th\u00e0nh ph\u1ea7n OGA ch\u01b0a c\u00f3 ki\u1ec3m ch\u1ee9ng t\u00e1ch ri\u00eang",
+    "quote": "evaluates its empirical convergence behavior",
+    "explanation": "A0\u2013A10 c\u00f3 backbone, encoding, grouped width, GT, fusion, SG-FPN, OGA+IQA, attention; factorial loss c\u00f3 OGA v\u00e0 IQA ri\u00eang. Nh\u01b0ng kh\u00f4ng c\u00f3 h\u00e0ng b\u1eadt/t\u1eaft T-SBUW ho\u1eb7c t\u00e1ch bounded softmax kh\u1ecfi EMA; c\u0169ng ch\u01b0a t\u00e1ch projection GIoU kh\u1ecfi \u03c0-corner. Loss curves c\u1ee7a c\u00e1c objective kh\u00e1c nhau kh\u00f4ng \u0111o ri\u00eang l\u1ee3i \u00edch c\u1ee7a weighting v\u00e0 kh\u00f4ng so \u0111\u01b0\u1ee3c tr\u1ef1c ti\u1ebfp khi normalization kh\u00e1c. PC-GTA \u0111\u01b0\u1ee3c ki\u1ec3m ch\u1ee9ng \u1edf m\u1ee9c package; c\u00e1c nh\u00e1nh physics t\u1eaft kh\u00f4ng c\u1ea7n m\u1ed9t h\u00e0ng hi\u1ec7u qu\u1ea3 \u0111\u01b0\u1ee3c g\u00e1n cho final run.",
+    "comment_type": "missing_information",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/experiments.tex",
+    "source_file": "sections/experiments.tex",
+    "source_line": 46,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "m04",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/sections/methodology.tex:360,383\u2013401"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/components.tex:11\u201321"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/loss.tex:10\u201317"
+      },
+      {
+        "type": "section",
+        "text": "paper/sections/results.tex:139\u2013146"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "B\u1ed5 sung matched ablation uniform weighting / EMA-only / T-SBUW, v\u00e0 projection-only / corner-only / combined OGA n\u1ebfu mu\u1ed1n quy k\u1ebft contribution c\u1ee7a t\u1eebng c\u01a1 ch\u1ebf. N\u1ebfu ch\u01b0a c\u00f3 c\u00e1c run n\u00e0y, gi\u1edbi h\u1ea1n k\u1ebft lu\u1eadn v\u00e0o h\u1ec7 th\u1ed1ng k\u1ebft h\u1ee3p; kh\u00f4ng b\u1ecba AP m\u1edbi.",
+    "latex_example": "The loss-factorial study evaluates the composite OGA objective and IQA.\nIt does not separate the effects of projection GIoU and the symmetric corner\nterm. No isolated ablation of EMA calibration and bounded task weighting is\nreported. The loss trajectories therefore describe convergence of the full\nobjectives, rather than establish the independent benefit of T-SBUW.\n% Proposed additional controls, with AP to be filled only from real runs:\n% uniform task weights; EMA-only calibration; full T-SBUW;\n% projection-only geometry; corner-only geometry; combined OGA.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M05",
+    "reviewer": 2,
+    "title": "C\u00f9ng R40/split ch\u01b0a \u0111\u1ee7 ch\u1ee9ng minh t\u01b0\u01a1ng \u0111\u01b0\u01a1ng evaluator cho so s\u00e1nh AP",
+    "quote": "Both implementations used $R_{40}$ interpolation on the same validation split",
+    "explanation": "Local evaluator th\u1ef1c hi\u1ec7n matching/ranking ri\u00eang tr\u00ean BEV outputs v\u00e0 quy t\u1eafc ignore/ROI ri\u00eang; log n\u00f3i r\u00f5 kh\u00f4ng ph\u1ea3i official hidden test. Table comparison ph\u00e2n bi\u1ec7t local v\u00e0 reference, l\u00e0 c\u00f4ng khai t\u1ed1t, nh\u01b0ng ch\u01b0a c\u00f3 equivalence check \u0111\u1ec3 d\u00f9ng ch\u00eanh l\u1ec7ch +1.33 ho\u1eb7c matched SECOND nh\u01b0 b\u1eb1ng ch\u1ee9ng ch\u1eafc ch\u1eafn h\u01a1n v\u1ec1 detector. C\u1ea7n t\u00e1i hi\u1ec7n c\u00f9ng evaluator ho\u1eb7c \u0111\u1ed1i chi\u1ebfu semantics c\u1ee7a ignore/matching/range/candidate filtering. Kh\u00f4ng kh\u1eb3ng \u0111\u1ecbnh m\u1ed9t quy t\u1eafc c\u1ee5 th\u1ec3 nh\u01b0 DontCare \u0111\u00e3 kh\u00e1c khi ch\u01b0a th\u1ea9m \u0111\u1ecbnh reference implementation t\u01b0\u01a1ng \u1ee9ng.",
+    "comment_type": "methodology",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/experiments.tex",
+    "source_file": "sections/experiments.tex",
+    "source_line": 37,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "e03-headline",
+    "related_previous_issues": [
+      "Phase 1 E03"
+    ],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "Code/tools/kitti_training_pipeline/evaluate_kitti_bev.py:164\u2013224"
+      },
+      {
+        "type": "section",
+        "text": "Result/benchmark_T4_20261018/sources/ours_best_ap.json:protocol"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/comparison.tex:23"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "Gi\u1eef c\u00f4ng khai hai protocol; \u0111\u00e1nh gi\u00e1 matched protocol tr\u00ean c\u00f9ng predictions/GT n\u1ebfu kh\u1ea3 thi v\u00e0 tr\u00ecnh b\u00e0y m\u1ee9c ch\u00eanh theo t\u1eebng class. Cho t\u1edbi l\u00fac \u0111\u00f3 coi b\u1ea3ng cross-family l\u00e0 descriptive comparison, kh\u00f4ng test t\u01b0\u01a1ng \u0111\u01b0\u01a1ng/th\u1ed1ng k\u00ea th\u1eafng thua.",
+    "latex_example": "MobilePIXORNeXt and historical MobilePIXOR use the local loader-aligned\nBEV evaluator; reference detectors use the reference KITTI evaluator.\nAlthough both report $R_{40}$ on the same validation split, evaluator\nequivalence has not been established here. Cross-family AP differences are\ntherefore descriptive. A common-evaluator comparison is required before\nattributing small differences solely to detector quality.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M06",
+    "reviewer": 2,
+    "title": "Hardware/protocol c\u1ee7a standalone timing v\u00e0 chi ph\u00ed preprocessing ch\u01b0a \u0111\u1ee7 t\u00e1i l\u1eadp",
+    "quote": "standalone network throughput reached $55.94$\\,FPS",
+    "explanation": "Methods cu\u1ed1i g\u1ecdi 55.94 FPS l\u00e0 standalone, nh\u01b0ng Results/Table components d\u00f9ng standalone=115.32 FPS v\u00e0 pipeline-forward=55.94. Code device_timed \u0111o CUDA events v\u00e0 sync; E2E wall-clock c\u00f3 I/O/preprocess. Context/table encoding ghi L4 cho c\u00e1c s\u1ed1 169.97/165.02/169.01, Table components l\u1ea1i g\u00e1n T4, \u0111\u00fang v\u1ea5n \u0111\u1ec1 Phase 1 E07. Ch\u01b0a c\u00f3 log standalone t\u01b0\u01a1ng \u1ee9ng v\u00e0 host CPU/threading/loop protocol \u0111\u1ea7y \u0111\u1ee7; ch\u1ec9 x86_64 kh\u00f4ng t\u00e1i l\u1eadp \u0111\u01b0\u1ee3c 20.94 ms CPU preprocessing. Training GPU c\u0169ng ch\u01b0a \u0111\u01b0\u1ee3c \u0111\u1ecbnh danh ri\u00eang, kh\u00f4ng th\u1ec3 suy t\u1eeb T4 evaluation v\u00e0 bf16 training r\u1eb1ng train tr\u00ean T4.",
+    "comment_type": "methodology",
+    "severity": "major",
+    "display_severity": "MAJOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/methodology.tex",
+    "source_file": "sections/methodology.tex",
+    "source_line": 466,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "e07-ngu\u1ed3n",
+    "related_previous_issues": [
+      "Phase 1 E07"
+    ],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/sections/results.tex:53"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/components.tex:3,32\u201334,45"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/encoding.tex:3,17"
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md:501"
+      },
+      {
+        "type": "section",
+        "text": "Code/tools/kitti_training_pipeline/evaluate_kitti_bev.py:276\u2013288,554\u2013588"
+      },
+      {
+        "type": "section",
+        "text": "Result/benchmark_T4_20261018/sources/ours_best_ap.json:runtime,latency"
+      }
+    ],
+    "gate_blocker": true,
+    "fix": "\u0110\u1ed5i t\u00ean 55.94 th\u00e0nh in-pipeline model forward; kh\u00f3a GPU v\u00e0 timer cho t\u1eebng regime. Ghi training GPU, CPU model, threads/workers, warmup/iterations, precision/batch/caching v\u00e0 synchronization. Ch\u1ec9 g\u00e1n T4 cho standalone sau x\u00e1c minh log; gi\u1eef \u0111\u1ea7u v\u00e0o .bin\u2192detections c\u1ee7a E2E ri\u00eang kh\u1ecfi network-only.",
+    "latex_example": "The sequential evaluation pipeline uses batch size one and FP32 on\nTesla T4. Network execution within this pipeline is measured with CUDA\nevents and end-event synchronization: 17.88\\,ms (55.94\\,FPS).\nEnd-to-end wall time includes binary-file loading, CPU rasterization, H2D,\nnetwork execution, decoding and NMS: 60.96\\,ms (16.41\\,FPS).\nThe first 10 frames are excluded from timing, leaving 3,759 timed frames.\nThe separate optimized figure, 8.67\\,ms (115.32\\,FPS), belongs to a distinct\nstandalone regime and is not substituted for end-to-end performance.\n% Author verification required before submission:\n% add the standalone GPU, warmup/iteration count, timer and synchronization;\n% add the host CPU model/thread count and the actual training GPU;\n% reconcile T4/L4 provenance for every reused ablation timing row.",
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "id": "M07",
+    "reviewer": 2,
+    "title": "Compute coverage c\u00f2n thi\u1ebfu FLOPs/MACs d\u00f9 \u0111\u00e3 c\u00f3 params, memory v\u00e0 timing",
+    "quote": "Peak allocated GPU memory was $98.44\\,\\text{MB}$",
+    "explanation": "B\u00e0i kh\u00f4ng thi\u1ebfu to\u00e0n b\u1ed9 efficiency evidence: c\u00f3 Params, checkpoint size, peak evaluation GPU memory, forward/E2E FPS v\u00e0 latency percentiles. Tuy nhi\u00ean ch\u01b0a c\u00f3 FLOPs/MACs ho\u1eb7c scope \u0111\u1ebfm operations. Script source-based t\u00ednh kho\u1ea3ng 11.4496 G Conv2d MACs cho batch=1, input14\u00d7800\u00d7704; \u0111\u00e2y ch\u1ec9 l\u00e0 ph\u00e9p t\u00ednh gi\u1ea3i t\u00edch c\u1ee7a reviewer, kh\u00f4ng ph\u1ea3i profiler ch\u1ea1y model, kh\u00f4ng bao g\u1ed3m SimAM/BN/activation/interpolation/decode/NMS. Kh\u00f4ng \u0111\u01b0\u1ee3c tr\u00ecnh b\u00e0y s\u1ed1 n\u00e0y nh\u01b0 s\u1ed1 \u0111o t\u00e1c gi\u1ea3 \u0111\u00e3 b\u00e1o c\u00e1o ho\u1eb7c d\u00f9ng \u0111\u1ec3 suy ra FPS.",
+    "comment_type": "missing_information",
+    "severity": "minor",
+    "display_severity": "MINOR",
+    "source_kind": "llm",
+    "confidence": "high",
+    "source_section": "sections/experiments.tex",
+    "source_file": "sections/experiments.tex",
+    "source_line": 52,
+    "review_lane": "evaluation_fairness_and_reproducibility",
+    "root_cause_key": "m07",
+    "related_previous_issues": [],
+    "evidence_anchor": [
+      {
+        "type": "section",
+        "text": "paper/sections/methodology.tex:458\u2013466"
+      },
+      {
+        "type": "section",
+        "text": "paper/tables/efficiency.tex"
+      },
+      {
+        "type": "section",
+        "text": "Code/tools/benchmarks/profile_detector.py:98\u2013138"
+      },
+      {
+        "type": "analysis_artifact",
+        "text": "parameter_and_mac_audit.json"
+      }
+    ],
+    "gate_blocker": false,
+    "fix": "B\u1ed5 sung compute count c\u00f3 profiler/version, batch/input shape, quy \u01b0\u1edbc FLOP/MAC v\u00e0 danh s\u00e1ch operators b\u1ecf qua. T\u00e1ch peak inference allocation kh\u1ecfi training memory. Thi\u1ebfu MACs hi\u1ec7n l\u00e0 b\u1ed5 sung n\u00ean l\u00e0m, kh\u00f4ng t\u1ef1 n\u00f3 l\u00e0 submission blocker.",
+    "latex_example": null,
+    "quote_verified": true,
+    "quote_source_verified": true
+  },
+  {
+    "title": "METRIC_MISMATCH: context-raster-backend",
+    "quote": "a parameter-free deterministic NumPy/Numba CPU rasterizer.",
+    "explanation": "C03: tab:strata_bev14 caption/Methods L96,122,tab:setup:CPU NumPy/Numba. Context: L59 n\u00f3i parallel CUDA, tr\u00e1i CPU; \u00a74.1 c\u00f314 deterministic formulas.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_line": 1,
+    "root_cause_key": "context-raster-backend",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14 caption/Methods L96,122,tab:setup:CPU NumPy/Numba."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L59 n\u00f3i parallel CUDA, tr\u00e1i CPU; \u00a74.1 c\u00f314 deterministic formulas."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Gi\u1eef CPU theo implementation final; s\u1eeda context L59. \u0110\u00e2y l\u00e0 implementation/backend mismatch \u1edf context, kh\u00f4ng ph\u1ea3i benchmark GPU raster \u0111\u00e3 \u0111\u01b0\u1ee3c ch\u1ee9ng minh."
+    ],
+    "allowed_wording": "Gi\u1eef CPU theo implementation final; s\u1eeda context L59. \u0110\u00e2y l\u00e0 implementation/backend mismatch \u1edf context, kh\u00f4ng ph\u1ea3i benchmark GPU raster \u0111\u00e3 \u0111\u01b0\u1ee3c ch\u1ee9ng minh.",
+    "forbidden_wording": [
+      "a parameter-free deterministic NumPy/Numba CPU rasterizer."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C03"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: context-final-result-snapshot",
+    "quote": "71.46\\% Moderate mean Average Precision (mAP)",
+    "explanation": "C06: tab:comparison/tab:components A10/tab:attention:71.46; canonical raw71.461874\u2026\u219271.46. Context: \u00a71.1/\u00a76.1 L28,413:71.46;\u00a76.6 L497 v\u00e0 L517:71.50.\nC07: tab:comparison/attention:73.42; canonical raw73.418711\u2026\u219273.42. Context: \u00a76.1 L413:73.42;\u00a76.6 L497/L517:73.45.\nC32: tab:attention70.58\u219271.46=.88pp;off/onparameter-freeclaim \u0111\u00fang;historicalrowidentity ch\u01b0a kh\u00f3a. Context: L493\u2192497:70.58\u219271.50=.92pp,mAP9 .79 so paper .76.\nC55: tab:attention71.46\u221269.80=1.66,\u221269.44=2.02,\u221269.36=2.10pp;range\u0111\u00fang. Context: Contextstagevaluesc\u00f9ngnh\u01b0ngfinal71.50\u2192range1.70\u20132.14.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_line": 1,
+    "root_cause_key": "context-final-result-snapshot",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison/tab:components A10/tab:attention:71.46; canonical raw71.461874\u2026\u219271.46."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a71.1/\u00a76.1 L28,413:71.46;\u00a76.6 L497 v\u00e0 L517:71.50."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Gi\u1eef71.46 cho canonical final benchmark; g\u1eafn run/checkpoint/protocol cho71.50 ho\u1eb7c b\u1ecf s\u1ed1 c\u0169 kh\u1ecfi context. Kh\u00f4ng \u0111\u1ed5i headline th\u00e0nh71.50.",
+      "Gi\u1eef73.42, t\u00e1ch snapshot73.45; mAP9 l\u00e09class\u00d7difficulty cells, kh\u00f4ng ph\u1ea3iIoU.9.",
+      "The reported A9\u2013A10 difference was.88percentage points; reconcile context snapshot and architecture/schedule before isolated causal claim.",
+      "Gi\u1eef1.66\u20132.10points chofinal71.46;resolvecontext71.50. FPS144.05 thu\u1ed9cstage3,kh\u00f4ngm\u1ecdistage."
+    ],
+    "allowed_wording": "Gi\u1eef71.46 cho canonical final benchmark; g\u1eafn run/checkpoint/protocol cho71.50 ho\u1eb7c b\u1ecf s\u1ed1 c\u0169 kh\u1ecfi context. Kh\u00f4ng \u0111\u1ed5i headline th\u00e0nh71.50.",
+    "forbidden_wording": [
+      "71.46\\% Moderate mean Average Precision (mAP)",
+      "73.42\\% overall 9-cell mAP",
+      "Block-SimAM added \\textbf{+0.88\\% mAP} without additional parameters.",
+      "Block-SimAM gained 1.66--2.10 mAP points over stage-level variants"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C06",
+      "C07",
+      "C32",
+      "C55"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: e03-headline",
+    "quote": "It outperformed PointPillars (70.13\\% mAP)",
+    "explanation": "C09: tab:comparison:71.46 vs70.13;note:local vsreference evaluator. PR figure shared-local PP mean\u224870.27,kh\u00f4ng70.13. Context: L411/413/416:70.13,71.46,+1.33;kh\u00f4ng cung c\u1ea5p evaluator equivalence.\nC10: tab:comparison:ours71.46<72.09,\u2212.63pp;PR shared-local SECOND mean\u224872.18;kh\u00f4ngequivalence test. Context: L416 th\u1eeba nh\u1eadn trailing0.63.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_line": 1,
+    "root_cause_key": "e03-headline",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparison:71.46 vs70.13;note:local vsreference evaluator. PR figure shared-local PP mean\u224870.27,kh\u00f4ng70.13."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L411/413/416:70.13,71.46,+1.33;kh\u00f4ng cung c\u1ea5p evaluator equivalence."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "The reported Moderate mAP values were 71.46% and70.13% under their respective evaluators; the1.33-point difference is descriptive. Mu\u1ed1n superiority:chung evaluator v\u00e0 seeds/uncertainty ph\u00f9 h\u1ee3p.",
+      "The reported score was0.63 percentage points below SECOND, with substantially fewer parameters; disclose protocol difference. Kh\u00f4ng d\u00f9ng matched/equivalent."
+    ],
+    "allowed_wording": "The reported Moderate mAP values were 71.46% and70.13% under their respective evaluators; the1.33-point difference is descriptive. Mu\u1ed1n superiority:chung evaluator v\u00e0 seeds/uncertainty ph\u00f9 h\u1ee3p.",
+    "forbidden_wording": [
+      "It outperformed PointPillars (70.13\\% mAP)",
+      "matched SECOND (72.09\\% mAP)"
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C09",
+      "C10"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: parameter-reduction-double-rounding",
+    "quote": "85.8\\% fewer parameters",
+    "explanation": "C12: Raw753569/5325576\u219285.850000075%\u219285.9%(1dp),85.85%(2dp). Rounded table .754/5.326\u219285.8430%\u219285.8%. Context: L23:85.8%;L412 d\u00f9ng5.326M,kh\u00f4ngexact count.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_line": 1,
+    "root_cause_key": "parameter-reduction-double-rounding",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Raw753569/5325576\u219285.850000075%\u219285.9%(1dp),85.85%(2dp). Rounded table .754/5.326\u219285.8430%\u219285.8%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L23:85.8%;L412 d\u00f9ng5.326M,kh\u00f4ngexact count."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "D\u00f9ng85.85% t\u1eeb raw counts, ho\u1eb7c85.9% m\u1ed9t ch\u1eef s\u1ed1; c\u00f4ng b\u1ed1 c\u01a1 s\u1edf l\u00e0m tr\u00f2n.85.8% t\u00e1i t\u1ea1o t\u1eeb b\u1ea3ng \u0111\u00e3 l\u00e0m tr\u00f2n nh\u01b0ng kh\u00f4ng ph\u1ea3i round-once raw count."
+    ],
+    "allowed_wording": "D\u00f9ng85.85% t\u1eeb raw counts, ho\u1eb7c85.9% m\u1ed9t ch\u1eef s\u1ed1; c\u00f4ng b\u1ed1 c\u01a1 s\u1edf l\u00e0m tr\u00f2n.85.8% t\u00e1i t\u1ea1o t\u1eeb b\u1ea3ng \u0111\u00e3 l\u00e0m tr\u00f2n nh\u01b0ng kh\u00f4ng ph\u1ea3i round-once raw count.",
+    "forbidden_wording": [
+      "85.8\\% fewer parameters"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C12"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: edge-deployment-extrapolation",
+    "quote": "accurate LiDAR perception on resource-constrained embedded systems.",
+    "explanation": "C16: tab:efficiency \u0111oTeslaT4;kh\u00f4ngembedded target,watt/energy,thermal/INT8/ROS deployment test. Context: L386\u2013389:T4/98.44MB,suitability l\u00e0suy r\u1ed9ng.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/abstract.tex",
+    "source_line": 1,
+    "root_cause_key": "edge-deployment-extrapolation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency \u0111oTeslaT4;kh\u00f4ngembedded target,watt/energy,thermal/INT8/ROS deployment test."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L386\u2013389:T4/98.44MB,suitability l\u00e0suy r\u1ed9ng."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "These results motivate evaluation on embedded platforms; the present measurements are from a desktop/server GPU pipeline."
+    ],
+    "allowed_wording": "These results motivate evaluation on embedded platforms; the present measurements are from a desktop/server GPU pipeline.",
+    "forbidden_wording": [
+      "accurate LiDAR perception on resource-constrained embedded systems."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C16"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: bev-versus-full-3d",
+    "quote": "a compact, proposal-free 3D LiDAR object detector",
+    "explanation": "C17: Methods Eq.target_tuple/Algorithm:ch\u1ec9 x,y,l,w,yaw;tab:comparison BEV;kh\u00f4ngprimary3DAP. Context: L425\u2013433:oursN/A3D,BEVonly;optionalvertical \u1edfL121.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/conclusion.tex",
+    "source_line": 5,
+    "root_cause_key": "bev-versus-full-3d",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Methods Eq.target_tuple/Algorithm:ch\u1ec9 x,y,l,w,yaw;tab:comparison BEV;kh\u00f4ngprimary3DAP."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L425\u2013433:oursN/A3D,BEVonly;optionalvertical \u1edfL121."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "a compact BEV object detector operating on3D LiDAR point clouds; gi\u1eef limitation full3D ch\u01b0a\u0111\u00e1nhgi\u00e1."
+    ],
+    "allowed_wording": "a compact BEV object detector operating on3D LiDAR point clouds; gi\u1eef limitation full3D ch\u01b0a\u0111\u00e1nhgi\u00e1.",
+    "forbidden_wording": [
+      "a compact, proposal-free 3D LiDAR object detector"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C17"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: pareto-scope",
+    "quote": "Empirical validation and leading edge Pareto efficiency.",
+    "explanation": "C18: fig:pareto_tradeoff/tablecomparison:ours nondominated trong observed set;kh\u00e1cAPprotocol/hardware. Parameter-frontier line \u0111i quaSECOND d\u00f9PointRCNN(4.039M,73.38)dominatesSECOND(5.326M,72.09). Context: \u00a76.1 ch\u1ec95models;kh\u00f4ngsearchto\u00e0nliterature.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 19,
+    "root_cause_key": "pareto-scope",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:pareto_tradeoff/tablecomparison:ours nondominated trong observed set;kh\u00e1cAPprotocol/hardware. Parameter-frontier line \u0111i quaSECOND d\u00f9PointRCNN(4.039M,73.38)dominatesSECOND(5.326M,72.09)."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.1 ch\u1ec95models;kh\u00f4ngsearchto\u00e0nliterature."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Empirical accuracy\u2013parameter\u2013latency trade-offs on KITTI validation. C\u00f3 th\u1ec3 n\u00f3i observed non-dominated point n\u1ebfu gi\u1eef protocol caveats."
+    ],
+    "allowed_wording": "Empirical accuracy\u2013parameter\u2013latency trade-offs on KITTI validation. C\u00f3 th\u1ec3 n\u00f3i observed non-dominated point n\u1ebfu gi\u1eef protocol caveats.",
+    "forbidden_wording": [
+      "Empirical validation and leading edge Pareto efficiency."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C18"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: prior-art-claim-not-verified",
+    "quote": "Neither combines continuous subcell displacements with continuous vertical spatial moments.",
+    "explanation": "C19: Ch\u1ec9citesPillarHist/TriBand;encodingtable \u0111o3channelvariant,kh\u00f4ngx\u00e1c minh n\u1ed9i dung t\u1eebngpaper. Context: L503\u2013508 soencoding variants;kh\u00f4ngprior-art claim verification.\nC90: RelatedWork g\u00e1nchoConvNeXt citedpaper;Methods codefinalMobilePIXORNeXt-Sexpansion2.5 \u0111\u00fang nh\u01b0ngkh\u00f4ngx\u00e1cminhoriginalConvNeXt. Context: L66,220 ch\u1ec9m\u00f4 t\u1ea3projectownblock2.5.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 7,
+    "root_cause_key": "prior-art-claim-not-verified",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Ch\u1ec9citesPillarHist/TriBand;encodingtable \u0111o3channelvariant,kh\u00f4ngx\u00e1c minh n\u1ed9i dung t\u1eebngpaper."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L503\u2013508 soencoding variants;kh\u00f4ngprior-art claim verification."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "N\u00eau th\u00e0nh ph\u1ea7n m\u00e0 paper n\u00e0y combines; ki\u1ec3m tra original references tr\u01b0\u1edbc khi kh\u1eb3ng \u0111\u1ecbnh neither. Kh\u00f4ng t\u1ef1 th\u00eam first/novel.",
+      "Attribute large-kernel design inspiration to ConvNeXt and state separately that the present block uses expansion2.5; verify original citation before assigning that ratio to it."
+    ],
+    "allowed_wording": "N\u00eau th\u00e0nh ph\u1ea7n m\u00e0 paper n\u00e0y combines; ki\u1ec3m tra original references tr\u01b0\u1edbc khi kh\u1eb3ng \u0111\u1ecbnh neither. Kh\u00f4ng t\u1ef1 th\u00eam first/novel.",
+    "forbidden_wording": [
+      "Neither combines continuous subcell displacements with continuous vertical spatial moments.",
+      "inverted bottleneck expansions ($e=2.5$)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C19",
+      "C90"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: context-architecture-snapshot",
+    "quote": "for nine attention operators in total.",
+    "explanation": "C23: fig:backbone_f32/tab:setup depths3+4+2=9;resolved finalconfigmatches. Context: L70,159,215,517 n\u00f3i8 ho\u1eb7cdepth2/4/2.\nC24: fig:backbone_f32/tab:setup/head32;resolvedconfig F32,out32,H32. Context: L182\u2013198,222\u2013225 n\u00f3iout16/head16,trongL75 l\u1ea1iF32.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 235,
+    "root_cause_key": "context-architecture-snapshot",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:backbone_f32/tab:setup depths3+4+2=9;resolved finalconfigmatches."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L70,159,215,517 n\u00f3i8 ho\u1eb7cdepth2/4/2."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Gi\u1eef9(final);context8 ph\u1ea3ig\u1eafn l\u1ecbch s\u1eed2/4/2. Kh\u00f4ng s\u1eeda final v\u1ec18.",
+      "Gi\u1eef final32; version context v\u00e0 channel contract."
+    ],
+    "allowed_wording": "Gi\u1eef9(final);context8 ph\u1ea3ig\u1eafn l\u1ecbch s\u1eed2/4/2. Kh\u00f4ng s\u1eeda final v\u1ec18.",
+    "forbidden_wording": [
+      "for nine attention operators in total.",
+      "\\mathbf{F}_{\\mathrm{out}} \\in \\mathbb{R}^{B \\times 32 \\times 200 \\times 176}"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C23",
+      "C24"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: t01",
+    "quote": "depthwise $3 \\times 3$ refinement, BN, and SiLU produce $\\mathbf{U}_4$ and $\\mathbf{U}_3$",
+    "explanation": "C25: fig:backbone_f32 th\u1ef1c ghiDW48\u219248 r\u1ed3iConv48\u219232;codeproj_u3 th\u01b0\u1eddng,kh\u00f4ngDW. Context: L177\u2013179 ph\u00e2n bi\u1ec7tRefine/Proj nh\u01b0ngL73 di\u1ec5n\u0111\u1ea1tchungDW.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 285,
+    "root_cause_key": "t01",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:backbone_f32 th\u1ef1c ghiDW48\u219248 r\u1ed3iConv48\u219232;codeproj_u3 th\u01b0\u1eddng,kh\u00f4ngDW."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L177\u2013179 ph\u00e2n bi\u1ec7tRefine/Proj nh\u01b0ngL73 di\u1ec5n\u0111\u1ea1tchungDW."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "N\u00eaustride8 depthwise48\u219248;stride4 standardConv48\u219232. S\u1eeda c\u00f9ngcaption SG-FPN v\u00e0Intro."
+    ],
+    "allowed_wording": "N\u00eaustride8 depthwise48\u219248;stride4 standardConv48\u219232. S\u1eeda c\u00f9ngcaption SG-FPN v\u00e0Intro.",
+    "forbidden_wording": [
+      "depthwise $3 \\times 3$ refinement, BN, and SiLU produce $\\mathbf{U}_4$ and $\\mathbf{U}_3$"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C25"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: gating-artifact-claim",
+    "quote": "avoiding deconvolution checkerboard artifacts.",
+    "explanation": "C26: tab:components A7\u2192A8:68.12\u219267.38,\u2212.74pp;fig:scale_gated_fusion l\u00e0schematic,kh\u00f4ngartifacterror metric. Context: L73 n\u00f3ieliminates;L515 g\u1ed9pnh\u1ea7mwidth/gategain.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 11,
+    "root_cause_key": "gating-artifact-claim",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components A7\u2192A8:68.12\u219267.38,\u2212.74pp;fig:scale_gated_fusion l\u00e0schematic,kh\u00f4ngartifacterror metric."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L73 n\u00f3ieliminates;L515 g\u1ed9pnh\u1ea7mwidth/gategain."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "uses bilinear upsampling in place of transposed convolution; intended to avoid that particular upsampling mechanism. Ch\u01b0aclaim artifact-free/suppressnoiseproved."
+    ],
+    "allowed_wording": "uses bilinear upsampling in place of transposed convolution; intended to avoid that particular upsampling mechanism. Ch\u01b0aclaim artifact-free/suppressnoiseproved.",
+    "forbidden_wording": [
+      "avoiding deconvolution checkerboard artifacts."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C26"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: latency-scope",
+    "quote": "The backbone achieved $55.94$\\,FPS on Tesla T4",
+    "explanation": "C28: tab:efficiency55.94 l\u00e0whole model+heads,17.88ms;backbone604864 ch\u1ec9m\u1ed9tcomponent. Context: L26,446 c\u0169ngwhole model.\nC29: tab:components/efficiency note:standalone115.32FPS,8.67ms;pipelineforward55.94FPS,17.88ms. Context: L26 ph\u00e2nbi\u1ec7t\u0111\u00fang2regimes.\nC78: tab:efficiency l\u00e0E2E,kh\u00f4ngmemoryaccess;SECOND93.70ms<100;two-stage133.75\u2013194.50. Context: \u00a76.1SECOND93.70;\u00a76.3stagebreakdownnotmemory-only.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 207,
+    "root_cause_key": "latency-scope",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiency55.94 l\u00e0whole model+heads,17.88ms;backbone604864 ch\u1ec9m\u1ed9tcomponent."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L26,446 c\u0169ngwhole model."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "The complete detector achieved55.94FPS for in-pipeline model forward; ch\u01b0ac\u00f3backbone-onlytiming.",
+      "\u0110\u1ed5i55.94 th\u00e0nh in-pipeline model forward; gi\u1eef standalone ri\u00eang115.32 v\u1edbi raw timing protocol c\u1ea7n x\u00e1c minh.",
+      "Name E2E latencies and the exact detector subset; do not relabel whole-pipeline timing as memory access or infer embedded limits from T4."
+    ],
+    "allowed_wording": "The complete detector achieved55.94FPS for in-pipeline model forward; ch\u01b0ac\u00f3backbone-onlytiming.",
+    "forbidden_wording": [
+      "The backbone achieved $55.94$\\,FPS on Tesla T4",
+      "standalone network throughput reached $55.94$\\,FPS",
+      "memory access latencies ($100\\text{--}195\\,\\text{ms}$)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C28",
+      "C29",
+      "C78"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: percentage-points-units",
+    "quote": "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.",
+    "explanation": "C30: tab:componentsA5=60.22,A6=66.25:6.03pp;relative10.0132846%. Context: L64,486\u2013487,514:+6.03 nh\u01b0ngg\u1ecdib\u1eb1ng%.\nC31: tab:componentsA8=67.38,A9=70.58:3.20pp;lossfactorial full. Context: L493,516:70.58\u221267.38=3.20.\nC42: tab:loss69.20\u221268.97=.23pp;69.20\u221267.38=1.82pp. Context: L489\u2013491:67.38,68.97,69.20.\nC46: tab:comparison71.46\u221270.13=1.33pp;relative1.896478%. Context: L416:+1.33%,arithmeticmatchnh\u01b0ngunitsm\u01a1h\u1ed3.\nC47: tab:comparison60.75\u221256.01=4.74pp;60.75\u221256.56=4.19pp;PRfigurebaselines55.83/56.47\u21924.92/4.28. Context: L411\u2013417:referencevalues56.01/56.56.\nC48: tab:comparison71.46\u221241.40=30.06pp;73.42\u221242.27=31.15pp. Context: \u00a76.1L410,413:c\u00f9ngvalueslocalR40.\nC49: tab:components47.60\u221241.40=6.20pp;throughput169.97/90.57\u22481.8767 n\u00ean nearlydouble h\u1ee3p l\u00fd nh\u01b0ngGPUsch\u01b0akh\u00f3a. Context: L481\u2013482,511:+6.20.\nC50: tab:encoding50.14\u221244.42=5.72pp;50.14\u221247.60=2.54pp. Context: L505\u2013508,512:kh\u1edbpvalues.\nC51: tab:componentsA5=60.22,A4=51.30:8.92pp;A3\u2192A5=10.08ppcombinetwochanges. Context: L485\u2013486,513:c\u00f350.14\u219260.22=10.08.\nC52: tab:components68.45\u221261.11=7.34pp in mAP9,kh\u00f4ngModerate. Context: L64,486\u2013487,514:7.34mAP9.\nC54: tab:loss68.97\u221267.38=1.59pp;Car.17,Ped2.45,Cyc2.14pp;IQAalone70.31\u221267.38=2.93pp. Context: L489\u2013493:compositevaluesavailable;classdeltanottabulatedcontext.\nC65: tab:distance65.23\u221230.45=34.78pp;Cyclist76.32\u221225.55=50.77pp;ratios2.142/2.987. Context: L456,459:c\u00f9ngvalues;L461doublenearlytriple\u0111\u00fang.\nC66: tab:distance44.30\u221212.61=31.69pp;11.49\u22123.75=7.74pp;farCyclist14.38pp. Context: \u00a76.4L456,459:c\u00f9ngvalues.\nC91: tab:comparisonCar:86.90\u221288.02=\u22121.12pp,86.90\u221288.56=\u22121.66pp;vsPIXOR+14.88pp,MobilePIXOR+11.38pp. CyclistvsPP+.39pp,vsSECOND\u22124.43pp. Context: L409\u2013413 c\u00f9ngAPvalues.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 128,
+    "root_cause_key": "percentage-points-units",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA5=60.22,A6=66.25:6.03pp;relative10.0132846%."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L64,486\u2013487,514:+6.03 nh\u01b0ngg\u1ecdib\u1eb1ng%."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "The reported progression increased Moderate mAP from60.22% to66.25%,a6.03-percentage-point change; controlled-effect qualification c\u1ea7n manifests.",
+      "OGA+IQA row was3.20percentage points abovebaseline; package-level,kh\u00f4ngm\u1ed7imodule3.20.",
+      "Gi\u1eef69.20%;gains.23 v\u00e01.82percentage points. QOGA c\u00f2n\u0111\u1ed5iRDA/softmin,kh\u00f4ngisolatequalitycoupling alone.",
+      "a1.33-percentage-point reported difference; retain evaluator caveat.",
+      "4.74 and4.19percentage points from reference-table values; \u0111\u1eebnggh\u00e9p v\u1edbiPRshared-localnumbers. Ch\u1ecdn\u0111\u1ed3ngnh\u1ea5tprotocol tr\u01b0\u1edbc infer superiority.",
+      "30.06percentage points inModerate mAP and31.15points inmAP9; kh\u00f4ngrelativepercent.",
+      "a6.20-percentage-point increase in the reported progression; throughputprovenance ph\u1ea3i\u0111\u1ed3ngnh\u1ea5t.",
+      "5.72 and2.54percentage points;g\u00f3iencoding thay nhi\u1ec1u features,n\u00eankh\u00f4ngquyri\u00eangoffsetgain.",
+      "8.92percentage points forH16\u2192H32 row;10.08points appliesgrouping+widthcombined.",
+      "a7.34-percentage-point change inmAP9; labelmetricexplicitly.",
+      "Use1.59/2.93percentage points;fullfactorialinteraction3.20\u22121.59\u22122.93=\u22121.32points. Kh\u00f4ngg\u1ecdipositive synergisticgain.",
+      "34.78 and50.77percentage points; morethandouble/nearlytriple \u0111\u00fangAPratio,kh\u00f4ngsafetydemonstration.",
+      "31.69percentage points; explicitlyretainfarPedestrian.80vs.99,\u2212.19points.",
+      "less than1.7percentage points forCar;retainCyclist deficit4.43points relative toSECOND and evaluator boundary."
+    ],
+    "allowed_wording": "The reported progression increased Moderate mAP from60.22% to66.25%,a6.03-percentage-point change; controlled-effect qualification c\u1ea7n manifests.",
+    "forbidden_wording": [
+      "It improved Moderate mAP by $+6.03\\%$ over naive sampling in the ablations.",
+      "OGA and IQA added \\textbf{+3.20\\% mAP}",
+      "Q-OGA achieved $69.20\\%$ Moderate mAP, exceeding OGA alone by $+0.23\\%$ and baseline Smooth-L1 by $+1.82\\%$.",
+      "a $+1.33\\%$ margin",
+      "(+4.74\\% over PointPillars, +4.19\\% over SECOND)",
+      "by $+30.06\\%$ ($71.46\\%$ vs. $41.40\\%$) and by $+31.15\\%$",
+      "(\\textbf{+6.20\\% mAP})",
+      "($+5.72\\%$ over TriBand-BEV and $+2.54\\%$ over Binary35)",
+      "(\\textbf{+8.92\\% mAP})",
+      "(\\textbf{+7.34\\% mAP})",
+      "(\\textbf{+1.59\\% mAP})",
+      "(a $+34.78\\%$ improvement)",
+      "(vs. $12.61\\%$, a $+31.69\\%$ gain)",
+      "by less than $1.7\\%$"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C30",
+      "C31",
+      "C42",
+      "C46",
+      "C47",
+      "C48",
+      "C49",
+      "C50",
+      "C51",
+      "C52",
+      "C54",
+      "C65",
+      "C66",
+      "C91"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: m03",
+    "quote": "In controlled ablations,",
+    "explanation": "C33: tab:loss noattention.721M vsfinal.753569M;zero-paramSimAM cannot explain delta;curves50 vsfinal160epochs. Context: \u00a76.6 progression kh\u00f4ngmanifest t\u1eebngrun;depth8 old vsfinal9.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 19,
+    "root_cause_key": "m03",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss noattention.721M vsfinal.753569M;zero-paramSimAM cannot explain delta;curves50 vsfinal160epochs."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.6 progression kh\u00f4ngmanifest t\u1eebngrun;depth8 old vsfinal9."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "In the reported architectural progression; ch\u1ec9kh\u00f4i ph\u1ee5c controlled sau config/hash,budget,seed,selectionpolicy matched."
+    ],
+    "allowed_wording": "In the reported architectural progression; ch\u1ec9kh\u00f4i ph\u1ee5c controlled sau config/hash,budget,seed,selectionpolicy matched.",
+    "forbidden_wording": [
+      "In controlled ablations,"
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C33"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: optional-branch-evidence",
+    "quote": "Optional visibility, shadow-masking, and intensity-adjustment heuristics address additional synthesis artifacts.",
+    "explanation": "C34: Kh\u00f4ngablation t\u1eebngoptionalmechanism;Experiments L49:disableLOS/shadow/radiometry;visibilityflagguardbypassfinal. Context: L62,514 g\u00e1ngainchoLOS/shadowto\u00e0npackage,kh\u00f4ng\u0111\u00fangfinaltoggles.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 17,
+    "root_cause_key": "optional-branch-evidence",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Kh\u00f4ngablation t\u1eebngoptionalmechanism;Experiments L49:disableLOS/shadow/radiometry;visibilityflagguardbypassfinal."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L62,514 g\u00e1ngainchoLOS/shadowto\u00e0npackage,kh\u00f4ng\u0111\u00fangfinaltoggles."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "The sampler provides optional checks; their individual benefits were not evaluated in the reported final configuration. Gi\u1eef ch\u00fang l\u00e0capability,kh\u00f4ngvalidated contribution."
+    ],
+    "allowed_wording": "The sampler provides optional checks; their individual benefits were not evaluated in the reported final configuration. Gi\u1eef ch\u00fang l\u00e0capability,kh\u00f4ngvalidated contribution.",
+    "forbidden_wording": [
+      "Optional visibility, shadow-masking, and intensity-adjustment heuristics address additional synthesis artifacts."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C34"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: orphan-tsbuw",
+    "quote": "12-parameter \\textbf{T-SBUW} balances task objectives,",
+    "explanation": "C35: MethodsL384\u2013401 formula12logits;fig:loss_curves kh\u00f4nguniform/EMA-only/fullT-SBUW ablation. Context: L328\u2013339 c\u00f3formulation nh\u01b0ng\u00a76.6kh\u00f4ngrowt\u00e1chweighting.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 17,
+    "root_cause_key": "orphan-tsbuw",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "MethodsL384\u2013401 formula12logits;fig:loss_curves kh\u00f4nguniform/EMA-only/fullT-SBUW ablation."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L328\u2013339 c\u00f3formulation nh\u01b0ng\u00a76.6kh\u00f4ngrowt\u00e1chweighting."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "T-SBUW defines adaptive weights; its isolated contribution was not measured. N\u1ebfugi\u1eef\u0111\u00f3ngg\u00f3pch\u00ednh,th\u00eammatched ablation."
+    ],
+    "allowed_wording": "T-SBUW defines adaptive weights; its isolated contribution was not measured. N\u1ebfugi\u1eef\u0111\u00f3ngg\u00f3pch\u00ednh,th\u00eammatched ablation.",
+    "forbidden_wording": [
+      "12-parameter \\textbf{T-SBUW} balances task objectives,"
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C35"
+    ],
+    "user_gate_label": "CRITICAL BLOCKER"
+  },
+  {
+    "title": "OVERCLAIM: stability-guarantee",
+    "quote": "to ensure numerical stability during deep backpropagation.",
+    "explanation": "C37: LayerScaleinit1e-5 \u1edfMethods;kh\u00f4nggradientstats/nonfinite-rate/controlledstabilitytest. Context: L272 c\u0169ngensuringstableconvergence nh\u01b0ngkh\u00f4ngsupportingstats.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 229,
+    "root_cause_key": "stability-guarantee",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "LayerScaleinit1e-5 \u1edfMethods;kh\u00f4nggradientstats/nonfinite-rate/controlledstabilitytest."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L272 c\u0169ngensuringstableconvergence nh\u01b0ngkh\u00f4ngsupportingstats."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "to initialize residual updates at a small scale; stability l\u00e0design motivation,kh\u00f4ngguarantee."
+    ],
+    "allowed_wording": "to initialize residual updates at a small scale; stability l\u00e0design motivation,kh\u00f4ngguarantee.",
+    "forbidden_wording": [
+      "to ensure numerical stability during deep backpropagation."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C37"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: quality-calibration-mechanism",
+    "quote": "Detaching the target limits gradient instability while retaining supervision for confidence calibration.",
+    "explanation": "C38: Eq.iqa_loss stopgrad \u0111\u00fangch\u1eb7ngradientquaqualitytarget;kh\u00f4ngcalibration ECE/reliability/stability ablation. Context: L326\u2013327:BCEwithdetachedproxy.\nC43: tab:loss\u0111oAP fullobjectives;kh\u00f4ngrankaccuracy/AP-atfixedranking/ECE/qualitycorrelationmetric. Context: \u00a76.6IQA-only70.31,OGA+IQA70.58;kh\u00f4ngrankingaccuracymeasure.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 368,
+    "root_cause_key": "quality-calibration-mechanism",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.iqa_loss stopgrad \u0111\u00fangch\u1eb7ngradientquaqualitytarget;kh\u00f4ngcalibration ECE/reliability/stability ablation."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L326\u2013327:BCEwithdetachedproxy."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Detaching the target prevents gradients from propagating through the target-generation path. Ch\u01b0a\u0111\u1ecbnhl\u01b0\u1ee3nggradientstability/calibration improvement.",
+      "The OGA+IQA configuration had the highest Moderate mAP among the configurations in the loss-factorial table."
+    ],
+    "allowed_wording": "Detaching the target prevents gradients from propagating through the target-generation path. Ch\u01b0a\u0111\u1ecbnhl\u01b0\u1ee3nggradientstability/calibration improvement.",
+    "forbidden_wording": [
+      "Detaching the target limits gradient instability while retaining supervision for confidence calibration.",
+      "The explicit IQA branch gave the highest ranking accuracy,"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C38",
+      "C43"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: orphan-qoga",
+    "quote": "We developed \\textbf{Q-OGA} as a head-free alternative for resource-constrained platforms.",
+    "explanation": "C39: tab:loss c\u00f3QOGA69.20/.702M/6.94ms;Methods c\u00f3sectionnh\u01b0ngIntroduction contributions/Conclusionkh\u00f4ngt\u00f3mQ-OGA. Context: \u00a74.4.3 v\u00e0\u00a76.6 L491:69.20.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 371,
+    "root_cause_key": "orphan-qoga",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss c\u00f3QOGA69.20/.702M/6.94ms;Methods c\u00f3sectionnh\u01b0ngIntroduction contributions/Conclusionkh\u00f4ngt\u00f3mQ-OGA."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a74.4.3 v\u00e0\u00a76.6 L491:69.20."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "N\u1ebfu Q-OGA l\u00e0 \u0111\u00f3ng g\u00f3p m\u1edbi: th\u00eam Intro v\u00e0 Conclusion c\u00f9ng bounded result; ho\u1eb7c ghi r\u00f5 auxiliary comparison, kh\u00f4ng ph\u1ea3i main contribution."
+    ],
+    "allowed_wording": "N\u1ebfu Q-OGA l\u00e0 \u0111\u00f3ng g\u00f3p m\u1edbi: th\u00eam Intro v\u00e0 Conclusion c\u00f9ng bounded result; ho\u1eb7c ghi r\u00f5 auxiliary comparison, kh\u00f4ng ph\u1ea3i main contribution.",
+    "forbidden_wording": [
+      "We developed \\textbf{Q-OGA} as a head-free alternative for resource-constrained platforms."
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C39"
+    ],
+    "user_gate_label": "CRITICAL BLOCKER"
+  },
+  {
+    "title": "METRIC_MISMATCH: iqa-parameter-delta",
+    "quote": "adding $18.59\\,\\text{K}$ parameters",
+    "explanation": "C40: tab:loss .721\u2212.702=.019M saurounding,kh\u00f4ngsuyexact18.59K;final-source counterIQA=18626=18.626K. Context: \u00a73.3heads111921 nh\u01b0ngkh\u00f4ngexactIQA-onlydelta;historicalconfigs ch\u01b0akh\u00f3a.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 371,
+    "root_cause_key": "iqa-parameter-delta",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss .721\u2212.702=.019M saurounding,kh\u00f4ngsuyexact18.59K;final-source counterIQA=18626=18.626K."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a73.3heads111921 nh\u01b0ngkh\u00f4ngexactIQA-onlydelta;historicalconfigs ch\u01b0akh\u00f3a."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Kh\u00f4ngkh\u1eb3ng\u0111\u1ecbnh18.59K cho final. C\u00f4ngb\u1ed1exactper-run counts;finalsame-topologybranchdelta18,626,nh\u01b0ngkh\u00f4ngghi\u0111\u00e8historicalrows ch\u01b0aresolve."
+    ],
+    "allowed_wording": "Kh\u00f4ngkh\u1eb3ng\u0111\u1ecbnh18.59K cho final. C\u00f4ngb\u1ed1exactper-run counts;finalsame-topologybranchdelta18,626,nh\u01b0ngkh\u00f4ngghi\u0111\u00e8historicalrows ch\u01b0aresolve.",
+    "forbidden_wording": [
+      "adding $18.59\\,\\text{K}$ parameters"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C40"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: standalone-run-provenance",
+    "quote": "Q-OGA reduced forward latency by $1.25\\,\\text{ms}$",
+    "explanation": "C41: tab:loss8.19\u22126.94=1.25ms;\u0111\u00fangtableonly. Context: \u00a76.6IQA122.16FPS\u21928.186ms,QOGA133.97FPS\u21927.465ms,delta\u2248.722ms;kh\u00e1c144.16FPSpaper.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 381,
+    "root_cause_key": "standalone-run-provenance",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:loss8.19\u22126.94=1.25ms;\u0111\u00fangtableonly."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.6IQA122.16FPS\u21928.186ms,QOGA133.97FPS\u21927.465ms,delta\u2248.722ms;kh\u00e1c144.16FPSpaper."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "The standalone table reports1.25ms; reconcile different run/device/timing snapshots in context before attributing saving solely to removing IQA."
+    ],
+    "allowed_wording": "The standalone table reports1.25ms; reconcile different run/device/timing snapshots in context before attributing saving solely to removing IQA.",
+    "forbidden_wording": [
+      "Q-OGA reduced forward latency by $1.25\\,\\text{ms}$"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C41"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: proxy-versus-iou",
+    "quote": "continuous bounding box IoU quality $q^*$",
+    "explanation": "C45: Eq.iqa_loss targetclip(mean4axisGIoU,0,1),kh\u00f4ngexactrotatedareaIoU;Phase2squarewitnessproxy.5 vsIoU.25. Context: L319/327 g\u1ecdiMGIoUsimilarity.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 371,
+    "root_cause_key": "proxy-versus-iou",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.iqa_loss targetclip(mean4axisGIoU,0,1),kh\u00f4ngexactrotatedareaIoU;Phase2squarewitnessproxy.5 vsIoU.25."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L319/327 g\u1ecdiMGIoUsimilarity."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "detached projection-GIoU quality proxy; kh\u00f4ngclaim exactIoU calibration n\u1ebfu ch\u01b0a\u0111ocorrelation/reliability."
+    ],
+    "allowed_wording": "detached projection-GIoU quality proxy; kh\u00f4ngclaim exactIoU calibration n\u1ebfu ch\u01b0a\u0111ocorrelation/reliability.",
+    "forbidden_wording": [
+      "continuous bounding box IoU quality $q^*$"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C45"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: context-gating-attribution",
+    "quote": "(\\textbf{+1.87\\% mAP})",
+    "explanation": "C53: tab:componentsA6\u2192A7:68.12\u221266.25=1.87pp(widthonly);A7\u2192A8:\u2212.74;A6\u2192A8:+1.13. Context: L515 g\u1ed9paddinggatec\u0169ngth\u00e0nh68.12/+1.87;saiattribution.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 106,
+    "root_cause_key": "context-gating-attribution",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsA6\u2192A7:68.12\u221266.25=1.87pp(widthonly);A7\u2192A8:\u2212.74;A6\u2192A8:+1.13."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L515 g\u1ed9paddinggatec\u0169ngth\u00e0nh68.12/+1.87;saiattribution."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "1.87points for fusion-width increase alone. SG-FPN row is.74points lower;updatecontext L515."
+    ],
+    "allowed_wording": "1.87points for fusion-width increase alone. SG-FPN row is.74points lower;updatecontext L515.",
+    "forbidden_wording": [
+      "(\\textbf{+1.87\\% mAP})"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C53"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: loss-curve-overclaim",
+    "quote": "The plotted losses weighted by T-SBUW show no divergence or oscillation.",
+    "explanation": "C56: fig:loss_curves actualPDF:validation/classificationA6pink spike\u2248epoch18\u2192~100,otherfluctuations;ch\u01b0adataexport. Context: Kh\u00f4ngloss-timeseries/rawspikestats \u1edfcontext.\nC57: fig:loss_curves A9blue belowA10red \u1edfGeometry/IoU v\u00e0nhi\u1ec1u\u0111i\u1ec3mOffset/Yaw;lossnormalizationkh\u00e1cobjective. Context: Kh\u00f4ngper-tasklate-epochnumbers haycommon-normalizationcomparisons.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 139,
+    "root_cause_key": "loss-curve-overclaim",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:loss_curves actualPDF:validation/classificationA6pink spike\u2248epoch18\u2192~100,otherfluctuations;ch\u01b0adataexport."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Kh\u00f4ngloss-timeseries/rawspikestats \u1edfcontext."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Losses generally declined; visible validation/classification spikes occurred in some runs. Kh\u00f4ngclaimnooscillation.",
+      "The plotted regression losses decrease over training; no uniform lowest-loss claim forA10. Export comparable unweighted taskmetrics tr\u01b0\u1edbc ranking."
+    ],
+    "allowed_wording": "Losses generally declined; visible validation/classification spikes occurred in some runs. Kh\u00f4ngclaimnooscillation.",
+    "forbidden_wording": [
+      "The plotted losses weighted by T-SBUW show no divergence or oscillation.",
+      "Configuration A10 has the lowest late-training validation losses across the continuous regression tasks."
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C56",
+      "C57"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: loss-mechanism-speculation",
+    "quote": "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting.",
+    "explanation": "C58: fig:loss_curves givestrajectories;kh\u00f4ngmatchedregularization/underfittingdiagnostic;A6c\u00f3spike. Context: PC-GTA APpackageeffectkh\u00f4ng\u0111ooverfitmechanism.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 145,
+    "root_cause_key": "loss-mechanism-speculation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "fig:loss_curves givestrajectories;kh\u00f4ngmatchedregularization/underfittingdiagnostic;A6c\u00f3spike."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: PC-GTA APpackageeffectkh\u00f4ng\u0111ooverfitmechanism."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "State observed training/validation trends; mechanism and degree of underfitting remain undetermined. Hedgeskh\u00f4ngt\u1ea1oevidence."
+    ],
+    "allowed_wording": "State observed training/validation trends; mechanism and degree of underfitting remain undetermined. Hedgeskh\u00f4ngt\u1ea1oevidence.",
+    "forbidden_wording": [
+      "This behavior is consistent with regularization from physics-consistent point cloud augmentation (PC-GTA, A6) without apparent underfitting."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C58"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: pr-table-protocol-mismatch",
+    "quote": "compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.",
+    "explanation": "C59: PRasset legendsPedModeratePP55.83,SECOND56.47;tablemain56.01/56.56. Assettitle/footer:sharedlocalevaluator. Context: \u00a76.1L411\u2013412:56.01/56.56reference. \u0110\u00e2y kh\u00f4ng ch\u1ec9rounding.\nC61: PRactualcolumnsCar/Ped/Cyc,rowsEasy/Moderate/Hard;oursgold,PPgreen,SECONDblue,MobilePIXORred. Context: Contextkh\u00f4ngPRlayout/color mapping.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 24,
+    "root_cause_key": "pr-table-protocol-mismatch",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "PRasset legendsPedModeratePP55.83,SECOND56.47;tablemain56.01/56.56. Assettitle/footer:sharedlocalevaluator."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.1L411\u2013412:56.01/56.56reference. \u0110\u00e2y kh\u00f4ng ch\u1ec9rounding."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Caption ph\u1ea3iph\u00e2nbi\u1ec7treference-tablevaluesvslocalPRfigure. Regenerateallfigure/tablefromoneprotocol;kh\u00f4ng\u0111\u1ed5ilegendth\u1ee7c\u00f4ngm\u00e0gi\u1eefcurvekh\u00e1c.",
+      "S\u1eedacaption theoactualrows/columns/colors;\u0111\u1ed3ngth\u1eddis\u1eedareferenceAPs. L\u1ed7i visualization/legendcontract,c\u00f9ngroot v\u1edbiPRnumericmismatch."
+    ],
+    "allowed_wording": "Caption ph\u1ea3iph\u00e2nbi\u1ec7treference-tablevaluesvslocalPRfigure. Regenerateallfigure/tablefromoneprotocol;kh\u00f4ng\u0111\u1ed5ilegendth\u1ee7c\u00f4ngm\u00e0gi\u1eefcurvekh\u00e1c.",
+    "forbidden_wording": [
+      "compared to $56.01\\%$ for PointPillars and $56.56\\%$ for SECOND.",
+      "Car (top row,"
+    ],
+    "gate_blocker": true,
+    "quote_verified": true,
+    "claim_ids": [
+      "C59",
+      "C61"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: pr-vru-dominance",
+    "quote": "MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users,",
+    "explanation": "C60: tab:comparisonCyclist66.73<SECOND71.16;PRassetCyclistModerateours66.73<SECOND70.70;curvescross. Context: L413vsL412Cyclist66.73<71.16;farPed.80<.99.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 24,
+    "root_cause_key": "pr-vru-dominance",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:comparisonCyclist66.73<SECOND71.16;PRassetCyclistModerateours66.73<SECOND70.70;curvescross."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L413vsL412Cyclist66.73<71.16;farPed.80<.99."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Higher Pedestrian AP is observed; Cyclist performance remains below SECOND at Moderate difficulty. Kh\u00f4ngclaimpointwisePRdominance/allVRUs."
+    ],
+    "allowed_wording": "Higher Pedestrian AP is observed; Cyclist performance remains below SECOND at Moderate difficulty. Kh\u00f4ngclaimpointwisePRdominance/allVRUs.",
+    "forbidden_wording": [
+      "MobilePIXORNeXt consistently maintains superior recall and precision envelopes on vulnerable road users,"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C60"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: h2d-causal-attribution",
+    "quote": "With pinned-memory buffers, H2D latency fell to $6.91\\,\\text{ms}$, compared with $40.63\\,\\text{ms}$ for MobilePIXOR.",
+    "explanation": "C64: Tab:efficiency/rawbreakdownoursT4,MobilePIXORL4;channels/host/timerdiffer,kh\u00f4ngpinning-onlycontrol. Context: L443vs446:L4vsT4,40.63vs6.91.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 51,
+    "root_cause_key": "h2d-causal-attribution",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Tab:efficiency/rawbreakdownoursT4,MobilePIXORL4;channels/host/timerdiffer,kh\u00f4ngpinning-onlycontrol."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L443vs446:L4vsT4,40.63vs6.91."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Recorded H2D times were6.91ms and40.63ms on the respective pipelines; no isolated attribution to pinning orchannelcount."
+    ],
+    "allowed_wording": "Recorded H2D times were6.91ms and40.63ms on the respective pipelines; no isolated attribution to pinning orchannelcount.",
+    "forbidden_wording": [
+      "With pinned-memory buffers, H2D latency fell to $6.91\\,\\text{ms}$, compared with $40.63\\,\\text{ms}$ for MobilePIXOR."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C64"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: range-mechanism-speculation",
+    "quote": "Physics-consistent synthesis regularizes distant returns,",
+    "explanation": "C67: tab:distancefinalvsMobilePIXOR \u0111\u1ed5i nhi\u1ec1u modules;farPedours.80<.99;kh\u00f4ngrange-specificPC-GTAoff/on. Context: L461claimnear/mid t\u1ed1t;L514 g\u00e1nc\u01a1ch\u1ebfch\u01b0a\u0111\u01b0\u1ee3cisolate.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/introduction.tex",
+    "source_line": 9,
+    "root_cause_key": "range-mechanism-speculation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:distancefinalvsMobilePIXOR \u0111\u1ed5i nhi\u1ec1u modules;farPedours.80<.99;kh\u00f4ngrange-specificPC-GTAoff/on."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L461claimnear/mid t\u1ed1t;L514 g\u00e1nc\u01a1ch\u1ebfch\u01b0a\u0111\u01b0\u1ee3cisolate."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Range-adaptive subsampling is intended to model distance-dependent density; its isolated range-wise benefit was not established."
+    ],
+    "allowed_wording": "Range-adaptive subsampling is intended to model distance-dependent density; its isolated range-wise benefit was not established.",
+    "forbidden_wording": [
+      "Physics-consistent synthesis regularizes distant returns,"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C67"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: untested-depth-comparison",
+    "quote": "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone.",
+    "explanation": "C68: tab:components c\u00f3package/widthchanges;kh\u00f4ngdepth-onlycontrol row. Context: \u00a76.6 kh\u00f4ngdepth-onlyrun.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 192,
+    "root_cause_key": "untested-depth-comparison",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:components c\u00f3package/widthchanges;kh\u00f4ngdepth-onlycontrol row."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.6 kh\u00f4ngdepth-onlyrun."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "PC-GTA and grouped-head changes had large reported progression differences; remove comparison with untested depth-only scaling."
+    ],
+    "allowed_wording": "PC-GTA and grouped-head changes had large reported progression differences; remove comparison with untested depth-only scaling.",
+    "forbidden_wording": [
+      "Physics-consistent augmentation (\\texttt{PC-GTA}) and decoupled grouped heads produced larger observed accuracy gains than model depth scaling alone."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C68"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: checkpoint-epoch",
+    "quote": "from the extended run (Epoch 50)",
+    "explanation": "C69: tab:ap_vs_lossL160/captionL153:130;setupfinalselected130;canonicalcheckpoint130. Context: L470:Epoch130;L378130extendedtrainingl\u00e0contextstaleschedule.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 149,
+    "root_cause_key": "checkpoint-epoch",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:ap_vs_lossL160/captionL153:130;setupfinalselected130;canonicalcheckpoint130."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L470:Epoch130;L378130extendedtrainingl\u00e0contextstaleschedule."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "from the extended160-epoch run, selected at epoch130.50 ch\u1ec9standard schedule/illustratedcurves."
+    ],
+    "allowed_wording": "from the extended160-epoch run, selected at epoch130.50 ch\u1ec9standard schedule/illustratedcurves.",
+    "forbidden_wording": [
+      "from the extended run (Epoch 50)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C69"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: checkpoint-selection-provenance",
+    "quote": "validation AP maximization (Epoch 130)",
+    "explanation": "C70: tab:ap_vs_lossfinalAP71.46<best-loss71.48;selectiontrainingpolicyrecordedmaximumvalAP,kh\u00f4ngallcheckpointselectionmetrics. Context: L470\u2013471c\u0169ng71.46vs71.48.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 153,
+    "root_cause_key": "checkpoint-selection-provenance",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:ap_vs_lossfinalAP71.46<best-loss71.48;selectiontrainingpolicyrecordedmaximumvalAP,kh\u00f4ngallcheckpointselectionmetrics."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L470\u2013471c\u0169ng71.46vs71.48."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "recorded AP-selected checkpoint(epoch130);clarifytraining-selectionmetricvsfinalbenchmarkandresolvewhyfinalrescorebestlossishigher."
+    ],
+    "allowed_wording": "recorded AP-selected checkpoint(epoch130);clarifytraining-selectionmetricvsfinalbenchmarkandresolvewhyfinalrescorebestlossishigher.",
+    "forbidden_wording": [
+      "validation AP maximization (Epoch 130)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C70"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: checkpoint-latency-speculation",
+    "quote": "A possible explanation is that extended training sharpened classification heatmaps around positive centers,",
+    "explanation": "C72: Kh\u00f4ngpeakcount,NMS-candidatehistograms,heatmapsharpness,h2d/model/decodecontrolledanalysis. Context: \u00a76.5onlymetrics;kh\u00f4ngmechanismdiagnostics.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 166,
+    "root_cause_key": "checkpoint-latency-speculation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Kh\u00f4ngpeakcount,NMS-candidatehistograms,heatmapsharpness,h2d/model/decodecontrolledanalysis."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: \u00a76.5onlymetrics;kh\u00f4ngmechanismdiagnostics."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "The mechanism behind the timing difference remains undetermined; testcandidatecounts andstage-levelrepeatedtimings. Gi\u1eefhypothesisr\u00f5n\u1ebfu\u0111\u1ec1xu\u1ea5tfuturetest."
+    ],
+    "allowed_wording": "The mechanism behind the timing difference remains undetermined; testcandidatecounts andstage-levelrepeatedtimings. Gi\u1eefhypothesisr\u00f5n\u1ebfu\u0111\u1ec1xu\u1ea5tfuturetest.",
+    "forbidden_wording": [
+      "A possible explanation is that extended training sharpened classification heatmaps around positive centers,"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C72"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: memory-unit",
+    "quote": "Peak allocated GPU memory was $98.44\\,\\text{MB}$.",
+    "explanation": "C73: rawfield98.439453125;source divides1024\u00b2\u2192MiB,notdecimalMB;~103.22MBdecimal. Context: L389 g\u1ecdi98.44MB,c\u00f9ngunitlabelissue.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/experiments.tex",
+    "source_line": 52,
+    "root_cause_key": "memory-unit",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "rawfield98.439453125;source divides1024\u00b2\u2192MiB,notdecimalMB;~103.22MBdecimal."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L389 g\u1ecdi98.44MB,c\u00f9ngunitlabelissue."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Peak allocated evaluation GPU memory was98.44MiB;kh\u00f4ngtrainingpeak/modeldiskbytes."
+    ],
+    "allowed_wording": "Peak allocated evaluation GPU memory was98.44MiB;kh\u00f4ngtrainingpeak/modeldiskbytes.",
+    "forbidden_wording": [
+      "Peak allocated GPU memory was $98.44\\,\\text{MB}$."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C73"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: context-training-snapshot",
+    "quote": "The reported checkpoint came from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130.",
+    "explanation": "C74: tab:setup \u0111\u00fang160/10/130;resolvedfinalconfig/checkpointidentityconfirms. Context: L377\u2013378ch\u1ec9standard50/warmup4 ho\u1eb7cextended130.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/experiments.tex",
+    "source_line": 46,
+    "root_cause_key": "context-training-snapshot",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setup \u0111\u00fang160/10/130;resolvedfinalconfig/checkpointidentityconfirms."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L377\u2013378ch\u1ec9standard50/warmup4 ho\u1eb7cextended130."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Gi\u1eefpaper160/10/130;refreshcontext ph\u00e2nbi\u1ec7tschedule length v\u00e0selectedepoch."
+    ],
+    "allowed_wording": "Gi\u1eefpaper160/10/130;refreshcontext ph\u00e2nbi\u1ec7tschedule length v\u00e0selectedepoch.",
+    "forbidden_wording": [
+      "The reported checkpoint came from an extended 160-epoch run with 10 warmup epochs and was selected at epoch 130."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C74"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: encoding-feature-list",
+    "quote": "($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$)",
+    "explanation": "C77: tab:strata_bev14actualmax,mean,span,std;kh\u00f4ngstandalonez_minchannel. Context: L250\u2013254:max,mean,span,std.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/related_work.tex",
+    "source_line": 6,
+    "root_cause_key": "encoding-feature-list",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14actualmax,mean,span,std;kh\u00f4ngstandalonez_minchannel."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L250\u2013254:max,mean,span,std."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "\u0110\u1ed5iRelatedWorkth\u00e0nhz_max,z_mean,z_span,z_std. Minimum c\u00f3th\u1ec3suy t\u1eebmax\u2212span,nh\u01b0ngkh\u00f4ngph\u1ea3ichannelri\u00eang."
+    ],
+    "allowed_wording": "\u0110\u1ed5iRelatedWorkth\u00e0nhz_max,z_mean,z_span,z_std. Minimum c\u00f3th\u1ec3suy t\u1eebmax\u2212span,nh\u01b0ngkh\u00f4ngph\u1ea3ichannelri\u00eang.",
+    "forbidden_wording": [
+      "($\\mu_z, \\sigma_z, z_{\\min}, z_{\\max}$)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C77"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: reflectance-semantics",
+    "quote": "Calibrated surface returns capture material discrimination",
+    "explanation": "C79: tab:strata_bev14ch8/9max/meanintensity;kh\u00f4ngmaterial-labelclassification/calibrationstudy. Context: L255\u2013256onlyreflectanceformulas.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 78,
+    "root_cause_key": "reflectance-semantics",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:strata_bev14ch8/9max/meanintensity;kh\u00f4ngmaterial-labelclassification/calibrationstudy."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L255\u2013256onlyreflectanceformulas."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Reflectance statistics provide intensity cues; remove untested examples ofmaterialdiscrimination."
+    ],
+    "allowed_wording": "Reflectance statistics provide intensity cues; remove untested examples ofmaterialdiscrimination.",
+    "forbidden_wording": [
+      "Calibrated surface returns capture material discrimination"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C79"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: ground-estimate-versus-truth",
+    "quote": "anchored strictly flush with the terrain:",
+    "explanation": "C80: Eq.ground_fitting setsbottomtoestimatedpercentileheight;kh\u00f4ngtruegrounderror/planeGTmetric. Context: L286\u2013288sameheuristic.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 140,
+    "root_cause_key": "ground-estimate-versus-truth",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.ground_fitting setsbottomtoestimatedpercentileheight;kh\u00f4ngtruegrounderror/planeGTmetric."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L286\u2013288sameheuristic."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "anchored to the estimated local ground elevation; do notpromiseexactphysicalterrainalignment."
+    ],
+    "allowed_wording": "anchored to the estimated local ground elevation; do notpromiseexactphysicalterrainalignment.",
+    "forbidden_wording": [
+      "anchored strictly flush with the terrain:"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C80"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: visibility-guard",
+    "quote": "and visibility protection.",
+    "explanation": "C82: tab:setupPCGTApackage;hybrid_sampler protect=flag&&(shadow||extra_width>0||margin<=1e-8). Finalflagtrue,shadowfalse,width0,margin.1\u2192false. Context: Contextm\u00f4 t\u1ea3mechanisms,kh\u00f4ngruntimeguard distinction.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/experiments.tex",
+    "source_line": 49,
+    "root_cause_key": "visibility-guard",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:setupPCGTApackage;hybrid_sampler protect=flag&&(shadow||extra_width>0||margin<=1e-8). Finalflagtrue,shadowfalse,width0,margin.1\u2192false."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Contextm\u00f4 t\u1ea3mechanisms,kh\u00f4ngruntimeguard distinction."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "The visibility-protection flag was enabled, but the explicit check was bypassed under the final sampler guard; do notclaimitactivelytestedallplacements."
+    ],
+    "allowed_wording": "The visibility-protection flag was enabled, but the explicit check was bypassed under the final sampler guard; do notclaimitactivelytestedallplacements.",
+    "forbidden_wording": [
+      "and visibility protection."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C82"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: e07-ngu\u1ed3n",
+    "quote": "($188.4\\,\\text{FPS}$)",
+    "explanation": "C83: tab:encoding188.43\u2192188.4(1dp),169.01\u2192169.0;GPUL4caption. Context: L501\u2013508:L4,188.43/169.01;componentsreuse169.97/165.02/169.01asT4.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 91,
+    "root_cause_key": "e07-ngu\u1ed3n",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:encoding188.43\u2192188.4(1dp),169.01\u2192169.0;GPUL4caption."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L501\u2013508:L4,188.43/169.01;componentsreuse169.97/165.02/169.01asT4."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Roundingvalues\u0111\u00fang;reconcileL4vsT4forreusedrows. Do notcallforwardFPS E2E FPS."
+    ],
+    "allowed_wording": "Roundingvalues\u0111\u00fang;reconcileL4vsT4forreusedrows. Do notcallforwardFPS E2E FPS.",
+    "forbidden_wording": [
+      "($188.4\\,\\text{FPS}$)"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C83"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "OVERCLAIM: latency-variability-wording",
+    "quote": "Percentile analysis showed low latency dispersion in the evaluated desktop GPU environment:",
+    "explanation": "C84: tab:efficiencyp50=58.28,p95=80.85,p99=95.91;noquantitativecriterionforlowdispersion. Context: L446c\u00f9ngpercentiles.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 45,
+    "root_cause_key": "latency-variability-wording",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:efficiencyp50=58.28,p95=80.85,p99=95.91;noquantitativecriterionforlowdispersion."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L446c\u00f9ngpercentiles."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "Reportpercentilesdirectly;mean16.41FPSsupports10Hzaveragebutnotworst-caseharddeadline."
+    ],
+    "allowed_wording": "Reportpercentilesdirectly;mean16.41FPSsupports10Hzaveragebutnotworst-caseharddeadline.",
+    "forbidden_wording": [
+      "Percentile analysis showed low latency dispersion in the evaluated desktop GPU environment:"
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C84"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: gradient-mechanism-speculation",
+    "quote": "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories.",
+    "explanation": "C87: tab:componentsgrouping/widthgivesAProws;kh\u00f4nggradient-cosine/conflictstatistics;\u0111\u1ed3ngth\u1eddi\u0111\u1ed5i nhi\u1ec1ufeatures trongcross-familycomparison. Context: L77,225,513 n\u00f3ieliminatesconflict nh\u01b0ngkh\u00f4ng\u0111ogradients.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex",
+    "source_line": 30,
+    "root_cause_key": "gradient-mechanism-speculation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "tab:componentsgrouping/widthgivesAProws;kh\u00f4nggradient-cosine/conflictstatistics;\u0111\u1ed3ngth\u1eddi\u0111\u1ed5i nhi\u1ec1ufeatures trongcross-familycomparison."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L77,225,513 n\u00f3ieliminatesconflict nh\u01b0ngkh\u00f4ng\u0111ogradients."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "GroupedHeader separates task parameters. Its isolated effect on gradient interference was not measured; keep as motivation, not explanation established by AP."
+    ],
+    "allowed_wording": "GroupedHeader separates task parameters. Its isolated effect on gradient interference was not measured; keep as motivation, not explanation established by AP.",
+    "forbidden_wording": [
+      "The second is GroupedHeader, which separates pedestrian regression from vehicle footprints to reduce gradient interference between categories."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C87"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "UNSUPPORTED: attention-semantic-extrapolation",
+    "quote": "Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds.",
+    "explanation": "C88: Eq.simam_energy maskph\u1ee5thu\u1ed9cactivationdeviation;kh\u00f4ngsemanticLiDARcluster/terrainattentiongroundtruth. Context: L71 t\u01b0\u01a1ngt\u1ef1amplifyingclusters;kh\u00f4ngclass-specificmaskmetrics.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 261,
+    "root_cause_key": "attention-semantic-extrapolation",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Eq.simam_energy maskph\u1ee5thu\u1ed9cactivationdeviation;kh\u00f4ngsemanticLiDARcluster/terrainattentiongroundtruth."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: L71 t\u01b0\u01a1ngt\u1ef1amplifyingclusters;kh\u00f4ngclass-specificmaskmetrics."
+      }
+    ],
+    "claim_strength": "unsupported",
+    "missing_evidence": [
+      "The mask modulates feature activations according to their deviation from channel moments; tests would be needed to establish preferential amplification of object clusters."
+    ],
+    "allowed_wording": "The mask modulates feature activations according to their deviation from channel moments; tests would be needed to establish preferential amplification of object clusters.",
+    "forbidden_wording": [
+      "Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C88"
+    ],
+    "user_gate_label": null
+  },
+  {
+    "title": "METRIC_MISMATCH: t08",
+    "quote": "stage-level adapters add learned linear projections.",
+    "explanation": "C89: Code ResidualLightAttention c\u00f3 m\u1ed9t scalar beta v\u1edbiX+beta*(SimAM(X)\u2212X),kh\u00f4nglearnedchannelprojection;tableattentionkh\u00f4ngparamcountt\u1eebngadapter. Context: Context kh\u00f4ngexactadapterdelta;rawrevision c\u1ee7ahistoricalruns ch\u01b0a\u0111\u01b0\u1ee3cch\u1ec9r\u00f5.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex",
+    "source_line": 261,
+    "root_cause_key": "t08",
+    "review_lane": "claims_vs_evidence",
+    "evidence_anchor": [
+      {
+        "type": "figure_or_table",
+        "text": "Code ResidualLightAttention c\u00f3 m\u1ed9t scalar beta v\u1edbiX+beta*(SimAM(X)\u2212X),kh\u00f4nglearnedchannelprojection;tableattentionkh\u00f4ngparamcountt\u1eebngadapter."
+      },
+      {
+        "type": "section",
+        "text": "paper/code_context.md: Context kh\u00f4ngexactadapterdelta;rawrevision c\u1ee7ahistoricalruns ch\u01b0a\u0111\u01b0\u1ee3cch\u1ec9r\u00f5."
+      }
+    ],
+    "claim_strength": "observed",
+    "missing_evidence": [
+      "Describe the current adapter as a learned scalar residual interpolation, or cite the historical implementation actually benchmarked."
+    ],
+    "allowed_wording": "Describe the current adapter as a learned scalar residual interpolation, or cite the historical implementation actually benchmarked.",
+    "forbidden_wording": [
+      "stage-level adapters add learned linear projections."
+    ],
+    "gate_blocker": false,
+    "quote_verified": true,
+    "claim_ids": [
+      "C89"
+    ],
+    "user_gate_label": null
+  }
+]

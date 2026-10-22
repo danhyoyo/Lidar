@@ -1,0 +1,33 @@
+{
+  "requested_script_invocations": 170,
+  "all_exit_codes_zero": true,
+  "full_deai_before": 23,
+  "full_deai_after": 14,
+  "protected_tokens_passed": true,
+  "source_matches_rewrite_manifest": true,
+  "latex_compile_exit_code": 0,
+  "pdf": "/tmp/lidar_language_build_20261022/MobilePIXORNeXt.pdf",
+  "pdf_pages": 25,
+  "undefined_citations_or_references": false,
+  "latex_layout_warnings": [
+    "Underfull \\hbox (badness 1496) in paragraph at lines 15--16",
+    "Underfull \\hbox (badness 1412) in paragraph at lines 144--145",
+    "Underfull \\hbox (badness 1565) in paragraph at lines 202--203",
+    "Underfull \\hbox (badness 3646) in paragraph at lines 207--208",
+    "Underfull \\hbox (badness 2057) in paragraph at lines 244--246",
+    "Underfull \\hbox (badness 1558) in paragraph at lines 310--311",
+    "Underfull \\hbox (badness 2608) in paragraph at lines 331--332",
+    "Underfull \\hbox (badness 1163) in paragraph at lines 384--385",
+    "Overfull \\hbox (0.12177pt too wide) in paragraph at lines 459--460",
+    "Underfull \\hbox (badness 1102) in paragraph at lines 40--41",
+    "Underfull \\hbox (badness 3503) in paragraph at lines 52--53",
+    "Underfull \\hbox (badness 10000) in paragraph at lines 175--175",
+    "Underfull \\hbox (badness 4805) in paragraph at lines 23--24"
+  ],
+  "visually_checked_pages": [
+    1,
+    14,
+    22
+  ],
+  "pdf_text_extraction_note": "pdftotext returned exit 0 and extracted 25 pages, with one PDF syntax warning (Badly formatted number); representative pdftoppm rendering returned exit 0 on pages 1, 14, and 22."
+}

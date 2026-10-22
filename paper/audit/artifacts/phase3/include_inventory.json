@@ -1,0 +1,26 @@
+{
+  "entry": "paper/MobilePIXORNeXt.tex",
+  "requested_main_exists": false,
+  "files": [
+    "MobilePIXORNeXt.tex",
+    "sections/abstract.tex",
+    "sections/conclusion.tex",
+    "sections/declarations.tex",
+    "sections/experiments.tex",
+    "sections/figure_helpers.tex",
+    "sections/introduction.tex",
+    "sections/methodology.tex",
+    "sections/related_work.tex",
+    "sections/results.tex",
+    "tables/attention.tex",
+    "tables/comparison.tex",
+    "tables/components.tex",
+    "tables/distance_our_vs_mbpixor.tex",
+    "tables/efficiency.tex",
+    "tables/encoding.tex",
+    "tables/loss.tex",
+    "tables/setup.tex"
+  ],
+  "missing": [],
+  "assembled_lines": 1110
+}

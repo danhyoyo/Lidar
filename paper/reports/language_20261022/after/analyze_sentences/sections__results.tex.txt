@@ -1,0 +1,61 @@
+% WARN: include file not found: tables/comparison (results.tex:7)
+% WARN: include file not found: tables/efficiency (results.tex:37)
+% WARN: include file not found: tables/distance_our_vs_mbpixor (results.tex:65)
+% WARN: include file not found: tables/components (results.tex:81)
+% WARN: include file not found: tables/loss (results.tex:121)
+% WARN: include file not found: tables/attention (results.tex:130)
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 37, 18 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Full-system latency includes point cloud loading, tensorization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and Non-Maximum Suppression (NMS).
+% Suggested: Full-system latency includes point cloud loading. tensorization. Host-to-Device (H2D) transfer. network execution. coordinate decoding. and Non-Maximum Suppression (NMS)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 42, 8 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: MobilePIXORNeXt ran faster than PointPillars ( ,  ), MobilePIXOR ( ,  ), and SECOND ( ,  ).
+% Suggested: MobilePIXORNeXt ran faster than PointPillars (. ). MobilePIXOR (. ). and SECOND (. )..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 118, 18 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: With OGA, Moderate mAP rose from   to   (\textbf{+1.59\% mAP}), with gains for Car ( ), Pedestrian ( ), and Cyclist ( ).
+% Suggested: With OGA. Moderate mAP rose from   to   (\textbf{+1.59\% mAP}). with gains for Car ( ). Pedestrian ( ). and Cyclist ( )..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 135, 17 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: It includes the total objective and six tasks: Classification, Geometry, IoU Quality, Subcell Offset, Size, and Yaw.
+% Suggested: It includes the total objective and six tasks: Classification. Geometry. IoU Quality. Subcell Offset. Size. and Yaw..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 147, 65 words, 0 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \setlength{\tabcolsep}{1.5pt} \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcrrrrr@{}} \toprule \textbf{Selection} & \textbf{Epoch} & \textbf{Car} & \textbf{Ped.} & \textbf{Cyc.} & \textbf{mAP } & \textbf{E2E} \\ \midrule \textbf{Best AP} & \textbf{130} & \textbf{86.90} & 60.75 & 66.73 & \textbf{71.46} & \textbf{60.96} \\ Best loss & 47 & 82.71 & \textbf{62.30} & \textbf{69.43} & \textbf{71.48} & 81.23 \\ \bottomrule \end{tabular*} \end{table}
+% Suggested: \setlength{\tabcolsep}{1.5pt} \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcrrrrr@{}} \toprule \textbf{Selection} & \textbf{Epoch} & \textbf{Car} & \textbf{Ped.} & \textbf{Cyc.} & \textbf{mAP } & \textbf{E2E} \\ \midrule \textbf{Best AP} & \textbf{130} & \textbf{86.90} & 60.75 & 66.73 & \textbf{71.46} & \textbf{60.96} \\ Best loss & 47 & 82.71 & \textbf{62.30} & \textbf{69.43} & \textbf{71.48} & 81.23 \\ \bottomrule \end{tabular*} \end{table}
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 166, 37 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \begin{figure}[t] \centering \paperfigure[width=\columnwidth,height=0.38\textheight,keepaspectratio]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.} ) on KITTI validation frames \texttt{007038}, \texttt{005571}, and \texttt{006761} (top to bottom).
+% Suggested: \begin{figure}[t] \centering \paperfigure[width=\columnwidth. height=0.38\textheight. keepaspectratio]{qualitative_detections.pdf}{65mm}{Qualitative BEV detection visualizations on KITTI validation scenes.} ) on KITTI validation frames \texttt{007038}. \texttt{005571}. and \texttt{006761} (top to bottom)..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

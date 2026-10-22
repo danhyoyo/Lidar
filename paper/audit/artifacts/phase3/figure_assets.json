@@ -1,0 +1,52 @@
+[
+  {
+    "path": "paper/figures/backbone_f32.pdf",
+    "sha256": "b382f5e5bd68382ba4dc17cc375ec3d8bdf68ad577369e505feddc4c1aa76f2f",
+    "extracted_text": "backbone_f32.txt"
+  },
+  {
+    "path": "paper/figures/geometry_output_2x2.pdf",
+    "sha256": "01022408262e2ac1580c3bcc11d4c7168e14bf09d84f5954023b4d5757e84f42",
+    "extracted_text": "geometry_output_2x2.txt"
+  },
+  {
+    "path": "paper/figures/next_simam_block.pdf",
+    "sha256": "1bd598d97bafdaad243e334dc0bb34ede15db6c470f92d2d0be68778380b5e7c",
+    "extracted_text": "next_simam_block.txt"
+  },
+  {
+    "path": "paper/figures/pareto_tradeoff.pdf",
+    "sha256": "5fc0feb05b937f111c9f3752cbd39a0a22b7a0142291fc3e4aadee8f607357f5",
+    "extracted_text": "pareto_tradeoff.txt"
+  },
+  {
+    "path": "paper/figures/pipeline_overview.pdf",
+    "sha256": "9a348e33c0dfc1a1da04445e3953e8e6ef0ad5a69b2f268d38d4c26564a9eb3d",
+    "extracted_text": "pipeline_overview.txt"
+  },
+  {
+    "path": "paper/figures/pr_all_difficulties.pdf",
+    "sha256": "84ee68a7e3bf278dc20a2fca6b9c9b3a9eef64fb593e2bd107bfe7403a686322",
+    "extracted_text": "pr_all_difficulties.txt"
+  },
+  {
+    "path": "paper/figures/qualitative_detections.pdf",
+    "sha256": "7b96c5f7bb4b1741e1306c1b2a374bbf75b188c7f55538a3a6eb2acf7d0e1430",
+    "extracted_text": "qualitative_detections.txt"
+  },
+  {
+    "path": "paper/figures/scale_gated_fusion.pdf",
+    "sha256": "54bc1e2300c034a6cf925f6e8569d58669cc1636325c8f6a4f113a4874df1edb",
+    "extracted_text": "scale_gated_fusion.txt"
+  },
+  {
+    "path": "paper/figures/strata_bev14.pdf",
+    "sha256": "e99e214e6c7a3af91fd1b424e7a104e334337bf8ca6dbb2c19916d0092cb64a1",
+    "extracted_text": "strata_bev14.txt"
+  },
+  {
+    "path": "paper/figures/training_curves_all_losses_2.pdf",
+    "sha256": "7d487de783b67e222624f4944f20dd4ae28c6699a8c1862503758ca56a2996de",
+    "extracted_text": "training_curves_all_losses_2.txt"
+  }
+]

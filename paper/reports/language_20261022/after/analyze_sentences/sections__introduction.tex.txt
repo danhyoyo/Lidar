@@ -1,0 +1,37 @@
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 5, 20 words, 6 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Vehicle perception systems must detect, orient, and classify nearby objects, including passenger vehicles, pedestrians, and cyclists, within strict latency limits.
+% Suggested: Vehicle perception systems must detect. orient. and classify nearby objects. including passenger vehicles. pedestrians. and cyclists. within strict latency limits..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 7, 21 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: They are faster than volumetric methods, although point gathering, dynamic memory allocation, and sparse scattering add runtime and memory transfer overhead.
+% Suggested: They are faster than volumetric methods. although point gathering. dynamic memory allocation. and sparse scattering add runtime and memory transfer overhead..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 9, 54 words, 1 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Our research question was: \textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?} We coupled this representation with a single-branch ConvNeXt-style backbone~  using large   depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~ .
+% Suggested: Our research question was: \textit{Can an ultra-compact LiDAR detector operating on a parameter-free BEV tensor rival the localization accuracy of heavy volumetric and pillar architectures while achieving superior end-to-end throughput on commodity edge hardware?} We coupled this representation with a single-branch ConvNeXt-style backbone~  using large   depthwise kernels and parameter-free 3D spatial-energy attention (SimAM)~ .
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 11, 28 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: The top-down \textbf{Scale-Gated Feature Pyramid Network (SG-FPN Neck,  )} balances semantic context and fine coordinates through bilinear upsampling, depthwise refinement, and learnable scale gates, avoiding deconvolution checkerboard artifacts.
+% Suggested: The top-down \textbf{Scale-Gated Feature Pyramid Network (SG-FPN Neck. )} balances semantic context and fine coordinates through bilinear upsampling. depthwise refinement. and learnable scale gates. avoiding deconvolution checkerboard artifacts..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

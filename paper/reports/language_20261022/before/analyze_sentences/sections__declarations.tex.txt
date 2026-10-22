@@ -1,0 +1,28 @@
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 4, 24 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \begin{acknowledgements} The authors would like to acknowledge FPT University, Vietnam, for providing computational infrastructure, GPU workstation clusters, and laboratory facilities supporting this research.
+% Suggested: \begin{acknowledgements} The authors would like to acknowledge FPT University. Vietnam. for providing computational infrastructure. GPU workstation clusters. and laboratory facilities supporting this research..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 28, 19 words, 5 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \textbf{Nhan Trong Phan}: Formal analysis, loss ablation studies (OGA, IQA, T-SBUW), quantitative visualization, and writing the original draft.
+% Suggested: \textbf{Nhan Trong Phan}: Formal analysis. loss ablation studies (OGA. IQA. T-SBUW). quantitative visualization. and writing the original draft..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 28, 18 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \textbf{Hoang Ngoc Tran}: Research supervision, conceptual validation, project administration, critical revision, and final review of the manuscript.
+% Suggested: \textbf{Hoang Ngoc Tran}: Research supervision. conceptual validation. project administration. critical revision. and final review of the manuscript..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

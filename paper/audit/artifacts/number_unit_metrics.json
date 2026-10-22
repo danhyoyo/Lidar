@@ -1,0 +1,60 @@
+{
+  "attached_physical_unit_candidates": [
+    {
+      "file": "sections/methodology.tex",
+      "line": 7,
+      "quote": "32mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 49,
+      "quote": "10mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 184,
+      "quote": "42mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 216,
+      "quote": "60mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 216,
+      "quote": "60mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 275,
+      "quote": "34mm"
+    },
+    {
+      "file": "sections/methodology.tex",
+      "line": 300,
+      "quote": "75mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 11,
+      "quote": "48mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 23,
+      "quote": "65mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 138,
+      "quote": "75mm"
+    },
+    {
+      "file": "sections/results.tex",
+      "line": 176,
+      "quote": "65mm"
+    }
+  ],
+  "note": "Only number-unit adjacency is deterministic here; percent vs percentage-point semantics are reviewed separately."
+}

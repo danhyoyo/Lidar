@@ -1,0 +1,19 @@
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 6, 24 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: Pillar encoders~  learn geometric features but require point gathering, dynamic memory allocation, and sparse scattering, which add latency and energy costs on edge accelerators.
+% Suggested: Pillar encoders~  learn geometric features but require point gathering. dynamic memory allocation. and sparse scattering. which add latency and energy costs on edge accelerators..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+
+% LONG SENTENCE (Line 11, 13 words, 4 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: PointRCNN~ , Part- ~ , and PV-RCNN~  developed two-stage point processing, part-aware aggregation, and voxel-set abstractions.
+% Suggested: PointRCNN~. Part- ~. and PV-RCNN~  developed two-stage point processing. part-aware aggregation. and voxel-set abstractions..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

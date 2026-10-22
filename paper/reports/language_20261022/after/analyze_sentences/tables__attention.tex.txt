@@ -1,0 +1,10 @@
+% CONTRACT [Script]: goal=grammar strength=moderate
+% LONG SENTENCE (Line 5, 114 words, 3 clauses) [Severity: Minor] [Priority: P2] [Script]
+% Original: \setlength{\tabcolsep}{5pt} \begin{tabular}{@{}llrrrr@{}} \toprule \textbf{\shortstack[l]{SimAM Attention\\Placement}} & \textbf{\shortstack[l]{Neck Fusion\\Width}} & \textbf{\shortstack{mAP \\(\%)  }} & \textbf{\shortstack{mAP \\(\%)  }} & \textbf{\shortstack{Standalone\\Forward (ms)  }} & \textbf{\shortstack{Standalone\\FPS  }} \\ \midrule None (No attention) &   & \underline{70.58} & \underline{72.66} & \underline{8.19} & \underline{122.16} \\ Stage-2 ( ) &   & 69.44 & 71.49 & 7.30 & 136.91 \\ Stage-3 ( ) &   & 69.80 & 71.98 & \textbf{6.94} & \textbf{144.05} \\ Stage-4 ( ) &   & 69.36 & 71.34 & 7.44 & 134.43 \\ \textbf{Block-level ( )} & \textbf{ } & \textbf{71.46} & \textbf{73.42} & 8.67 & 115.32 \\ \bottomrule \end{tabular} \par\vspace{2pt} {\footnotesize \textit{Note.} All configurations share OGA, the IQA quality head, Strata-BEV14 input, and PC-GTA augmentation.
+% Suggested: \setlength{\tabcolsep}{5pt} \begin{tabular}{@{}llrrrr@{}} \toprule \textbf{\shortstack[l]{SimAM Attention\\Placement}} & \textbf{\shortstack[l]{Neck Fusion\\Width}} & \textbf{\shortstack{mAP \\(\%)  }} & \textbf{\shortstack{mAP \\(\%)  }} & \textbf{\shortstack{Standalone\\Forward (ms)  }} & \textbf{\shortstack{Standalone\\FPS  }} \\ \midrule None (No attention) &   & \underline{70.58} & \underline{72.66} & \underline{8.19} & \underline{122.16} \\ Stage-2 ( ) &   & 69.44 & 71.49 & 7.30 & 136.91 \\ Stage-3 ( ) &   & 69.80 & 71.98 & \textbf{6.94} & \textbf{144.05} \\ Stage-4 ( ) &   & 69.36 & 71.34 & 7.44 & 134.43 \\ \textbf{Block-level ( )} & \textbf{ } & \textbf{71.46} & \textbf{73.42} & 8.67 & 115.32 \\ \bottomrule \end{tabular} \par\vspace{2pt} {\footnotesize \textit{Note.} All configurations share OGA. the IQA quality head. Strata-BEV14 input. and PC-GTA augmentation..
+% Rationale: Sentence exceeds complexity threshold, split for readability.
+% Changed:       none (split proposal only; source not rewritten)
+% Protected:     none
+% Meaning-Check: NEEDS-LLM
+% Risk-Flags:    not-assessed
+

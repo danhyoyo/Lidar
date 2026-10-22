@@ -1,0 +1,77 @@
+{
+  "scope": "Arithmetic from readable PDF legend values only; not re-evaluation",
+  "matched_protocol_panel_values": {
+    "PointPillars": {
+      "pdf_legend_APs": [
+        "92.60",
+        "60.70",
+        "82.20",
+        "88.60",
+        "55.83",
+        "66.38",
+        "85.84",
+        "51.79",
+        "62.27"
+      ],
+      "moderate": [
+        "88.60",
+        "55.83",
+        "66.38"
+      ],
+      "moderate_mean_displayed_APs": "70.27",
+      "mean_rounded_2dp": "70.27"
+    },
+    "SECOND": {
+      "pdf_legend_APs": [
+        "92.74",
+        "60.45",
+        "83.71",
+        "89.36",
+        "56.47",
+        "70.70",
+        "86.44",
+        "51.97",
+        "66.58"
+      ],
+      "moderate": [
+        "89.36",
+        "56.47",
+        "70.70"
+      ],
+      "moderate_mean_displayed_APs": "72.17666666666666666666666667",
+      "mean_rounded_2dp": "72.18"
+    },
+    "Block-SimAM C3-C5 / F32 (our)": {
+      "pdf_legend_APs": [
+        "91.48",
+        "66.82",
+        "84.21",
+        "86.90",
+        "60.75",
+        "66.73",
+        "84.45",
+        "56.09",
+        "63.33"
+      ],
+      "moderate": [
+        "86.90",
+        "60.75",
+        "66.73"
+      ],
+      "moderate_mean_displayed_APs": "71.46",
+      "mean_rounded_2dp": "71.46"
+    }
+  },
+  "paper_reference_values": {
+    "PointPillars": [
+      "88.02",
+      "56.01",
+      "66.34"
+    ],
+    "SECOND": [
+      "88.56",
+      "56.56",
+      "71.16"
+    ]
+  }
+}

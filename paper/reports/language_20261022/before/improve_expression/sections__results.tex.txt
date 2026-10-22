@@ -1,0 +1,8 @@
+% WARN: include file not found: tables/comparison (results.tex:7)
+% WARN: include file not found: tables/efficiency (results.tex:37)
+% WARN: include file not found: tables/distance_our_vs_mbpixor (results.tex:65)
+% WARN: include file not found: tables/components (results.tex:81)
+% WARN: include file not found: tables/loss (results.tex:121)
+% WARN: include file not found: tables/attention (results.tex:130)
+% CONTRACT [Script]: goal=clarity strength=moderate
+% EXPRESSION: No weak-expression patterns detected.
