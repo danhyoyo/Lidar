@@ -1,0 +1,282 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{geiger2012kitti}
+\citation{yang2018pixor}
+\citation{yan2018second}
+\citation{shi2019pointrcnn}
+\citation{shi2020part}
+\citation{shi2020pvrcnn}
+\citation{qi2017pointnetplusplus}
+\citation{meyer2019lasernet}
+\citation{lang2019pointpillars}
+\citation{li2023pillarnext}
+\citation{mao2023pillarnest}
+\citation{yang2018pixor}
+\citation{nguyen2024indoor}
+\citation{zhou2025pillarhist}
+\citation{khoshkdahan2026triband}
+\citation{li2020gfl}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:introduction}{{1}{1}{Introduction}{section.1}{}}
+\citation{liu2022convnext}
+\citation{yang2021simam}
+\citation{le2026mgiou}
+\citation{yang2018pixor}
+\citation{nguyen2024indoor}
+\citation{lang2019pointpillars}
+\citation{li2023pillarnext}
+\citation{mao2023pillarnest}
+\citation{meyer2019lasernet}
+\citation{bai2022transfusion}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\newlabel{sec:related_work}{{2}{3}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Bird's-Eye View LiDAR Representation and Alternative Paradigms}{3}{subsection.2.1}\protected@file@percent }
+\newlabel{sec:rel_bev_encoding}{{2.1}{3}{Bird's-Eye View LiDAR Representation and Alternative Paradigms}{subsection.2.1}{}}
+\citation{lang2019pointpillars,li2023pillarnext}
+\citation{yang2018pixor,nguyen2024indoor}
+\citation{zhou2025pillarhist}
+\citation{khoshkdahan2026triband}
+\citation{yan2018second}
+\citation{yan2018second}
+\citation{shi2019pointrcnn}
+\citation{shi2020part}
+\citation{shi2020pvrcnn}
+\citation{geiger2012kitti}
+\citation{liu2022convnext}
+\citation{wang2020eca}
+\citation{yang2021simam}
+\citation{nguyen2024indoor}
+\citation{tran2026rubber}
+\citation{rezatofighi2019giou}
+\citation{le2026mgiou}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Ground-Truth Data Augmentation and Physical Regularization}{4}{subsection.2.2}\protected@file@percent }
+\newlabel{sec:rel_gt_augmentation}{{2.2}{4}{Ground-Truth Data Augmentation and Physical Regularization}{subsection.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Lightweight Convolutional Backbones and Efficient Spatial Attention}{4}{subsection.2.3}\protected@file@percent }
+\newlabel{sec:rel_backbone_attention}{{2.3}{4}{Lightweight Convolutional Backbones and Efficient Spatial Attention}{subsection.2.3}{}}
+\citation{li2020gfl}
+\citation{kendall2018uncertainty}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Geometric Supervision, Loss Formulations, and Quality Calibration}{5}{subsection.2.4}\protected@file@percent }
+\newlabel{sec:rel_supervision_losses}{{2.4}{5}{Geometric Supervision, Loss Formulations, and Quality Calibration}{subsection.2.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Proposed Method}{5}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{5}{Proposed Method}{section.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces End-to-end architecture and tensor flow of MobilePIXORNeXt. Unordered 3D LiDAR point clouds pass through the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\mathbf  {X} \in \mathbb  {R}^{B \times 14 \times 800 \times 704}$ without learned pillar encoders. ConvNeXt-style stages with parameter-free Block-SimAM attention extract multi-scale features. A top-down Scale-Gated Feature Pyramid Network (SG-FPN) fuses them into a 32-channel shared representation at stride 4 ($200 \times 176$). Decoupled GroupedHeader towers process Car and Pedestrian/Cyclist categories independently. Solid arrows show the feedforward inference path. Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:r37_overview}{{1}{5}{End-to-end architecture and tensor flow of MobilePIXORNeXt. Unordered 3D LiDAR point clouds pass through the parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor $\mathbf {X} \in \mathbb {R}^{B \times 14 \times 800 \times 704}$ without learned pillar encoders. ConvNeXt-style stages with parameter-free Block-SimAM attention extract multi-scale features. A top-down Scale-Gated Feature Pyramid Network (SG-FPN) fuses them into a 32-channel shared representation at stride 4 ($200 \times 176$). Decoupled GroupedHeader towers process Car and Pedestrian/Cyclist categories independently. Solid arrows show the feedforward inference path. Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)}{figure.1}{}}
+\citation{lang2019pointpillars,li2023pillarnext}
+\citation{yang2018pixor}
+\citation{khoshkdahan2026triband}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Problem Formulation and Input/Output Contracts}{6}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:problem_formulation}{{3.1}{6}{Problem Formulation and Input/Output Contracts}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{LiDAR Coordinate Frame and Spatial Region of Interest.}{6}{section*.1}\protected@file@percent }
+\newlabel{eq:spatial_roi}{{1}{6}{LiDAR Coordinate Frame and Spatial Region of Interest}{equation.1}{}}
+\newlabel{eq:grid_assignment}{{2}{6}{LiDAR Coordinate Frame and Spatial Region of Interest}{equation.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Detection Target Contract.}{6}{section*.2}\protected@file@percent }
+\newlabel{eq:target_tuple}{{3}{6}{Detection Target Contract}{equation.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Deterministic Strata-BEV14 Feature Representation}{6}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:strata_bev14}{{3.2}{6}{Deterministic Strata-BEV14 Feature Representation}{subsection.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \times 704$ grid at $0.1\,\text  {m}$ resolution). Channels 0--3 encode logarithmic point densities across four vertical strata ($[-2.5, 1.0]\,\text  {m}$). Channels 4--7 encode normalized maximum elevation $z_{\max }$, mean elevation $z_{\mathrm  {mean}}$, elevation span $z_{\mathrm  {span}}$, and population standard deviation $z_{\mathrm  {std}}$. Channels 8--9 encode maximum and mean reflectance intensity. Channel 10 records total cell logarithmic density, and Channel 11 records binary occupancy. Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\Delta \bar  {x}, \Delta \bar  {y}) \in [-0.5, 0.5]$ to reduce discretization error. Brighter values indicate higher point concentrations, reflectance, or vertical dispersion.}}{6}{figure.2}\protected@file@percent }
+\newlabel{fig:strata_bev14}{{2}{6}{Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \times 704$ grid at $0.1\,\text {m}$ resolution). Channels 0--3 encode logarithmic point densities across four vertical strata ($[-2.5, 1.0]\,\text {m}$). Channels 4--7 encode normalized maximum elevation $z_{\max }$, mean elevation $z_{\mathrm {mean}}$, elevation span $z_{\mathrm {span}}$, and population standard deviation $z_{\mathrm {std}}$. Channels 8--9 encode maximum and mean reflectance intensity. Channel 10 records total cell logarithmic density, and Channel 11 records binary occupancy. Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\Delta \bar {x}, \Delta \bar {y}) \in [-0.5, 0.5]$ to reduce discretization error. Brighter values indicate higher point concentrations, reflectance, or vertical dispersion}{figure.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{6}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mathematical Formulation.}{6}{section*.4}\protected@file@percent }
+\newlabel{eq:density_encoding}{{4}{6}{Mathematical Formulation}{equation.4}{}}
+\newlabel{eq:z_std_encoding}{{5}{7}{Mathematical Formulation}{equation.5}{}}
+\newlabel{eq:intensity_encoding}{{6}{7}{Mathematical Formulation}{equation.6}{}}
+\newlabel{eq:offset_encoding}{{7}{7}{Mathematical Formulation}{equation.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Technical Advantage.}{7}{section*.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Mathematical formulations and physical semantics of the fourteen deterministic feature channels in the Strata-BEV14 representation. All statistical moments and spatial offsets are evaluated deterministically over LiDAR points within horizontal grid cells of size $\Delta _x = \Delta _y = 0.1\,\text  {m}$ ($800 \times 704$ grid) using NumPy or Numba on CPU without learned parameters.}}{7}{table.1}\protected@file@percent }
+\newlabel{tab:strata_bev14}{{1}{7}{Mathematical formulations and physical semantics of the fourteen deterministic feature channels in the Strata-BEV14 representation. All statistical moments and spatial offsets are evaluated deterministically over LiDAR points within horizontal grid cells of size $\Delta _x = \Delta _y = 0.1\,\text {m}$ ($800 \times 704$ grid) using NumPy or Numba on CPU without learned parameters}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Physics-Consistent Ground-Truth Augmentation}{7}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:pc_gta}{{3.3}{7}{Physics-Consistent Ground-Truth Augmentation}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{7}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Design Heuristics.}{7}{section*.7}\protected@file@percent }
+\newlabel{eq:ground_fitting}{{8}{8}{Design Heuristics}{equation.8}{}}
+\newlabel{eq:shadow_mask}{{9}{8}{Design Heuristics}{equation.9}{}}
+\newlabel{eq:inverse_square}{{10}{8}{Design Heuristics}{equation.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}ConvNeXt-Style Multi-Scale BEV Backbone Hierarchy}{8}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:backbone_architecture}{{3.4}{8}{ConvNeXt-Style Multi-Scale BEV Backbone Hierarchy}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{8}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Backbone Topology and Multi-Stage Hierarchy.}{8}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Streamlined Single-Branch Depthwise Design.}{8}{section*.10}\protected@file@percent }
+\citation{wang2020eca}
+\citation{yang2021simam}
+\citation{yang2021simam}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces MobilePIXORNeXt feedforward hierarchy with layer dimensions, channel widths, and receptive fields. A two-layer stem processes 14-channel input at stride 2 ($400 \times 352$). Three stages follow: C2 has 48 channels and depth 3; C3 has 96 channels and depth 4; C4 has 128 channels and depth 2. Each stage uses \texttt  {MobilePIXORNeXt-S} blocks with Block-SimAM. The Scale-Gated FPN (SG-FPN) uses lateral $1 \times 1$ projections, bilinear $2\times $ upsampling, depthwise $3 \times 3$ refinement, and learnable scale gates $\mathbf  {G}_r$. It produces a shared 32-channel feature map ($F_{32}$) at stride 4 ($200 \times 176$). Independent grouped towers separate Car predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total parameters).}}{9}{figure.3}\protected@file@percent }
+\newlabel{fig:backbone}{{3}{9}{MobilePIXORNeXt feedforward hierarchy with layer dimensions, channel widths, and receptive fields. A two-layer stem processes 14-channel input at stride 2 ($400 \times 352$). Three stages follow: C2 has 48 channels and depth 3; C3 has 96 channels and depth 4; C4 has 128 channels and depth 2. Each stage uses \texttt {MobilePIXORNeXt-S} blocks with Block-SimAM. The Scale-Gated FPN (SG-FPN) uses lateral $1 \times 1$ projections, bilinear $2\times $ upsampling, depthwise $3 \times 3$ refinement, and learnable scale gates $\mathbf {G}_r$. It produces a shared 32-channel feature map ($F_{32}$) at stride 4 ($200 \times 176$). Independent grouped towers separate Car predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total parameters)}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM}{9}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:next_s_block}{{3.5}{9}{MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Micro-Architecture and Inverted Bottleneck.}{9}{section*.11}\protected@file@percent }
+\newlabel{eq:next_block}{{11}{9}{Micro-Architecture and Inverted Bottleneck}{equation.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{Parameter-Free Block-SimAM Spatial-Energy Attention.}{9}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Design and Placement.}{9}{section*.13}\protected@file@percent }
+\newlabel{eq:spatial_moments}{{12}{9}{Design and Placement}{equation.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The \texttt  {MobilePIXORNeXt-S} residual block and parameter-free Block-SimAM attention. \textbf  {Top}: Residual path from input $\mathbf  {Z}$ to output $\mathbf  {Z}'$. It applies a $7 \times 7$ depthwise convolution, inverted bottleneck expansion with ratio $e = 2.5$, and SiLU activation, followed by pointwise projection. Parameter-free 3D spatial-energy attention $\mathcal  {S}(\mathbf  {R})$ precedes LayerScale scaling $\boldsymbol  {\gamma }_{\mathrm  {blk}}$ (initialized to $10^{-5}$) and the identity shortcut. \textbf  {Bottom}: SimAM computes channel-wise spatial moments ($\mu _c, \nu _c$) in FP32 precision and inverse-energy importance $s_t = (t - \mu _c)^2 / (4(\nu _c + \lambda _{\mathrm  {sim}})) + 0.5$. Sigmoid scaling produces the 3D modulation tensor $\mathbf  {A} \in [0, 1]^{B \times C \times H \times W}$ without learned parameters.}}{10}{figure.4}\protected@file@percent }
+\newlabel{fig:next_s_block}{{4}{10}{The \texttt {MobilePIXORNeXt-S} residual block and parameter-free Block-SimAM attention. \textbf {Top}: Residual path from input $\mathbf {Z}$ to output $\mathbf {Z}'$. It applies a $7 \times 7$ depthwise convolution, inverted bottleneck expansion with ratio $e = 2.5$, and SiLU activation, followed by pointwise projection. Parameter-free 3D spatial-energy attention $\mathcal {S}(\mathbf {R})$ precedes LayerScale scaling $\boldsymbol {\gamma }_{\mathrm {blk}}$ (initialized to $10^{-5}$) and the identity shortcut. \textbf {Bottom}: SimAM computes channel-wise spatial moments ($\mu _c, \nu _c$) in FP32 precision and inverse-energy importance $s_t = (t - \mu _c)^2 / (4(\nu _c + \lambda _{\mathrm {sim}})) + 0.5$. Sigmoid scaling produces the 3D modulation tensor $\mathbf {A} \in [0, 1]^{B \times C \times H \times W}$ without learned parameters}{figure.4}{}}
+\newlabel{eq:simam_energy}{{13}{10}{Design and Placement}{equation.13}{}}
+\newlabel{eq:simam_modulation}{{14}{10}{Design and Placement}{equation.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Technical Advantage.}{10}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)}{10}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:neck_architecture}{{3.6}{10}{Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)}{subsection.3.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{10}{section*.15}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Scale-Gated Feature Pyramid Network (SG-FPN) fusion at stride $r \in \{8, 4\}$. Bilinear interpolation upsamples top-down features. Depthwise refinement at stride 8 and projection convolution at stride 4 produce representations $\mathbf  {U}_4$ and $\mathbf  {U}_3$ without deconvolution checkerboard artifacts. Lateral high-resolution features $\mathbf  {L}_r$ are weighted by a zero-initialized depthwise gate $\mathbf  {G}_r = 2\sigma (\operatorname  {DWConv}_{3\times 3}(\mathbf  {L}_r + \mathbf  {U}_r))$ before element-wise summation $\mathbf  {P}_r = \mathbf  {U}_r + \mathbf  {G}_r \odot \mathbf  {L}_r$ to retain boundary detail and suppress background responses.}}{10}{figure.5}\protected@file@percent }
+\newlabel{fig:scale_gated_fusion}{{5}{10}{Scale-Gated Feature Pyramid Network (SG-FPN) fusion at stride $r \in \{8, 4\}$. Bilinear interpolation upsamples top-down features. Depthwise refinement at stride 8 and projection convolution at stride 4 produce representations $\mathbf {U}_4$ and $\mathbf {U}_3$ without deconvolution checkerboard artifacts. Lateral high-resolution features $\mathbf {L}_r$ are weighted by a zero-initialized depthwise gate $\mathbf {G}_r = 2\sigma (\operatorname {DWConv}_{3\times 3}(\mathbf {L}_r + \mathbf {U}_r))$ before element-wise summation $\mathbf {P}_r = \mathbf {U}_r + \mathbf {G}_r \odot \mathbf {L}_r$ to retain boundary detail and suppress background responses}{figure.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Mathematical Formulation.}{10}{section*.16}\protected@file@percent }
+\newlabel{eq:scale_gating_u4}{{15}{11}{Mathematical Formulation}{equation.15}{}}
+\newlabel{eq:scale_gating_u3}{{16}{11}{Mathematical Formulation}{equation.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Shared Grouped Prediction Towers}{11}{subsection.3.7}\protected@file@percent }
+\newlabel{sec:grouped_heads}{{3.7}{11}{Shared Grouped Prediction Towers}{subsection.3.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Prediction-head geometry, orientation, and quality-aware scoring. \textbf  {(a)} Metric subcell offsets $(\hat  {o}_x, \hat  {o}_y)$ from grid anchor center $P$ to object center $C$. \textbf  {(b)} Log-dimension targets $(t_w, t_l) = (\log w, \log l)$ decoded by exponentiation. \textbf  {(c)} Doubled-angle yaw representation $(c_2, s_2) = (\cos 2\theta , \sin 2\theta )$ on the unit circle, resolving $180^\circ $ heading ambiguity through $\pi $-rotational symmetry of BEV footprints. \textbf  {(d)} Joint quality scoring combines overlap prediction $\hat  {q} \in [0, 1]$ and classification probability $p_{\mathrm  {cls}}$ as $s_{\mathrm  {det}} = (p_{\mathrm  {cls}})^{1-\alpha } \hat  {q}^\alpha $ ($\alpha = 0.5$). This score prioritizes well-aligned boxes during peak filtering and rotated NMS.}}{11}{figure.6}\protected@file@percent }
+\newlabel{fig:geometry_output}{{6}{11}{Prediction-head geometry, orientation, and quality-aware scoring. \textbf {(a)} Metric subcell offsets $(\hat {o}_x, \hat {o}_y)$ from grid anchor center $P$ to object center $C$. \textbf {(b)} Log-dimension targets $(t_w, t_l) = (\log w, \log l)$ decoded by exponentiation. \textbf {(c)} Doubled-angle yaw representation $(c_2, s_2) = (\cos 2\theta , \sin 2\theta )$ on the unit circle, resolving $180^\circ $ heading ambiguity through $\pi $-rotational symmetry of BEV footprints. \textbf {(d)} Joint quality scoring combines overlap prediction $\hat {q} \in [0, 1]$ and classification probability $p_{\mathrm {cls}}$ as $s_{\mathrm {det}} = (p_{\mathrm {cls}})^{1-\alpha } \hat {q}^\alpha $ ($\alpha = 0.5$). This score prioritizes well-aligned boxes during peak filtering and rotated NMS}{figure.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{11}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Topology and Target Formulation.}{11}{section*.18}\protected@file@percent }
+\newlabel{eq:gt_targets}{{17}{11}{Topology and Target Formulation}{equation.17}{}}
+\newlabel{eq:decoded_targets}{{18}{11}{Topology and Target Formulation}{equation.18}{}}
+\citation{le2026mgiou}
+\citation{rezatofighi2019giou}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA)}{12}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:losses_and_oga}{{3.8}{12}{Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA)}{subsection.3.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation.}{12}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Oriented Geometric Alignment (OGA).}{12}{section*.20}\protected@file@percent }
+\newlabel{eq:corner_enumeration}{{19}{12}{Oriented Geometric Alignment (OGA)}{equation.19}{}}
+\newlabel{eq:projection_axes}{{20}{12}{Oriented Geometric Alignment (OGA)}{equation.20}{}}
+\newlabel{eq:mgiou_loss}{{21}{12}{Oriented Geometric Alignment (OGA)}{equation.21}{}}
+\newlabel{eq:corner_loss}{{22}{12}{Oriented Geometric Alignment (OGA)}{equation.22}{}}
+\newlabel{eq:smooth_l1_base}{{23}{12}{Oriented Geometric Alignment (OGA)}{equation.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{IoU-Aware Quality Alignment (IQA).}{12}{section*.21}\protected@file@percent }
+\newlabel{eq:iqa_loss}{{24}{12}{IoU-Aware Quality Alignment (IQA)}{equation.24}{}}
+\@writefile{toc}{\contentsline {paragraph}{Head-Free Alternative: Quality-Coupled OGA (Q-OGA).}{13}{section*.22}\protected@file@percent }
+\newlabel{eq:cqfl_target}{{25}{13}{Head-Free Alternative: Quality-Coupled OGA (Q-OGA)}{equation.25}{}}
+\newlabel{eq:cqfl_loss}{{26}{13}{Head-Free Alternative: Quality-Coupled OGA (Q-OGA)}{equation.26}{}}
+\newlabel{eq:softmin_corner}{{27}{13}{Head-Free Alternative: Quality-Coupled OGA (Q-OGA)}{equation.27}{}}
+\@writefile{toc}{\contentsline {paragraph}{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}{13}{section*.23}\protected@file@percent }
+\newlabel{eq:tsbuw_weights}{{28}{13}{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)}{equation.28}{}}
+\newlabel{eq:balanced_loss}{{29}{13}{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW)}{equation.29}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}Coordinate Decoding and Inference Pipeline}{13}{subsection.3.9}\protected@file@percent }
+\newlabel{sec:decoding_and_pipeline}{{3.9}{13}{Coordinate Decoding and Inference Pipeline}{subsection.3.9}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces End-to-end MobilePIXORNeXt inference and box decoding pipeline.}}{13}{algorithm.1}\protected@file@percent }
+\newlabel{alg:inference_pipeline}{{1}{13}{End-to-end MobilePIXORNeXt inference and box decoding pipeline}{algorithm.1}{}}
+\newlabel{eq:box_decode}{{30}{13}{End-to-end MobilePIXORNeXt inference and box decoding pipeline}{equation.30}{}}
+\citation{geiger2012kitti}
+\citation{yang2018pixor}
+\newlabel{eq:joint_score}{{31}{14}{End-to-end MobilePIXORNeXt inference and box decoding pipeline}{equation.31}{}}
+\@writefile{toc}{\contentsline {paragraph}{Parameter Distribution Breakdown.}{14}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{14}{section.4}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{14}{Experiments}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Dataset and Evaluation Protocol}{14}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:dataset_and_metrics}{{4.1}{14}{Dataset and Evaluation Protocol}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Dataset and Partitioning.}{14}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Spatial Region of Interest (ROI) and Target Parameterization.}{14}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation Metrics.}{14}{section*.27}\protected@file@percent }
+\citation{yang2018pixor}
+\citation{nguyen2024indoor}
+\citation{lang2019pointpillars}
+\citation{yan2018second}
+\citation{shi2019pointrcnn}
+\citation{shi2020part}
+\citation{shi2020pvrcnn}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Experimental settings, architecture hyperparameters, and training configuration for MobilePIXORNeXt. Training uses a deterministic single-seed setup ($\text  {seed} = 42$) with PyTorch 2.11.0 and CUDA 13.0. Timing uses a dedicated NVIDIA Tesla T4 GPU (16\,GB GDDR6 VRAM), batch size 1, and FP32 precision.}}{15}{table.2}\protected@file@percent }
+\newlabel{tab:setup}{{2}{15}{Experimental settings, architecture hyperparameters, and training configuration for MobilePIXORNeXt. Training uses a deterministic single-seed setup ($\text {seed} = 42$) with PyTorch 2.11.0 and CUDA 13.0. Timing uses a dedicated NVIDIA Tesla T4 GPU (16\,GB GDDR6 VRAM), batch size 1, and FP32 precision}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Implementation Details}{15}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:implementation_details}{{4.2}{15}{Implementation Details}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Network and Model Configuration.}{15}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Training Schedule and Optimization.}{15}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Data Augmentation Pipeline.}{15}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Batching, Precision, and Hardware Environment.}{15}{section*.31}\protected@file@percent }
+\citation{lang2019pointpillars}
+\citation{yan2018second}
+\citation{nguyen2024indoor}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Quantitative object detection comparison on the KITTI validation set for Bird's-Eye View (BEV) bounding box estimation. Average Precision (AP, \%) is evaluated using 40-point interpolation ($R_{40}$) at Moderate difficulty ($\text  {IoU} \ge 0.70$ for Car; $\text  {IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact models are in \textbf  {bold}, and second-best values are \underline  {underlined}.}}{16}{table.3}\protected@file@percent }
+\newlabel{tab:comparison}{{3}{16}{Quantitative object detection comparison on the KITTI validation set for Bird's-Eye View (BEV) bounding box estimation. Average Precision (AP, \%) is evaluated using 40-point interpolation ($R_{40}$) at Moderate difficulty ($\text {IoU} \ge 0.70$ for Car; $\text {IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact models are in \textbf {bold}, and second-best values are \underline {underlined}}{table.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results and Discussion}{16}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{16}{Results and Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Quantitative Comparison on KITTI Benchmark}{16}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:benchmark_comparison}{{5.1}{16}{Quantitative Comparison on KITTI Benchmark}{subsection.5.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Detection Quality and Parameter Efficiency.}{16}{section*.32}\protected@file@percent }
+\citation{yang2018pixor}
+\citation{nguyen2024indoor}
+\citation{lang2019pointpillars}
+\citation{yan2018second}
+\citation{shi2019pointrcnn}
+\citation{shi2020part}
+\citation{shi2020pvrcnn}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces MobilePIXORNeXt accuracy, parameter count, and latency on KITTI validation using Moderate BEV AP $R_{40}$. \textbf  {(a)} Accuracy ($\text  {mAP}_{\mathrm  {M}}$, \%) versus parameter count (M, logarithmic scale). MobilePIXORNeXt (red star) achieves $71.46\%$ mAP with $0.754\,\text  {M}$ parameters, trailing SECOND ($72.09\%$, $5.33\,\text  {M}$) by only $0.63\,\text  {pp}$ and exceeding PointPillars ($70.13\%$, $4.84\,\text  {M}$) by $+1.33\,\text  {pp}$ with $>84\%$ fewer parameters. \textbf  {(b)} Accuracy ($\text  {mAP}_{\mathrm  {M}}$, \%) versus end-to-end latency (ms) at batch size 1 on NVIDIA Tesla T4. MobilePIXORNeXt has the lowest complete pipeline latency ($60.96\,\text  {ms}$, $16.41\,\text  {FPS}$) among the evaluated real-time detectors.}}{17}{figure.7}\protected@file@percent }
+\newlabel{fig:pareto_tradeoff}{{7}{17}{MobilePIXORNeXt accuracy, parameter count, and latency on KITTI validation using Moderate BEV AP $R_{40}$. \textbf {(a)} Accuracy ($\text {mAP}_{\mathrm {M}}$, \%) versus parameter count (M, logarithmic scale). MobilePIXORNeXt (red star) achieves $71.46\%$ mAP with $0.754\,\text {M}$ parameters, trailing SECOND ($72.09\%$, $5.33\,\text {M}$) by only $0.63\,\text {pp}$ and exceeding PointPillars ($70.13\%$, $4.84\,\text {M}$) by $+1.33\,\text {pp}$ with $>84\%$ fewer parameters. \textbf {(b)} Accuracy ($\text {mAP}_{\mathrm {M}}$, \%) versus end-to-end latency (ms) at batch size 1 on NVIDIA Tesla T4. MobilePIXORNeXt has the lowest complete pipeline latency ($60.96\,\text {ms}$, $16.41\,\text {FPS}$) among the evaluated real-time detectors}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Inference Latency and Real-Time Complexity}{17}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:latency_analysis}{{5.2}{17}{Inference Latency and Real-Time Complexity}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Pipeline Latency vs. Model Forward Throughput.}{17}{section*.33}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated under a unified local evaluation harness on the KITTI validation split across Car (left column, $\text  {IoU} \ge 0.70$), Pedestrian (center column, $\text  {IoU} \ge 0.50$), and Cyclist (right column, $\text  {IoU} \ge 0.50$) under Easy (top row), Moderate (middle row), and Hard (bottom row) difficulty regimes. Gold solid curves depict the proposed MobilePIXORNeXt, green dashed curves denote PointPillars, blue dotted curves represent SECOND, and red solid curves denote baseline MobilePIXOR. Shaded areas denote Average Precision integrals. In this unified local benchmark, MobilePIXORNeXt attains $60.75\%$ Moderate AP on Pedestrian, compared to $55.83\%$ for PointPillars and $56.47\%$ for SECOND (versus $56.01\%$ and $56.56\%$ in published reference tables). On Cyclist, SECOND maintains higher Moderate precision ($70.70\%$ local vs. $66.73\%$), while MobilePIXORNeXt improves over PointPillars ($65.86\%$ local).}}{18}{figure.8}\protected@file@percent }
+\newlabel{fig:pr_curves}{{8}{18}{Nine-cell Precision--Recall ($R_{40}$) benchmark curves evaluated under a unified local evaluation harness on the KITTI validation split across Car (left column, $\text {IoU} \ge 0.70$), Pedestrian (center column, $\text {IoU} \ge 0.50$), and Cyclist (right column, $\text {IoU} \ge 0.50$) under Easy (top row), Moderate (middle row), and Hard (bottom row) difficulty regimes. Gold solid curves depict the proposed MobilePIXORNeXt, green dashed curves denote PointPillars, blue dotted curves represent SECOND, and red solid curves denote baseline MobilePIXOR. Shaded areas denote Average Precision integrals. In this unified local benchmark, MobilePIXORNeXt attains $60.75\%$ Moderate AP on Pedestrian, compared to $55.83\%$ for PointPillars and $56.47\%$ for SECOND (versus $56.01\%$ and $56.56\%$ in published reference tables). On Cyclist, SECOND maintains higher Moderate precision ($70.70\%$ local vs. $66.73\%$), while MobilePIXORNeXt improves over PointPillars ($65.86\%$ local)}{figure.8}{}}
+\citation{nguyen2024indoor}
+\citation{nguyen2024indoor}
+\citation{khoshkdahan2026triband}
+\citation{yang2018pixor}
+\citation{khoshkdahan2026triband}
+\citation{khoshkdahan2026triband}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Pipeline latency and throughput on KITTI validation (3,769 frames, including 3,759 timed frames after 10 warmup frames) on a unified NVIDIA Tesla T4 GPU platform. Batch size is 1, with FP32 precision. Forward latency covers network execution alone. End-to-End (E2E) latency includes raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Best values among compact models are in \textbf  {bold}, and second-best are \underline  {underlined}.}}{19}{table.4}\protected@file@percent }
+\newlabel{tab:efficiency}{{4}{19}{Pipeline latency and throughput on KITTI validation (3,769 frames, including 3,759 timed frames after 10 warmup frames) on a unified NVIDIA Tesla T4 GPU platform. Batch size is 1, with FP32 precision. Forward latency covers network execution alone. End-to-End (E2E) latency includes raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Best values among compact models are in \textbf {bold}, and second-best are \underline {underlined}}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Distance-Stratified Detection Performance}{19}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:distance_stratified}{{5.3}{19}{Distance-Stratified Detection Performance}{subsection.5.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Range-Dependent Accuracy on Vulnerable Road Users.}{19}{section*.34}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Distance-stratified detection performance (Moderate AP, \%) on Vulnerable Road Users (Pedestrian and Cyclist) across Near ($0\text  {--}30\,\text  {m}$), Intermediate ($30\text  {--}50\,\text  {m}$), and Far ($50\text  {--}70.4\,\text  {m}$) range intervals on the KITTI validation benchmark using BEV AP $R_{40}$. Best results across competing compact models are in \textbf  {bold}.}}{19}{table.5}\protected@file@percent }
+\newlabel{tab:distance_ap}{{5}{19}{Distance-stratified detection performance (Moderate AP, \%) on Vulnerable Road Users (Pedestrian and Cyclist) across Near ($0\text {--}30\,\text {m}$), Intermediate ($30\text {--}50\,\text {m}$), and Far ($50\text {--}70.4\,\text {m}$) range intervals on the KITTI validation benchmark using BEV AP $R_{40}$. Best results across competing compact models are in \textbf {bold}}{table.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Ablation Studies}{19}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:ablations}{{5.4}{19}{Ablation Studies}{subsection.5.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Systematic Architectural Progression.}{19}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{1. Backbone Architecture (A0 $\to $ A1).}{19}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{2. BEV Input Representation (A1 $\to $ A2 $\to $ A3).}{19}{table.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Architectural ablations on KITTI validation using Moderate BEV AP $R_{40}$. Panel (a) lists additions from baseline MobilePIXOR (A0) to the final MobilePIXORNeXt configuration (A10). Panel (b) reports accuracy ($\text  {mAP}_{\mathrm  {M}}$, $\text  {mAP}_9$) and standalone forward latency and throughput (ms, FPS) on an NVIDIA Tesla T4 GPU. Best values are in \textbf  {bold}, and second-best are \underline  {underlined}.}}{20}{table.6}\protected@file@percent }
+\newlabel{tab:components}{{6}{20}{Architectural ablations on KITTI validation using Moderate BEV AP $R_{40}$. Panel (a) lists additions from baseline MobilePIXOR (A0) to the final MobilePIXORNeXt configuration (A10). Panel (b) reports accuracy ($\text {mAP}_{\mathrm {M}}$, $\text {mAP}_9$) and standalone forward latency and throughput (ms, FPS) on an NVIDIA Tesla T4 GPU. Best values are in \textbf {bold}, and second-best are \underline {underlined}}{table.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{3. Decoupled Grouped Prediction Towers (A3 $\to $ A4 $\to $ A5).}{20}{section*.38}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Ablation of Bird's-Eye View (BEV) input representation paradigms on the KITTI validation benchmark under the official $R_{40}$ evaluation protocol. All models are trained under strictly identical conditions (MobilePIXORNeXt backbone, F24 neck, single head, standard augmentation, baseline loss, seed 42) and benchmarked on an NVIDIA L4 GPU. Best results across all configurations are in \textbf  {bold}, and second-best are \underline  {underlined}.}}{21}{table.7}\protected@file@percent }
+\newlabel{tab:encoding}{{7}{21}{Ablation of Bird's-Eye View (BEV) input representation paradigms on the KITTI validation benchmark under the official $R_{40}$ evaluation protocol. All models are trained under strictly identical conditions (MobilePIXORNeXt backbone, F24 neck, single head, standard augmentation, baseline loss, seed 42) and benchmarked on an NVIDIA L4 GPU. Best results across all configurations are in \textbf {bold}, and second-best are \underline {underlined}}{table.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{4. Physics-Consistent Ground-Truth Augmentation (A5 $\to $ A6).}{21}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{5. Multiscale Neck and Scale Gating (A6 $\to $ A7 $\to $ A8).}{21}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{6. Geometric Supervision and Localization Quality (A8 $\to $ A9).}{21}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{7. Block-SimAM Energy Attention (A9 $\to $ A10).}{21}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Geometric Supervision and Quality Head Factorial Study.}{21}{section*.43}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\mathrm  {det}} = \sqrt  {P_{\mathrm  {cls}} \hat  {q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \textbf  {bold}, and second-best are \underline  {underlined}.}}{22}{table.8}\protected@file@percent }
+\newlabel{tab:loss}{{8}{22}{Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\mathrm {det}} = \sqrt {P_{\mathrm {cls}} \hat {q}}$. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU. Best values are in \textbf {bold}, and second-best are \underline {underlined}}{table.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{3D Spatial-Energy Attention Integration and Placement.}{22}{section*.44}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all nine \texttt  {MobilePIXORNeXt-S} residual blocks before LayerScale scaling. Best values are in \textbf  {bold}, and second-best are \underline  {underlined}.}}{22}{table.9}\protected@file@percent }
+\newlabel{tab:attention}{{9}{22}{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$). Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all nine \texttt {MobilePIXORNeXt-S} residual blocks before LayerScale scaling. Best values are in \textbf {bold}, and second-best are \underline {underlined}}{table.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Multi-Task Optimization Dynamics and Convergence.}{22}{section*.45}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Training and validation loss trajectories over 50 epochs on KITTI for configurations A1 through A10 (Table~\ref {tab:components}). The top panels show total training loss (left) and validation loss (right) on logarithmic scales. Six task panels show Classification Focal Loss, Oriented Geometry Loss (OGA), IoU Quality Loss (IQA), Subcell Centroid Offset Loss, Footprint Size Loss, and Doubled-Angle Yaw Loss. The legend traces baseline A1 (Binary35), Strata-BEV (A2--A3), Decoupled GroupedHeader (A4--A5), PC-GTA (A6), SG-FPN (A7--A8), OGA and IQA (A9), and final configuration A10 (Block-SimAM). The trajectories demonstrate overall convergence across multi-task objectives under T-SBUW balancing, despite visible transient validation spikes in classification (around epochs 18--25, briefly reaching $\sim 10^2$ before dampening) and minor fluctuations across early regression phases. In late training, configuration A10 achieves competitive validation losses across regression heads alongside A9.}}{23}{figure.9}\protected@file@percent }
+\newlabel{fig:loss_curves}{{9}{23}{Training and validation loss trajectories over 50 epochs on KITTI for configurations A1 through A10 (Table~\ref {tab:components}). The top panels show total training loss (left) and validation loss (right) on logarithmic scales. Six task panels show Classification Focal Loss, Oriented Geometry Loss (OGA), IoU Quality Loss (IQA), Subcell Centroid Offset Loss, Footprint Size Loss, and Doubled-Angle Yaw Loss. The legend traces baseline A1 (Binary35), Strata-BEV (A2--A3), Decoupled GroupedHeader (A4--A5), PC-GTA (A6), SG-FPN (A7--A8), OGA and IQA (A9), and final configuration A10 (Block-SimAM). The trajectories demonstrate overall convergence across multi-task objectives under T-SBUW balancing, despite visible transient validation spikes in classification (around epochs 18--25, briefly reaching $\sim 10^2$ before dampening) and minor fluctuations across early regression phases. In late training, configuration A10 achieves competitive validation losses across regression heads alongside A9}{figure.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training Schedule Fairness and Convergence Validation.}{23}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Qualitative Visualizations and Analysis}{23}{subsection.5.5}\protected@file@percent }
+\newlabel{sec:qualitative_analysis}{{5.5}{23}{Qualitative Visualizations and Analysis}{subsection.5.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Visual Inspection on Representative Driving Scenarios.}{23}{section*.47}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Qualitative BEV predictions from MobilePIXORNeXt (checkpoint \texttt  {Final-h32}) on KITTI validation frames \texttt  {007038}, \texttt  {005571}, and \texttt  {006761} (top to bottom). \textbf  {Left}: Front-camera images with calibrated projections of predicted BEV footprints, class labels, and confidence scores. \textbf  {Right}: Corresponding LiDAR BEV views with predicted oriented footprints and class annotations. Prediction colors are cyan for Car, magenta for Pedestrian, and yellow for Cyclist. The panels visualize predicted footprints rather than full 3D boxes.}}{24}{figure.10}\protected@file@percent }
+\newlabel{fig:qualitative_detections}{{10}{24}{Qualitative BEV predictions from MobilePIXORNeXt (checkpoint \texttt {Final-h32}) on KITTI validation frames \texttt {007038}, \texttt {005571}, and \texttt {006761} (top to bottom). \textbf {Left}: Front-camera images with calibrated projections of predicted BEV footprints, class labels, and confidence scores. \textbf {Right}: Corresponding LiDAR BEV views with predicted oriented footprints and class annotations. Prediction colors are cyan for Car, magenta for Pedestrian, and yellow for Cyclist. The panels visualize predicted footprints rather than full 3D boxes}{figure.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Discussion and Practical Limitations}{24}{subsection.5.6}\protected@file@percent }
+\newlabel{sec:discussion_limitations}{{5.6}{24}{Discussion and Practical Limitations}{subsection.5.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Discussion and Insights.}{24}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitations and Future Scope.}{24}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{24}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{24}{Conclusion}{section.6}{}}
+\bibstyle{spmpsci}
+\bibdata{references}
+\bibcite{geiger2012kitti}{1}
+\bibcite{yang2018pixor}{2}
+\bibcite{yan2018second}{3}
+\bibcite{shi2019pointrcnn}{4}
+\bibcite{shi2020part}{5}
+\bibcite{shi2020pvrcnn}{6}
+\bibcite{qi2017pointnetplusplus}{7}
+\bibcite{meyer2019lasernet}{8}
+\bibcite{lang2019pointpillars}{9}
+\bibcite{li2023pillarnext}{10}
+\bibcite{mao2023pillarnest}{11}
+\bibcite{nguyen2024indoor}{12}
+\bibcite{zhou2025pillarhist}{13}
+\bibcite{khoshkdahan2026triband}{14}
+\bibcite{li2020gfl}{15}
+\bibcite{liu2022convnext}{16}
+\bibcite{yang2021simam}{17}
+\bibcite{le2026mgiou}{18}
+\bibcite{bai2022transfusion}{19}
+\bibcite{wang2020eca}{20}
+\bibcite{tran2026rubber}{21}
+\bibcite{rezatofighi2019giou}{22}
+\bibcite{kendall2018uncertainty}{23}
+\gdef \@abspage@last{27}

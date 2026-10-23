@@ -1,0 +1,87 @@
+% Compile from this directory with build.ps1. Auxiliary files go to build/.
+\RequirePackage{fix-cm}
+\pdfminorversion=7
+\newcommand{\DoNotLoadEpstopdf}{}
+\documentclass[twocolumn]{svjour3}
+\smartqed
+\journalname{Arabian Journal for Science and Engineering (AJSE)}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx,microtype,hyperref}
+\usepackage{cuted,capt-of}
+\usepackage{amsmath,amssymb,amsfonts,booktabs,cite,array}
+\usepackage{placeins}
+% Optional ORCID hyperlink macro (zero-dependency, clickable badge)
+\newcommand{\orcidID}[1]{\unskip\,\href{https://orcid.org/#1}{\protect\scalebox{0.7}{\textbf{\textcolor[rgb]{0.65,0.81,0.22}{[iD]}}}}}
+\input{sections/figure_helpers}
+\begin{document}
+\raggedbottom
+\setlength{\emergencystretch}{1.5em}
+\title{MobilePIXORNeXt: Compact LiDAR Object Detection via Strata-BEV Encoding and Oriented Geometric Alignment
+%MobilePIXORNeXt: Compact LiDAR Object Detection with Oriented Geometry and Localization Quality 
+%\thanks{Grants or other notes The article that should go on the front page should be
+%placed here. General acknowledgments should be placed at the end of the article.}
+}
+% \subtitle{Do you have a subtitle?\\ If so, write it here.
+
+%\titlerunning{Short form of title}        % if too long for running head
+
+\author{
+  \rightskip=0pt
+  Duyen Huu Nguyen$^1$ \and
+  Anh Duc Bui$^1$ \and
+  Nhan Trong Phan$^1$ \and
+  Hoang Ngoc Tran$^{*,1}$
+}
+
+\authorrunning{D. H. Nguyen et al.}
+
+\institute{
+  $^*$Correspondence: Hoang Ngoc Tran (\email{hoang2531992@gmail.com}) \\
+  \at $^1$ FPT University (FPT), Can Tho, 94000, VietNam. \\
+  \email{duyennhce200017@gmail.com; anhbdce200052@gmail.com; nhanptce200090@gmail.com; hoang2531992@gmail.com}
+  % [Optional ORCID iDs - uncomment lines below and supply 16-digit iDs if desired]:
+  % \\ \textbf{ORCID iDs:}
+  % D. H. Nguyen: \url{https://orcid.org/0000-0000-0000-0000};
+  % A. D. Bui: \url{https://orcid.org/0000-0000-0000-0000};
+  % N. T. Phan: \url{https://orcid.org/0000-0000-0000-0000};
+  % H. N. Tran: \url{https://orcid.org/0000-0000-0000-0000}
+}
+
+% \date{Received: date / Accepted: date}
+%The correct dates will be entered by the editor
+
+\titlerunning{MobilePIXORNeXt}
+\maketitle  
+
+
+\begin{abstract}
+Accurate 3D object perception from Light Detection and Ranging (LiDAR) point clouds is an important challenge for autonomous vehicles, where volumetric and pillar networks frequently exceed edge computational budgets. In this paper, we present MobilePIXORNeXt, an ultra-compact, proposal-free detector targeting oriented bounding footprints on the Special Euclidean (SE) manifold $SE(2)$ for real-time collision avoidance and path planning. With 753,569 trainable parameters, the framework replaces heavy learned point encoders with Strata-BEV14, a deterministic Central Processing Unit (CPU) statistical rasterizer computing 14 feature channels in 20.94 milliseconds. A single-branch ConvNeXt-style backbone with parameter-free 3D spatial-energy attention (Block-SimAM) extracts multi-scale features, while a Scale-Gated Feature Pyramid Network fuses representations for decoupled grouped prediction heads. The model is trained using Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment (OGA), balanced by 12-parameter Temperature-Softmax Bounded Uncertainty Weighting. On the KITTI benchmark under 40-point interpolated Average Precision (AP), MobilePIXORNeXt achieves 71.46\% Moderate mean Average Precision (mAP) and 73.42\% overall 9-cell mAP across Car, Pedestrian, and Cyclist. It exceeds PointPillars by 1.33 percentage points with an 84.41\% parameter reduction and trails SECOND by only 0.63 percentage points with 85.85\% fewer parameters, while pedestrian Moderate AP reaches 60.75\%. We also examine Q-OGA as a head-free variant achieving 69.20\% Moderate mAP. On an NVIDIA Tesla T4 GPU, the end-to-end pipeline operates in 60.96 milliseconds (16.41 frames per second). These results demonstrate that deterministic statistical encoding coupled with oriented geometric alignment enables accurate, real-time perception on edge vehicular platforms.
+\end{abstract}
+\keywords{LiDAR object detection \and Bird's-eye view representation \and Compact convolutional neural networks \and Parameter-free attention \and Oriented bounding box regression}
+
+\section{Introduction}\label{sec:introduction}
+\input{sections/introduction}
+\section{Related Work}\label{sec:related_work}
+\input{sections/related_work}
+\section{Proposed Method}\label{sec:method}
+\input{sections/methodology}
+\section{Experiments}\label{sec:experiments}
+\input{sections/experiments}
+\section{Results and Discussion}\label{sec:results}
+\input{sections/results}
+\FloatBarrier
+\makeatletter
+\global\@colht=\textheight
+\global\@colroom=\textheight
+\global\vsize=\textheight
+\makeatother
+\section{Conclusion}\label{sec:conclusion}
+\input{sections/conclusion}
+
+\input{sections/declarations}
+\bibliographystyle{spmpsci}
+\begingroup
+\raggedright
+\bibliography{references}
+\endgroup
+\end{document}

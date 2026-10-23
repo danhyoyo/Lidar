@@ -1,0 +1,18 @@
+\begin{table*}[t]
+\centering\small
+\caption{Ablation of Bird's-Eye View (BEV) input representation paradigms on the KITTI validation benchmark under the official $R_{40}$ evaluation protocol. All models are trained under strictly identical conditions (MobilePIXORNeXt backbone, F24 neck, single head, standard augmentation, baseline loss, seed 42) and benchmarked on an NVIDIA L4 GPU. Best results across all configurations are in \textbf{bold}, and second-best are \underline{underlined}.}
+\label{tab:encoding}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcrrrrrrr@{}}
+\toprule
+\textbf{Representation} & \textbf{$C_{\mathrm{in}}$} & \textbf{\shortstack{H2D Payload\\(MB) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Standalone\\FPS $\uparrow$}} \\
+\midrule
+TriBand-BEV~\cite{khoshkdahan2026triband} & 3 & \textbf{6.76} & 74.10 & 38.05 & 21.12 & 44.42 & 46.55 & \textbf{188.43} \\
+Strata-BEV8 ($8\text{ch}$) & 8 & \underline{18.02} & \underline{78.35} & 38.48 & \textbf{25.29} & 47.37 & 48.95 & 165.02 \\
+Binary35~\cite{yang2018pixor} & 35 & 78.85 & 75.24 & \underline{44.36} & 23.20 & \underline{47.60} & \underline{49.08} & \underline{169.97} \\
+\textbf{Strata-BEV14 (Ours)} & \textbf{14} & 31.54 & \textbf{79.97} & \textbf{45.36} & \underline{25.10} & \textbf{50.14} & \textbf{52.00} & 169.01 \\
+\bottomrule
+\end{tabular*}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} All variants share the identical MobilePIXORNeXt-S backbone, F24 SumFPN neck, single-head H16, standard augmentation, and baseline Smooth-L1 loss. Standalone inference speed is measured in FP32 on an NVIDIA L4 GPU under batch size 1 ($800 \times 704$ input grid). TriBand-BEV~\cite{khoshkdahan2026triband} provides the fastest forward execution ($188.43\,\text{FPS}$) due to its compact 3-channel input ($6.76\,\text{MB}$), but suffers significant accuracy degradation ($44.42\%$ Moderate mAP) due to the lack of continuous elevation moments and horizontal subcell centroid offsets. Strata-BEV14 achieves the highest accuracy ($50.14\%$ Moderate mAP and $52.00\%$ $\text{mAP}_9$) while maintaining real-time throughput ($169.01\,\text{FPS}$) and reducing H2D memory payload by $60.0\%$ relative to Binary35 ($31.54\,\text{MB}$ vs. $78.85\,\text{MB}$).}
+\end{table*}

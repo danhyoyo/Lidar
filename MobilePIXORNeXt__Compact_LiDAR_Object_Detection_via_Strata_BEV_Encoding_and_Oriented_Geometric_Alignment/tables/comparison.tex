@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering\small
+\caption{Quantitative object detection comparison on the KITTI validation set for Bird's-Eye View (BEV) bounding box estimation. Average Precision (AP, \%) is evaluated using 40-point interpolation ($R_{40}$) at Moderate difficulty ($\text{IoU} \ge 0.70$ for Car; $\text{IoU} \ge 0.50$ for Pedestrian and Cyclist). The top partition compares compact and real-time BEV/pillar detectors; the bottom partition lists heavier two-stage 3D anchor-based detectors as external reference points. Best values among compact models are in \textbf{bold}, and second-best values are \underline{underlined}.}
+\label{tab:comparison}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} \\
+\midrule
+PIXOR (Car only)~\cite{yang2018pixor} & 2.135 & 72.02 & -- & -- & -- & -- \\
+MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & \underline{88.02} & 56.01 & 66.34 & 70.13 & 72.25 \\
+SECOND~\cite{yan2018second} & 5.326 & \textbf{88.56} & \underline{56.56} & \textbf{71.16} & \textbf{72.09} & \textbf{73.79} \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & 86.90 & \textbf{60.75} & \underline{66.73} & \underline{71.46} & \underline{73.42} \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Heavyweight 3D Anchor-Based Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 88.42 & 57.84 & 73.87 & 73.38 & 75.31 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 90.05 & 64.20 & 74.60 & 76.28 & 78.04 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 90.29 & 58.48 & 74.54 & 74.44 & 76.49 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} $\text{mAP}_{\mathrm{M}}$ is the unweighted mean across the three target classes at Moderate difficulty. $\text{mAP}_{9}$ denotes the macro-average over all nine class-difficulty combinations (Easy, Moderate, Hard). Dashes (--) indicate classes unsupported by single-class PIXOR. All results use the same KITTI validation split. MobilePIXORNeXt and historical MobilePIXOR use local loader-aligned BEV AP; PIXOR, PointPillars, SECOND, and the heavier references report published reference KITTI AP. Under our unified local evaluation harness (Figure~\ref{fig:pr_curves}), PointPillars achieves $55.83\%$ and SECOND achieves $56.47\%$ on Pedestrian Moderate AP. GPU timings are specified separately in Table~\ref{tab:efficiency}.}
+\end{table*}
