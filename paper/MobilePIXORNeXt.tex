@@ -10,6 +10,8 @@
 \usepackage{cuted,capt-of}
 \usepackage{amsmath,amssymb,amsfonts,booktabs,cite,array}
 \usepackage{placeins}
+% Optional ORCID hyperlink macro (zero-dependency, clickable badge)
+\newcommand{\orcidID}[1]{\unskip\,\href{https://orcid.org/#1}{\protect\scalebox{0.7}{\textbf{\textcolor[rgb]{0.65,0.81,0.22}{[iD]}}}}}
 \input{sections/figure_helpers}
 \begin{document}
 \raggedbottom
@@ -21,22 +23,26 @@
 
 %\titlerunning{Short form of title}        % if too long for running head
 
-% [Audit-Action-Required]: Author block kept anonymous for double-blind submission gate verification.
-% Author names for single-blind or camera-ready submission to AJSE:
-% Duyen Huu Nguyen, Anh Duc Bui, Nhan Trong Phan, Hoang Ngoc Tran (FPT University)
-\author{}
+\author{
+  \rightskip=0pt
+  Duyen Huu Nguyen$^1$ \and
+  Anh Duc Bui$^1$ \and
+  Nhan Trong Phan$^1$ \and
+  Hoang Ngoc Tran$^{*,1}$
+}
 
-%\authorrunning{Short form of author list} % if too long for running head
+\authorrunning{D. H. Nguyen et al.}
 
-\institute{  *Correspondence: Hoang Ngoc Tran \\
- \at $^1$ 
-              FPT University (FPT), Can Tho, 94000, VietNam. \\
-%  \at $^2$ 
-%               Department of Mechatronic Engineering, Faculty of Mechanical
-%             Engineering, Ho Chi Minh City University of Technology (HCMUT),
-% Vietnam National University, Ho Chi Minh City, Vietnam. \\
-              \email{\raggedright hoang2531992@gmail.com; duyennhce200017@gmail.com; anhbdce200052@gmail.com; nhanptce200090@gmail.com}           %  \\
-%             \emph{Present address:} of F. Author  %  if needed
+\institute{
+  $^*$Correspondence: Hoang Ngoc Tran (\email{hoang2531992@gmail.com}) \\
+  \at $^1$ FPT University (FPT), Can Tho, 94000, VietNam. \\
+  \email{duyennhce200017@gmail.com; anhbdce200052@gmail.com; nhanptce200090@gmail.com; hoang2531992@gmail.com}
+  % [Optional ORCID iDs - uncomment lines below and supply 16-digit iDs if desired]:
+  % \\ \textbf{ORCID iDs:}
+  % D. H. Nguyen: \url{https://orcid.org/0000-0000-0000-0000};
+  % A. D. Bui: \url{https://orcid.org/0000-0000-0000-0000};
+  % N. T. Phan: \url{https://orcid.org/0000-0000-0000-0000};
+  % H. N. Tran: \url{https://orcid.org/0000-0000-0000-0000}
 }
 
 \date{Received: date / Accepted: date}
