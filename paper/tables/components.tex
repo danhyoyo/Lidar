@@ -38,9 +38,9 @@ A6 & + Physics-Consistent Ground-Truth Augmentation (PC-GTA) & 66.25 & 68.45 & 7
 A7 & + Expanded neck fusion layer ($F_{32}$, 32 channels) & 68.12 & 70.05 & 6.72 & 148.82 \\
 A8 & + Bilinear Depthwise Scale-Gated Neck (SG-FPN) & 67.38 & 69.46 & 6.94 & 144.16 \\
 A9 & + Oriented Geometric Alignment (OGA) and IQA supervision & \underline{70.58} & \underline{72.66} & 8.19 & 122.16 \\
-A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \textbf{71.46} & \textbf{73.42} & 8.67 & 115.32 \\
+A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
 \bottomrule
 \end{tabular*}\endgroup
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} Step identifiers A0--A10 trace additions from baseline R01 to the final configuration. Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU, excluding I/O and NMS. In the complete pipeline (Table~\ref{tab:efficiency}), forward execution takes $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with evaluation-harness synchronization. Full-system E2E latency is $60.96\,\text{ms}$ ($16.41\,\text{FPS}$).}
+{\footnotesize \textit{Note.} Step identifiers A0--A10 trace additions from the baseline to the final configuration. Intermediate ablation configurations A1--A9 are benchmarked under standard 50-epoch schedules; A10 denotes the final converged 100-epoch deployment model reaching $71.50\%$ Moderate mAP and $73.45\%$ $\text{mAP}_9$ (reaching $71.48\%$ at 50 epochs, as analyzed in Section~\ref{sec:ablations}). Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU, excluding I/O and NMS. In the complete pipeline (Table~\ref{tab:efficiency}), forward execution takes $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with evaluation-harness synchronization. Full-system E2E latency is $60.96\,\text{ms}$ ($16.41\,\text{FPS}$).}
 \end{table*}

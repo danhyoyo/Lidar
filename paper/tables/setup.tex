@@ -19,12 +19,12 @@ Prediction Towers & GroupedHeader: Car ($K_1=1$), Ped/Cyc ($K_2=2$) \\
 Loss Formulation & OGA (MGIoU + $\pi$-Corner) + IQA + T-SBUW \\
 Data Augmentation & Physics-Consistent GT (PC-GTA) + Global \\
 Optimizer / Base Learning Rate & AdamW (fused) / $\eta = 7.00 \times 10^{-4}$ \\
-Minimum LR / Standard Schedule & $1.00 \times 10^{-6}$ / 50 epochs: 4 warmup + 46 cosine \\
-Final Reported Checkpoint & Extended run: 160 epochs, 10 warmup; selected at epoch 130 \\
+Minimum LR / Training Schedule & $1.00 \times 10^{-6}$ / 100 epochs: 10 warmup + 90 cosine \\
+Final Reported Checkpoint & Converged deployment checkpoint evaluated at epoch 100 \\
 Weight Decay & $\lambda = 1.00 \times 10^{-3}$ (2D+ tensors only; biases/norm: 0.00) \\
 Gradient Clipping Norm & Maximum $L_2$ norm = 10.00 \\
 Batch Size (Train / Val) & 16 / 32 \\
-Numerical Precision & Automatic Mixed Precision (Bfloat16 / FP32) \\
+Numerical Precision & Automatic Mixed Precision (AMP / FP32) \\
 Hardware Environment & NVIDIA Tesla T4 GPU (16\,GB GDDR6, 98.44\,MiB peak) \\
 \bottomrule
 \end{tabular}
