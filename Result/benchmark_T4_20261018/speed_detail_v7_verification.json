@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "full_workbook": "Tables_bai_bao_LiDAR_v7_SpeedDetail.xlsx",
+  "standalone_workbook": "Speed_chi_tiet_8_models_v7.xlsx",
+  "models": 8,
+  "timed_stage_rows": 40,
+  "verified_new_data_cells": 1232,
+  "encoder_only_available": false,
+  "measured_stages": [
+    "preprocess",
+    "host_to_device",
+    "model/network",
+    "decode_nms",
+    "input_to_detections"
+  ],
+  "all_existing_data_sheets_preserved": true,
+  "new_profiling_or_inference": false,
+  "sources": [
+    {
+      "source_id": "pixor",
+      "snapshot": "sources/pixor.json",
+      "sha256": "6b553646071173e0114d244d232fbc49f61479a4709eb2f132c0b88ce9d9d0b0",
+      "network_stage_key": "network",
+      "E2E_scope": "Scope established by PIXOR profiling runner and documentation",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "mobilepixor_B0_loss_L4_summary",
+      "snapshot": "sources/mobilepixor_B0_loss_L4_summary.json",
+      "sha256": "450f0ce0ecaf4aad44de4e46d906a641e4ddba7ab90523812c0fe3b558755450",
+      "network_stage_key": "model",
+      "E2E_scope": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "pointpillars",
+      "snapshot": "sources/pointpillars.json",
+      "sha256": "c9620ccf813ea0ebf063c3e2857359a916ce5ac9d2fdb2731f44eeba427fc814",
+      "network_stage_key": "network",
+      "E2E_scope": "Sequential raw bin/calibration read + native FOV/voxelization + collation + H2D + module_list + final post_processing; excludes GT recall, annotation projection/text export and AP.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "second",
+      "snapshot": "sources/second.json",
+      "sha256": "2a7bbe9dfae37a456ced88273d120a67da45db8a93c269b6c863babc7b5bf68c",
+      "network_stage_key": "network",
+      "E2E_scope": "Sequential raw bin/calibration read + native FOV/voxelization + collation + H2D + module_list + final post_processing; excludes GT recall, annotation projection/text export and AP.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "pointrcnn",
+      "snapshot": "sources/pointrcnn.json",
+      "sha256": "bd2cc643e7f0894c891d38df1a9c98110c9d68df861299fc11275ee2515d0a9f",
+      "network_stage_key": "network",
+      "E2E_scope": "Sequential raw bin/calibration read + native FOV/voxelization + collation + H2D + module_list + final post_processing; excludes GT recall, annotation projection/text export and AP.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "parta2_anchor",
+      "snapshot": "sources/parta2_anchor.json",
+      "sha256": "b34ec62f63c11f657980a824f0bfa2b29346de1b269ae87215ba54915895a253",
+      "network_stage_key": "network",
+      "E2E_scope": "Sequential raw bin/calibration read + native FOV/voxelization + collation + H2D + module_list + final post_processing; excludes GT recall, annotation projection/text export and AP.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "pv_rcnn",
+      "snapshot": "sources/pv_rcnn.json",
+      "sha256": "1f9bc3347a56d68b761331cdd145aa2faa7343e8309f40e66cce8f3eb4550ff4",
+      "network_stage_key": "network",
+      "E2E_scope": "Sequential raw bin/calibration read + native FOV/voxelization + collation + H2D + module_list + final post_processing; excludes GT recall, annotation projection/text export and AP.",
+      "timed_frames": 3759
+    },
+    {
+      "source_id": "ours_best_ap",
+      "snapshot": "sources/ours_best_ap.json",
+      "sha256": "88b1bcb3f64bfa13b0f2f14097df875f9f202e3c8fee5c28ffb0a01e7fe50c17",
+      "network_stage_key": "model",
+      "E2E_scope": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+      "timed_frames": 3759
+    }
+  ]
+}

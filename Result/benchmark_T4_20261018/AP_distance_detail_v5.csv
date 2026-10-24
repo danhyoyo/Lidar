@@ -1,0 +1,13 @@
+﻿Model,GPU,Class,Distance bin,Moderate AP R40 (%),Valid GT,TP,FP,Max recall (%),Source ID
+"MobilePIXOR (L4, historical)",L4,Pedestrian,0–30 m,30.448746847366014,1589,821,8611,51.66771554436753,mobilepixor_B0_loss_L4_summary
+"MobilePIXOR (L4, historical)",L4,Pedestrian,30–50 m,3.7460632872013178,137,41,4424,29.927007299270077,mobilepixor_B0_loss_L4_summary
+"MobilePIXOR (L4, historical)",L4,Pedestrian,"50–70,4 m",0.9874288323263736,13,7,1477,53.84615384615385,mobilepixor_B0_loss_L4_summary
+"MobilePIXOR (L4, historical)",L4,Cyclist,0–30 m,25.553037975648618,346,171,4027,49.421965317919074,mobilepixor_B0_loss_L4_summary
+"MobilePIXOR (L4, historical)",L4,Cyclist,30–50 m,12.610933108402838,181,87,2804,48.06629834254144,mobilepixor_B0_loss_L4_summary
+"MobilePIXOR (L4, historical)",L4,Cyclist,"50–70,4 m",0.5561797752808988,17,4,569,23.52941176470588,mobilepixor_B0_loss_L4_summary
+"PixorNeXt (ours, best AP)",T4,Pedestrian,0–30 m,65.23446374220885,1589,1264,12385,79.54688483322845,ours_best_ap
+"PixorNeXt (ours, best AP)",T4,Pedestrian,30–50 m,11.491748321062385,137,66,10297,48.175182481751825,ours_best_ap
+"PixorNeXt (ours, best AP)",T4,Pedestrian,"50–70,4 m",0.8046146497765002,13,6,4695,46.15384615384615,ours_best_ap
+"PixorNeXt (ours, best AP)",T4,Cyclist,0–30 m,76.31960437256102,346,284,4180,82.08092485549133,ours_best_ap
+"PixorNeXt (ours, best AP)",T4,Cyclist,30–50 m,44.300612235173915,181,158,7758,87.29281767955801,ours_best_ap
+"PixorNeXt (ours, best AP)",T4,Cyclist,"50–70,4 m",14.94167512131917,17,7,2374,41.17647058823529,ours_best_ap

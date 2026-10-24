@@ -1,0 +1,629 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Speed chi tiết 8 models V7</title><style>body{font:15px/1.6 system-ui;color:#17324d;background:#edf2f7;margin:24px}main{padding:28px;background:white}.scroll{overflow:auto;margin:24px 0}table{border-collapse:collapse;white-space:nowrap;font-size:13px}th,td{padding:12px;border-bottom:1px solid #dce4ed}th{background:#17324d;color:white}tr:nth-child(even){background:#eaf1f8}p{max-width:110ch}svg{width:100%;height:auto}.note{background:#fff1ce;padding:14px}</style><main><h1>Speed chi tiết — 8 mô hình</h1><p class="note">Đủ preprocess/input encoding, H2D, model/network, final decode/NMS và offline E2E. Không có số encoder-only/backbone/neck/head tách riêng trong report.</p><div class="scroll"><table><thead><tr><th>Model</th><th>GPU</th><th>Preprocess / input encoding (ms)</th><th>H2D (ms)</th><th>Model / network (ms)</th><th>Decode / final NMS (ms)</th><th>Other / overhead (ms)</th><th>E2E mean (ms)</th><th>Model / network FPS</th><th>E2E FPS</th><th>E2E P50 (ms)</th><th>E2E P95 (ms)</th><th>E2E P99 (ms)</th><th>Timed frames</th><th>Checkpoint epoch</th><th>Encoder-only timing</th><th>Source ID</th></tr></thead><tbody><tr><td>PIXOR (Car only)</td><td>T4</td><td>34.45</td><td>29.53</td><td>70.79</td><td>6.93</td><td>2.29</td><td>144.00</td><td>14.13</td><td>6.94</td><td>142.29</td><td>159.38</td><td>175.43</td><td>3759</td><td>50</td><td>Chưa đo tách riêng</td><td>pixor</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>15.08</td><td>40.63</td><td>11.05</td><td>18.84</td><td>0.33</td><td>85.92</td><td>90.50</td><td>11.64</td><td>84.11</td><td>112.52</td><td>124.94</td><td>3759</td><td>30</td><td>Chưa đo tách riêng</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>PointPillars</td><td>T4</td><td>27.75</td><td>1.36</td><td>32.13</td><td>2.30</td><td>0.30</td><td>63.84</td><td>31.12</td><td>15.66</td><td>62.10</td><td>75.88</td><td>92.73</td><td>3759</td><td>80</td><td>Chưa đo tách riêng</td><td>pointpillars</td></tr><tr><td>SECOND</td><td>T4</td><td>27.20</td><td>1.06</td><td>62.64</td><td>2.54</td><td>0.26</td><td>93.70</td><td>15.96</td><td>10.67</td><td>92.02</td><td>107.42</td><td>126.35</td><td>3759</td><td>80</td><td>Chưa đo tách riêng</td><td>second</td></tr><tr><td>PointRCNN</td><td>T4</td><td>22.90</td><td>0.37</td><td>169.36</td><td>1.69</td><td>0.18</td><td>194.50</td><td>5.90</td><td>5.14</td><td>194.77</td><td>213.48</td><td>222.37</td><td>3759</td><td>77</td><td>Chưa đo tách riêng</td><td>pointrcnn</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>28.26</td><td>1.04</td><td>102.57</td><td>1.66</td><td>0.22</td><td>133.75</td><td>9.75</td><td>7.48</td><td>132.40</td><td>150.49</td><td>169.13</td><td>3759</td><td>80</td><td>Chưa đo tách riêng</td><td>parta2_anchor</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>25.08</td><td>1.02</td><td>160.79</td><td>1.52</td><td>0.19</td><td>188.60</td><td>6.22</td><td>5.30</td><td>187.35</td><td>202.62</td><td>219.07</td><td>3759</td><td>77</td><td>Chưa đo tách riêng</td><td>pv_rcnn</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>20.94</td><td>6.91</td><td>17.88</td><td>14.94</td><td>0.29</td><td>60.96</td><td>55.94</td><td>16.41</td><td>58.28</td><td>80.85</td><td>95.91</td><td>3759</td><td>130</td><td>Chưa đo tách riêng</td><td>ours_best_ap</td></tr></tbody></table></div><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="396pt" viewBox="0 0 864 396" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-18T17:56:42.863967</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7+dfsg1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 396 
+L 864 396 
+L 864 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 183.85 274.464 
+L 853.2 274.464 
+L 853.2 25.44 
+L 183.85 25.44 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 183.85 274.464 
+L 183.85 25.44 
+" clip-path="url(#pc05e9830c0)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2">
+      <defs>
+       <path id="m2ee61a9b67" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m2ee61a9b67" x="183.85" y="274.464" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="183.85" y="289.062437" transform="rotate(-0 183.85 289.062437)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 332.183048 274.464 
+L 332.183048 25.44 
+" clip-path="url(#pc05e9830c0)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m2ee61a9b67" x="332.183048" y="274.464" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="332.183048" y="289.062437" transform="rotate(-0 332.183048 289.062437)">50</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 480.516097 274.464 
+L 480.516097 25.44 
+" clip-path="url(#pc05e9830c0)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m2ee61a9b67" x="480.516097" y="274.464" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="480.516097" y="289.062437" transform="rotate(-0 480.516097 289.062437)">100</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 628.849145 274.464 
+L 628.849145 25.44 
+" clip-path="url(#pc05e9830c0)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m2ee61a9b67" x="628.849145" y="274.464" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="628.849145" y="289.062437" transform="rotate(-0 628.849145 289.062437)">150</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 777.182194 274.464 
+L 777.182194 25.44 
+" clip-path="url(#pc05e9830c0)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m2ee61a9b67" x="777.182194" y="274.464" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="777.182194" y="289.062437" transform="rotate(-0 777.182194 289.062437)">200</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="518.525" y="302.740563" transform="rotate(-0 518.525 302.740563)">Mean sequential offline latency (ms / frame)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_11">
+      <defs>
+       <path id="m96b6db9cfc" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="48.368783" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="52.168002" transform="rotate(-0 176.85 52.168002)">PIXOR (Car only) — T4</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="77.392559" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="81.191778" transform="rotate(-0 176.85 81.191778)">MobilePIXOR (L4, historical) — L4</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="106.416336" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="110.215554" transform="rotate(-0 176.85 110.215554)">PointPillars — T4</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="135.440112" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="139.239331" transform="rotate(-0 176.85 139.239331)">SECOND — T4</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_15">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="164.463888" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="168.263107" transform="rotate(-0 176.85 168.263107)">PointRCNN — T4</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="193.487664" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="197.286883" transform="rotate(-0 176.85 197.286883)">Part-A²-Anchor — T4</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_17">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="222.511441" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="226.310659" transform="rotate(-0 176.85 226.310659)">PV-RCNN — T4</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#m96b6db9cfc" x="183.85" y="251.535217" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="176.85" y="255.334436" transform="rotate(-0 176.85 255.334436)">PixorNeXt (ours) — T4</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 183.85 36.759273 
+L 286.062372 36.759273 
+L 286.062372 59.978294 
+L 183.85 59.978294 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 183.85 65.783049 
+L 228.578188 65.783049 
+L 228.578188 89.00207 
+L 183.85 89.00207 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 183.85 94.806825 
+L 266.178845 94.806825 
+L 266.178845 118.025846 
+L 183.85 118.025846 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 183.85 123.830601 
+L 264.528755 123.830601 
+L 264.528755 147.049622 
+L 183.85 147.049622 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 183.85 152.854378 
+L 251.783584 152.854378 
+L 251.783584 176.073399 
+L 183.85 176.073399 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 183.85 181.878154 
+L 267.688667 181.878154 
+L 267.688667 205.097175 
+L 183.85 205.097175 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 183.85 210.90193 
+L 258.253343 210.90193 
+L 258.253343 234.120951 
+L 183.85 234.120951 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 183.85 239.925706 
+L 245.969199 239.925706 
+L 245.969199 263.144727 
+L 183.85 263.144727 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #93c5fd"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 286.062372 36.759273 
+L 373.675841 36.759273 
+L 373.675841 59.978294 
+L 286.062372 59.978294 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 228.578188 65.783049 
+L 349.113236 65.783049 
+L 349.113236 89.00207 
+L 228.578188 89.00207 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 266.178845 94.806825 
+L 270.215988 94.806825 
+L 270.215988 118.025846 
+L 266.178845 118.025846 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 264.528755 123.830601 
+L 267.668954 123.830601 
+L 267.668954 147.049622 
+L 264.528755 147.049622 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 251.783584 152.854378 
+L 252.876006 152.854378 
+L 252.876006 176.073399 
+L 251.783584 176.073399 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 267.688667 181.878154 
+L 270.786783 181.878154 
+L 270.786783 205.097175 
+L 267.688667 205.097175 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 258.253343 210.90193 
+L 261.28884 210.90193 
+L 261.28884 234.120951 
+L 258.253343 234.120951 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 245.969199 239.925706 
+L 266.477062 239.925706 
+L 266.477062 263.144727 
+L 245.969199 263.144727 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #c4b5fd"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 373.675841 36.759273 
+L 583.694504 36.759273 
+L 583.694504 59.978294 
+L 373.675841 59.978294 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_20">
+    <path d="M 349.113236 65.783049 
+L 381.894715 65.783049 
+L 381.894715 89.00207 
+L 349.113236 89.00207 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 270.215988 94.806825 
+L 365.543933 94.806825 
+L 365.543933 118.025846 
+L 270.215988 118.025846 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 267.668954 123.830601 
+L 453.505944 123.830601 
+L 453.505944 147.049622 
+L 267.668954 147.049622 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_23">
+    <path d="M 252.876006 152.854378 
+L 755.299788 152.854378 
+L 755.299788 176.073399 
+L 252.876006 176.073399 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_24">
+    <path d="M 270.786783 181.878154 
+L 575.084806 181.878154 
+L 575.084806 205.097175 
+L 270.786783 205.097175 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_25">
+    <path d="M 261.28884 210.90193 
+L 738.292849 210.90193 
+L 738.292849 234.120951 
+L 261.28884 234.120951 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_26">
+    <path d="M 266.477062 239.925706 
+L 319.506681 239.925706 
+L 319.506681 263.144727 
+L 266.477062 263.144727 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_27">
+    <path d="M 583.694504 36.759273 
+L 604.245888 36.759273 
+L 604.245888 59.978294 
+L 583.694504 59.978294 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_28">
+    <path d="M 381.894715 65.783049 
+L 437.781784 65.783049 
+L 437.781784 89.00207 
+L 381.894715 89.00207 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_29">
+    <path d="M 365.543933 94.806825 
+L 372.364428 94.806825 
+L 372.364428 118.025846 
+L 365.543933 118.025846 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_30">
+    <path d="M 453.505944 123.830601 
+L 461.049494 123.830601 
+L 461.049494 147.049622 
+L 453.505944 147.049622 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_31">
+    <path d="M 755.299788 152.854378 
+L 760.327051 152.854378 
+L 760.327051 176.073399 
+L 755.299788 176.073399 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_32">
+    <path d="M 575.084806 181.878154 
+L 580.010936 181.878154 
+L 580.010936 205.097175 
+L 575.084806 205.097175 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_33">
+    <path d="M 738.292849 210.90193 
+L 742.787378 210.90193 
+L 742.787378 234.120951 
+L 738.292849 234.120951 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_34">
+    <path d="M 319.506681 239.925706 
+L 363.83967 239.925706 
+L 363.83967 263.144727 
+L 319.506681 263.144727 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #fdba74"/>
+   </g>
+   <g id="patch_35">
+    <path d="M 604.245888 36.759273 
+L 611.040866 36.759273 
+L 611.040866 59.978294 
+L 604.245888 59.978294 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_36">
+    <path d="M 437.781784 65.783049 
+L 438.754742 65.783049 
+L 438.754742 89.00207 
+L 437.781784 89.00207 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_37">
+    <path d="M 372.364428 94.806825 
+L 373.244299 94.806825 
+L 373.244299 118.025846 
+L 372.364428 118.025846 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_38">
+    <path d="M 461.049494 123.830601 
+L 461.815536 123.830601 
+L 461.815536 147.049622 
+L 461.049494 147.049622 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_39">
+    <path d="M 760.327051 152.854378 
+L 760.875862 152.854378 
+L 760.875862 176.073399 
+L 760.327051 176.073399 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_40">
+    <path d="M 580.010936 181.878154 
+L 580.655617 181.878154 
+L 580.655617 205.097175 
+L 580.010936 205.097175 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_41">
+    <path d="M 742.787378 210.90193 
+L 743.351154 210.90193 
+L 743.351154 234.120951 
+L 742.787378 234.120951 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_42">
+    <path d="M 363.83967 239.925706 
+L 364.686749 239.925706 
+L 364.686749 263.144727 
+L 363.83967 263.144727 
+z
+" clip-path="url(#pc05e9830c0)" style="fill: #cbd5e1"/>
+   </g>
+   <g id="patch_43">
+    <path d="M 183.85 274.464 
+L 853.2 274.464 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="615.490858" y="50.852221" transform="rotate(-0 615.490858 50.852221)">144.00 ms</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="443.204734" y="79.875997" transform="rotate(-0 443.204734 79.875997)">85.92 ms</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="377.694291" y="108.899773" transform="rotate(-0 377.694291 108.899773)">63.84 ms</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="466.265527" y="137.923549" transform="rotate(-0 466.265527 137.923549)">93.70 ms</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="765.325854" y="166.947326" transform="rotate(-0 765.325854 166.947326)">194.50 ms</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="585.105609" y="195.971102" transform="rotate(-0 585.105609 195.971102)">133.75 ms</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="747.801146" y="224.994878" transform="rotate(-0 747.801146 224.994878)">188.60 ms</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="369.13674" y="254.018654" transform="rotate(-0 369.13674 254.018654)">60.96 ms</text>
+   </g>
+   <g id="text_23">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start" x="183.85" y="19.44" transform="rotate(-0 183.85 19.44)">Saved stage timing from input to detections</text>
+   </g>
+   <g id="legend_1">
+    <g id="patch_44">
+     <path d="M 319.1975 325.989169 
+L 337.1975 325.989169 
+L 337.1975 319.689169 
+L 319.1975 319.689169 
+z
+" style="fill: #93c5fd"/>
+    </g>
+    <g id="text_24">
+     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="344.3975" y="325.989169" transform="rotate(-0 344.3975 325.989169)">Preprocess / input encoding</text>
+    </g>
+    <g id="patch_45">
+     <path d="M 319.1975 339.199481 
+L 337.1975 339.199481 
+L 337.1975 332.899481 
+L 319.1975 332.899481 
+z
+" style="fill: #c4b5fd"/>
+    </g>
+    <g id="text_25">
+     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="344.3975" y="339.199481" transform="rotate(-0 344.3975 339.199481)">H2D</text>
+    </g>
+    <g id="patch_46">
+     <path d="M 487.37375 325.989169 
+L 505.37375 325.989169 
+L 505.37375 319.689169 
+L 487.37375 319.689169 
+z
+" style="fill: #087e8b"/>
+    </g>
+    <g id="text_26">
+     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="512.57375" y="325.989169" transform="rotate(-0 512.57375 325.989169)">Model / network</text>
+    </g>
+    <g id="patch_47">
+     <path d="M 487.37375 339.199481 
+L 505.37375 339.199481 
+L 505.37375 332.899481 
+L 487.37375 332.899481 
+z
+" style="fill: #fdba74"/>
+    </g>
+    <g id="text_27">
+     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="512.57375" y="339.199481" transform="rotate(-0 512.57375 339.199481)">Decode / final NMS</text>
+    </g>
+    <g id="patch_48">
+     <path d="M 615.96125 325.989169 
+L 633.96125 325.989169 
+L 633.96125 319.689169 
+L 615.96125 319.689169 
+z
+" style="fill: #cbd5e1"/>
+    </g>
+    <g id="text_28">
+     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="641.16125" y="325.989169" transform="rotate(-0 641.16125 325.989169)">Other / overhead</text>
+    </g>
+   </g>
+  </g>
+  <g id="text_29">
+   <text style="font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677b" x="8.64" y="392.04" transform="rotate(-0 8.64 392.04)">FP32, batch one. MobilePIXOR: L4; others: T4. Encoder-only timing is not separately available; native implementations differ.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc05e9830c0">
+   <rect x="183.85" y="25.44" width="669.35" height="249.024"/>
+  </clipPath>
+ </defs>
+</svg>
+<p>Đơn vị thời gian là ms/frame. Tất cả là saved FP32 batch-one inference; 3.759 frame timing sau 10 warmup, AP vẫn dùng đủ 3.769 frame.</p><p>Preprocess/input encoding là thời gian GỘP, không phải encoder-only: gồm I/O và xử lý đầu vào. Không tách số đọc file, tạo BEV, voxelization hoặc learned encoder khi nguồn chưa đo riêng.</p><p>Learned encoder của một số baseline nằm trong module_list/network, không chỉ trong preprocess. Backbone/neck/head và internal decode/proposal NMS có thể nằm trong network; không có timing riêng cho từng phần.</p><p>Decode/final NMS của baseline chỉ là final post_processing. Không cộng hoặc chuyển internal NMS ra khỏi network nếu không có profiling riêng.</p><p>E2E ở đây là SEQUENTIAL OFFLINE input-to-detections, gồm I/O/preprocess, H2D, network và hậu xử lý. Không phải sensor-to-actuator latency; không gồm ROS, tracking, HMI, AP hoặc export/projection ngoài ranh giới đo.</p><p>Other/overhead = measured E2E mean − tổng bốn stage mean. Đây là phần dư của phép đo, không được gọi là thời gian encoder.</p><p>P50/P95/P99 là thống kê của stage tương ứng từ report; E2E percentile được lấy trực tiếp từ E2E report, không cộng các percentile của stage.</p><p>Model FPS và E2E FPS = 1000 / mean latency tương ứng; đây là nghịch đảo độ trễ batch 1, không chứng minh throughput pipeline đa luồng.</p><p>MobilePIXOR đo L4; bảy dòng còn lại T4. PIXOR T4 theo xác nhận người dùng. Không tính speedup trực tiếp giữa MobilePIXOR L4 và các dòng T4. CPU/IO giữa các phiên có thể khác.</p><p>Giữ checkpoint: MobilePIXOR loss-selected epoch 30 (lịch sử 38/100 epochs), PixorNeXt best AP epoch 130. Không chạy profiling/training/inference mới khi tạo bảng.</p><h2>Mean / P50 / P95 / P99 theo stage</h2><div class="scroll"><table><thead><tr><th>Model</th><th>GPU</th><th>Stage</th><th>Mean (ms)</th><th>P50 (ms)</th><th>P95 (ms)</th><th>P99 (ms)</th><th>1000 / mean_ms</th><th>Timed frames</th><th>Source ID</th></tr></thead><tbody><tr><td>PIXOR (Car only)</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>34.45</td><td>33.92</td><td>43.63</td><td>52.25</td><td>29.02</td><td>3759</td><td>pixor</td></tr><tr><td>PIXOR (Car only)</td><td>T4</td><td>Host-to-device transfer</td><td>29.53</td><td>28.55</td><td>36.41</td><td>49.24</td><td>33.86</td><td>3759</td><td>pixor</td></tr><tr><td>PIXOR (Car only)</td><td>T4</td><td>Network module_list</td><td>70.79</td><td>70.61</td><td>72.36</td><td>73.30</td><td>14.13</td><td>3759</td><td>pixor</td></tr><tr><td>PIXOR (Car only)</td><td>T4</td><td>Decode / final NMS</td><td>6.93</td><td>5.72</td><td>14.69</td><td>19.22</td><td>144.35</td><td>3759</td><td>pixor</td></tr><tr><td>PIXOR (Car only)</td><td>T4</td><td>Offline E2E input-to-detections</td><td>144.00</td><td>142.29</td><td>159.38</td><td>175.43</td><td>6.94</td><td>3759</td><td>pixor</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Preprocess / input encoding (grouped)</td><td>15.08</td><td>14.66</td><td>19.08</td><td>20.31</td><td>66.33</td><td>3759</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Host-to-device transfer</td><td>40.63</td><td>37.41</td><td>55.01</td><td>57.28</td><td>24.61</td><td>3759</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Model forward</td><td>11.05</td><td>11.05</td><td>11.08</td><td>11.10</td><td>90.50</td><td>3759</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Decode / final NMS</td><td>18.84</td><td>15.86</td><td>41.67</td><td>52.31</td><td>53.08</td><td>3759</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Offline E2E input-to-detections</td><td>85.92</td><td>84.11</td><td>112.52</td><td>124.94</td><td>11.64</td><td>3759</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>PointPillars</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>27.75</td><td>26.18</td><td>38.65</td><td>53.88</td><td>36.03</td><td>3759</td><td>pointpillars</td></tr><tr><td>PointPillars</td><td>T4</td><td>Host-to-device transfer</td><td>1.36</td><td>1.25</td><td>2.00</td><td>3.93</td><td>734.84</td><td>3759</td><td>pointpillars</td></tr><tr><td>PointPillars</td><td>T4</td><td>Network module_list</td><td>32.13</td><td>32.00</td><td>33.70</td><td>36.13</td><td>31.12</td><td>3759</td><td>pointpillars</td></tr><tr><td>PointPillars</td><td>T4</td><td>Decode / final NMS</td><td>2.30</td><td>2.16</td><td>3.47</td><td>5.36</td><td>434.96</td><td>3759</td><td>pointpillars</td></tr><tr><td>PointPillars</td><td>T4</td><td>Offline E2E input-to-detections</td><td>63.84</td><td>62.10</td><td>75.88</td><td>92.73</td><td>15.66</td><td>3759</td><td>pointpillars</td></tr><tr><td>SECOND</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>27.20</td><td>26.07</td><td>38.43</td><td>53.28</td><td>36.77</td><td>3759</td><td>second</td></tr><tr><td>SECOND</td><td>T4</td><td>Host-to-device transfer</td><td>1.06</td><td>0.97</td><td>1.41</td><td>3.19</td><td>944.74</td><td>3759</td><td>second</td></tr><tr><td>SECOND</td><td>T4</td><td>Network module_list</td><td>62.64</td><td>62.13</td><td>67.53</td><td>76.56</td><td>15.96</td><td>3759</td><td>second</td></tr><tr><td>SECOND</td><td>T4</td><td>Decode / final NMS</td><td>2.54</td><td>2.43</td><td>3.93</td><td>6.02</td><td>393.27</td><td>3759</td><td>second</td></tr><tr><td>SECOND</td><td>T4</td><td>Offline E2E input-to-detections</td><td>93.70</td><td>92.02</td><td>107.42</td><td>126.35</td><td>10.67</td><td>3759</td><td>second</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>22.90</td><td>22.27</td><td>28.22</td><td>39.23</td><td>43.67</td><td>3759</td><td>pointrcnn</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Host-to-device transfer</td><td>0.37</td><td>0.35</td><td>0.43</td><td>0.62</td><td>2715.68</td><td>3759</td><td>pointrcnn</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Network module_list</td><td>169.36</td><td>169.70</td><td>187.18</td><td>193.32</td><td>5.90</td><td>3759</td><td>pointrcnn</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Decode / final NMS</td><td>1.69</td><td>1.73</td><td>2.38</td><td>2.84</td><td>590.11</td><td>3759</td><td>pointrcnn</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Offline E2E input-to-detections</td><td>194.50</td><td>194.77</td><td>213.48</td><td>222.37</td><td>5.14</td><td>3759</td><td>pointrcnn</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>28.26</td><td>27.31</td><td>36.92</td><td>52.51</td><td>35.39</td><td>3759</td><td>parta2_anchor</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Host-to-device transfer</td><td>1.04</td><td>0.97</td><td>1.27</td><td>3.15</td><td>957.57</td><td>3759</td><td>parta2_anchor</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Network module_list</td><td>102.57</td><td>102.18</td><td>113.46</td><td>123.64</td><td>9.75</td><td>3759</td><td>parta2_anchor</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Decode / final NMS</td><td>1.66</td><td>1.59</td><td>2.41</td><td>4.53</td><td>602.23</td><td>3759</td><td>parta2_anchor</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Offline E2E input-to-detections</td><td>133.75</td><td>132.40</td><td>150.49</td><td>169.13</td><td>7.48</td><td>3759</td><td>parta2_anchor</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>25.08</td><td>24.27</td><td>30.84</td><td>49.67</td><td>39.87</td><td>3759</td><td>pv_rcnn</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Host-to-device transfer</td><td>1.02</td><td>0.97</td><td>1.20</td><td>2.50</td><td>977.32</td><td>3759</td><td>pv_rcnn</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Network module_list</td><td>160.79</td><td>159.88</td><td>171.40</td><td>181.75</td><td>6.22</td><td>3759</td><td>pv_rcnn</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Decode / final NMS</td><td>1.52</td><td>1.51</td><td>2.19</td><td>2.62</td><td>660.06</td><td>3759</td><td>pv_rcnn</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Offline E2E input-to-detections</td><td>188.60</td><td>187.35</td><td>202.62</td><td>219.07</td><td>5.30</td><td>3759</td><td>pv_rcnn</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Preprocess / input encoding (grouped)</td><td>20.94</td><td>19.59</td><td>31.06</td><td>35.45</td><td>47.76</td><td>3759</td><td>ours_best_ap</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Host-to-device transfer</td><td>6.91</td><td>6.80</td><td>7.80</td><td>9.06</td><td>144.66</td><td>3759</td><td>ours_best_ap</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Model forward</td><td>17.88</td><td>17.63</td><td>19.40</td><td>20.47</td><td>55.94</td><td>3759</td><td>ours_best_ap</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Decode / final NMS</td><td>14.94</td><td>11.78</td><td>33.14</td><td>48.92</td><td>66.92</td><td>3759</td><td>ours_best_ap</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Offline E2E input-to-detections</td><td>60.96</td><td>58.28</td><td>80.85</td><td>95.91</td><td>16.41</td><td>3759</td><td>ours_best_ap</td></tr></tbody></table></div><h2>Phạm vi đo</h2><div class="scroll"><table><thead><tr><th>Model</th><th>GPU</th><th>Preprocess / input encoding</th><th>Encoder-only availability</th><th>Model / network boundary</th><th>Decode / final NMS boundary</th><th>E2E includes</th><th>E2E excludes</th><th>GPU evidence</th><th>Source ID</th></tr></thead><tbody><tr><td>PIXOR (Car only)</td><td>T4</td><td>Bin/calibration read + occupancy BEV encoding + FOV/projection mask + tensor creation; image shape cached</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>PIXOR FP32 model forward, including backbone/neck/head; no separate submodule timing</td><td>D2H output + score decode + rotated NMS (CPU OpenCV); learned model is outside this stage</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>KITTI annotation projection/export and AP; no ROS/tracking/display/sensor capture</td><td>T4 explicitly confirmed by user; report records FP32</td><td>pixor</td></tr><tr><td>MobilePIXOR (L4, historical)</td><td>L4</td><td>Dataset sample preparation: bin loading + configured BEV input encoding / tensor preparation, reported as one stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>PyTorch forward, including backbone/neck/head; no encoder/backbone/neck/head split</td><td>filter_pred decode / quality scoring / rotated NMS, including output transfers where performed</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>Separate GT scoring/AP; no ROS/tracking/display/sensor capture; no reference projection added to this measured BEV pipeline</td><td>L4 in archived report metadata</td><td>mobilepixor_B0_loss_L4_summary</td></tr><tr><td>PointPillars</td><td>T4</td><td>Raw bin/calibration read + native FOV filtering + voxel/data processing + collation; one measured CPU stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>module_list, including architecture-specific internal box decoding and ROI proposal NMS; final post_processing is separate. Learned feature encoding, where present in module_list, is included here; not separately profiled.</td><td>Final model.post_processing only, with CUDA synchronization; excludes any proposal NMS already inside network</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>GT recall, annotation projection/text export and AP; no ROS/tracking/display/sensor capture</td><td>T4 / FP32 / batch 1 in report metadata</td><td>pointpillars</td></tr><tr><td>SECOND</td><td>T4</td><td>Raw bin/calibration read + native FOV filtering + voxel/data processing + collation; one measured CPU stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>module_list, including architecture-specific internal box decoding and ROI proposal NMS; final post_processing is separate. Learned feature encoding, where present in module_list, is included here; not separately profiled.</td><td>Final model.post_processing only, with CUDA synchronization; excludes any proposal NMS already inside network</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>GT recall, annotation projection/text export and AP; no ROS/tracking/display/sensor capture</td><td>T4 / FP32 / batch 1 in report metadata</td><td>second</td></tr><tr><td>PointRCNN</td><td>T4</td><td>Raw bin/calibration read + native FOV filtering + voxel/data processing + collation; one measured CPU stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>module_list, including architecture-specific internal box decoding and ROI proposal NMS; final post_processing is separate. Learned feature encoding, where present in module_list, is included here; not separately profiled.</td><td>Final model.post_processing only, with CUDA synchronization; excludes any proposal NMS already inside network</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>GT recall, annotation projection/text export and AP; no ROS/tracking/display/sensor capture</td><td>T4 / FP32 / batch 1 in report metadata</td><td>pointrcnn</td></tr><tr><td>Part-A²-Anchor</td><td>T4</td><td>Raw bin/calibration read + native FOV filtering + voxel/data processing + collation; one measured CPU stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>module_list, including architecture-specific internal box decoding and ROI proposal NMS; final post_processing is separate. Learned feature encoding, where present in module_list, is included here; not separately profiled.</td><td>Final model.post_processing only, with CUDA synchronization; excludes any proposal NMS already inside network</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>GT recall, annotation projection/text export and AP; no ROS/tracking/display/sensor capture</td><td>T4 / FP32 / batch 1 in report metadata</td><td>parta2_anchor</td></tr><tr><td>PV-RCNN</td><td>T4</td><td>Raw bin/calibration read + native FOV filtering + voxel/data processing + collation; one measured CPU stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>module_list, including architecture-specific internal box decoding and ROI proposal NMS; final post_processing is separate. Learned feature encoding, where present in module_list, is included here; not separately profiled.</td><td>Final model.post_processing only, with CUDA synchronization; excludes any proposal NMS already inside network</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>GT recall, annotation projection/text export and AP; no ROS/tracking/display/sensor capture</td><td>T4 / FP32 / batch 1 in report metadata</td><td>pv_rcnn</td></tr><tr><td>PixorNeXt (ours, best AP)</td><td>T4</td><td>Dataset sample preparation: bin loading + configured BEV input encoding / tensor preparation, reported as one stage</td><td>Không có số encoder-only; không được suy ra từ tổng thời gian</td><td>PyTorch forward, including backbone/neck/head; no encoder/backbone/neck/head split</td><td>filter_pred decode / quality scoring / rotated NMS, including output transfers where performed</td><td>Sequential raw input preparation + H2D + network + final decode/NMS, measured by wall clock</td><td>Separate GT scoring/AP; no ROS/tracking/display/sensor capture; no reference projection added to this measured BEV pipeline</td><td>T4 in report metadata</td><td>ours_best_ap</td></tr></tbody></table></div></main></html>

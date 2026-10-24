@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "model_rows": 8,
+  "columns": 23,
+  "exported_data_cells_checked": 736,
+  "full_workbook": "Tables_bai_bao_LiDAR_v4_MobilePIXOR.xlsx",
+  "standalone_workbook": "Benchmark_DAY_DU_v4_MobilePIXOR.xlsx",
+  "MobilePIXOR": {
+    "gpu": "L4",
+    "AP_protocol": "local BEV R40",
+    "map_moderate": 41.399044634156304,
+    "map9": 42.27369345603039,
+    "parameters": 597817,
+    "checkpoint_epoch": 30,
+    "selection": "loss",
+    "archived_epochs": 38,
+    "configured_epochs": 100
+  },
+  "checks": [
+    "All new data cells checked after reopening",
+    "Macro AP by difficulty and AP9 recomputed",
+    "Both speed definitions checked",
+    "MobilePIXOR remains L4 and loss-selected",
+    "Other prior sheets, including augmentation, preserved",
+    "V3 input workbook unchanged"
+  ],
+  "new_training_or_evaluation": false
+}

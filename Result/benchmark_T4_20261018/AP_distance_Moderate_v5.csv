@@ -1,0 +1,9 @@
+﻿Model,GPU,Protocol,Car AP 0–30 m (%),Car AP 30–50 m (%),Car AP 50–70.4 m (%),Ped. AP 0–30 m (%),Ped. AP 30–50 m (%),Ped. AP 50–70.4 m (%),Cyc. AP 0–30 m (%),Cyc. AP 30–50 m (%),Cyc. AP 50–70.4 m (%),mAP 0–30 m (%),mAP 30–50 m (%),mAP 50–70.4 m (%),Status,Source ID
+PIXOR (Car only),T4,Reference R40,Chưa có,Chưa có,Chưa có,—,—,—,—,—,—,—,—,—,Car chưa có AP theo dải; Ped/Cyc không áp dụng,pixor
+"MobilePIXOR (L4, historical)",L4,Local R40 *,Chưa có,Chưa có,Chưa có,30.448746847366014,3.7460632872013178,0.9874288323263736,25.553037975648618,12.610933108402838,0.5561797752808988,Chưa có,Chưa có,Chưa có,Có Ped/Cyc; Car chưa có AP theo dải,mobilepixor_B0_loss_L4_summary
+PointPillars,T4,Reference R40,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có report AP theo khoảng cách,pointpillars
+SECOND,T4,Reference R40,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có report AP theo khoảng cách,second
+PointRCNN,T4,Reference R40,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có report AP theo khoảng cách,pointrcnn
+Part-A²-Anchor,T4,Reference R40,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có report AP theo khoảng cách,parta2_anchor
+PV-RCNN,T4,Reference R40,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có,Chưa có report AP theo khoảng cách,pv_rcnn
+"PixorNeXt (ours, best AP)",T4,Local R40 *,Chưa có,Chưa có,Chưa có,65.23446374220885,11.491748321062385,0.8046146497765002,76.31960437256102,44.300612235173915,14.94167512131917,Chưa có,Chưa có,Chưa có,Có Ped/Cyc; Car chưa có AP theo dải,ours_best_ap

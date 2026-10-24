@@ -1,0 +1,19 @@
+{
+  "artifacts_root": "/home/duyennh/Downloads/artifacts-20261018T082735Z-1-002/artifacts",
+  "models": [
+    {
+      "id": "mobilepixor",
+      "title": "MobilePIXOR",
+      "checkpoint": "mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixor", "encoding": "binary_slices", "loss": "baseline", "use_iou": false, "epoch": 30},
+      "selection": "minimum validation loss, epoch 30"
+    },
+    {
+      "id": "ours",
+      "title": "Ours",
+      "checkpoint": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-head_shared-sgfpn-ctx_none_local_none_blocksimam_c3c4c5_f32_detail0_9e1b2f9764e5-grouped_8ca741fdd6ed-s42-Final-h32/checkpoints/130epoch.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "hist14", "loss": "oga", "use_iou": true, "augmentation": "hybrid_gt_sampling", "epoch": 130},
+      "selection": "explicit epoch 130 checkpoint requested by user"
+    }
+  ]
+}

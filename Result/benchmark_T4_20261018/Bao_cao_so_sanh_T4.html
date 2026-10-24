@@ -1,0 +1,590 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Báo cáo benchmark LiDAR T4</title><style>body{margin:0;background:#edf2f7;color:#17324d;font:16px/1.65 system-ui,sans-serif}main{max-width:1200px;margin:36px auto;background:white;padding:48px;box-shadow:0 6px 35px #17324d10;border-radius:14px}h1{font-size:34px;line-height:1.2}h2{margin-top:42px;padding-top:16px;border-top:2px solid #eaf1f8;font-size:22px}p{max-width:100ch}.meta{color:#596c80}.cards{display:flex;gap:16px;flex-wrap:wrap}.card{background:#eaf5f6;padding:16px 22px;border-radius:10px;flex:1;min-width:160px}.card strong{display:block;color:#087e8b;font-size:28px}.table{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:13px}th{background:#17324d;color:white;text-align:left}th,td{padding:10px;border-bottom:1px solid #dce4ed;vertical-align:top}tr:nth-child(even){background:#f5f8fc}.pending{background:#fff1ce;font-weight:600}svg{width:100%;height:auto}figure{margin:24px 0}figcaption{font-size:12px;color:#596c80}.notice{border-left:4px solid #d79d26;background:#fff8e9;padding:14px 20px}@media print{body{background:white;font-size:10pt}main{margin:0;padding:0;max-width:none;box-shadow:none}.table{overflow:visible}table{font-size:8pt}thead{display:table-header-group}tr,figure{break-inside:avoid}h2{break-after:avoid}}</style><main><p class="meta">LiDAR research · 18/10/2026 · báo cáo từ kết quả đã lưu</p><h1>So sánh PIXOR, PixorNeXt và các detector trên Tesla T4</h1><div class="cards"><div class="card"><strong>0,754 M</strong>PixorNeXt parameters</div><div class="card"><strong>60,96 ms</strong>Mean offline pipeline</div><div class="card"><strong>16,41 FPS</strong>Best AP checkpoint · epoch 130</div></div><p class="notice">Timing T4 đã có. Reference AP của PixorNeXt còn chờ chấm; các số local được trình bày riêng. PIXOR T4 theo xác nhận của người dùng.</p><h2>1. Kết quả chính và phạm vi báo cáo</h2><p>Bộ hồ sơ hiện có đủ để lập bảng timing T4 và ghi nhận kết quả của PIXOR, PixorNeXt cùng năm detector OpenPCDet. PixorNeXt best AP epoch 130 có 753.569 tham số, pipeline offline trung bình 60,96 ms/frame (16,41 FPS), forward 17,88 ms và decode/NMS 14,94 ms. AP local BEV Moderate macro là 71,46%. Đây là mô hình không focal context, dùng BlockSimAM tại c3/c4/c5 và shared grouped heads + IQA; khác run P16/Final3D cũ.</p><p>T4 của PIXOR đã được người dùng kiểm tra và xác nhận trong cuộc trao đổi ngày 18/10/2026. Báo cáo chấp nhận xác nhận này; nguồn được ghi là user confirmation vì report_pixor.json không có trường GPU. FP32 và 3.759 mẫu timing của PIXOR có trong report; batch-one profiling được xác định từ runner hiện có. T4/FP32/batch-one của năm baseline có metadata; PixorNeXt có metadata T4/FP32 và runner batch-one.</p><p>Cả nhóm dùng cùng danh sách 3.769 frame validation. Timing loại 10 frame đầu; AP vẫn sử dụng đủ frame. Đây là đánh giá validation đã dùng chọn checkpoint, không phải hidden-test KITTI. Chưa đồng nhất evaluator AP giữa PixorNeXt và các baseline; báo cáo để trống reference AP của PixorNeXt thay vì xếp hạng các số khác protocol.</p><h2>2. Hiệu quả tính toán trên Tesla T4</h2><div class="table"><table><thead><tr><th>Model</th><th>Params (M)</th><th>Pipeline (ms)</th><th>Pipeline FPS</th><th>Pipeline p95 (ms)</th></tr></thead><tbody><tr><td>PIXOR (our reproduction; Car)</td><td>2.13</td><td>144.00</td><td>6.94</td><td>159.38</td></tr><tr><td>PointPillars</td><td>4.83</td><td>63.84</td><td>15.66</td><td>75.88</td></tr><tr><td>SECOND</td><td>5.33</td><td>93.70</td><td>10.67</td><td>107.42</td></tr><tr><td>PointRCNN</td><td>4.04</td><td>194.50</td><td>5.14</td><td>213.48</td></tr><tr><td>Part-A²-Anchor</td><td>63.81</td><td>133.75</td><td>7.48</td><td>150.49</td></tr><tr><td>PV-RCNN</td><td>13.12</td><td>188.60</td><td>5.30</td><td>202.62</td></tr><tr><td>PixorNeXt (ours; best AP)</td><td>0.75</td><td>60.96</td><td>16.41</td><td>80.85</td></tr></tbody></table></div><p>So với PointPillars, PixorNeXt dùng ít hơn 84.41% tham số. Trong các lần đo đã lưu, mean pipeline latency thấp hơn 4.52% và FPS cao hơn 4.73%. Chênh lệch pipeline với PointPillars nhỏ; đây là quan sát từ các report, chưa có lặp độc lập hoặc kiểm định độ ổn định giữa phiên Colab. Không diễn giải như một cải thiện có ý nghĩa thống kê.</p><p>Pipeline PIXOR Car-only chậm hơn PixorNeXt ba lớp khoảng 2.36 lần trong các implementation được đo. Đây là đối chiếu hai hệ thống có recipe và phạm vi lớp khác nhau; không cô lập hiệu quả riêng của backbone. Các baseline dùng preprocessing và hậu xử lý gốc. Pipeline gồm CPU/IO, chuyển dữ liệu, network và decode/NMS; cùng GPU chưa đồng nghĩa mọi điều kiện CPU, ổ đĩa hoặc tần số GPU đều trùng nhau.</p><div class="table"><table><thead><tr><th>Model</th><th>Preprocess</th><th>H2D</th><th>Forward/network</th><th>Decode/NMS</th><th>Total pipeline</th></tr></thead><tbody><tr><td>PIXOR (our reproduction; Car)</td><td>34.45</td><td>29.53</td><td>70.79</td><td>6.93</td><td>144.00</td></tr><tr><td>PointPillars</td><td>27.75</td><td>1.36</td><td>32.13</td><td>2.30</td><td>63.84</td></tr><tr><td>SECOND</td><td>27.20</td><td>1.06</td><td>62.64</td><td>2.54</td><td>93.70</td></tr><tr><td>PointRCNN</td><td>22.90</td><td>0.37</td><td>169.36</td><td>1.69</td><td>194.50</td></tr><tr><td>Part-A²-Anchor</td><td>28.26</td><td>1.04</td><td>102.57</td><td>1.66</td><td>133.75</td></tr><tr><td>PV-RCNN</td><td>25.08</td><td>1.02</td><td>160.79</td><td>1.52</td><td>188.60</td></tr><tr><td>PixorNeXt (ours; best AP)</td><td>20.94</td><td>6.91</td><td>17.88</td><td>14.94</td><td>60.96</td></tr></tbody></table></div><p>Đơn vị bảng stage là ms/frame. Forward/network không phải ranh giới hoàn toàn đồng nhất: network OpenPCDet có thể chứa decode và proposal NMS nội bộ; model PixorNeXt trả đầu ra trước hậu xử lý riêng. Vì vậy ưu tiên pipeline latency khi đối chiếu hệ thống và giữ tên stage gốc. Không lấy 55,94 model forwards/s của PixorNeXt làm FPS pipeline; pipeline thực tế là 16,41 FPS. Các stage có thể không cộng chính xác bằng total do overhead biên đo.</p><figure><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="331.2pt" viewBox="0 0 864 331.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-18T16:47:01.550858</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7+dfsg1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 331.2 
+L 864 331.2 
+L 864 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 99.52 272.68 
+L 426.6 272.68 
+L 426.6 25.44 
+L 99.52 25.44 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 99.52 272.68 
+L 99.52 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2">
+      <defs>
+       <path id="mead2a08ea6" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#mead2a08ea6" x="99.52" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="99.52" y="287.278437" transform="rotate(-0 99.52 287.278437)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 141.531959 272.68 
+L 141.531959 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="141.531959" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="141.531959" y="287.278437" transform="rotate(-0 141.531959 287.278437)">10</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 183.543919 272.68 
+L 183.543919 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="183.543919" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="183.543919" y="287.278437" transform="rotate(-0 183.543919 287.278437)">20</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 225.555878 272.68 
+L 225.555878 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="225.555878" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="225.555878" y="287.278437" transform="rotate(-0 225.555878 287.278437)">30</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 267.567837 272.68 
+L 267.567837 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="267.567837" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="267.567837" y="287.278437" transform="rotate(-0 267.567837 287.278437)">40</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_11">
+      <path d="M 309.579797 272.68 
+L 309.579797 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="309.579797" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="309.579797" y="287.278437" transform="rotate(-0 309.579797 287.278437)">50</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_13">
+      <path d="M 351.591756 272.68 
+L 351.591756 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="351.591756" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="351.591756" y="287.278437" transform="rotate(-0 351.591756 287.278437)">60</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_15">
+      <path d="M 393.603715 272.68 
+L 393.603715 25.44 
+" clip-path="url(#p7dc459c258)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="393.603715" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="393.603715" y="287.278437" transform="rotate(-0 393.603715 287.278437)">70</text>
+     </g>
+    </g>
+    <g id="text_9">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="263.06" y="300.956563" transform="rotate(-0 263.06 300.956563)">M parameters</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_17">
+      <defs>
+       <path id="mbcc6c6ac7d" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="49.899572" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="53.698791" transform="rotate(-0 92.52 53.698791)">PIXOR (Car)</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="82.953048" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="86.752267" transform="rotate(-0 92.52 86.752267)">PointPillars</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_19">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="116.006524" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="119.805743" transform="rotate(-0 92.52 119.805743)">SECOND</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="149.06" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="152.859219" transform="rotate(-0 92.52 152.859219)">PointRCNN</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_21">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="182.113476" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="185.912695" transform="rotate(-0 92.52 185.912695)">Part-A²-Anchor</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_22">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="215.166952" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="218.966171" transform="rotate(-0 92.52 218.966171)">PV-RCNN</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_23">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="99.52" y="248.220428" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_16">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="92.52" y="252.019647" transform="rotate(-0 92.52 252.019647)">PixorNeXt (ours)</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 99.52 36.678182 
+L 108.488154 36.678182 
+L 108.488154 63.120963 
+L 99.52 63.120963 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 99.52 69.731658 
+L 119.832312 69.731658 
+L 119.832312 96.174439 
+L 99.52 96.174439 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 99.52 102.785134 
+L 121.893788 102.785134 
+L 121.893788 129.227914 
+L 99.52 129.227914 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 99.52 135.83861 
+L 116.48787 135.83861 
+L 116.48787 162.28139 
+L 99.52 162.28139 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 99.52 168.892086 
+L 367.618361 168.892086 
+L 367.618361 195.334866 
+L 99.52 195.334866 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 99.52 201.945561 
+L 154.621613 201.945561 
+L 154.621613 228.388342 
+L 99.52 228.388342 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 99.52 234.999037 
+L 102.685891 234.999037 
+L 102.685891 261.441818 
+L 99.52 261.441818 
+z
+" clip-path="url(#p7dc459c258)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 99.52 272.68 
+L 426.6 272.68 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="112.50963" y="52.38301" transform="rotate(-0 112.50963 52.38301)">2.135</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="123.853787" y="85.436486" transform="rotate(-0 123.853787 85.436486)">4.835</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="125.915264" y="118.489962" transform="rotate(-0 125.915264 118.489962)">5.326</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="120.509345" y="151.543438" transform="rotate(-0 120.509345 151.543438)">4.039</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="371.639836" y="184.596913" transform="rotate(-0 371.639836 184.596913)">63.815</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="158.643088" y="217.650389" transform="rotate(-0 158.643088 217.650389)">13.116</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="106.707366" y="250.703865" transform="rotate(-0 106.707366 250.703865)">0.754</text>
+   </g>
+   <g id="text_24">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start" x="99.52" y="19.44" transform="rotate(-0 99.52 19.44)">Detector parameters</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_11">
+    <path d="M 526.12 272.68 
+L 853.2 272.68 
+L 853.2 25.44 
+L 526.12 25.44 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_9">
+     <g id="line2d_24">
+      <path d="M 526.12 272.68 
+L 526.12 25.44 
+" clip-path="url(#pf7b40fea8f)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_25">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="526.12" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_25">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="526.12" y="287.278437" transform="rotate(-0 526.12 287.278437)">0</text>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_26">
+      <path d="M 595.038656 272.68 
+L 595.038656 25.44 
+" clip-path="url(#pf7b40fea8f)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_27">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="595.038656" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_26">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="595.038656" y="287.278437" transform="rotate(-0 595.038656 287.278437)">50</text>
+     </g>
+    </g>
+    <g id="xtick_11">
+     <g id="line2d_28">
+      <path d="M 663.957313 272.68 
+L 663.957313 25.44 
+" clip-path="url(#pf7b40fea8f)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_29">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="663.957313" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_27">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="663.957313" y="287.278437" transform="rotate(-0 663.957313 287.278437)">100</text>
+     </g>
+    </g>
+    <g id="xtick_12">
+     <g id="line2d_30">
+      <path d="M 732.875969 272.68 
+L 732.875969 25.44 
+" clip-path="url(#pf7b40fea8f)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_31">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="732.875969" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_28">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="732.875969" y="287.278437" transform="rotate(-0 732.875969 287.278437)">150</text>
+     </g>
+    </g>
+    <g id="xtick_13">
+     <g id="line2d_32">
+      <path d="M 801.794626 272.68 
+L 801.794626 25.44 
+" clip-path="url(#pf7b40fea8f)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.15; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_33">
+      <g>
+       <use xlink:href="#mead2a08ea6" x="801.794626" y="272.68" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_29">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="801.794626" y="287.278437" transform="rotate(-0 801.794626 287.278437)">200</text>
+     </g>
+    </g>
+    <g id="text_30">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="689.66" y="300.956563" transform="rotate(-0 689.66 300.956563)">ms / frame</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_8">
+     <g id="line2d_34">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="49.899572" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_31">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="53.698791" transform="rotate(-0 519.12 53.698791)">PIXOR (Car)</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_35">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="82.953048" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_32">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="86.752267" transform="rotate(-0 519.12 86.752267)">PointPillars</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_36">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="116.006524" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_33">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="119.805743" transform="rotate(-0 519.12 119.805743)">SECOND</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_37">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="149.06" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_34">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="152.859219" transform="rotate(-0 519.12 152.859219)">PointRCNN</text>
+     </g>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_38">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="182.113476" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_35">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="185.912695" transform="rotate(-0 519.12 185.912695)">Part-A²-Anchor</text>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_39">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="215.166952" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_36">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="218.966171" transform="rotate(-0 519.12 218.966171)">PV-RCNN</text>
+     </g>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_40">
+      <g>
+       <use xlink:href="#mbcc6c6ac7d" x="526.12" y="248.220428" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_37">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end" x="519.12" y="252.019647" transform="rotate(-0 519.12 252.019647)">PixorNeXt (ours)</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_12">
+    <path d="M 526.12 36.678182 
+L 724.601868 36.678182 
+L 724.601868 63.120963 
+L 526.12 63.120963 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 526.12 69.731658 
+L 614.116578 69.731658 
+L 614.116578 96.174439 
+L 526.12 96.174439 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 526.12 102.785134 
+L 655.268639 102.785134 
+L 655.268639 129.227914 
+L 526.12 129.227914 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 526.12 135.83861 
+L 794.218361 135.83861 
+L 794.218361 162.28139 
+L 526.12 162.28139 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 526.12 168.892086 
+L 710.484242 168.892086 
+L 710.484242 195.334866 
+L 526.12 195.334866 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 526.12 201.945561 
+L 786.076013 201.945561 
+L 786.076013 228.388342 
+L 526.12 228.388342 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #9bafc4"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 526.12 234.999037 
+L 610.14056 234.999037 
+L 610.14056 261.441818 
+L 526.12 261.441818 
+z
+" clip-path="url(#pf7b40fea8f)" style="fill: #087e8b"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 526.12 272.68 
+L 853.2 272.68 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_38">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="728.623343" y="52.38301" transform="rotate(-0 728.623343 52.38301)">144.00</text>
+   </g>
+   <g id="text_39">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="618.138053" y="85.436486" transform="rotate(-0 618.138053 85.436486)">63.84</text>
+   </g>
+   <g id="text_40">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="659.290114" y="118.489962" transform="rotate(-0 659.290114 118.489962)">93.70</text>
+   </g>
+   <g id="text_41">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="798.239836" y="151.543438" transform="rotate(-0 798.239836 151.543438)">194.50</text>
+   </g>
+   <g id="text_42">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="714.505717" y="184.596913" transform="rotate(-0 714.505717 184.596913)">133.75</text>
+   </g>
+   <g id="text_43">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="790.097488" y="217.650389" transform="rotate(-0 790.097488 217.650389)">188.60</text>
+   </g>
+   <g id="text_44">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start" x="614.162035" y="250.703865" transform="rotate(-0 614.162035 250.703865)">60.96</text>
+   </g>
+   <g id="text_45">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start" x="526.12" y="19.44" transform="rotate(-0 526.12 19.44)">Observed offline pipeline latency on T4</text>
+   </g>
+  </g>
+  <g id="text_46">
+   <text style="font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677b" x="8.64" y="326.232" transform="rotate(-0 8.64 326.232)">FP32, batch-one inference; native implementations. PIXOR is Car-only; other rows cover three classes. PIXOR T4: user confirmation.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p7dc459c258">
+   <rect x="99.52" y="25.44" width="327.08" height="247.24"/>
+  </clipPath>
+  <clipPath id="pf7b40fea8f">
+   <rect x="526.12" y="25.44" width="327.08" height="247.24"/>
+  </clipPath>
+ </defs>
+</svg>
+<figcaption>Detector size and observed offline pipeline latency; native implementations and different class scope as disclosed.</figcaption></figure><h2>3. Kết quả Car BEV R40 theo reference evaluator</h2><div class="table"><table><thead><tr><th>Model</th><th>Reference Car Easy (%)</th><th>Reference Car Moderate (%)</th><th>Reference Car Hard (%)</th><th>Scope / status</th></tr></thead><tbody><tr><td>PIXOR (our reproduction)</td><td>82.79</td><td>72.02</td><td>68.37</td><td>Car only; train-derived projection prior</td></tr><tr><td>PointPillars</td><td>92.02</td><td>88.02</td><td>86.63</td><td>Reference BEV R40</td></tr><tr><td>SECOND</td><td>92.42</td><td>88.56</td><td>87.65</td><td>Reference BEV R40</td></tr><tr><td>PointRCNN</td><td>93.74</td><td>88.42</td><td>86.44</td><td>Reference BEV R40</td></tr><tr><td>Part-A²-Anchor</td><td>92.87</td><td>90.05</td><td>88.34</td><td>Reference BEV R40</td></tr><tr><td>PV-RCNN</td><td>92.94</td><td>90.29</td><td>88.50</td><td>Reference BEV R40</td></tr><tr><td>PixorNeXt (ours; best AP)</td><td class="pending">CHỜ CHẤM</td><td class="pending">CHỜ CHẤM</td><td class="pending">CHỜ CHẤM</td><td>CHỜ CHẤM REFERENCE; local AP để ở bảng riêng</td></tr></tbody></table></div><p>PIXOR là PIXOR (our reproduction, 50 epochs), chỉ đánh giá Car; 72,02% là Car Moderate AP, không phải mAP ba lớp. PIXOR và năm baseline dùng cùng revision và SHA-256 evaluator reference. Native input ROI/FOV và phương pháp tạo bbox projection khác nhau được khai báo ở phần protocol. Chưa có reference Car AP của PixorNeXt trong hồ sơ; 86,90% Car local AP không được điền vào cột này.</p><h2>4. Kết quả ba lớp BEV R40 theo reference evaluator</h2><div class="table"><table><thead><tr><th>Model</th><th>Reference Car M (%)</th><th>Reference Ped. M (%)</th><th>Reference Cyc. M (%)</th><th>Reference BEV mAP M (%)</th><th>Status</th></tr></thead><tbody><tr><td>PointPillars</td><td>88.02</td><td>56.01</td><td>66.34</td><td>70.13</td><td>Reference BEV R40</td></tr><tr><td>SECOND</td><td>88.56</td><td>56.56</td><td>71.16</td><td>72.09</td><td>Reference BEV R40</td></tr><tr><td>PointRCNN</td><td>88.42</td><td>57.84</td><td>73.87</td><td>73.38</td><td>Reference BEV R40</td></tr><tr><td>Part-A²-Anchor</td><td>90.05</td><td>64.20</td><td>74.60</td><td>76.28</td><td>Reference BEV R40</td></tr><tr><td>PV-RCNN</td><td>90.29</td><td>58.48</td><td>74.54</td><td>74.44</td><td>Reference BEV R40</td></tr><tr><td>PixorNeXt (ours; best AP)</td><td class="pending">CHỜ CHẤM</td><td class="pending">CHỜ CHẤM</td><td class="pending">CHỜ CHẤM</td><td class="pending">CHỜ CHẤM</td><td>CHỜ CHẤM REFERENCE</td></tr></tbody></table></div><p>Macro mAP là trung bình không trọng số của Car, Pedestrian và Cyclist ở Moderate. PIXOR không xuất hiện trong bảng macro vì không có hai lớp còn lại. Trong năm baseline reference hiện có, Part-A²-Anchor có mAP cao nhất (76,28%). Chưa kết luận vị trí của PixorNeXt trong nhóm reference khi chưa chấm lại; cũng không ghép reference AP 3D của Final3D cũ với timing của mô hình BEV hiện tại.</p><h2>5. PixorNeXt: best AP và best loss trên cùng local protocol</h2><div class="table"><table><thead><tr><th>Checkpoint</th><th>Epoch</th><th>Local Car M (%)</th><th>Local Ped. M (%)</th><th>Local Cyc. M (%)</th><th>Local BEV mAP M (%)</th><th>Pipeline (ms)</th><th>Pipeline FPS</th><th>Model (ms)</th><th>Decode/NMS (ms)</th></tr></thead><tbody><tr><td>Best AP (primary)</td><td>130</td><td>86.90</td><td>60.75</td><td>66.73</td><td>71.46</td><td>60.96</td><td>16.41</td><td>17.88</td><td>14.94</td></tr><tr><td>Best loss (sensitivity)</td><td>47</td><td>82.71</td><td>62.30</td><td>69.43</td><td>71.48</td><td>81.23</td><td>12.31</td><td>22.73</td><td>30.89</td></tr></tbody></table></div><p>Giữ best AP epoch 130 làm kết quả chính theo policy đã khai báo; best loss epoch 47 dùng để phân tích độ nhạy. Best loss cao hơn local macro AP khoảng 0,01549 điểm phần trăm, nhưng không vì chênh lệch này mà đổi policy chọn checkpoint sau khi xem kết quả. Config hash của hai report giống nhau, checkpoint hash khác nhau. Mỗi hàng dùng AP và timing của chính checkpoint đó.</p><p>Best AP có timing thấp hơn best loss trong các report đã lưu. Decode/NMS thay đổi theo đầu ra dự đoán; phần chênh lệch forward giữa hai lần đo chưa được cô lập khỏi môi trường thực thi. Không quy toàn bộ thay đổi timing cho lựa chọn checkpoint hoặc kiến trúc. Các kết quả local này là bằng chứng nội bộ và không được so trực tiếp với reference AP ở hai bảng trên.</p><h2>6. Điều kiện đã chung và khác biệt còn lại</h2><div class="table"><table><thead><tr><th>Hạng mục</th><th>Tình trạng</th><th>Cách sử dụng</th></tr></thead><tbody><tr><td>GPU</td><td>Tesla T4 cho cả bảy; PIXOR theo xác nhận người dùng</td><td>Dùng nhãn T4; giữ nguồn xác nhận PIXOR</td></tr><tr><td>Precision / inference</td><td>FP32; baseline batch 1 theo metadata, hai runner BEV batch 1</td><td>Khai báo ranh giới timing và warmup</td></tr><tr><td>Validation</td><td>3.769 frame, cùng thứ tự ID; canonical/raw hashes đối chiếu</td><td>Giữ split cố định; không gọi hidden test</td></tr><tr><td>AP evaluator</td><td>PIXOR + năm baseline: reference; PixorNeXt: local</td><td>Chờ reference BEV AP của PixorNeXt</td></tr><tr><td>Lớp và metric</td><td>PIXOR Car-only; mô hình còn lại ba lớp</td><td>Tách bảng Car và macro; dùng BEV khi có PIXOR/PixorNeXt</td></tr><tr><td>Pre/postprocessing, input ROI</td><td>Giữ theo implementation; không hoàn toàn giống nhau</td><td>Khai báo đầy đủ; GT reference full-frame</td></tr><tr><td>Training recipe / budget</td><td>PIXOR 50 epochs; ours config 160; baseline pretrained recipe riêng</td><td>So các hệ thống đã train; không gọi matched-training ablation</td></tr><tr><td>PIXOR projection</td><td>Train-only median Car height/bottom-z</td><td>Khai báo đây là prior để projection, không phải dự đoán 3D</td></tr></tbody></table></div><p>PIXOR report ghi prior Car height=1,5 m và bottom-z=−1,5370027417 m, lấy từ train. Prior phục vụ chuyển footprint BEV thành annotation KITTI và ảnh hưởng bbox/difficulty của prediction. Với mô hình BEV hiện tại của PixorNeXt, cần khai báo adapter projection tương ứng trước khi dùng reference BEV. Không tạo AP3D từ chiều cao prior rồi coi đó là khả năng dự đoán vertical.</p><h2>7. Bước còn lại để hoàn tất bảng accuracy chung</h2><p>Giữ nguyên checkpoint best AP epoch 130 và các kết quả baseline đã có. Lấy evaluation_ap_local_bev_T4.predictions.npz đã lưu trên Drive; report ghi SHA-256 5a2fd94c05953db6195d3dde0ac6af273a6911535757864be0fabe905e08d1f2. File này chưa có trong thư mục nguồn tại lúc lập báo cáo. Không có đủ predictions/labels/calibration tại chỗ để chấm lại reference trong lần tổng hợp này.</p><p>Chuyển saved footprint sang KITTI annotation bằng một adapter được khai báo: dùng calibration và kích thước ảnh thật theo frame, dùng Car prior giống PIXOR; các lớp còn lại tính prior từ train rồi giữ cố định. Giữ nguyên score và footprint, không đọc GT validation để ước lượng vertical hoặc chọn prior. Adapter phải kiểm tra yaw, thứ tự kích thước, projection và việc lọc prediction. Đối chiếu sensitivity của prior nếu chúng ảnh hưởng đáng kể AP.</p><p>Chấm annotations bằng pinned reference BEV R40 trên GT full-frame với IoU Car=0,7 và Pedestrian/Cyclist=0,5. Sau khi có report, điền các ô còn trống trong bảng Car và macro ba lớp. Đây là chấm lại saved predictions, không cần train lại. Timing đang là raw input-to-BEV-detections; nếu pipeline cuối bao gồm adapter projection hoặc thay đổi hậu xử lý thì đo/khai báo thêm phần đó, không dùng timing cũ để đại diện cho pipeline mở rộng.</p><h2>8. Đoạn mô tả có thể dùng trong bản thảo</h2><p>English — efficiency: In the saved Tesla T4 FP32 measurements, the AP-selected PixorNeXt checkpoint contains 0.754 million detector parameters and achieves a mean sequential offline input-to-BEV-detections latency of 60.96 ms per frame (16.41 FPS). Timing excludes the first ten frames and covers 3,759 validation frames. Compared with the evaluated PointPillars implementation, it uses 84.41% fewer parameters and has a 4.52% lower observed mean pipeline latency. Implementations retain their native preprocessing and postprocessing; the small latency difference has not been validated across independent profiling sessions. The PIXOR reproduction is Car-only, while the remaining detectors cover three classes.</p><p>English — accuracy status: The current PixorNeXt checkpoint achieves 71.46% Moderate macro AP under the local loader-aligned BEV R40 protocol. PIXOR and the five OpenPCDet baselines were evaluated with the pinned full-frame reference evaluator. These scores are reported separately pending reference BEV evaluation of PixorNeXt and are not used to claim a common-protocol accuracy ranking.</p><h2>9. Nguồn, xác minh và các tệp bàn giao</h2><p>Nguồn chính là report JSON trong thư mục người dùng cung cấp; bản sao nguyên trạng và SHA-256 nằm trong sources/ và source_manifest.json. Các prediction text của năm baseline được đối chiếu ID và hash, không chép toàn bộ vào gói báo cáo. Mean latency baseline được tính lại từ CSV từng frame để đối chiếu report. Với PIXOR và PixorNeXt, chỉ có summary timing trong thư mục nên chưa tính lại phân phối từ từng frame. File verification.json ghi phạm vi kiểm tra. Không có training, inference hoặc AP evaluation mới được thực hiện khi tạo báo cáo.</p><p>Tài liệu protocol: KITTI BEV Evaluation https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=bev; pinned OpenPCDet evaluator https://github.com/open-mmlab/OpenPCDet/tree/233f849829b6ac19afb8af8837a0246890908755/pcdet/datasets/kitti/kitti_object_eval_python. Hai nguồn này mô tả tiêu chí đánh giá; toàn bộ số liệu thực nghiệm trong báo cáo lấy từ report cục bộ. Hướng dẫn implementation trong Code/docs/openpcdet_benchmark.md và Code/docs/pixor_training_notebook.md.</p></main></html>

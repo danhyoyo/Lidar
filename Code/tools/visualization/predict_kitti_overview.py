@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a real hist14 BEV checkpoint and export its detections on KITTI LiDAR.
+"""Run a real Hist14 or binary-slice BEV checkpoint on KITTI LiDAR.
 
 BEV checkpoints do not predict Z or height. The 3D scene shows planar footprints
 on an explicitly declared display plane, never manufactured 3D detection boxes.
@@ -106,6 +106,17 @@ def classification_heatmaps(prediction, *, groups, num_classes):
     return logits.numpy(), torch.sigmoid(logits).numpy()
 
 
+def encode_model_points(points, schema):
+    """Use the unchanged training rasterizers and return contiguous [C,Y,X]."""
+    if schema.name == "hist14":
+        from core.datasets.utils_1.bev_backend import encode_hist14_chw
+        return encode_hist14_chw(points, schema)
+    if schema.name == "binary_slices":
+        from core.datasets.utils_1.preprocess import voxelize
+        return np.ascontiguousarray(voxelize(points, dict(schema.geometry)).transpose(2, 0, 1))
+    raise ValueError(f"Unsupported comparison encoder: {schema.name}")
+
+
 class BEVOverviewPredictor:
     """Load/validate the checkpoint once and reuse the exact decoder across frames."""
 
@@ -116,7 +127,6 @@ class BEVOverviewPredictor:
         from common import (configure_detector_imports, build_model, validate_evaluation_checkpoint,
                             normalize_state_dict, bev_encoding_spec, detection_spec)
         configure_detector_imports(ROOT / "detector")
-        from core.datasets.utils_1.bev_backend import encode_hist14_chw
         from postprocess import filter_pred
 
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
@@ -125,8 +135,8 @@ class BEVOverviewPredictor:
         if spec.box_mode != "bev":
             raise ValueError("This exporter handles BEV checkpoints only; use the 3D decoder for a 3D checkpoint")
         self.schema = schema = bev_encoding_spec(config)
-        if schema.name != "hist14":
-            raise ValueError("This inference entry point currently supports hist14 encoding")
+        if schema.name not in {"hist14", "binary_slices"}:
+            raise ValueError("This inference entry point supports hist14 and binary_slices encoding")
         device = "cuda" if device == "auto" and torch.cuda.is_available() else "cpu" if device == "auto" else device
         if device == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA is unavailable; use --device cpu")
@@ -136,7 +146,7 @@ class BEVOverviewPredictor:
         model.load_state_dict(normalize_state_dict(checkpoint), strict=True)
         self.model = model.to(device).eval()
         self.device, self.score, self.nms, self.max_detections = device, score, nms, max_detections
-        self.encode, self.decode = encode_hist14_chw, filter_pred
+        self.encode, self.decode = encode_model_points, filter_pred
         self.class_order = sorted(config["data"]["kitti"]["objects"],
                                   key=config["data"]["kitti"]["objects"].get)
         os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/lidar-kitti-overview-numba")
@@ -144,7 +154,8 @@ class BEVOverviewPredictor:
             "config_source": str(config_path) if config_path else "embedded checkpoint config",
             "config_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
             "checkpoint_epoch": checkpoint.get("epoch"), "box_mode": spec.box_mode,
-            "strict_state_dict": True, "checkpoint_identity_validated": True,
+            "strict_state_dict": True,
+            "checkpoint_identity_validated": checkpoint.get("checkpoint_identity") is not None,
             "vertical_prediction": False, "ground_truth_used_for_inference": False,
             "torch_version": torch.__version__, "device": device, "precision": "fp32",
             "encoding": schema.name, "encoding_backend": schema.backend,

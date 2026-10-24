@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "full_workbook": "Tables_bai_bao_LiDAR_T4_v3_BenchmarkFull.xlsx",
+  "standalone_workbook": "Benchmark_T4_DAY_DU.xlsx",
+  "model_rows": 7,
+  "columns_per_benchmark": 22,
+  "exported_data_cells_checked": 616,
+  "mAP_definition": "Unweighted mean over three classes at one difficulty",
+  "mAP9_definition": "Unweighted mean of nine class-by-difficulty AP values",
+  "ours_protocol": "local BEV R40, AP-selected epoch 130",
+  "PIXOR_missing_class_and_macro_cells": "em dash, not zero",
+  "checks": [
+    "Both workbooks reopen and start on full benchmark",
+    "All exported data cells match source-derived values",
+    "Difficulty mAP and mAP9 independently recomputed",
+    "Forward/network and pipeline FPS checked against mean latency",
+    "PIXOR has only Car AP",
+    "No 3D AP invented for BEV-only models",
+    "Existing augmentation and all other prior sheets preserved",
+    "Input V2 workbook unchanged"
+  ],
+  "output_sha256": {
+    "Tables_bai_bao_LiDAR_T4_v3_BenchmarkFull.xlsx": "a7b374443b6da60bfb9cef5f5f8e5bacd2bc86110efc78f0c3ceb438540c6513",
+    "Benchmark_T4_DAY_DU.xlsx": "0d3aee33d3dda0c54bef9ab477f3f4e5aad125cfffdaeb0db50c2f12d6319cd1"
+  }
+}

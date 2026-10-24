@@ -1,0 +1,14 @@
+{
+  "snapshot": "sources/mobilepixor_B0_loss_L4_summary.json",
+  "snapshot_type": "extracted evaluation summary entry",
+  "snapshot_sha256": "450f0ce0ecaf4aad44de4e46d906a641e4ddba7ab90523812c0fe3b558755450",
+  "summary_file": "paper/research/evaluation_summaries.json",
+  "summary_file_sha256": "24c84054a3eaa98a6c727437d985a99feb75ef45d7b55d409408ed7a281a0544",
+  "original_report": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+  "original_report_sha256_recorded": "a86551f681ce45fed706847fa039803752518580eb8de0af90decc4b389bb20d",
+  "gpu": "NVIDIA L4",
+  "selection": "minimum validation loss",
+  "checkpoint_epoch": 30,
+  "archived_epochs": 38,
+  "configured_epochs": 100
+}

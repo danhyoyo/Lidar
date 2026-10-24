@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "full_workbook": "Tables_bai_bao_LiDAR_v6_mAP_mAP9.xlsx",
+  "summary_workbook": "Benchmark_tom_tat_mAP_mAP9_v6.xlsx",
+  "models": 8,
+  "verified_summary_cells": 216,
+  "mAP": "Macro three-class Moderate AP",
+  "mAP9": "Mean of nine class/difficulty AP values",
+  "ours_mAP": 71.4618743778308,
+  "ours_mAP9": 73.4187111270043,
+  "range_columns_added": "Overall mAP/mAP9 only; no range mAP9 inferred",
+  "input_V5_unchanged": true
+}

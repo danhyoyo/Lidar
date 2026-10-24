@@ -1,0 +1,47 @@
+{
+  "workbook": "Result/paper_tables/Tables_bai_bao_LiDAR.xlsx",
+  "sheets": [
+    "00_Muc_luc",
+    "T01_Benchmark",
+    "T02_Loss_IQA",
+    "T03_Loss_100ep",
+    "T04_Attention",
+    "T05_Efficiency",
+    "T06_3D_Reference",
+    "T07_Vertical_Diagnostic",
+    "S01_Representation",
+    "S02_Augmentation",
+    "S03_Checkpoint",
+    "S04_AP_Archive",
+    "99_Nguon"
+  ],
+  "main_table_sheets": 7,
+  "supplementary_table_sheets": 4,
+  "archived_bev_runs_in_scope": 19,
+  "width_sweep_excluded": [
+    "O24G16",
+    "O24G32",
+    "O32G16",
+    "RC24"
+  ],
+  "exported_header_and_data_cells_verified": 1141,
+  "augmentation_mapping": {
+    "global_only_baseline": "G16",
+    "existing_GT_sampler_openpcdet_fake": "O32",
+    "improved_hybrid": "H32",
+    "additional_hybrid_with_neck_and_quota_changes": "S32 (archive only)"
+  },
+  "Q100_minus_O100_mAP_pp": 0.8249863862948104,
+  "checks": [
+    "Workbook reopens",
+    "No date-coerced table values",
+    "Factorial AP matches reports",
+    "Deltas use unrounded values",
+    "Reference AP and oracle diagnostics remain separate",
+    "Missing benchmark cells remain blank",
+    "FPS matches pipeline latency",
+    "Historical focal context declared",
+    "Width candidates excluded"
+  ],
+  "new_training_or_inference": false
+}

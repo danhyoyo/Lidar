@@ -1,0 +1,50 @@
+{
+  "artifacts_root": "/home/duyennh/Downloads/artifacts-20261018T082735Z-1-002/artifacts",
+  "models": [
+    {
+      "id": "mobilepixor",
+      "title": "MobilePIXOR",
+      "checkpoint": "mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixor", "encoding": "binary_slices", "loss": "baseline", "use_iou": false},
+      "selection": "minimum validation loss, epoch 30"
+    },
+    {
+      "id": "mobilepixornext",
+      "title": "MobilePIXORNeXt",
+      "checkpoint": "mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "binary_slices", "loss": "baseline", "use_iou": false},
+      "selection": "minimum validation loss, epoch 13"
+    },
+    {
+      "id": "strata_bev14",
+      "title": "MobilePIXORNeXt + Strata-BEV14",
+      "checkpoint": "mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "hist14", "loss": "baseline", "use_iou": false},
+      "selection": "minimum validation loss, epoch 12"
+    },
+    {
+      "id": "pc_gta",
+      "title": "MobilePIXORNeXt + PC-GTA",
+      "checkpoint": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "hist14", "loss": "baseline", "use_iou": false, "augmentation": "hybrid_gt_sampling"},
+      "selection": "minimum validation loss, epoch 40",
+      "note": "Also uses Hist14, grouped heads, stage depths [3,4,2], output width 32. PC-GTA maps to the saved hybrid_gt_sampling training recipe."
+    },
+    {
+      "id": "oga_iqa",
+      "title": "MobilePIXORNeXt + OGA + IQA",
+      "checkpoint": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_none_local_none_f32_detail0_a220f59703f1-grouped_e02c0e499671-s42-P5-h32/selected/best_loss.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "hist14", "loss": "oga", "use_iou": true, "augmentation": "hybrid_gt_sampling"},
+      "selection": "minimum validation loss, epoch 25",
+      "note": "P5 also includes Hist14, hybrid GT sampling, grouped independent heads and SG-FPN."
+    },
+    {
+      "id": "ours",
+      "title": "Ours",
+      "checkpoint": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-head_shared-sgfpn-ctx_none_local_none_blocksimam_c3c4c5_f32_detail0_9e1b2f9764e5-grouped_8ca741fdd6ed-s42-Final-h32/selected/best_ap.pt",
+      "expected": {"backbone": "mobilepixornext", "encoding": "hist14", "loss": "oga", "use_iou": true, "augmentation": "hybrid_gt_sampling", "epoch": 130},
+      "selection": "maximum validation AP, epoch 130 (user confirmed)",
+      "note": "Final-h32: shared grouped heads, SG-FPN, block SimAM C3/C4/C5."
+    }
+  ]
+}

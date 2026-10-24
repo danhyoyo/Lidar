@@ -1,0 +1,11 @@
+{
+  "ours_parameters": 753569,
+  "ours_local_map": 71.46187437783078,
+  "ours_pipeline_ms": 60.95632459058288,
+  "ours_pipeline_fps": 16.405188579143594,
+  "parameter_reduction_vs_pointpillars_pct": 84.41393058122546,
+  "pipeline_latency_reduction_vs_pointpillars_pct": 4.51837810009772,
+  "pipeline_fps_increase_vs_pointpillars_pct": 4.732196636578445,
+  "pipeline_latency_ratio_pixor_over_ours": 2.3623011860060914,
+  "local_map_best_loss_minus_best_ap_pp": 0.015488538686895481
+}

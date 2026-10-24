@@ -1,0 +1,99 @@
+{
+  "output": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/camera_hist14_3x2_20261019/camera_detection_bev14_overlay_clean_3x2.png",
+  "canvas_pixels": [
+    3448,
+    2394
+  ],
+  "layout": "3x2",
+  "background": "white",
+  "text_count": 0,
+  "axes_visible": false,
+  "frames": [
+    {
+      "frame": "002425",
+      "source_tensor_sha256": "0e4b4476ef97ba820a2f1c179c40a7b662066e6ec04786c8b85e51e760086de1",
+      "channel_weight_sums": [
+        7075.207186384561,
+        3779.7014040164713,
+        1510.583081713263,
+        1347.8990756003952,
+        13263.984859947588,
+        13050.633141995642,
+        1595.5017926005426,
+        1457.8547592890689,
+        10253.657804962473,
+        9656.030989215056,
+        12758.37393794557,
+        22938.0,
+        15491.848036873082,
+        15528.932336032709
+      ],
+      "drawn_boxes": 1
+    },
+    {
+      "frame": "005571",
+      "source_tensor_sha256": "f07859624298a7013452f4bb236fe1a3633136f610eb24813750a06d4c960196",
+      "channel_weight_sums": [
+        3823.661389120171,
+        5257.97587405601,
+        1611.582435497455,
+        902.1073171758442,
+        11461.57664033384,
+        11312.891420607766,
+        1335.8145041948585,
+        1198.0320575216751,
+        9200.767408079206,
+        8585.4064489976,
+        10853.804306225436,
+        19383.0,
+        13052.864182426976,
+        13183.7875182106
+      ],
+      "drawn_boxes": 11
+    },
+    {
+      "frame": "007016",
+      "source_tensor_sha256": "993ae716b70063b42777c8a78d7cfcf06021d183f1ed87c880fa0ea7de21d02c",
+      "channel_weight_sums": [
+        3552.4537172859036,
+        5854.909282070736,
+        1227.7998129662246,
+        834.5897537215287,
+        11222.693590461666,
+        11074.447567726163,
+        1164.9341494140454,
+        1049.8839236331792,
+        9037.191241687484,
+        8484.523459769716,
+        10733.13630630013,
+        19433.0,
+        13142.401148583645,
+        13185.62302146748
+      ],
+      "drawn_boxes": 11
+    }
+  ],
+  "fusion": "normalized weighted RGB mixture of all fourteen channel hues, same XY cells",
+  "channel_colors": [
+    "#ff4b5c",
+    "#ff9f1c",
+    "#ffe14a",
+    "#a9de2a",
+    "#2dd881",
+    "#00c2a8",
+    "#28c9f5",
+    "#4385ff",
+    "#8572ff",
+    "#bd65f0",
+    "#f25ad5",
+    "#f477a0",
+    "#cba56c",
+    "#b4dff2"
+  ],
+  "spatial_pooling": "display-only 2x2 maximum of channel weights",
+  "weights": "sqrt of fixed-range normalized values; signed offsets shifted +0.5",
+  "opacity": "1-exp(-0.8*sum(weights)) over white",
+  "color_brightness": 0.58,
+  "interpolation": "nearest",
+  "source_metadata_sha256": "23390344c1f45bfbff0e8b3bd81a789bf00fd78011a9acfb8e538ac5a98b7ba5"
+}

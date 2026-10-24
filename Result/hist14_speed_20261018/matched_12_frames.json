@@ -1,0 +1,5491 @@
+{
+  "config_sha256": "8d68970d03074273beb395cf2d174af520103daa9f4f684328e3f644e490d79f",
+  "environment": {
+    "cpu_model": "AMD Ryzen 5 7640HS w/ Radeon 760M Graphics",
+    "kernel_parallel": false,
+    "logical_cpus": 12,
+    "numba": "0.67.0",
+    "numba_threads": 1,
+    "numpy": "2.4.6",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "python": "3.14.4",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  "frames": [
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000001.bin",
+      "point_count": 120268,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 101.345667,
+          "mean_ms": 105.22058070000001,
+          "p50_ms": 105.017786,
+          "p95_ms": 108.526017,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            103.692276,
+            104.508753,
+            103.130328,
+            106.011402,
+            104.896924,
+            105.00143,
+            101.277829,
+            106.446712,
+            103.601775,
+            103.71044,
+            101.181928,
+            102.632451,
+            105.616699,
+            104.704642,
+            107.411549,
+            109.154541,
+            110.968677,
+            106.549846,
+            107.757821,
+            105.810083,
+            107.573594,
+            103.458094,
+            106.885448,
+            102.374705,
+            104.32607,
+            104.644398,
+            105.917917,
+            105.034142,
+            105.651054,
+            106.685893
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 8.64071,
+          "mean_ms": 6.849590399999999,
+          "p50_ms": 6.7209555000000005,
+          "p95_ms": 7.4758043999999995,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.559792,
+            6.770378,
+            6.661633,
+            6.806376,
+            6.46296,
+            6.574169,
+            6.54263,
+            6.41539,
+            6.579619,
+            7.017223,
+            6.702661,
+            6.533693,
+            6.755269,
+            7.33946,
+            7.412187,
+            7.224032,
+            6.676952,
+            6.8989,
+            6.648028,
+            6.634833,
+            7.06879,
+            7.699468,
+            7.076995,
+            6.669738,
+            6.73925,
+            7.103105,
+            7.221758,
+            7.527855,
+            6.52179,
+            6.642778
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 792.253191,
+          "mean_ms": 3.4975844666666664,
+          "p50_ms": 3.487597,
+          "p95_ms": 4.05534665,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.681833,
+            3.268143,
+            2.921962,
+            3.449105,
+            3.594037,
+            3.536509,
+            3.488138,
+            3.405112,
+            3.570062,
+            3.042639,
+            3.067937,
+            4.021392,
+            4.134195,
+            3.472358,
+            3.812378,
+            3.897459,
+            3.375957,
+            3.631498,
+            3.386186,
+            3.555925,
+            3.547801,
+            4.051539,
+            3.075992,
+            4.058462,
+            3.448343,
+            3.487056,
+            3.103053,
+            2.998907,
+            3.252334,
+            3.591222
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 15.005414,
+          "mean_ms": 3.4862908666666668,
+          "p50_ms": 3.4554915,
+          "p95_ms": 4.1155392,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.426051,
+            3.594218,
+            3.343306,
+            3.024836,
+            3.455747,
+            3.035256,
+            3.062286,
+            3.550886,
+            2.934185,
+            3.124483,
+            3.714414,
+            3.13886,
+            4.326747,
+            3.309732,
+            3.602292,
+            4.126089,
+            3.654701,
+            4.076326,
+            3.365748,
+            3.206107,
+            4.102645,
+            3.973131,
+            3.143099,
+            3.780108,
+            3.473961,
+            3.079449,
+            3.51045,
+            3.607713,
+            3.455236,
+            3.390664
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 194.003786,
+          "mean_ms": 2.9678872999999997,
+          "p50_ms": 2.9175234999999997,
+          "p95_ms": 3.3398896000000002,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.887136,
+            2.978779,
+            2.880213,
+            2.79313,
+            2.813618,
+            2.79904,
+            2.744718,
+            2.906803,
+            2.860075,
+            2.743145,
+            2.788501,
+            3.126657,
+            3.001031,
+            2.989639,
+            3.371187,
+            3.058039,
+            2.86248,
+            3.316084,
+            2.993837,
+            2.881826,
+            3.18141,
+            2.928244,
+            3.225113,
+            3.008024,
+            3.345259,
+            2.898738,
+            2.667933,
+            2.693501,
+            2.959132,
+            3.333327
+          ]
+        }
+      },
+      "sha256": "59a02fdaaab3b7e903713cb618e8f53efcaf71c144436ddfcdf4f28bdbd73d20"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000692.bin",
+      "point_count": 114177,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 102.596553,
+          "mean_ms": 107.28891626666663,
+          "p50_ms": 106.3152095,
+          "p95_ms": 119.37190369999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            106.069211,
+            109.031308,
+            107.569447,
+            117.887193,
+            107.172309,
+            111.604234,
+            115.466216,
+            111.66618,
+            120.586667,
+            107.57666,
+            106.708876,
+            107.951095,
+            106.561208,
+            121.105183,
+            110.5454,
+            105.07556,
+            101.46934,
+            101.059198,
+            104.875964,
+            104.142303,
+            105.183844,
+            101.542067,
+            105.349305,
+            102.155011,
+            100.659746,
+            103.93335,
+            102.99392,
+            106.949208,
+            102.310373,
+            103.467112
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.773654,
+          "mean_ms": 6.670829666666667,
+          "p50_ms": 6.482316,
+          "p95_ms": 7.458439149999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            7.130877,
+            6.235311,
+            7.128532,
+            6.470333,
+            6.357771,
+            6.975044,
+            6.871909,
+            6.943484,
+            6.71298,
+            6.587655,
+            6.72311,
+            6.363713,
+            6.490631,
+            6.306725,
+            6.476706,
+            8.439962,
+            6.423885,
+            6.60705,
+            6.487926,
+            6.216936,
+            6.382187,
+            7.607224,
+            6.310833,
+            6.831614,
+            6.237865,
+            7.276591,
+            6.419798,
+            6.365275,
+            6.329457,
+            6.413506
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.564048,
+          "mean_ms": 2.8865467333333332,
+          "p50_ms": 2.8183464999999996,
+          "p95_ms": 3.583317349999998,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.986513,
+            2.408516,
+            2.863822,
+            2.786797,
+            2.878801,
+            2.54423,
+            2.996572,
+            4.093778,
+            3.874205,
+            2.67709,
+            3.194074,
+            2.727796,
+            3.227788,
+            2.734569,
+            3.065672,
+            2.616877,
+            2.842252,
+            2.667502,
+            3.163817,
+            2.799231,
+            2.554911,
+            2.653266,
+            2.948031,
+            2.933383,
+            2.70822,
+            2.574798,
+            2.929376,
+            2.716405,
+            2.837462,
+            2.590648
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.810472,
+          "mean_ms": 2.9497714999999993,
+          "p50_ms": 2.8289165,
+          "p95_ms": 3.9092222999999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.749206,
+            2.626676,
+            2.540313,
+            2.823396,
+            2.815722,
+            2.668866,
+            3.274415,
+            3.068558,
+            3.989812,
+            3.264396,
+            3.123421,
+            2.737264,
+            2.932,
+            2.808478,
+            2.895432,
+            3.917847,
+            3.272061,
+            3.073357,
+            2.438491,
+            2.866117,
+            2.636976,
+            2.465883,
+            3.898681,
+            2.861387,
+            3.080601,
+            2.723338,
+            2.791647,
+            2.834437,
+            2.816333,
+            2.498034
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 14.202953,
+          "mean_ms": 2.577855633333334,
+          "p50_ms": 2.4915015,
+          "p95_ms": 3.3120655499999994,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.402013,
+            2.360535,
+            2.530014,
+            2.674095,
+            2.928243,
+            2.318175,
+            2.510157,
+            2.833675,
+            3.509479,
+            2.55482,
+            2.423773,
+            2.429916,
+            2.322643,
+            3.446229,
+            2.496451,
+            3.148088,
+            2.316863,
+            2.446897,
+            2.294932,
+            2.404798,
+            2.456996,
+            2.486552,
+            2.361878,
+            2.291335,
+            2.619362,
+            2.81473,
+            2.502031,
+            2.606437,
+            2.651983,
+            2.192569
+          ]
+        }
+      },
+      "sha256": "df10378cc8fc1c5dd37cbeccba30c9b85c4e78e72ca29d945312b97e8b016580"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001355.bin",
+      "point_count": 122753,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 102.819082,
+          "mean_ms": 105.13045133333334,
+          "p50_ms": 103.67347050000001,
+          "p95_ms": 112.9559814,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            102.380495,
+            102.035176,
+            102.333819,
+            103.239272,
+            103.680013,
+            101.980162,
+            104.473898,
+            101.980813,
+            105.352212,
+            102.722639,
+            103.084261,
+            105.406964,
+            103.587839,
+            103.067499,
+            103.932949,
+            103.793326,
+            103.521133,
+            103.666928,
+            101.252802,
+            101.988969,
+            102.923748,
+            103.971381,
+            108.482626,
+            105.169728,
+            108.110325,
+            110.855423,
+            113.815186,
+            113.631741,
+            112.130053,
+            111.34216
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.314289,
+          "mean_ms": 6.702230033333333,
+          "p50_ms": 6.633820500000001,
+          "p95_ms": 7.3190051,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.54336,
+            7.309544,
+            6.376166,
+            6.407655,
+            6.551867,
+            6.652135,
+            6.562387,
+            6.653528,
+            6.520367,
+            7.326746,
+            7.017784,
+            6.684186,
+            6.517522,
+            6.407545,
+            6.584929,
+            6.39475,
+            6.692682,
+            6.555073,
+            6.506811,
+            6.676581,
+            6.892839,
+            6.425939,
+            6.508625,
+            6.615506,
+            7.117291,
+            6.656815,
+            7.613916,
+            6.970134,
+            6.664028,
+            6.66019
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.555983,
+          "mean_ms": 2.853312166666667,
+          "p50_ms": 2.774289,
+          "p95_ms": 3.4959929,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.888599,
+            2.837342,
+            3.577937,
+            2.919587,
+            2.688122,
+            2.725421,
+            2.679665,
+            2.803659,
+            2.928624,
+            3.028333,
+            2.848984,
+            3.245601,
+            2.614062,
+            2.601779,
+            2.677772,
+            2.775927,
+            2.470532,
+            2.749316,
+            2.630743,
+            3.074329,
+            2.912173,
+            2.717958,
+            2.75635,
+            2.589346,
+            2.645802,
+            3.500051,
+            3.491033,
+            2.649979,
+            2.772651,
+            2.797688
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.893529,
+          "mean_ms": 2.7734882000000005,
+          "p50_ms": 2.777004,
+          "p95_ms": 3.15579605,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.144381,
+            2.568787,
+            3.1656,
+            2.828415,
+            2.715683,
+            2.627838,
+            2.399327,
+            2.689765,
+            2.80383,
+            2.872689,
+            2.750178,
+            2.806204,
+            2.90501,
+            2.549912,
+            3.012182,
+            2.554741,
+            3.163136,
+            2.439434,
+            2.884531,
+            2.715563,
+            2.890893,
+            3.021269,
+            2.363911,
+            2.671129,
+            2.426078,
+            3.146825,
+            2.567574,
+            2.975442,
+            2.918816,
+            2.625503
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.482527,
+          "mean_ms": 2.5154541333333333,
+          "p50_ms": 2.5045815,
+          "p95_ms": 2.8409779499999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.730622,
+            2.140491,
+            2.441727,
+            2.584286,
+            2.311613,
+            2.354944,
+            2.373449,
+            2.580499,
+            2.689915,
+            2.67125,
+            2.754046,
+            2.800493,
+            2.874102,
+            2.534742,
+            2.374651,
+            2.619623,
+            2.321822,
+            2.486743,
+            2.323304,
+            2.391262,
+            2.954874,
+            2.26748,
+            2.679876,
+            2.309228,
+            2.370373,
+            2.527189,
+            2.52242,
+            2.428703,
+            2.393887,
+            2.65001
+          ]
+        }
+      },
+      "sha256": "2520158237b304fd18406b9fe3487a811180cd37db8f486bb49a1694adceceb8"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002054.bin",
+      "point_count": 124853,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 108.40511,
+          "mean_ms": 107.35030103333332,
+          "p50_ms": 106.881035,
+          "p95_ms": 114.73880669999998,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            107.794581,
+            105.282771,
+            107.079785,
+            118.625805,
+            109.878554,
+            104.418764,
+            104.770606,
+            105.723821,
+            109.988031,
+            119.658549,
+            107.079573,
+            107.091827,
+            107.253982,
+            106.305977,
+            104.586619,
+            107.420666,
+            106.682497,
+            109.679169,
+            107.557444,
+            106.570736,
+            105.874164,
+            105.268915,
+            107.935756,
+            107.328733,
+            105.227767,
+            107.850045,
+            105.183393,
+            103.373235,
+            106.053332,
+            102.963934
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 10.285136,
+          "mean_ms": 7.027876066666665,
+          "p50_ms": 6.8650915,
+          "p95_ms": 7.65042385,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            7.169089,
+            6.80328,
+            7.062438,
+            9.672192,
+            7.560215,
+            7.0687,
+            7.385176,
+            7.424139,
+            7.656898,
+            6.761271,
+            6.618262,
+            6.406533,
+            7.01558,
+            6.55921,
+            7.364908,
+            6.63339,
+            6.488728,
+            6.915381,
+            6.415229,
+            6.507733,
+            7.642511,
+            6.713441,
+            7.181112,
+            6.491594,
+            6.69682,
+            7.343327,
+            7.288875,
+            6.814802,
+            6.579769,
+            6.595679
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 3.061274,
+          "mean_ms": 3.120654833333334,
+          "p50_ms": 2.982881,
+          "p95_ms": 4.015417799999999,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.686358,
+            2.749708,
+            4.2222,
+            2.987204,
+            3.219372,
+            2.780295,
+            2.906242,
+            2.974921,
+            3.216226,
+            3.200456,
+            2.902064,
+            3.762684,
+            3.312037,
+            3.148248,
+            2.896133,
+            2.624231,
+            4.240966,
+            2.819849,
+            3.071904,
+            2.9742,
+            2.935087,
+            2.884401,
+            3.678336,
+            3.089587,
+            3.223569,
+            2.795554,
+            3.152606,
+            2.978558,
+            3.272872,
+            2.913777
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.883058,
+          "mean_ms": 2.9459913333333336,
+          "p50_ms": 2.8691625,
+          "p95_ms": 3.622485899999998,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.199504,
+            2.876346,
+            4.158069,
+            3.968562,
+            2.872919,
+            2.863201,
+            3.196269,
+            2.667623,
+            3.060072,
+            2.866197,
+            3.112781,
+            2.871026,
+            2.784553,
+            2.580468,
+            2.860707,
+            3.006722,
+            2.861177,
+            2.80456,
+            2.429695,
+            2.757642,
+            2.727976,
+            2.711135,
+            2.867299,
+            2.634881,
+            2.902916,
+            2.731623,
+            3.017071,
+            2.959062,
+            3.04812,
+            2.981564
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.584549,
+          "mean_ms": 2.7524289333333334,
+          "p50_ms": 2.65029,
+          "p95_ms": 3.4713024499999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.4272,
+            2.329196,
+            4.070003,
+            3.559232,
+            3.024966,
+            2.287457,
+            2.764616,
+            2.954813,
+            3.046746,
+            2.550633,
+            2.509505,
+            2.364472,
+            2.774415,
+            2.679996,
+            2.227625,
+            2.322503,
+            2.493275,
+            2.747273,
+            2.509275,
+            3.086071,
+            2.59211,
+            2.620584,
+            3.3562,
+            2.891594,
+            2.764115,
+            3.363833,
+            2.829899,
+            2.472255,
+            2.373539,
+            2.579467
+          ]
+        }
+      },
+      "sha256": "7436b36761e3f941a1050fe4d0532a7356816e97fa9e69e634d2d0717ea9aa4e"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002745.bin",
+      "point_count": 115299,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 102.309402,
+          "mean_ms": 101.78831370000003,
+          "p50_ms": 101.8801335,
+          "p95_ms": 104.45692414999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            103.181073,
+            98.597823,
+            101.351167,
+            103.179059,
+            100.911901,
+            102.483048,
+            101.724571,
+            102.318008,
+            102.088607,
+            100.696575,
+            104.663174,
+            100.219626,
+            105.257994,
+            99.271953,
+            103.093378,
+            100.518099,
+            102.301367,
+            102.203442,
+            100.668101,
+            102.035696,
+            99.344069,
+            103.772267,
+            99.751025,
+            102.894473,
+            101.072362,
+            102.248558,
+            101.462658,
+            100.915958,
+            104.204841,
+            101.218538
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 8.860985,
+          "mean_ms": 6.5201122666666675,
+          "p50_ms": 6.357616,
+          "p95_ms": 7.228184499999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.2935,
+            7.108235,
+            6.306224,
+            6.79789,
+            6.309009,
+            6.789394,
+            6.327094,
+            7.705388,
+            6.211356,
+            6.822126,
+            6.589638,
+            6.812217,
+            6.401583,
+            6.5852,
+            6.402465,
+            6.285175,
+            6.216105,
+            6.288631,
+            6.138028,
+            6.21898,
+            6.336611,
+            6.95193,
+            6.25104,
+            6.373622,
+            6.420289,
+            7.326325,
+            6.237344,
+            6.189564,
+            6.34161,
+            6.566795
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.571111,
+          "mean_ms": 2.906122333333334,
+          "p50_ms": 2.8776840000000004,
+          "p95_ms": 3.26574595,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.869704,
+            2.660109,
+            3.076292,
+            3.130775,
+            2.84636,
+            2.857671,
+            2.97399,
+            2.759155,
+            3.216186,
+            2.962899,
+            3.306295,
+            3.048671,
+            2.927062,
+            2.980042,
+            2.876837,
+            2.94255,
+            2.86282,
+            3.422684,
+            2.878531,
+            2.760057,
+            2.671831,
+            2.667823,
+            2.510206,
+            3.04891,
+            2.62917,
+            2.945186,
+            2.809961,
+            2.827484,
+            2.744457,
+            2.969952
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.663716,
+          "mean_ms": 2.8811282999999994,
+          "p50_ms": 2.8060285,
+          "p95_ms": 3.4896150999999995,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.919417,
+            3.688325,
+            2.899289,
+            3.607282,
+            2.80398,
+            3.124403,
+            2.731593,
+            2.613491,
+            3.3458,
+            3.172363,
+            2.782449,
+            2.932182,
+            2.642516,
+            2.863271,
+            2.648898,
+            2.962167,
+            2.808077,
+            3.161212,
+            2.734158,
+            2.777981,
+            2.770657,
+            2.423514,
+            2.599966,
+            2.881496,
+            2.678744,
+            3.237386,
+            2.847161,
+            2.719601,
+            2.500137,
+            2.556333
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 14.14821,
+          "mean_ms": 2.5682498333333332,
+          "p50_ms": 2.539031,
+          "p95_ms": 2.8884659999999998,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.791186,
+            2.640302,
+            2.355686,
+            2.543159,
+            2.336509,
+            2.425848,
+            2.636945,
+            2.46909,
+            2.616987,
+            2.343532,
+            2.491311,
+            2.458609,
+            2.695876,
+            2.694073,
+            2.334395,
+            2.926671,
+            2.825931,
+            3.148339,
+            2.645972,
+            2.363079,
+            2.841771,
+            2.534903,
+            2.564379,
+            2.579727,
+            2.510346,
+            2.511359,
+            2.473287,
+            2.5226,
+            2.582553,
+            2.18307
+          ]
+        }
+      },
+      "sha256": "9a2c4141ec3f5dcdd7e03e913b2b13610cbec2ddfa8dce4a441ae6eda68a2e45"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003421.bin",
+      "point_count": 114943,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 72.318311,
+          "mean_ms": 80.92444476666668,
+          "p50_ms": 81.800029,
+          "p95_ms": 88.41854835,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            75.851314,
+            73.8581,
+            74.122478,
+            75.251825,
+            73.471672,
+            72.951443,
+            73.62961,
+            72.787283,
+            75.90316,
+            83.909746,
+            81.304471,
+            82.295587,
+            84.087441,
+            83.742371,
+            82.924852,
+            80.789381,
+            79.973895,
+            85.761724,
+            82.98177,
+            84.868973,
+            80.522098,
+            81.095808,
+            83.362546,
+            80.686357,
+            83.201242,
+            88.68087,
+            90.766327,
+            88.097933,
+            87.454912,
+            83.398154
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 5.405198,
+          "mean_ms": 5.700242866666668,
+          "p50_ms": 5.5946445,
+          "p95_ms": 6.269767949999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            5.563175,
+            5.391432,
+            5.393496,
+            5.543558,
+            5.406079,
+            5.500457,
+            5.455993,
+            5.636233,
+            5.546884,
+            5.503933,
+            6.288771,
+            6.246542,
+            5.543318,
+            5.794711,
+            5.595035,
+            5.720591,
+            5.527789,
+            5.500116,
+            5.606697,
+            5.928634,
+            6.714874,
+            5.607478,
+            5.534622,
+            5.808557,
+            5.80975,
+            5.566892,
+            5.750528,
+            6.025515,
+            5.901372,
+            5.594254
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 3.583477,
+          "mean_ms": 3.1798851666666668,
+          "p50_ms": 3.145027,
+          "p95_ms": 3.6765730999999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.88938,
+            2.807176,
+            3.145743,
+            3.283984,
+            2.75135,
+            2.674296,
+            3.237596,
+            2.833776,
+            3.576153,
+            3.108203,
+            3.111849,
+            2.921591,
+            2.727024,
+            3.516312,
+            3.703223,
+            2.824949,
+            2.923134,
+            3.305775,
+            3.521961,
+            3.644001,
+            4.187746,
+            3.258365,
+            2.955164,
+            3.043561,
+            2.735802,
+            3.161132,
+            3.581604,
+            3.586203,
+            3.235191,
+            3.144311
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 3.838868,
+          "mean_ms": 3.089249566666666,
+          "p50_ms": 3.0686225,
+          "p95_ms": 3.4347401499999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.972828,
+            2.975382,
+            3.120135,
+            2.802447,
+            3.132218,
+            3.076713,
+            3.039964,
+            3.075712,
+            3.355649,
+            2.900631,
+            2.839306,
+            3.068247,
+            2.810973,
+            3.514678,
+            2.997735,
+            3.068998,
+            3.066875,
+            3.270107,
+            2.989419,
+            3.321814,
+            3.247625,
+            3.007964,
+            3.272953,
+            3.201749,
+            2.874834,
+            3.392669,
+            3.113472,
+            2.92076,
+            3.469162,
+            2.776468
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 15.738995,
+          "mean_ms": 2.914505366666667,
+          "p50_ms": 2.930092,
+          "p95_ms": 3.1934779499999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.944995,
+            2.731563,
+            2.990561,
+            3.221967,
+            2.900822,
+            2.980793,
+            2.50161,
+            2.702178,
+            3.118762,
+            2.749948,
+            2.747253,
+            2.683864,
+            2.679815,
+            3.14956,
+            2.875774,
+            2.955605,
+            3.158658,
+            2.992023,
+            3.001632,
+            2.915189,
+            3.129352,
+            3.132939,
+            3.317336,
+            3.09591,
+            2.793199,
+            2.958691,
+            2.726333,
+            2.794713,
+            2.84656,
+            2.637556
+          ]
+        }
+      },
+      "sha256": "27b3b9369d4665f254e770f2acd0dd81984719f03384aae26bc9a604e8789882"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004149.bin",
+      "point_count": 117716,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 100.909125,
+          "mean_ms": 97.66563339999998,
+          "p50_ms": 97.485874,
+          "p95_ms": 100.63342689999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            99.745564,
+            97.437628,
+            100.03505,
+            99.533275,
+            101.123008,
+            101.667213,
+            98.526328,
+            99.469485,
+            99.938147,
+            100.006997,
+            96.289667,
+            96.259821,
+            97.53412,
+            96.681956,
+            94.683052,
+            95.283573,
+            95.594158,
+            99.06373,
+            93.714108,
+            97.567192,
+            95.332525,
+            97.851318,
+            97.727024,
+            95.556847,
+            97.376263,
+            97.84183,
+            96.802162,
+            97.128627,
+            96.868638,
+            97.329696
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.754208,
+          "mean_ms": 6.4269057,
+          "p50_ms": 6.339657,
+          "p95_ms": 7.0917454,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.5749,
+            7.579352,
+            6.159418,
+            6.510629,
+            6.046355,
+            6.081431,
+            7.083678,
+            7.098346,
+            6.771069,
+            6.925229,
+            6.435137,
+            6.299131,
+            6.156993,
+            6.045513,
+            6.24,
+            6.771119,
+            6.090248,
+            6.380183,
+            6.234059,
+            6.668276,
+            6.405771,
+            6.412444,
+            6.168375,
+            6.126225,
+            6.227445,
+            6.077523,
+            6.534805,
+            6.079627,
+            6.384562,
+            6.239328
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.988938,
+          "mean_ms": 3.069403133333334,
+          "p50_ms": 3.0506845,
+          "p95_ms": 3.4097337999999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.146605,
+            3.232437,
+            3.030997,
+            2.721655,
+            2.860436,
+            2.778902,
+            2.983478,
+            3.459133,
+            3.251593,
+            3.059691,
+            3.137988,
+            2.964422,
+            3.241964,
+            3.278653,
+            3.238678,
+            3.638,
+            3.086642,
+            3.086231,
+            2.906031,
+            2.774875,
+            2.889471,
+            2.76156,
+            3.349357,
+            3.098705,
+            3.041678,
+            3.030777,
+            3.293782,
+            2.966375,
+            3.025457,
+            2.746521
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.852922,
+          "mean_ms": 3.005054666666667,
+          "p50_ms": 2.999127,
+          "p95_ms": 3.4233938999999998,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.002403,
+            3.237807,
+            2.779583,
+            2.929826,
+            2.694333,
+            2.913226,
+            2.922783,
+            4.08392,
+            3.007052,
+            2.964953,
+            3.022251,
+            3.149771,
+            2.649018,
+            2.766349,
+            3.007492,
+            3.018043,
+            2.638067,
+            2.582072,
+            3.377019,
+            2.993446,
+            2.967799,
+            2.995851,
+            3.19178,
+            3.065773,
+            2.642286,
+            3.010148,
+            3.461337,
+            3.241133,
+            3.018183,
+            2.817936
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.425789,
+          "mean_ms": 2.6552733999999996,
+          "p50_ms": 2.6241515,
+          "p95_ms": 3.06882535,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.774985,
+            2.792498,
+            2.378048,
+            2.489558,
+            2.526918,
+            2.467497,
+            2.520766,
+            2.684845,
+            2.635162,
+            2.755238,
+            2.661071,
+            2.675448,
+            2.699392,
+            2.498364,
+            2.47507,
+            2.732796,
+            2.417092,
+            2.45923,
+            2.488416,
+            3.002914,
+            3.034914,
+            2.704943,
+            2.559339,
+            2.613141,
+            2.835529,
+            2.43797,
+            3.096571,
+            3.174478,
+            2.471644,
+            2.594365
+          ]
+        }
+      },
+      "sha256": "7d414bdb18d99c2c1034c80ec6ec9b9da8fde61a979a7577ff511e13fcb3f0de"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004790.bin",
+      "point_count": 110533,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 104.328594,
+          "mean_ms": 104.75691843333333,
+          "p50_ms": 104.58041349999999,
+          "p95_ms": 108.10830659999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            102.734742,
+            103.831829,
+            105.026969,
+            106.310255,
+            101.900322,
+            103.005553,
+            104.215451,
+            104.291825,
+            104.212997,
+            102.543482,
+            105.449966,
+            103.455961,
+            104.247922,
+            101.196717,
+            102.519247,
+            104.267339,
+            108.102019,
+            109.245101,
+            102.454856,
+            104.608681,
+            104.600236,
+            105.642798,
+            105.067745,
+            107.208306,
+            105.243306,
+            108.113451,
+            106.262385,
+            105.639061,
+            106.74844,
+            104.560591
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.728719,
+          "mean_ms": 7.0404314,
+          "p50_ms": 6.8884855,
+          "p95_ms": 8.08158875,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.679186,
+            6.824981,
+            6.722227,
+            7.163408,
+            6.841753,
+            6.949546,
+            7.09041,
+            6.492094,
+            6.723169,
+            6.712439,
+            6.871499,
+            6.5804,
+            6.626418,
+            6.692421,
+            6.6068,
+            8.044989,
+            6.679668,
+            6.931371,
+            6.730313,
+            7.631029,
+            6.905472,
+            7.107403,
+            6.931902,
+            6.728129,
+            7.481267,
+            8.653604,
+            8.111534,
+            6.976877,
+            7.520772,
+            7.201861
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.800713,
+          "mean_ms": 3.1659395333333333,
+          "p50_ms": 3.2262795,
+          "p95_ms": 3.4833768,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.26087,
+            3.454856,
+            3.035155,
+            3.425531,
+            3.228088,
+            3.447752,
+            2.988337,
+            3.336222,
+            2.701086,
+            3.314261,
+            3.224471,
+            3.419528,
+            2.817966,
+            3.055373,
+            3.266641,
+            2.924897,
+            3.019365,
+            3.388701,
+            3.286228,
+            2.732455,
+            3.194665,
+            2.907194,
+            3.506712,
+            3.300304,
+            3.622891,
+            3.164489,
+            3.291547,
+            3.192421,
+            2.837433,
+            2.632747
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 3.049222,
+          "mean_ms": 3.1264329666666657,
+          "p50_ms": 3.14648,
+          "p95_ms": 3.5995834999999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.948712,
+            3.241093,
+            3.27681,
+            3.240562,
+            2.709011,
+            3.145874,
+            3.195026,
+            2.821263,
+            3.520609,
+            3.008826,
+            3.045825,
+            3.097953,
+            3.213831,
+            3.400032,
+            3.123832,
+            3.664199,
+            3.182142,
+            2.859895,
+            3.206608,
+            3.730885,
+            3.252525,
+            3.147086,
+            3.354176,
+            2.986403,
+            3.15449,
+            3.127208,
+            2.863402,
+            2.748425,
+            2.955906,
+            2.57038
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.353293,
+          "mean_ms": 2.6853564000000008,
+          "p50_ms": 2.64743,
+          "p95_ms": 3.0991049499999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.511248,
+            2.770988,
+            2.709001,
+            2.521087,
+            2.525025,
+            3.290666,
+            2.585709,
+            2.590548,
+            2.33686,
+            2.759877,
+            2.492383,
+            2.645261,
+            2.491291,
+            2.325579,
+            2.934936,
+            2.846099,
+            2.649599,
+            2.528962,
+            3.049633,
+            2.669877,
+            2.914448,
+            2.510677,
+            3.139582,
+            2.855527,
+            3.011009,
+            2.725492,
+            2.449342,
+            2.538319,
+            2.730091,
+            2.451576
+          ]
+        }
+      },
+      "sha256": "bc5800a35d2c8d2d676ec4abce29772c90e01959a8c22f4cf48700ddf4c39cc0"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005465.bin",
+      "point_count": 116314,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 104.511137,
+          "mean_ms": 104.85271446666665,
+          "p50_ms": 105.06876249999999,
+          "p95_ms": 106.62936615,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            106.281621,
+            104.631785,
+            107.613419,
+            106.52013,
+            105.709204,
+            104.500056,
+            106.272314,
+            104.013571,
+            104.160497,
+            103.733023,
+            103.539809,
+            105.044962,
+            105.550885,
+            106.332668,
+            105.092563,
+            106.639686,
+            105.922636,
+            105.35666,
+            105.684316,
+            105.420329,
+            104.906753,
+            106.616753,
+            104.494426,
+            102.830633,
+            102.17018,
+            101.647325,
+            105.779736,
+            102.785328,
+            103.194007,
+            103.136159
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.566604,
+          "mean_ms": 6.837017966666665,
+          "p50_ms": 6.696709500000001,
+          "p95_ms": 7.45579005,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.69718,
+            6.652636,
+            6.830822,
+            7.496556,
+            6.892077,
+            6.632719,
+            6.587083,
+            7.256544,
+            6.949756,
+            7.405965,
+            6.592463,
+            7.093497,
+            7.301799,
+            6.496613,
+            6.800965,
+            6.570532,
+            6.692932,
+            6.537609,
+            7.066566,
+            6.395122,
+            6.693073,
+            6.746714,
+            6.845059,
+            6.696239,
+            6.59607,
+            6.54331,
+            6.759027,
+            8.367415,
+            6.423084,
+            6.491112
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.796626,
+          "mean_ms": 3.1795912666666672,
+          "p50_ms": 3.209643,
+          "p95_ms": 3.5227316999999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.209793,
+            3.263455,
+            3.277392,
+            3.145553,
+            2.824528,
+            3.407015,
+            3.014436,
+            2.8464,
+            2.872518,
+            3.281158,
+            3.407316,
+            2.784293,
+            3.300455,
+            2.792658,
+            3.455356,
+            3.198182,
+            3.576234,
+            3.321003,
+            2.897285,
+            3.3086,
+            3.45734,
+            3.158818,
+            3.209493,
+            3.583197,
+            3.271049,
+            2.716966,
+            3.137838,
+            3.450106,
+            3.013895,
+            3.205406
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.926701,
+          "mean_ms": 3.0480011000000005,
+          "p50_ms": 3.059886,
+          "p95_ms": 3.3843102999999997,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.85181,
+            3.438415,
+            2.819569,
+            3.081121,
+            2.925097,
+            3.105187,
+            2.856458,
+            3.208691,
+            3.208501,
+            3.344718,
+            2.816183,
+            2.700695,
+            2.832103,
+            2.967628,
+            3.3352,
+            3.416704,
+            3.103584,
+            2.819118,
+            3.173014,
+            2.825019,
+            3.209393,
+            2.993917,
+            2.939355,
+            3.102041,
+            3.196098,
+            3.128821,
+            2.952961,
+            3.138689,
+            2.911292,
+            3.038651
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.336622,
+          "mean_ms": 2.8140723666666663,
+          "p50_ms": 2.7644605,
+          "p95_ms": 3.2717661499999995,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.913757,
+            2.639961,
+            2.52266,
+            2.786687,
+            3.46261,
+            3.015829,
+            3.062125,
+            2.380742,
+            2.664177,
+            3.177093,
+            2.484428,
+            2.529052,
+            2.713279,
+            2.684605,
+            2.892917,
+            2.770567,
+            2.51215,
+            3.112901,
+            3.349226,
+            3.038772,
+            3.118752,
+            2.738727,
+            2.758354,
+            2.672041,
+            2.792388,
+            2.531938,
+            2.928944,
+            2.612639,
+            2.914679,
+            2.640171
+          ]
+        }
+      },
+      "sha256": "71e80e3f4a4edf67fe2e4b124f4bfadb1d15ad4c34832a67ae10ae5170b39be9"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006167.bin",
+      "point_count": 124322,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 105.649572,
+          "mean_ms": 103.18195349999999,
+          "p50_ms": 103.1971385,
+          "p95_ms": 105.8438016,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            102.388471,
+            103.805018,
+            103.747881,
+            106.543705,
+            103.480427,
+            103.382042,
+            101.407674,
+            102.594328,
+            102.771041,
+            103.012235,
+            106.116831,
+            101.826172,
+            103.678159,
+            101.295633,
+            102.619856,
+            101.618622,
+            101.508173,
+            103.383193,
+            102.405973,
+            103.459317,
+            103.700441,
+            103.570907,
+            102.438966,
+            103.493211,
+            102.413749,
+            101.88912,
+            101.59689,
+            104.332341,
+            105.46813,
+            105.510099
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.466737,
+          "mean_ms": 6.6771557999999995,
+          "p50_ms": 6.579143999999999,
+          "p95_ms": 7.139039749999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.524796,
+            8.34355,
+            6.5116,
+            6.775648,
+            6.642708,
+            6.364183,
+            6.613083,
+            6.439355,
+            6.651465,
+            6.471716,
+            6.50597,
+            6.545205,
+            6.382137,
+            6.247033,
+            6.684346,
+            7.120117,
+            6.721086,
+            7.097745,
+            6.45267,
+            6.788553,
+            6.366017,
+            7.154522,
+            6.63848,
+            6.682423,
+            6.486954,
+            6.512413,
+            7.032712,
+            6.407054,
+            6.782541,
+            6.368592
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.700565,
+          "mean_ms": 2.954179933333333,
+          "p50_ms": 2.9427510000000003,
+          "p95_ms": 3.25822705,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.686769,
+            2.898147,
+            3.01087,
+            2.943392,
+            3.204744,
+            2.943042,
+            2.5014,
+            2.785676,
+            3.163977,
+            3.127258,
+            2.792087,
+            2.557065,
+            3.274927,
+            2.895261,
+            2.593093,
+            2.897897,
+            2.964442,
+            2.844936,
+            2.767391,
+            2.977828,
+            2.897897,
+            3.158517,
+            2.97378,
+            3.237816,
+            2.936229,
+            2.645542,
+            2.94246,
+            3.21869,
+            3.617512,
+            3.166753
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.696227,
+          "mean_ms": 2.835212966666666,
+          "p50_ms": 2.8392165,
+          "p95_ms": 3.0902953999999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.928134,
+            3.149501,
+            2.825841,
+            2.942541,
+            2.83055,
+            3.017933,
+            2.557195,
+            2.831872,
+            2.929115,
+            2.794703,
+            2.851529,
+            2.738356,
+            2.813427,
+            2.684145,
+            2.839346,
+            2.929496,
+            2.974451,
+            3.227297,
+            2.635372,
+            2.839156,
+            2.655981,
+            2.93149,
+            2.553107,
+            2.972117,
+            2.89435,
+            2.748685,
+            2.52226,
+            2.696677,
+            2.902485,
+            2.839277
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 13.097542,
+          "mean_ms": 2.5996370666666664,
+          "p50_ms": 2.5652705,
+          "p95_ms": 2.8775773,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.794522,
+            2.749167,
+            2.598854,
+            2.555652,
+            2.888569,
+            2.372918,
+            2.313967,
+            2.552978,
+            2.606127,
+            2.577323,
+            2.536436,
+            2.112918,
+            2.552356,
+            2.591329,
+            2.789623,
+            2.392114,
+            2.864143,
+            2.560802,
+            2.769215,
+            2.569739,
+            2.505678,
+            2.578194,
+            2.495419,
+            2.837874,
+            2.510698,
+            2.539952,
+            2.553609,
+            2.765046,
+            2.896945,
+            2.556945
+          ]
+        }
+      },
+      "sha256": "77332e725e34ebfa669f1d582245e77e4d9a0e86a8427f372bc5e1d0e6a4a5d0"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006837.bin",
+      "point_count": 120484,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 107.519953,
+          "mean_ms": 105.7218803333333,
+          "p50_ms": 105.295995,
+          "p95_ms": 108.2748522,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            107.362967,
+            105.323748,
+            103.607936,
+            105.121297,
+            104.229578,
+            106.209816,
+            103.813444,
+            105.288922,
+            108.180206,
+            106.625308,
+            104.272749,
+            104.73039,
+            106.766184,
+            113.755985,
+            102.990324,
+            104.850557,
+            105.072454,
+            105.413467,
+            105.79781,
+            105.057286,
+            106.102605,
+            105.741434,
+            106.474214,
+            107.311782,
+            104.982976,
+            104.065569,
+            104.906291,
+            105.303068,
+            103.945753,
+            108.35229
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.296276,
+          "mean_ms": 6.976348633333334,
+          "p50_ms": 6.7262255,
+          "p95_ms": 8.785659349999996,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            6.456387,
+            6.325901,
+            6.966567,
+            6.500971,
+            6.886306,
+            7.312519,
+            6.485331,
+            7.004269,
+            6.311414,
+            6.920761,
+            6.69728,
+            6.584859,
+            9.317855,
+            9.686709,
+            6.997215,
+            6.700847,
+            6.91468,
+            6.581833,
+            6.683324,
+            6.783373,
+            6.71807,
+            6.66997,
+            6.685749,
+            6.734381,
+            6.884373,
+            6.621067,
+            6.890414,
+            8.135198,
+            7.476327,
+            6.356509
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.545123,
+          "mean_ms": 2.9144140000000003,
+          "p50_ms": 2.9195824999999997,
+          "p95_ms": 3.4050788499999993,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.926331,
+            2.630273,
+            2.545252,
+            2.683693,
+            3.049542,
+            2.754096,
+            2.879062,
+            2.912834,
+            3.327415,
+            2.967658,
+            3.125135,
+            3.468622,
+            3.775409,
+            2.798449,
+            2.87294,
+            2.494016,
+            2.699923,
+            2.935397,
+            2.985211,
+            3.230002,
+            3.05939,
+            2.425377,
+            2.942541,
+            2.609323,
+            2.722276,
+            2.61829,
+            3.041537,
+            2.864724,
+            3.110016,
+            2.977686
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.631475,
+          "mean_ms": 2.8210311,
+          "p50_ms": 2.757141,
+          "p95_ms": 3.6996029,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            2.551514,
+            2.439864,
+            2.73491,
+            2.570029,
+            2.548619,
+            2.755518,
+            2.85232,
+            2.758764,
+            2.848514,
+            2.548349,
+            2.72973,
+            2.863722,
+            3.694126,
+            4.032313,
+            2.465322,
+            2.397915,
+            2.818577,
+            3.704084,
+            2.905131,
+            2.879722,
+            2.914989,
+            2.418634,
+            2.709552,
+            2.699793,
+            2.873872,
+            2.555913,
+            2.9742,
+            2.884451,
+            2.570109,
+            2.930377
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 12.625864,
+          "mean_ms": 2.561227533333334,
+          "p50_ms": 2.5387750000000002,
+          "p95_ms": 2.9043228999999995,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.37417,
+            2.525144,
+            2.44272,
+            2.593363,
+            2.765307,
+            2.378579,
+            2.501139,
+            2.858322,
+            2.818988,
+            2.393647,
+            2.444553,
+            2.572183,
+            3.456428,
+            2.354373,
+            2.593824,
+            2.94196,
+            2.698381,
+            2.260096,
+            2.63419,
+            2.625844,
+            2.364311,
+            2.132365,
+            2.63442,
+            2.552406,
+            2.500989,
+            2.324247,
+            2.607249,
+            2.83647,
+            2.260867,
+            2.390291
+          ]
+        }
+      },
+      "sha256": "e00e45beb204af5959a513d97535fd152495db6e3a317198fe8986477300dee9"
+    },
+    {
+      "dtype": "float32",
+      "hist14_before_bit_mismatches": 0,
+      "hist14_layout_bit_mismatches": 0,
+      "iteration_order": [
+        [
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "hist14_numba_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "binary_slices_raster",
+          "hist14_numba_raster",
+          "hist14_before_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "binary_slices_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "binary_slices_raster",
+          "hist14_before_chw",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_chw",
+          "hist14_numba_chw",
+          "hist14_before_chw",
+          "hist14_numba_raster",
+          "binary_slices_raster"
+        ],
+        [
+          "hist14_numba_chw",
+          "hist14_numba_raster",
+          "hist14_before_chw",
+          "binary_slices_raster",
+          "binary_slices_chw"
+        ],
+        [
+          "binary_slices_raster",
+          "binary_slices_chw",
+          "hist14_numba_raster",
+          "hist14_numba_chw",
+          "hist14_before_chw"
+        ]
+      ],
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007480.bin",
+      "point_count": 110736,
+      "results": {
+        "binary_slices_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 104.541585,
+          "mean_ms": 103.6735845,
+          "p50_ms": 103.1931755,
+          "p95_ms": 107.52462394999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            35,
+            800,
+            704
+          ],
+          "steady_ms": [
+            103.185,
+            104.308656,
+            102.311656,
+            106.657269,
+            101.780676,
+            102.346141,
+            102.675982,
+            101.595838,
+            103.48208,
+            103.171906,
+            104.247662,
+            101.13985,
+            105.51622,
+            102.748418,
+            103.38094,
+            101.735471,
+            100.665386,
+            103.639216,
+            103.146929,
+            103.093088,
+            104.603611,
+            108.234278,
+            104.000827,
+            110.974337,
+            104.714721,
+            105.704104,
+            103.201351,
+            102.058089,
+            103.570937,
+            102.316896
+          ]
+        },
+        "binary_slices_raster": {
+          "contiguous": false,
+          "dtype": "float32",
+          "first_call_ms": 6.119212,
+          "mean_ms": 6.509647199999998,
+          "p50_ms": 6.4064935,
+          "p95_ms": 7.064160899999999,
+          "payload_bytes": 78848000,
+          "shape": [
+            800,
+            704,
+            35
+          ],
+          "steady_ms": [
+            8.100903,
+            6.488717,
+            6.276648,
+            6.296977,
+            6.31438,
+            7.178307,
+            6.209241,
+            6.419367,
+            6.276037,
+            6.512412,
+            6.254457,
+            6.274044,
+            6.283061,
+            6.412455,
+            6.643099,
+            6.214471,
+            6.551466,
+            6.512563,
+            6.400532,
+            6.924649,
+            6.298309,
+            6.63898,
+            6.779675,
+            6.548941,
+            6.374934,
+            6.283562,
+            6.30942,
+            6.28273,
+            6.667534,
+            6.561545
+          ]
+        },
+        "hist14_before_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 2.873822,
+          "mean_ms": 3.2903749,
+          "p50_ms": 3.2961615,
+          "p95_ms": 3.6701482499999996,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.285616,
+            3.337274,
+            3.360828,
+            3.231425,
+            3.271731,
+            3.527252,
+            3.415631,
+            3.003615,
+            3.305243,
+            3.728601,
+            3.398199,
+            3.193173,
+            2.890122,
+            3.386897,
+            3.462249,
+            3.056174,
+            3.408969,
+            4.229704,
+            3.161042,
+            2.804801,
+            3.446029,
+            3.28708,
+            3.439958,
+            3.120155,
+            2.947219,
+            3.402958,
+            3.598706,
+            3.240792,
+            2.813107,
+            2.956697
+          ]
+        },
+        "hist14_numba_chw": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 3.126778,
+          "mean_ms": 3.1899039666666664,
+          "p50_ms": 3.1612525,
+          "p95_ms": 3.6297261999999995,
+          "payload_bytes": 31539200,
+          "shape": [
+            14,
+            800,
+            704
+          ],
+          "steady_ms": [
+            3.362932,
+            2.800964,
+            3.073737,
+            2.901664,
+            3.167935,
+            3.15457,
+            3.063228,
+            3.373463,
+            3.23918,
+            2.883239,
+            3.681091,
+            3.152816,
+            2.663114,
+            2.999468,
+            3.937634,
+            3.445437,
+            3.464493,
+            2.90483,
+            3.524556,
+            2.817355,
+            3.304582,
+            3.388139,
+            3.196539,
+            3.196709,
+            3.566947,
+            3.108773,
+            2.996192,
+            3.252434,
+            3.115045,
+            2.960053
+          ]
+        },
+        "hist14_numba_raster": {
+          "contiguous": true,
+          "dtype": "float32",
+          "first_call_ms": 15.335876,
+          "mean_ms": 2.7030824333333334,
+          "p50_ms": 2.6911075,
+          "p95_ms": 3.1226852,
+          "payload_bytes": 31539200,
+          "shape": [
+            800,
+            704,
+            14
+          ],
+          "steady_ms": [
+            2.527269,
+            2.582833,
+            2.318916,
+            3.178685,
+            2.964112,
+            2.956627,
+            2.781197,
+            2.595487,
+            2.779073,
+            2.470823,
+            2.522109,
+            2.98498,
+            2.789553,
+            2.755198,
+            2.840979,
+            2.641374,
+            3.184466,
+            3.054241,
+            2.704543,
+            2.287988,
+            2.499567,
+            2.824468,
+            2.475501,
+            2.589426,
+            2.810953,
+            2.547737,
+            2.677672,
+            2.535263,
+            2.440746,
+            2.770687
+          ]
+        }
+      },
+      "sha256": "cfdacec9455fcf566cf620f0c1659ec4806f55592f669d9c3fca808c073a7175"
+    }
+  ],
+  "geometry": {
+    "x_max": 70.4,
+    "x_min": 0,
+    "x_res": 0.1,
+    "y_max": 40,
+    "y_min": -40,
+    "y_res": 0.1,
+    "z_max": 1,
+    "z_min": -2.5,
+    "z_res": 0.1
+  },
+  "hist14_implementation_version": 3,
+  "hist14_semantic_hash": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0",
+  "mean_ms": {
+    "binary_slices_chw": 102.29630770277777,
+    "binary_slices_raster": 6.661532333333333,
+    "hist14_before_chw": 3.0848340388888893,
+    "hist14_numba_chw": 3.0126297111111113,
+    "hist14_numba_raster": 2.6929192
+  },
+  "protocol": {
+    "aggregation": "equal-weight mean across frame means",
+    "first_call": "includes dependency/JIT/cache initialization where applicable",
+    "iterations_per_frame": 30,
+    "order": "randomized_interleaving_per_frame",
+    "seed": 42,
+    "warmup": 5
+  },
+  "scope": {
+    "ap": false,
+    "augmentation": false,
+    "caveat": "local CPU benchmark; does not update archived GPU E2E speed or AP",
+    "chw": "rasterization plus independently owned contiguous float32 CHW model input",
+    "decode": false,
+    "device": "CPU",
+    "file_io": false,
+    "h2d": false,
+    "model": false,
+    "raster": "native rasterizer output; Binary may be noncontiguous"
+  },
+  "source_sha256": {
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Code/detector/core/bev_encoding.py": "bfaa018ceede40dc6d3f64f8632d10aadca84ac1bfaa05732c5f95773f37816b",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Code/detector/core/datasets/utils_1/bev_backend.py": "08cc83ca70ee63fb952906b2c6ec1a05af68a8992ba94880bbc2fb0d81dcd625",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Code/detector/core/datasets/utils_1/preprocess.py": "2a61b73a79c25d030b788a06f959d2b631e3c50ce5d7ab7ae187a4a553f32ac8",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Code/tools/benchmarks/benchmark_hist14_vs_binary.py": "51bafa8f76e053f512acab33b87e2dae64a690dbc2550098de49681aa2f457a4",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/hist14_speed_v3/bev_backend_before.py": "89ac8b999dbeddf8c49da1347d84606c4834e64c4b1e10a9c1ede7caac6b7542"
+  }
+}

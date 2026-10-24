@@ -6,6 +6,104 @@ ghi nguồn và SHA256 từng file.
 
 ## Mở kết quả
 
+**Từng ảnh riêng: 4 thư mục hàng_cột, mỗi thư mục 2 PNG 600 DPI:**
+[thư mục ảnh](outputs/heatmap/individual_panels_003736_005663_red/),
+[tải toàn bộ ZIP](outputs/heatmap/individual_panels_003736_005663_red.zip).
+`1_1`=MobilePIXOR/003736, `1_2`=MobilePIXOR/005663,
+`2_1`=Ours/003736, `2_2`=Ours/005663. Mỗi thư mục chỉ có
+`detect.png` và `heatmap.png`, kích thước 1631×1170, không chữ/viền ngoài.
+Chạy lại bằng `Demo/code/export_kitti_individual_panels.py`.
+
+**Bản hai hàng, chỉ MobilePIXOR và Ours, không có Ground truth:**
+[PNG 600 DPI](outputs/heatmap/models_only_003736_005663_red/mobilepixor_ours_bev_003736_005663_2x2.png),
+[SVG](outputs/heatmap/models_only_003736_005663_red/mobilepixor_ours_bev_003736_005663_2x2.svg).
+Giữ trái 003736, phải 005663, box đỏ và nguyên vẹn detection/heatmap đã kiểm tra.
+Chạy lại bằng `Demo/code/export_kitti_models_only.py`. Bản ba hàng phía dưới
+được giữ nguyên; verification.json xác nhận các tensor/box và kích thước panel.
+
+**Bản hiện tại: trái 003736, phải 005663; box đỏ, Ground truth 48 mm.**
+[PNG 600 DPI](outputs/heatmap/reference_bev_003736_005663_red/gt_mobilepixor_ours_bev_003736_005663_3x2.png),
+[SVG](outputs/heatmap/reference_bev_003736_005663_red/gt_mobilepixor_ours_bev_003736_005663_3x2.svg).
+Hai checkpoint đã chạy lại trên đúng hai scan; tensor khớp với các lần suy luận
+gốc. Script xuất bản này theo mặc định.
+
+**Bản mới nhất: khôi phục trái 003736, đổi phải sang 001225; box đỏ, GT 48 mm.**
+[PNG 600 DPI](outputs/heatmap/reference_bev_003736_001225_red/gt_mobilepixor_ours_bev_003736_001225_3x2.png),
+[SVG](outputs/heatmap/reference_bev_003736_001225_red/gt_mobilepixor_ours_bev_003736_001225_3x2.svg).
+Hai mô hình chạy lại trên đúng hai scan; prediction và heatmap khớp nguyên vẹn
+với các bản gốc trước khi đổi vị trí.
+
+**Bản trước: trái 001225, phải 003034, box đỏ và Ground truth lớn hơn.**
+[PNG 600 DPI](outputs/heatmap/reference_bev_001225_003034_red/gt_mobilepixor_ours_bev_001225_003034_3x2.png),
+[SVG](outputs/heatmap/reference_bev_001225_003034_red/gt_mobilepixor_ours_bev_001225_003034_3x2.svg).
+Chọn trái 001225 sau khi xem sáu cảnh có ít lỗi Ours: pointcloud phân bố rộng hơn.
+Trong ROI cố định, Ours đúng 5/5, FP=FN=0; MobilePIXOR TP=4, FP=1, FN=1.
+Viền GT/prediction đều đỏ `#ff3030`; chiều cao hàng GT tăng từ 42 lên 48 mm.
+Cột phải giữ nguyên scan và tensor detection/heatmap của cả hai mô hình.
+Ảnh cũ vẫn giữ nguyên.
+
+**Bản trước: trái 003736, phải 003034, chọn theo cả detection và heatmap.**
+[PNG 600 DPI](outputs/heatmap/reference_bev_selected_003736_003034/gt_mobilepixor_ours_bev_003736_003034_3x2.png),
+[SVG](outputs/heatmap/reference_bev_selected_003736_003034/gt_mobilepixor_ours_bev_003736_003034_3x2.svg),
+[scan phải](data/kitti_groundtruth/training/velodyne/003034.bin).
+Trong ROI đang vẽ, Ours detect TP=6, FP=0, FN=0; MobilePIXOR TP=5, FP=3, FN=1.
+Heatmap max-class: Ours có 6 đỉnh đúng và 0 đỉnh thừa; MobilePIXOR có 6 đỉnh
+đúng và 2 đỉnh thừa, với threshold 0.30 và ghép tâm GT trong 1 m.
+Thang xám [0,1], grid gốc và crop giữ nguyên. Cột trái giữ nguyên từng pixel.
+[Bảng 31 cảnh](outputs/heatmap/comparison_scene_search/ranking.csv) và
+[hồ sơ chọn cảnh](outputs/heatmap/reference_bev_selected_003736_003034/selection.json)
+lưu tiêu chí, tensor và kiểm tra độc lập. Đây là ví dụ được chọn để minh họa ưu
+thế thật trên một cảnh, không phải benchmark ngẫu nhiên; điểm heatmap là tiêu
+chí minh họa riêng.
+
+**Cảnh được chọn theo lỗi Ours thấp nhất trong 32 scan validation: 003736.**
+[PNG 600 DPI](outputs/heatmap/reference_bev_ours_selected_003736/gt_mobilepixor_ours_bev_003736_005663_3x2.png),
+[SVG](outputs/heatmap/reference_bev_ours_selected_003736/gt_mobilepixor_ours_bev_003736_005663_3x2.svg),
+[scan gốc](data/kitti_groundtruth/training/velodyne/003736.bin).
+Trong ROI cố định, Ours có TP=7, FP=0, FN=0; MobilePIXOR có TP=6, FP=0, FN=1.
+Score vẫn 0.30, NMS 0.10; IoU BEV Car=0.70, Pedestrian/Cyclist=0.50.
+[Bảng 32 scan](outputs/heatmap/ours_scene_search/ranking.csv) và
+[hồ sơ chọn cảnh](outputs/heatmap/reference_bev_ours_selected_003736/selection.json)
+lưu tiêu chí và kết quả thật. Đây là ví dụ minh họa được lựa chọn theo hiệu quả
+Ours trong ROI, không phải kết quả benchmark ngẫu nhiên. Hai box Ours ngoài ROI
+vẫn được giữ trong prediction NPY; ROI và ngưỡng không thay đổi khi chọn cảnh.
+GT giữ chiều cao 42 mm, cột phải trong bản này là 005663.
+
+**Bản mới nhất: cột 1 là scan 000008, Ground truth tăng 20%:**
+[PNG 600 DPI](outputs/heatmap/reference_bev_000008_005663/gt_mobilepixor_ours_bev_000008_005663_3x2.png),
+[SVG](outputs/heatmap/reference_bev_000008_005663/gt_mobilepixor_ours_bev_000008_005663_3x2.svg).
+GT cao 42 mm; hai hàng model giữ nguyên. Hai mô hình chạy mới trên scan KITTI gốc;
+Ours dùng `checkpoints/130epoch.pt`.
+Có thể đổi bằng `--frames 000008 005663 --ground-truth-height-mm 42`.
+
+**Bản mới: cột 1 dùng scan 004338, Ground truth nhỏ, hai hàng mô hình lớn hơn:**
+[PNG 600 DPI](outputs/heatmap/reference_bev_004338_005663/gt_mobilepixor_ours_bev_004338_005663_3x2.png),
+[SVG](outputs/heatmap/reference_bev_004338_005663/gt_mobilepixor_ours_bev_004338_005663_3x2.svg).
+Scan mới tải từ kho KITTI chính thức, khớp CRC32 và SHA256 đã ghi trước đó.
+Hai checkpoint chạy inference mới; cột 2 giữ nguyên dữ liệu và kết quả dự đoán.
+Hàng GT cao 35 mm, hai hàng model cao khoảng 50 mm; toàn bộ box chỉ là BEV.
+Script `Demo/code/export_kitti_reference_comparison.py` tạo bản so sánh.
+
+**Bản BEV zoom sát pointcloud, Ours dùng trực tiếp `checkpoints/130epoch.pt`:**
+[PNG 600 DPI](outputs/heatmap/reference_gt_comparison_bev_zoom/gt_mobilepixor_ours_bev_zoom_3x2.png),
+[SVG](outputs/heatmap/reference_gt_comparison_bev_zoom/gt_mobilepixor_ours_bev_zoom_3x2.svg).
+Crop chung X=[5,38], Y=[-26,20] m cho cả GT, detection và heatmap; không dựng chiều cao box.
+Chạy lại bằng `Demo/code/export_kitti_reference_comparison.py` với manifest mặc định
+`Demo/configs/reference_bev_zoom.json`. Dữ liệu inference mới và hash nằm trong thư mục kết quả.
+
+Ảnh theo `ref.png`, **3 hàng × 2 cảnh**, chỉ có nhãn Ground truth / MobilePIXOR / Ours:
+[PNG 600 DPI](outputs/heatmap/reference_gt_comparison/gt_mobilepixor_ours_reference_3x2.png),
+[SVG](outputs/heatmap/reference_gt_comparison/gt_mobilepixor_ours_reference_3x2.svg).
+Chạy mới cả hai checkpoint bằng `Demo/code/export_kitti_reference_comparison.py`;
+`outputs/heatmap/reference_gt_comparison/inference/` lưu scan gốc, detection,
+logits/probabilities, cấu hình và hash. Cảnh 000134 thuộc validation, 005663 thuộc train.
+
+So sánh mới sáu checkpoint, **3 hàng × 2 cặp pointcloud detection + heatmap**:
+[frame validation 000134](outputs/heatmap/model_comparison/000134/comparison_000134_3x2_perspective.png),
+[frame train 005663](outputs/heatmap/model_comparison/005663/comparison_005663_3x2_perspective.png).
+[README và bằng chứng inference](outputs/heatmap/model_comparison/README.md) ghi
+checkpoint, scan nguồn đã khớp hash, tensor thật, bản BEV/SVG và lệnh chạy lại.
+
 | Nội dung | File chính |
 |---|---|
 | Ảnh camera stitching, frame 005663 | [stitched.png](outputs/camera/005663/stitched.png) |

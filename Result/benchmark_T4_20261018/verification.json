@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "date": "2026-10-18",
+  "checks": [
+    "Same 3,769 validation IDs and order across baseline assets and project manifests",
+    "PIXOR canonical validation split and PixorNeXt raw split hashes agree with project manifests",
+    "PixorNeXt AP/loss checkpoints and fixed model config verified",
+    "PIXOR T4 accepted from explicit user confirmation, separately from report metadata",
+    "All 18,845 baseline prediction files checked against frame IDs and saved SHA-256",
+    "Baseline stage means recomputed from per-frame timing CSVs with warmup excluded",
+    "FP32, timed sample counts and 1000/mean_ms FPS checked",
+    "All 376 new workbook header/data cells verified after reopening",
+    "No reference AP invented for PixorNeXt; PIXOR macro is N/A",
+    "Prior loss/focal ablations and excluded-width scope preserved",
+    "Report HTML self-contained, report/CSV/workbook values assembled from one normalized data source"
+  ],
+  "baseline_prediction_files_verified": 18845,
+  "new_workbook_cells_verified": 376,
+  "output_workbook_sheets": [
+    "00_Muc_luc",
+    "T01_Benchmark",
+    "T02_Loss_IQA",
+    "T03_Loss_100ep",
+    "T04_Attention",
+    "T05_Efficiency",
+    "T06_3D_Reference",
+    "T07_Vertical_Diagnostic",
+    "S01_Representation",
+    "S02_Augmentation",
+    "S03_Checkpoint",
+    "S04_AP_Archive",
+    "99_Nguon",
+    "B01_Car_Reference",
+    "B02_3Class_Reference",
+    "B03_T4_Timing",
+    "B04_Ours_AP_vs_Loss",
+    "B05_Protocol_Audit",
+    "B06_T4_Sources"
+  ],
+  "ours_reference_ap_available": false,
+  "ours_saved_predictions_npz_present": false,
+  "pixor_T4_evidence": "explicit user confirmation",
+  "new_training": false,
+  "new_inference": false,
+  "new_AP_evaluation": false,
+  "not_verified": [
+    "PIXOR/PixorNeXt per-frame latency distributions: CSVs not supplied",
+    "Identical CPU/storage/clocks across profiling sessions",
+    "Reference AP of current no-focal PixorNeXt",
+    "Workbook rendering in Microsoft Excel/LibreOffice"
+  ]
+}

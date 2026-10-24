@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-18",
+  "subject": "PIXOR evaluation GPU",
+  "gpu": "Tesla T4",
+  "evidence_type": "explicit user confirmation in conversation",
+  "user_statement": "pixor cũng dùng T4 á tôi đã xem rồi",
+  "report_gpu_field_present": false
+}

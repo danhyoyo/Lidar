@@ -1,0 +1,530 @@
+{
+  "output": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/encoderBevviz/camera_bev_footprints_strata_bev14_4x2.png",
+  "pixels": [
+    2488,
+    3286
+  ],
+  "layout": "4 rows x 2 columns",
+  "left_mode": "camera",
+  "box_mode": "flat BEV footprints",
+  "cuboid_count": 0,
+  "ground_truth_used": false,
+  "predicted_height_used": false,
+  "frames": [
+    {
+      "frame": "007038",
+      "sources": {
+        "camera": {
+          "path": "/home/duyennh/Downloads/kitti_training_174frames_images/training/image_2/007038.png",
+          "sha256": "2416acd6b7d303c3ad40189729fc3e423e105cf42fa554e549e89164f6bfa771"
+        },
+        "lidar": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007038.bin",
+          "sha256": "f27cd87d039884f820bbd8c2bb74bb4da8231cd2d81cfbeecd985306ad5dc53e"
+        },
+        "calibration": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/calib/training/calib/007038.txt",
+          "sha256": "5813c05a89e33e67244891c62e153e0a572692d42365b8665e38cc242c7d4918"
+        }
+      },
+      "tensor_sha256": "8a8e255086762ba69d422b3650d2ef7d76ce3351362fb2550bfbd5be8c104bc9",
+      "left_box_count": 4,
+      "hist14_bev_box_count": 4,
+      "vertices_per_box": 4,
+      "edges_per_box": 4
+    },
+    {
+      "frame": "005571",
+      "sources": {
+        "camera": {
+          "path": "/home/duyennh/Downloads/kitti_training_174frames_images/training/image_2/005571.png",
+          "sha256": "2cf4adbe0e2fe211d9afb16b28740655e8a263761b18508a35e2b9bd681d21e6"
+        },
+        "lidar": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005571.bin",
+          "sha256": "d60b87bbf7f8a46a57a1f2f5500b47256d6319ac420afbdbb45c76994295ab83"
+        },
+        "calibration": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/calib/training/calib/005571.txt",
+          "sha256": "5813c05a89e33e67244891c62e153e0a572692d42365b8665e38cc242c7d4918"
+        }
+      },
+      "tensor_sha256": "f07859624298a7013452f4bb236fe1a3633136f610eb24813750a06d4c960196",
+      "left_box_count": 11,
+      "hist14_bev_box_count": 13,
+      "vertices_per_box": 4,
+      "edges_per_box": 4
+    },
+    {
+      "frame": "007016",
+      "sources": {
+        "camera": {
+          "path": "/home/duyennh/Downloads/kitti_training_174frames_images/training/image_2/007016.png",
+          "sha256": "5229f955cd6bf117edb819d7a26ae03108e15fd4f9da913bc6d5355749f5b367"
+        },
+        "lidar": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007016.bin",
+          "sha256": "9f98597eacc5b8df4c3cdd438a75f14d8b2a758229c52161120f0eb627486d4e"
+        },
+        "calibration": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/calib/training/calib/007016.txt",
+          "sha256": "5813c05a89e33e67244891c62e153e0a572692d42365b8665e38cc242c7d4918"
+        }
+      },
+      "tensor_sha256": "993ae716b70063b42777c8a78d7cfcf06021d183f1ed87c880fa0ea7de21d02c",
+      "left_box_count": 11,
+      "hist14_bev_box_count": 13,
+      "vertices_per_box": 4,
+      "edges_per_box": 4
+    },
+    {
+      "frame": "006761",
+      "sources": {
+        "camera": {
+          "path": "/home/duyennh/Downloads/kitti_training_174frames_images/training/image_2/006761.png",
+          "sha256": "7a47f174399e6d3a88e7d0e4961c2b59d2aae8ba2bd6c59a31bfdc0e9a9d077a"
+        },
+        "lidar": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006761.bin",
+          "sha256": "7d83128cf1f2677eb9b5ab9da09bb72eadfebfe92cc37c1820338776adc4b0c6"
+        },
+        "calibration": {
+          "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/calib/training/calib/006761.txt",
+          "sha256": "5813c05a89e33e67244891c62e153e0a572692d42365b8665e38cc242c7d4918"
+        }
+      },
+      "tensor_sha256": "8310f775193e293d4155f7a516f423ec9df05410dd429264347a77dcbfad73c1",
+      "left_box_count": 12,
+      "hist14_bev_box_count": 14,
+      "vertices_per_box": 4,
+      "edges_per_box": 4
+    }
+  ],
+  "display_roi_xy": [
+    0,
+    70.4,
+    -30,
+    30
+  ],
+  "orientation": "forward X right; lateral Y up",
+  "pca": {
+    "mean": [
+      0.1340726757920674,
+      0.15117336699221856,
+      0.036566445838420183,
+      0.021762059737616954,
+      0.35383641950804967,
+      0.3427506516597764,
+      0.022133226908511053,
+      0.0176976606462641,
+      0.268133916886386,
+      0.23659807738528793,
+      0.32815582326601533,
+      1.0,
+      0.49785562398655164,
+      0.5007538787465297
+    ],
+    "scale": [
+      0.1889496839353905,
+      0.18908234713907818,
+      0.11333646462074849,
+      0.07643092539556412,
+      0.20261264883141156,
+      0.18765934945516147,
+      0.07773227862164218,
+      0.06184808513154967,
+      0.1573555601963653,
+      0.13610181023322612,
+      0.15449633635978757,
+      1.0,
+      0.25313182561917696,
+      0.2437452462578019
+    ],
+    "basis": [
+      [
+        -0.22792416628254422,
+        0.08888980006429223,
+        0.5015542875875517
+      ],
+      [
+        0.12754837135234942,
+        0.3842418283446386,
+        -0.16976531510347997
+      ],
+      [
+        0.3203020236028291,
+        0.01151242279922532,
+        0.177123830257563
+      ],
+      [
+        0.33456189412000265,
+        -0.28664103482815934,
+        0.03304766214712264
+      ],
+      [
+        0.4245392311300975,
+        -0.28148887720576526,
+        -0.118758089408884
+      ],
+      [
+        0.3789815293470256,
+        -0.325746551355299,
+        -0.20301614789199388
+      ],
+      [
+        0.38543976546899017,
+        0.09947118855953259,
+        0.3589389162904246
+      ],
+      [
+        0.3761544167628297,
+        0.07855183305838861,
+        0.3477890109323718
+      ],
+      [
+        0.23496843571459283,
+        0.47998001423148345,
+        -0.25821930793312786
+      ],
+      [
+        0.17411953091253968,
+        0.42945816955307897,
+        -0.3865933149713086
+      ],
+      [
+        0.1334538784980556,
+        0.3819346433069118,
+        0.40716444845593996
+      ],
+      [
+        0.0,
+        5.293955920339377e-23,
+        -1.0587911840678754e-22
+      ],
+      [
+        0.0007018147328992999,
+        0.007417453374022997,
+        -0.0029705927975962093
+      ],
+      [
+        0.001488825496231928,
+        -0.0022949287680500453,
+        0.011015381785348811
+      ]
+    ],
+    "rgb_percentile_1": [
+      -2.2053928491848356,
+      -4.4147700728961965,
+      -2.3632677404536166
+    ],
+    "rgb_percentile_99": [
+      8.027560581421417,
+      3.2411455919783223,
+      3.7499122927158006
+    ],
+    "gamma": 0.65,
+    "display_pool": "2x2 max",
+    "explained_variance_ratio": [
+      0.3149702847819174,
+      0.16280748727330224,
+      0.13540400554354265
+    ]
+  },
+  "encoder": {
+    "name": "hist14",
+    "version": 1,
+    "channels": 14,
+    "channel_names": [
+      "height_count_b0",
+      "height_count_b1",
+      "height_count_b2",
+      "height_count_b3",
+      "z_max",
+      "z_mean",
+      "z_span",
+      "z_std",
+      "intensity_max",
+      "intensity_mean",
+      "log_density",
+      "occupancy",
+      "point_offset_x",
+      "point_offset_y"
+    ],
+    "geometry": {
+      "x_min": 0.0,
+      "x_max": 70.4,
+      "x_res": 0.1,
+      "y_min": -40.0,
+      "y_max": 40.0,
+      "y_res": 0.1,
+      "z_min": -2.5,
+      "z_max": 1.0,
+      "z_res": 0.1
+    },
+    "grid_shape_xyz": [
+      704,
+      800,
+      35
+    ],
+    "bin_edges": [
+      -2.5,
+      -1.625,
+      -0.75,
+      0.125,
+      1.0
+    ],
+    "density_norm": 32.0,
+    "intensity_scale": 1.0,
+    "layout": {
+      "encoding": "YXC",
+      "model": "BCYX"
+    },
+    "boundary": {
+      "interval": "open",
+      "epsilon": 0.001
+    },
+    "finite_filter": "first_four_columns",
+    "height_bin_ties": "upper",
+    "precision": {
+      "coordinates": "float64",
+      "index": "int64",
+      "accumulation": "float64",
+      "output": "float32"
+    }
+  },
+  "display_encoder_name": "Strata-BEV14",
+  "inference": {
+    "checkpoint": "/home/duyennh/Downloads/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-head_shared-sgfpn-ctx_none_local_none_blocksimam_c3c4c5_f32_detail0_9e1b2f9764e5-grouped_8ca741fdd6ed-s42-Final-h32-20261019T073647Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-head_shared-sgfpn-ctx_none_local_none_blocksimam_c3c4c5_f32_detail0_9e1b2f9764e5-grouped_8ca741fdd6ed-s42-Final-h32/selected/best_ap.pt",
+    "checkpoint_sha256": "b00e6db16354dc3057a773cb4f1847fcd465e48ce893eb336b58e0e4fde280f8",
+    "config_source": "embedded checkpoint config",
+    "config_sha256": "5d8601c839cc3ff71829e3e25d2b1a39f2c4bd9e51f0499781da85a12ccd8ef5",
+    "checkpoint_epoch": 130,
+    "box_mode": "bev",
+    "strict_state_dict": true,
+    "checkpoint_identity_validated": true,
+    "vertical_prediction": false,
+    "ground_truth_used_for_inference": false,
+    "torch_version": "2.11.0",
+    "device": "cpu",
+    "precision": "fp32",
+    "encoding": "hist14",
+    "encoding_backend": "numba",
+    "score_threshold": 0.3,
+    "nms_threshold": 0.1,
+    "max_detections": 500,
+    "use_iou": true,
+    "nms_alpha": 0.5,
+    "checkpoint_identity": {
+      "box_mode": "bev",
+      "class_order": [
+        "Car",
+        "Pedestrian",
+        "Cyclist"
+      ],
+      "encoding": {
+        "metadata": {
+          "bin_edges": [
+            -2.5,
+            -1.625,
+            -0.75,
+            0.125,
+            1.0
+          ],
+          "boundary": {
+            "epsilon": 0.001,
+            "interval": "open"
+          },
+          "channel_names": [
+            "height_count_b0",
+            "height_count_b1",
+            "height_count_b2",
+            "height_count_b3",
+            "z_max",
+            "z_mean",
+            "z_span",
+            "z_std",
+            "intensity_max",
+            "intensity_mean",
+            "log_density",
+            "occupancy",
+            "point_offset_x",
+            "point_offset_y"
+          ],
+          "channels": 14,
+          "density_norm": 32.0,
+          "finite_filter": "first_four_columns",
+          "geometry": {
+            "x_max": 70.4,
+            "x_min": 0.0,
+            "x_res": 0.1,
+            "y_max": 40.0,
+            "y_min": -40.0,
+            "y_res": 0.1,
+            "z_max": 1.0,
+            "z_min": -2.5,
+            "z_res": 0.1
+          },
+          "grid_shape_xyz": [
+            704,
+            800,
+            35
+          ],
+          "height_bin_ties": "upper",
+          "intensity_scale": 1.0,
+          "layout": {
+            "encoding": "YXC",
+            "model": "BCYX"
+          },
+          "name": "hist14",
+          "precision": {
+            "accumulation": "float64",
+            "coordinates": "float64",
+            "index": "int64",
+            "output": "float32"
+          },
+          "version": 1
+        },
+        "sha256": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0"
+      },
+      "group_weights": [
+        [
+          "car",
+          0.5
+        ],
+        [
+          "ped_cyc",
+          0.5
+        ]
+      ],
+      "groups": [
+        {
+          "classes": [
+            "Car"
+          ],
+          "global_ids": [
+            0
+          ],
+          "name": "car"
+        },
+        {
+          "classes": [
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "global_ids": [
+            1,
+            2
+          ],
+          "name": "ped_cyc"
+        }
+      ],
+      "model": {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 32,
+        "cls_encoding": "gaussian",
+        "deploy": false,
+        "expansion": 2.5,
+        "features": {
+          "config": {
+            "block_simam_lambda": 0.0001,
+            "block_simam_stages": [
+              "c3",
+              "c4",
+              "c5"
+            ],
+            "c4_attention": "none",
+            "c4_attention_qk_norm": "none",
+            "c4_attention_scales": [],
+            "c4_context": "none",
+            "detail_path": false,
+            "local_attention": "none",
+            "neck_fusion_channels": 32
+          },
+          "placement": {
+            "attention_order": null,
+            "block_simam": [
+              {
+                "channels": 48,
+                "stage": "c3",
+                "stride": 4
+              },
+              {
+                "channels": 96,
+                "stage": "c4",
+                "stride": 8
+              },
+              {
+                "channels": 128,
+                "stage": "c5",
+                "stride": 16
+              }
+            ],
+            "block_simam_position": "projection_bn_before_layer_scale",
+            "focal": null,
+            "local_attention": null
+          },
+          "resolver_version": 3
+        },
+        "head_mode": "grouped",
+        "header_act": "silu",
+        "header_architecture": "shared",
+        "header_use_bn": true,
+        "header_use_iou": true,
+        "neck_type": "scale_gated_fpn",
+        "num_range_bands": 4,
+        "scale_gated_fpn": true,
+        "stage_depths": [
+          3,
+          4,
+          2
+        ],
+        "use_reparam": false
+      },
+      "objective": {
+        "iou_loss_weight": 1.0,
+        "iou_target_type": "mgiou",
+        "name": "oga",
+        "use_iou": true
+      },
+      "output_stride": 4,
+      "training": {
+        "accumulation_steps": 1,
+        "checkpoint_selection": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "policy": "maximum validation AP",
+          "primary": "ap",
+          "sampling": "R40"
+        },
+        "epochs": 160,
+        "grad_clip_norm": 10.0,
+        "learning_rate": 0.0007,
+        "min_lr": 1e-06,
+        "optimizer": "adamw",
+        "physical_batch_size": 16,
+        "precision": "bf16",
+        "scheduler": "cosine",
+        "selection_decode": {
+          "max_detections": 500,
+          "nms_alpha": 0.5,
+          "nms_threshold": 0.1,
+          "peak_mode": "per_class",
+          "score_threshold": 0.05
+        },
+        "warmup_epochs": 10,
+        "weight_decay": 0.001
+      },
+      "version": 1
+    }
+  },
+  "camera_footprint": "four ground corners from cached calibration projection; no object height displayed",
+  "source_render_metadata_sha256": "5f9c3aca5332c0e98797e1c80088c7260d776b6807bf385148ac5803c3e5e62f",
+  "prediction_cache_sha256": "57a0f7e620c32a0af75d9eafe1d5b7fb02c788b005d9c5dc327dddc933563e50"
+}

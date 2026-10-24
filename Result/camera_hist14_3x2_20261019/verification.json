@@ -1,0 +1,31 @@
+{
+  "png": [
+    5280,
+    3520
+  ],
+  "unique_channel_colors": 14,
+  "source_hashes_verified": true,
+  "frames": [
+    {
+      "frame": "002425",
+      "fresh_inference_matches": true,
+      "encoder_tensor_matches": true,
+      "numpy_numba_max_error": 0.0,
+      "drawn_boxes": 1
+    },
+    {
+      "frame": "005571",
+      "fresh_inference_matches": true,
+      "encoder_tensor_matches": true,
+      "numpy_numba_max_error": 0.0,
+      "drawn_boxes": 11
+    },
+    {
+      "frame": "007016",
+      "fresh_inference_matches": true,
+      "encoder_tensor_matches": true,
+      "numpy_numba_max_error": 0.0,
+      "drawn_boxes": 11
+    }
+  ]
+}

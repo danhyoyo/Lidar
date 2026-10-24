@@ -1,0 +1,68 @@
+[
+  {
+    "id": "ours_best_ap",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/evaluation_ap_local_bev_T4.json",
+    "snapshot": "sources/ours_best_ap.json",
+    "sha256": "88b1bcb3f64bfa13b0f2f14097df875f9f202e3c8fee5c28ffb0a01e7fe50c17"
+  },
+  {
+    "id": "ours_best_loss",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/evaluation_loss_local_bev_T4.json",
+    "snapshot": "sources/ours_best_loss.json",
+    "sha256": "87edba176d7fe72f5e744712fb162c274e5097d55d02356ba54e7c360e8232fa"
+  },
+  {
+    "id": "pixor",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/report_pixor.json",
+    "snapshot": "sources/pixor.json",
+    "sha256": "6b553646071173e0114d244d232fbc49f61479a4709eb2f132c0b88ce9d9d0b0"
+  },
+  {
+    "id": "validation_assets",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/validation_assets.json",
+    "snapshot": "sources/validation_assets.json",
+    "sha256": "6ad41b1091ac83c441db896f52ff6f08c1599fd0cdc4dc8dde71303680451898"
+  },
+  {
+    "id": "baseline_environment",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/environment.json",
+    "snapshot": "sources/baseline_environment.json",
+    "sha256": "b134d3d61d38ee35014947ed15d3cfec3f052c05481d66ad7853aa545d723604"
+  },
+  {
+    "id": "pointpillars",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/full/pointpillars/report.json",
+    "snapshot": "sources/pointpillars.json",
+    "sha256": "c9620ccf813ea0ebf063c3e2857359a916ce5ac9d2fdb2731f44eeba427fc814"
+  },
+  {
+    "id": "second",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/full/second/report.json",
+    "snapshot": "sources/second.json",
+    "sha256": "2a7bbe9dfae37a456ced88273d120a67da45db8a93c269b6c863babc7b5bf68c"
+  },
+  {
+    "id": "pointrcnn",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/full/pointrcnn/report.json",
+    "snapshot": "sources/pointrcnn.json",
+    "sha256": "bd2cc643e7f0894c891d38df1a9c98110c9d68df861299fc11275ee2515d0a9f"
+  },
+  {
+    "id": "parta2_anchor",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/full/parta2_anchor/report.json",
+    "snapshot": "sources/parta2_anchor.json",
+    "sha256": "b34ec62f63c11f657980a824f0bfa2b29346de1b269ae87215ba54915895a253"
+  },
+  {
+    "id": "pv_rcnn",
+    "original_path": "/home/duyennh/Downloads/opendet_pixornext/kitti_val_20261017T163056Z_results/full/pv_rcnn/report.json",
+    "snapshot": "sources/pv_rcnn.json",
+    "sha256": "1f9bc3347a56d68b761331cdd145aa2faa7343e8309f40e66cce8f3eb4550ff4"
+  },
+  {
+    "id": "user_confirmation_pixor_T4",
+    "original_path": "User conversation, 2026-10-18",
+    "snapshot": "sources/user_confirmation_pixor_T4.json",
+    "sha256": "4ae46f6663892c1d7c4ad65638be6c14c8581026f32f4bd3a12db5a73f13850a"
+  }
+]

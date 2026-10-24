@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "full_workbook": "Tables_bai_bao_LiDAR_T4_v2_AugFixed.xlsx",
+  "single_sheet_workbook": "Augmentation_3_nhom_DA_SUA.xlsx",
+  "active_sheet": "S02_Augmentation",
+  "rows": [
+    {
+      "run": "G16",
+      "label": "Baseline: xoay / dịch / scale, không GT sampler",
+      "map": 51.29592789996303
+    },
+    {
+      "run": "O32",
+      "label": "GT sampler có sẵn (openpcdet_fake / Fake_opengt)",
+      "map": 60.21793749207129
+    },
+    {
+      "run": "H32",
+      "label": "Hybrid cải tiến (ours)",
+      "map": 68.12417843249604
+    }
+  ],
+  "sha256": {
+    "Tables_bai_bao_LiDAR_T4_v2_AugFixed.xlsx": "4845298b2bed9f4b88f2f9e30586784e5bd072f7c540a1c317d340059c203d3f",
+    "Augmentation_3_nhom_DA_SUA.xlsx": "6813ee3c8a96f42d6957de33614d4001428099175c6bbb132e20b087cc5582b8"
+  }
+}
