@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering\small
-\caption{Pipeline latency and throughput on KITTI validation (3,769 frames, including 3,759 timed frames after 10 warmup frames) on a unified NVIDIA Tesla T4 GPU platform. Batch size is 1, with FP32 precision. Forward latency covers network execution alone. End-to-End (E2E) latency includes raw LiDAR file I/O, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Best values among compact models are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Archived sequential offline pipeline latency on KITTI validation (3,759 timed frames after 10 warmup frames), FP32 and batch size 1. MobilePIXOR uses L4; the remaining rows use T4. GPU labels are retained per row. Network-stage boundaries and native preprocessing differ by implementation.}
 \label{tab:efficiency}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lrrrrrrrr@{}}
@@ -8,17 +8,17 @@
 \textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Model\\(ms) $\downarrow$}} & \textbf{\shortstack{Model\\FPS $\uparrow$}} & \textbf{\shortstack{E2E\\(ms) $\downarrow$}} & \textbf{\shortstack{E2E\\FPS $\uparrow$}} & \textbf{\shortstack{P50\\(ms) $\downarrow$}} & \textbf{\shortstack{P95\\(ms) $\downarrow$}} & \textbf{\shortstack{P99\\(ms) $\downarrow$}} \\
 \midrule
 PIXOR~\cite{yang2018pixor} & 2.135 & 70.79 & 14.13 & 144.00 & 6.94 & 142.29 & 159.38 & 175.43 \\
-MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & \underline{25.43} & \underline{39.32} & 90.65 & 11.03 & 89.75 & 101.46 & 114.56 \\
-PointPillars~\cite{lang2019pointpillars} & 4.835 & 32.13 & 31.12 & \underline{63.84} & \underline{15.66} & \underline{62.10} & \textbf{75.88} & \textbf{92.73} \\
+MobilePIXOR (L4)~\cite{nguyen2024indoor} & 0.598 & 11.05 & 90.50 & 85.92 & 11.64 & 84.11 & 112.52 & 124.94 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & 32.13 & 31.12 & 63.84 & 15.66 & 62.10 & 75.88 & 92.73 \\
 SECOND~\cite{yan2018second} & 5.326 & 62.64 & 15.96 & 93.70 & 10.67 & 92.02 & 107.42 & 126.35 \\
-\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & \textbf{17.88} & \textbf{55.94} & \textbf{60.96} & \textbf{16.41} & \textbf{58.28} & \underline{80.85} & \underline{95.91} \\
+\textbf{MobilePIXORNeXt (Ours)} & 0.754 & 17.88 & 55.94 & 60.96 & 16.41 & 58.28 & 80.85 & 95.91 \\
 \midrule
 \multicolumn{9}{@{}l}{\textit{Heavyweight 3D Anchor-Based Reference Detectors}} \\
-PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 169.36 & 5.90 & 194.50 & 5.14 & 191.24 & 213.48 & 235.10 \\
-Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 102.57 & 9.75 & 133.75 & 7.48 & 131.50 & 150.49 & 172.80 \\
-PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 160.79 & 6.22 & 188.60 & 5.30 & 186.40 & 202.62 & 224.15 \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 169.36 & 5.90 & 194.50 & 5.14 & 194.77 & 213.48 & 222.37 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 102.57 & 9.75 & 133.75 & 7.48 & 132.40 & 150.49 & 169.13 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 160.79 & 6.22 & 188.60 & 5.30 & 187.35 & 202.62 & 219.07 \\
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All detectors, including MobilePIXOR and reference networks, are evaluated under identical conditions on the same NVIDIA Tesla T4 GPU. Model latency measures network execution in the evaluation pipeline. Standalone throughput without pipeline synchronization reaches $115.32\,\text{FPS}$ ($8.67\,\text{ms}$, Table~\ref{tab:components}). End-to-end (E2E) latency includes LiDAR loading, statistical rasterization, Host-to-Device (H2D) transfer, network execution, coordinate decoding, and class-wise rotated NMS. Percentiles (P50, P95, P99) cover 3,759 timed frames after 10 warmup frames.}
+{\footnotesize \textit{Note.} Except for the explicitly marked L4 row, timing comes from the archived T4 snapshot. The offline boundary covers input preparation, H2D transfer, network execution, and final decoding/NMS; it excludes sensor acquisition, tracking, control, and AP computation. Learned encoding or internal proposal processing may lie inside the network stage of reference detectors. The 8.67\,ms / 115.32\,FPS model measurement belongs to a separate L4 report, rather than an isolated T4 benchmark. CPU/IO conditions and checkpoint identity must be matched before attributing timing differences to individual modules.}
 \end{table*}

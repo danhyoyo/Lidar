@@ -1,0 +1,142 @@
+[
+  {
+    "id": "I15",
+    "title": "Tổng task weights không phải tổng gradient budget",
+    "quote": "strictly conserves the total gradient budget across all tasks",
+    "explanation": "Sum omega=J chỉ bảo toàn tổng trọng số. Gradient mỗi task còn phụ thuộc scale/direction và shared features; không suy ra gradient norm hoặc convergence. Đã sửa phát biểu, giữ nguyên công thức.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:416",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i15",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I16",
+    "title": "Detached surrogate không loại hết gradient competition",
+    "quote": "Detaching $q^*$ prevents gradient competition",
+    "explanation": "q*=clipped mean projectionGIoU không phải exact polygon IoU. stopgrad chặn đường qua target, nhưng quality và geometry còn chung backbone/neck. Exact rotated IoU cũng không thể gọi là hoàn toàn nondifferentiable ở mọi cấu hình. Đã sửa mục tiêu surrogate và giới hạn gradient claim.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:383",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i16",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I17",
+    "title": "Doubled-angle không khôi phục directed heading liên tục",
+    "quote": "is fully recovered without trigonometric ambiguity",
+    "explanation": "cos2psi/sin2psi biểu diễn orientation modulo pi, không có front/back. Scalar atan2 representative vẫn wrap ở boundary và vector0 không có direction. Đã nêu đúng contract, giữ nguyên phương trình.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:475",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i17",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I26",
+    "title": "Phép cộng CPU statistics không tự bảo đảm CUDA sync không đáng kể",
+    "quote": "negligible thread synchronization",
+    "explanation": "Các cell độc lập sau group nhưng nhiều point có thể update cùngcell, cần grouping/reduction/atomic strategy. Chưa có đo CUDA hoặc asynchronouspipeline. Đã chuyển thành futureextension và nêu writeconflict.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:111",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i26",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I27",
+    "title": "Soft-min corner thiếu định nghĩa D và có thể âm",
+    "quote": "\\mathcal{D}_{\\mathrm{smooth}} = -\\tau_{\\mathrm{soft}}",
+    "explanation": "D_direct/D_pi chưa được định nghĩa tường minh là tổng/trung bình khoảng cách theo mét trước normalize hay distance đã normalize. Code smooth_corner_loss.py dùng meancornerL1, softmin rồi chia diagonal. Unnormalized logsumexp-softmin có thể âm và không có exactzero baseline. Đây không tự động là lỗi optimizer, nhưng gọi distance/C-infinity là chưa chính xác khi D gồm abs. Giữ nguyên công thức/kết quả; cần làm rõ định nghĩa, đơn vị tau và intended behavior.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:399",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i27",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Chưa sửa công thức; cần tác giả xác định",
+    "action": "Định nghĩa D_direct/D_pi, normalization order, tau units và việc cho phép negative loss; không đổi objective hồi tố nếu không chạy lại."
+  },
+  {
+    "id": "I29",
+    "title": "Data flow và index conventions chưa đủ rõ",
+    "quote": "A point $\\mathbf{p}_i$ maps to grid coordinate $(u_i, v_i)$ as:",
+    "explanation": "u làx/column704, v lày/row800; shapeCHW dùngrowv,columnu. Methods trình bàyStrata trướcPCGTA dễ hiểu nhầm augmentation trên BEV. Đã nêu trainpoints→PCGTA→rasterize và inferrawpoints→rasterize, cùng tensor indexing. Final heads share stem within eachgroup chứ không share initialgroupblock giữahai nhóm.",
+    "comment_type": "claim_accuracy",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:20",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i29",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I30",
+    "title": "RDA được gọi density-adaptive nhưng công thức chỉ dùng range",
+    "quote": "Range and Density-Adaptive (RDA) weighting",
+    "explanation": "w(r) chỉ córange, không có localdensityinput. Đã gọi range-adaptive weighting denotedRDA; chưa có ablation cho densityadaptation.",
+    "comment_type": "claim_accuracy",
+    "severity": "minor",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/methodology.tex:402",
+    "related_sections": [
+      "sections/methodology.tex"
+    ],
+    "root_cause_key": "i30",
+    "review_lane": "section_methods",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa thuật ngữ",
+    "action": ""
+  }
+]

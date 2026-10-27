@@ -1,0 +1,305 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>MobilePIXORNeXt review</title><style>body{font:16px/1.6 system-ui,sans-serif;max-width:1100px;margin:40px auto;padding:0 24px;color:#18212b}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #ccd4df;padding:8px;text-align:left}th{background:#edf2f7}blockquote{border-left:4px solid #9caabc;padding-left:16px;color:#445}code{overflow-wrap:anywhere}a{color:#145ea8}h2{margin-top:2em}</style><body><h1>Rà soát logic, số liệu và chỉnh sửa MobilePIXORNeXt</h1>
+<p>Ngày 24/10/2026. Execution: <strong>sequential single-agent</strong>. Đã đọc cả hai entry point, toàn bộ 8 section nội dung, 9 tệp bảng và bảng Strata trong Methods; đối chiếu nguồn Excel/CSV và một số code định nghĩa metric/loss. Đây là đánh giá nội bộ, không kiểm chứng tài liệu bên ngoài và không chạy lại huấn luyện/KITTI evaluation.</p>
+<p><strong>Kết luận:</strong> Có mâu thuẫn thực chất trong protocol, GPU, lịch huấn luyện và danh tính run. Một số hàng có AP trung bình đúng nhưng AP từng lớp hoặc tốc độ được ghép từ run khác. Bản thảo đã được sửa thành bản diễn giải trung thực với các nguồn đang có; chưa thể coi ablation đã được kiểm chứng đầy đủ hoặc bản thảo sẵn sàng nộp.</p>
+<p><strong>Tổng hợp bản trước sửa:</strong> 30 phát hiện (10 major, 16 moderate, 4 minor), đã xác minh 30/30 trích dẫn. Đây là phân loại vấn đề ban đầu, không phải 30 lỗi vẫn còn nguyên sau sửa.</p>
+<h2>Các trường hợp “cùng model nhưng hai số”</h2>
+<table>
+<thead>
+<tr>
+<th>Vị trí</th>
+<th>Số trong bản cũ</th>
+<th>Đối chiếu nguồn và xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A8 / Baseline loss</td>
+<td>67.38 / 69.46 nhưng 6.94 ms / 144.16 FPS</td>
+<td>AP thuộc P1 focal; tốc độ thuộc S32. Tách A8=S32 và A8F=P1.</td>
+</tr>
+<tr>
+<td>Loss Baseline P1</td>
+<td>83.92 / 55.48 / 62.74</td>
+<td>Nguồn 82.97 / 56.99 / 62.17. Đã sửa; mAP vẫn 67.38.</td>
+</tr>
+<tr>
+<td>Q-OGA P11</td>
+<td>84.35 / 58.12 / 65.13; 0.735M</td>
+<td>Nguồn 84.89 / 57.15 / 65.56; 815,743 params. Đã sửa; mAP vẫn69.20.</td>
+</tr>
+<tr>
+<td>OGA+IQA 70.58 và final71.50</td>
+<td>Ghi chỉ thêm attention</td>
+<td>70.58 = P4 focal / independent heads; final=no-focal / shared heads, schedule khác. Không phải một model chỉ bật/tắt attention.</td>
+</tr>
+<tr>
+<td>Final L4 và T4</td>
+<td>71.50/73.45 ghép60.96 ms</td>
+<td>L4:71.50/73.45; T4:71.46/73.42 và60.96 ms. Đã tách snapshot, chưa quy chênh lệch cho GPU.</td>
+</tr>
+<tr>
+<td>Forward8.67 và17.88 ms</td>
+<td>Ghi standalone/pipeline cùngT4</td>
+<td>8.67 từL4,17.88 từT4. Đã sửa.</td>
+</tr>
+<tr>
+<td>66.25%</td>
+<td>Ghi PC-GTA H32/F24</td>
+<td>Nguồn O32G16 simplified samplerV2 H16/F32/SG-FPN. Đã sửa nhãn và bỏ +6.03PC-GTA claim.</td>
+</tr>
+<tr>
+<td>Block-SimAM gain</td>
+<td>Methods+0.88, Results+0.92 pp</td>
+<td>Hai phát biểu cũ mâu thuẫn; cả hai chưa có matched no-attention control trên final model. Đã bỏ causal gain.</td>
+</tr>
+</tbody>
+</table>
+<h2>Phạm vi sửa</h2>
+<p>Đã thống nhất entry point và abstract, chỉnh luồng train/inference và nghĩa yaw/quality, sửa các ô có nguồn rõ, thay bảng “tiến trình cộng dồn” bằng inventory có run ID, và giới hạn các kết luận nhân quả. Không tạo số thí nghiệm mới. Không sửa phương trình loss hoặc tự chọn một bộ kết quả thay thế khi nguồn chưa đủ.</p>
+<p>Có ba hướng xử lý: chỉ trau chuốt câu sẽ để nguyên kết luận sai; giả định mọi run tương đương sẽ che mất confound; bản sửa hiện tại chọn <strong>ghi đúng nguồn và giới hạn diễn giải</strong>, đồng thời giữ các thiếu sót thực nghiệm thành việc cần làm. Bản trước sửa được lưu trong <code>artifacts/original/</code>; diff nằm ở <code>artifacts/data/source_changes.patch</code>.</p>
+<h2>Phát hiện chi tiết</h2>
+<p>Các mục dưới đây là <strong>[LLM]</strong>: được suy luận từ văn bản và nguồn cục bộ. Các phép kiểm tự động được báo riêng ở cuối. Tọa độ và trích dẫn là bản trước sửa trong <code>artifacts/original/</code>.</p>
+<h3>I01 — Hai entry point chứa abstract và tuyên bố khác nhau (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/MobilePIXORNeXt.tex:56">MobilePIXORNeXt.tex:56</a>.</p>
+<blockquote>
+<p>under the official 40-point interpolation protocol</p>
+</blockquote>
+<p>main.tex mô tả local evaluator chưa xác minh tương đương; MobilePIXORNeXt.tex vẫn ghi official và highest Pedestrian AP. sections/abstract.tex lại có bản thứ ba. Đã thống nhất MobilePIXORNeXt.tex → main.tex → sections/abstract.tex.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I02 — Tuyên bố unified/official trái với evaluator thực tế (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/experiments.tex:40">sections/experiments.tex:40</a>.</p>
+<blockquote>
+<p>The evaluation code strictly adheres to the official KITTI devkit evaluation protocol</p>
+</blockquote>
+<p>Workbook v7, sheet B05_Protocol_Audit: ours/MobilePIXOR dùng local loader-aligned, strict x/y ROI; PIXOR và năm baseline dùng reference evaluator, full-frame GT. Cùng R40 và IoU không chứng minh cùng ignore/matching/GT domain. Đã bỏ shared AP ranking, thêm L/R trong bảng. Chưa có đối chiếu evaluator trên cùng predictions.</p>
+<p><strong>Trạng thái:</strong> Đã sửa mô tả; thiếu thí nghiệm equivalence.</p>
+<p><strong>Việc tiếp theo:</strong> Chạy cùng predictions / GT qua hai evaluator, lưu class/difficulty ignore rules và matching outputs.</p>
+<h3>I03 — 8.67 ms và 17.88 ms bị giải thích sai thành hai chế độ T4 (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:45">sections/results.tex:45</a>.</p>
+<blockquote>
+<p>Standalone GPU Forward Latency</p>
+</blockquote>
+<p>Seed workbook Theo seed!AF7: 8.671745659 ms trên L4; v7 B10_Speed_Detail!E14: 17.875186737 ms trên T4. Không có thí nghiệm cùng GPU chứng minh chênh lệch do synchronization/DataLoader. Đã ghi GPU và tách snapshot.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I04 — AP L4 và T4 của cùng tên model bị gộp (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/comparison.tex:14">tables/comparison.tex:14</a>.</p>
+<blockquote>
+<p>86.90 &amp; \textbf{60.78} &amp; \underline{66.81}</p>
+</blockquote>
+<p>Seed workbook: L4 86.900441/60.778199/66.807415, mAP 71.495352, mAP9 73.445159. V7 T01_Benchmark row16: T4 86.903460/60.749361/66.732802, mAP 71.461874, mAP9 73.418711. Giữ cả hai snapshot với nhãn nguồn; chưa thể khẳng định khác biệt chỉ do GPU. Cần checkpoint hash/prediction hash.</p>
+<p><strong>Trạng thái:</strong> Đã tách; cần kiểm tra hash.</p>
+<p><strong>Việc tiếp theo:</strong> Đối chiếu SHA256 checkpoint, config, split và prediction files giữa báo cáo L4/T4.</p>
+<h3>I05 — Lịch 50/100 epoch và epoch cuối không khớp metadata (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/experiments.tex:51">sections/experiments.tex:51</a>.</p>
+<blockquote>
+<p>all exploratory ablation experiments (A1--A10) were trained under a standardized 50-epoch schedule</p>
+</blockquote>
+<p>Seed workbook Cau hinh: Final S42 completed/planned 160/160, selected 130; Final S43/S44 100/100, selected 100; B0 archived38/planned100 selected 30. runs_summary.csv: B1 budget 100 selected 13 (loss), E8 budget 50 selected 20, E14 budget 50 selected 30. Epoch47 là checkpoint loss-selected trong lịch sử final run, không chứng minh run độc lập50 epoch. Đã sửa toàn bộ khẳng định uniform schedule/asymptotic convergence.</p>
+<p><strong>Trạng thái:</strong> Đã sửa mô tả; chưa có thí nghiệm đồng budget.</p>
+<p><strong>Việc tiếp theo:</strong> Lập ma trận run/config/selected epoch/criterion; chỉ tính delta component khi các biến khác khớp.</p>
+<h3>I06 — Bảng seed không chỉ thay seed (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/seed_robustness.tex:3">tables/seed_robustness.tex:3</a>.</p>
+<blockquote>
+<p>under a 100-epoch training schedule</p>
+</blockquote>
+<p>Cau hinh!T10=Binary35 của MobilePIXOR S42; T11/T12=hist14 của S43/S44. S42 archived38 epoch, các seed còn lại100; Final S42 160 epoch, S43/S44 100 epoch. Mean/std vẫn là phép tính mô tả hợp lệ nhưng không đo initialization variance hoặc chứng minh numerical stability. Đã đổi caption/note và bỏ suy luận nhân quả.</p>
+<p><strong>Trạng thái:</strong> Đã sửa diễn giải; cần matched reruns.</p>
+<p><strong>Việc tiếp theo:</strong> Giữ cùng encoding, model, sampler, optimizer schedule, budget và checkpoint selection cho mọi seed.</p>
+<h3>I07 — A4→A5 không cô lập head width (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:99">sections/results.tex:99</a>.</p>
+<blockquote>
+<p>Expanding head width to 32 channels (A5) adds only</p>
+</blockquote>
+<p>A4 là G16 H16/F24/global-only, 51.30. A5=O32 H32/F32/SimplifiedGT V1 p=1,60.22. Cùng đổi head, neck, augmentation; +8.92 pp không phải head-only. Không có đo rank hoặc gradient chứng minh subspace collapse. Đã sửa cấu hình và bỏ cơ chế chưa đo.</p>
+<p><strong>Trạng thái:</strong> Đã sửa nhãn/diễn giải; chưa có isolated head run.</p>
+<h3>I08 — 66.25% bị gắn nhầm PC-GTA H32/F24 (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/components.tex:17">tables/components.tex:17</a>.</p>
+<blockquote>
+<p>A6 &amp; MobilePIXORNeXt &amp; Strata-BEV14 &amp; Grouped H32 &amp; PC-GTA &amp; F24 / SumFPN</p>
+</blockquote>
+<p>runs_summary.csv O32G16:66.247315/68.453192, H16/F32/SG-FPN/SimplifiedGT V2. A5=O32:H32/F32/SumFPN/SimplifiedGT V1. Vì vậy +6.03 pp không đo PC-GTA. H32 hybrid thực sự68.124178; O32→H32=+7.906241 pp, vẫn thay cả p/quota/placement recipe. Đã bỏ mọi +6.03 PC-GTA claim, ghi source-linked inventory.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I09 — A8 trộn AP P1 với tốc độ S32 (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/components.tex:39">tables/components.tex:39</a>.</p>
+<blockquote>
+<p>67.38 &amp; 69.46 &amp; 6.94 &amp; 144.16</p>
+</blockquote>
+<p>P1 focal context:67.378677/69.460029 và7.772452 ms/128.659530 FPS. S32 no-focal SG-FPN:68.459941/70.283161 và6.936693 ms/144.160918 FPS. Bản cũ ghép hai run vào một hàng. Đã giữ A8=S32 và thêm A8F=P1. A7H32→A8S32 còn đổi quota nên không cô lập neck.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I10 — AP từng lớp của Baseline và Q-OGA không khớp nguồn (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/loss.tex:10">tables/loss.tex:10</a>.</p>
+<blockquote>
+<p>83.92 &amp; 55.48 &amp; 62.74</p>
+</blockquote>
+<p>P1 nguồn:82.970232/56.992056/62.173743 →82.97/56.99/62.17; P11 nguồn:84.893017/57.145242/65.563877 →84.89/57.15/65.56. Các bộ số cũ vẫn cho cùng mAP làm tròn nên chỉ kiểm mean sẽ bỏ sót. Đã sửa từ paper_06_Loss_IQA.csv và workbook v7 T02.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I11 — Ghép Q-OGA lịch sử với số tham số của model cuối (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/loss.tex:19">tables/loss.tex:19</a>.</p>
+<blockquote>
+<p>saving $18{,}626$ parameters</p>
+</blockquote>
+<p>P1/P2/P11 dùng815743 params; P3/P4 dùng852929 params, chênh37186. Model cuối shared-head753569 khác kiến trúc. 69.20% là P11 lịch sử, không có bằng chứng ghép nó với734943 params. Đã sửa bảng0.816/0.853M và tách rõ mô hình cuối.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I12 — Factorial study không chứng minh positive synergy (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:121">sections/results.tex:121</a>.</p>
+<blockquote>
+<p>These results demonstrate clear methodological synergy</p>
+</blockquote>
+<p>Từ mAP chưa làm tròn: OGA khôngIQA +1.588431 pp; cóIQA +0.269471 pp. Interaction=P4−P3−P2+P1=−1.318960 pp. P4 cao nhất trong factorial không đồng nghĩa tương tác dương; chưa có uncertainty cho hiệu ứng nhỏ. Đã viết lại đúng main effects và interaction.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I13 — Attention table thay context, neck width và lịch sử run (major)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:112">sections/results.tex:112</a>.</p>
+<blockquote>
+<p>strictly attributable to 3D spatial-energy attention</p>
+</blockquote>
+<p>No-attention70.58 = P4 focal / independent towers852929; final71.50=no-focal / shared towers753569/selected 130. R25 middle stage row source F24, manuscriptF32. Lidar_result_final.xlsx còn có R37 F24 70.34 khác final. Không có đối chứng matched no-attention cho final. +0.88 Methods và+0.92 Results còn tự mâu thuẫn; đã bỏ isolated gain và ghi đúng phạm vi bảng.</p>
+<p><strong>Trạng thái:</strong> Đã sửa diễn giải/width; cần matched controls.</p>
+<p><strong>Việc tiếp theo:</strong> Chạy cùng final config, chỉ đổi block/stage attention, giữ width/depth/context/seed/schedule và rule chọn checkpoint.</p>
+<h3>I14 — Related Work gán cơ chế LOS/shadow bị tắt cho kết quả chính (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/related_work.tex:11">sections/related_work.tex:11</a>.</p>
+<blockquote>
+<p>integrating adaptive local ground plane fitting, static obstacle clearance filtering, line-of-sight ray checks, and shadow masking</p>
+</blockquote>
+<p>Experiments và Results ghi LOS, shadow, radiometric disabled. Đã mô tả core enabled mechanisms và optional options, không quy AP gain cho cơ chế không bật.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I15 — Tổng task weights không phải tổng gradient budget (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:416">sections/methodology.tex:416</a>.</p>
+<blockquote>
+<p>strictly conserves the total gradient budget across all tasks</p>
+</blockquote>
+<p>Sum omega=J chỉ bảo toàn tổng trọng số. Gradient mỗi task còn phụ thuộc scale/direction và shared features; không suy ra gradient norm hoặc convergence. Đã sửa phát biểu, giữ nguyên công thức.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I16 — Detached surrogate không loại hết gradient competition (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:383">sections/methodology.tex:383</a>.</p>
+<blockquote>
+<p>Detaching $q^*$ prevents gradient competition</p>
+</blockquote>
+<p>q*=clipped mean projectionGIoU không phải exact polygon IoU. stopgrad chặn đường qua target, nhưng quality và geometry còn chung backbone/neck. Exact rotated IoU cũng không thể gọi là hoàn toàn nondifferentiable ở mọi cấu hình. Đã sửa mục tiêu surrogate và giới hạn gradient claim.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I17 — Doubled-angle không khôi phục directed heading liên tục (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:475">sections/methodology.tex:475</a>.</p>
+<blockquote>
+<p>is fully recovered without trigonometric ambiguity</p>
+</blockquote>
+<p>cos2psi/sin2psi biểu diễn orientation modulo pi, không có front/back. Scalar atan2 representative vẫn wrap ở boundary và vector0 không có direction. Đã nêu đúng contract, giữ nguyên phương trình.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I18 — BEV/edge latency bị suy rộng thành 3D và safety deployment (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:190">sections/results.tex:190</a>.</p>
+<blockquote>
+<p>accurate 3D LiDAR detection was possible</p>
+</blockquote>
+<p>Output chỉ (x,y,l,w,yaw modulo pi), khôngz/h/velocity/tracking. KITTI/T4/L4 không chứng minh embedded/closed-loop collision avoidance hoặc TTC; P99 offline&lt;100 ms không phải worst-case guarantee. Đã giới hạn abstract/results/conclusion vào BEV và measured offline latency.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I19 — Cơ chế tối ưu hóa chưa có thí nghiệm phân biệt (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:99">sections/results.tex:99</a>.</p>
+<blockquote>
+<p>induces severe subspace rank collapse</p>
+</blockquote>
+<p>Không có feature singular values, gradient diagnostics hoặc matched width control. Các suy luận weak-return attenuation, synergy SG-FPN, T-SBUW suppresses spikes và epoch latency do sharpening đều vượt dữ liệu. Đã thay bằng quan sát AP/loss và ghi điều kiện kiểm chứng.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I20 — Monotonic descent mâu thuẫn validation spikes (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:144">sections/results.tex:144</a>.</p>
+<blockquote>
+<p>stable monotonic descent</p>
+</blockquote>
+<p>Results ghi classification spikes epochs18–25 rồi caption nói stable monotonic và rapidly stabilized byT-SBUW. Đã đổi thành generally decreasing trajectories; không quy nguyên nhân nếu không có weighting ablation.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I21 — Timing MobilePIXOR và một số percentile không khớp snapshot (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/efficiency.tex:11">tables/efficiency.tex:11</a>.</p>
+<blockquote>
+<p>90.65 &amp; 11.03</p>
+</blockquote>
+<p>V7B10: MobilePIXOR historicalL4 model11.049958/E2E85.923112/P50 84.114180/P95 112.524565/P99 124.943548. PointRCNN P50/P99=194.769222/222.372998; PartA2=132.399653/169.129394; PVRCNN=187.348769/219.072451. Đã sửa các ô có nguồn xác định, bỏ same-T4 claim. Không suy speedup L4/T4.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I22 — Far-range Pedestrian regression bị bỏ qua trong diễn giải (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:81">sections/results.tex:81</a>.</p>
+<blockquote>
+<p>These results are consistent with range-adaptive augmentation</p>
+</blockquote>
+<p>Table distance:PedFar0.99→0.80,−0.19 pp; Results chỉ nhấn mạnhCyclistFar14.94 và VRUgain. Đã nêu regression và bỏ suy luận nhân quả sampler/kernel từ whole-model comparison.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I23 — Delta_z 0.1 m không mô tả Strata-BEV14 (minor)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/tables/setup.tex:11">tables/setup.tex:11</a>.</p>
+<blockquote>
+<p>Grid resolution ($\Delta_x, \Delta_y, \Delta_z$)</p>
+</blockquote>
+<p>Strata14 dùng4heightbins trên3.5m, còn dz0.1 thuộc legacy35slices. Đã tách horizontalgrid0.1x0.1 vớifourverticalstrata; không đổi công thức.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I24 — Serialized checkpoint không phải kích thước trọng số FP32 thuần (minor)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:485">sections/methodology.tex:485</a>.</p>
+<blockquote>
+<p>with an FP32 checkpoint size of $9.34$</p>
+</blockquote>
+<p>753569*4bytes=3.014276MB; serializedcheckpoint9.34MB có thể chứa thêmstate/metadata. Mainabstract cũ gọi753569trainable nhưng12T-SBUW logits nâng tổngtrainable753581. Đã thống nhất deployable/train-only và serializedsize, không khẳng định thành phần checkpoint khi chưa có inspection.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I25 — Hình vehicle được dùng xác nhận VRU AP (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:166">sections/results.tex:166</a>.</p>
+<blockquote>
+<p>This visual evidence corroborates the substantial</p>
+</blockquote>
+<p>Ví dụ vehicle heatmaps không xác nhận định lượngPed/Cyc30–50m. Whole-model visualization cũng không trực tiếpvalidate Block-SimAM/SGFPN effects hoặc NMSspeed. Đã giới hạn caption và observation vào selectedexamples.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I26 — Phép cộng CPU statistics không tự bảo đảm CUDA sync không đáng kể (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:111">sections/methodology.tex:111</a>.</p>
+<blockquote>
+<p>negligible thread synchronization</p>
+</blockquote>
+<p>Các cell độc lập sau group nhưng nhiều point có thể update cùngcell, cần grouping/reduction/atomic strategy. Chưa có đo CUDA hoặc asynchronouspipeline. Đã chuyển thành futureextension và nêu writeconflict.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I27 — Soft-min corner thiếu định nghĩa D và có thể âm (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:399">sections/methodology.tex:399</a>.</p>
+<blockquote>
+<p>\mathcal{D}<em>{\mathrm{smooth}} = -\tau</em>{\mathrm{soft}}</p>
+</blockquote>
+<p>D_direct/D_pi chưa được định nghĩa tường minh là tổng/trung bình khoảng cách theo mét trước normalize hay distance đã normalize. Code smooth_corner_loss.py dùng meancornerL1, softmin rồi chia diagonal. Unnormalized logsumexp-softmin có thể âm và không có exactzero baseline. Đây không tự động là lỗi optimizer, nhưng gọi distance/C-infinity là chưa chính xác khi D gồm abs. Giữ nguyên công thức/kết quả; cần làm rõ định nghĩa, đơn vị tau và intended behavior.</p>
+<p><strong>Trạng thái:</strong> Chưa sửa công thức; cần tác giả xác định.</p>
+<p><strong>Việc tiếp theo:</strong> Định nghĩa D_direct/D_pi, normalization order, tau units và việc cho phép negative loss; không đổi objective hồi tố nếu không chạy lại.</p>
+<h3>I28 — Hình lưu sẵn còn legend/configuration cũ (moderate)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/results.tex:144">sections/results.tex:144</a>.</p>
+<blockquote>
+<p>Trajectories illustrate stable monotonic descent</p>
+</blockquote>
+<p>training_curves PDF vẫn gắnA5=GroupedH32,A6=HybridGT/F24,A8=HybridGT/SGFPN trong khi đối chiếu source đã phát hiện mapping khác. Pareto PDF còn nối frontier qua khác evaluator/GPU. Đã sửa caption nhưng chưa tái tạo hình khi thiếu trace liên kết từng curve với run. Cần dựng lại từ per-run records trước nộp.</p>
+<p><strong>Trạng thái:</strong> Chưa giải quyết nội dung hình; caption đã giới hạn.</p>
+<p><strong>Việc tiếp theo:</strong> Khôi phục curve→run/checkpoint manifest, dựng lại legend và chia biểu đồ theo protocol/hardware.</p>
+<h3>I29 — Data flow và index conventions chưa đủ rõ (minor)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:20">sections/methodology.tex:20</a>.</p>
+<blockquote>
+<p>A point $\mathbf{p}_i$ maps to grid coordinate $(u_i, v_i)$ as:</p>
+</blockquote>
+<p>u làx/column704, v lày/row800; shapeCHW dùngrowv,columnu. Methods trình bàyStrata trướcPCGTA dễ hiểu nhầm augmentation trên BEV. Đã nêu training points→PCGTA→rasterize và inference raw points→rasterize, cùng tensor indexing. Final heads share stem within eachgroup chứ không share initialgroupblock giữahai nhóm.</p>
+<p><strong>Trạng thái:</strong> Đã sửa.</p>
+<h3>I30 — RDA được gọi density-adaptive nhưng công thức chỉ dùng range (minor)</h3>
+<p>Vị trí bản trước sửa: <a href="/home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/review_results/audit_20261024/mobilepixornext-compact-lidar-object-detection-via-strata-bev-encoding-and-oriented-geometric-alignment/artifacts/original/sections/methodology.tex:402">sections/methodology.tex:402</a>.</p>
+<blockquote>
+<p>Range and Density-Adaptive (RDA) weighting</p>
+</blockquote>
+<p>w(r) chỉ córange, không có local density input. Đã gọi range-adaptive weighting denotedRDA; chưa có ablation cho density adaptation.</p>
+<p><strong>Trạng thái:</strong> Đã sửa thuật ngữ.</p>
+<h2>Nguồn đã đối chiếu</h2>
+<ul>
+<li><code>Result/mobilepixor_vs_ours_seed_summary.xlsx</code>: Theo seed và Cau hinh; epoch, encoding, GPU, per-class AP, params.</li>
+<li><code>Result/benchmark_T4_20261018/Tables_bai_bao_LiDAR_v7_SpeedDetail.xlsx</code>: T01_Benchmark, B04_Ours_AP_vs_Loss, B05_Protocol_Audit, B10_Speed_Detail, B12_Timing_Scope, T02_Loss_IQA, S02_Augmentation.</li>
+<li><code>Result/artifacts/ablation_analysis_20261012/</code>: runs_summary.csv, paper_01_Backbone.csv, paper_02_Encoding.csv, paper_03_Head_Width.csv, paper_04_Augmentation.csv, paper_05_Neck.csv, paper_06_Loss_IQA.csv.</li>
+<li><code>Result/Lidar_result_final.xlsx</code>: bảng attention stage/neck width và các run lịch sử. Workbook này có một số ô bị Excel đổi thành date serial; không lấy các ô đó làm AP và không ghi ngược thay đổi vào Excel.</li>
+<li>Code local evaluator, T-SBUW và smooth-corner implementation chỉ được đọc để đối chiếu định nghĩa, không thay đổi.</li>
+</ul>
+<p>Các workbook là nguồn lưu trữ cục bộ, không thay thế original JSON/config/checkpoint hashes. <code>workbooks.json</code> lưu trích xuất cả sheet/địa chỉ ô để kiểm lại; các giá trị date serial được giữ nguyên trong evidence.</p>
+<h2>Những việc vẫn cần trước khi nộp</h2>
+<ol>
+<li>Xác nhận checkpoint/config/prediction hashes cho L4/T4 và mỗi hàng; khôi phục manifest curve→run.</li>
+<li>So sánh trên cùng reference evaluator hoặc chứng minh local/reference equivalence bằng cùng predictions / GT.</li>
+<li>Chạy lại các đối chứng chỉ đổi một yếu tố cho final architecture; không dùng legacy focal model đại diện final no-focal.</li>
+<li>Chạy seed study cùng encoding, schedule, budget và selection rule.</li>
+<li>Dựng lại hình Pareto/loss với nguồn và nhãn đúng; caption hiện đã nêu giới hạn nhưng nội dung vector cũ còn giữ.</li>
+<li>Làm rõ D_direct/D_pi và normalization của soft-min. Chưa thay loss, vì đổi objective sẽ cần đánh giá lại.</li>
+</ol>
+<h2>Kiểm chứng</h2>
+<ul>
+<li>Biên dịch <code>main.tex</code> và compatibility entry <code>MobilePIXORNeXt.tex</code> thành công: 28 trang.</li>
+<li>Log cuối: 0 undefined references/citations, 0 overfull hbox. Còn các underfull hbox không chặn biên dịch.</li>
+<li>41/41 kiểm tra nguồn và thực thi checker đạt; 30/30 quote gốc được xác minh. Đây không phải kết quả chạy lại thí nghiệm.</li>
+<li>Đã xem trực quan trang 1, 21, 23; các bảng chính không bị cắt hoặc chồng chữ.</li>
+</ul>
+<p>Đọc <code>artifacts/data/verification.json</code> để xem kết quả máy chạy thực tế. Phase0 audit đã chạy nhưng text snapshot ban đầu chỉ chứa entry point; không coi output đó là bằng chứng đã kiểm semantic toàn bộ includes. Các phát hiện chi tiết trên đến từ việc đọc thủ công toàn bộ source và đối chiếu dữ liệu. Snapshot đầy đủ dùng kiểm quote đã được bổ sung bằng phép nối các source trước sửa. Đã chạy riêng check_tables, Methods logic và compile bằng script của skill. Không thực hiện online bibliography check. Môi trường không có <code>uv</code>/<code>python</code>; dùng <code>python3</code> tương đương cho script stdlib. Lệnh thử <code>python -B .../audit.py --help</code> trả127; fallback <code>python3</code> chạy được.</p>
+</body></html>

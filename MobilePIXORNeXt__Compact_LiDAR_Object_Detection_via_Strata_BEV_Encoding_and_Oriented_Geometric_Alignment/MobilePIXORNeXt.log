@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.10.20)  24 OCT 2026 20:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.10.20)  24 OCT 2026 21:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -792,7 +792,7 @@ Package pdftex.def Info: figures/pipeline_overview.pdf  used on input line 15.
 (pdftex.def)             Requested size: 435.60242pt x 245.02966pt.
  [2] [3 <./figures/pipeline_overview.pdf>]) (./sections/related_work.tex
 [4]) (./sections/methodology.tex [5]
-<figures/strata_bev14.pdf, id=191, 794.97pt x 614.295pt>
+<figures/strata_bev14.pdf, id=198, 794.97pt x 614.295pt>
 File: figures/strata_bev14.pdf Graphic file (type pdf)
 <use figures/strata_bev14.pdf>
 Package pdftex.def Info: figures/strata_bev14.pdf  used on input line 42.
@@ -821,7 +821,7 @@ Underfull \hbox (badness 1412) in paragraph at lines 133--134
 /m/n/10 (+20) :
  []
 
-<figures/backbone_f32.pdf, id=239, 794.97pt x 614.295pt>
+<figures/backbone_f32.pdf, id=246, 794.97pt x 614.295pt>
 File: figures/backbone_f32.pdf Graphic file (type pdf)
 <use figures/backbone_f32.pdf>
 Package pdftex.def Info: figures/backbone_f32.pdf  used on input line 170.
@@ -839,7 +839,7 @@ Underfull \hbox (badness 3646) in paragraph at lines 192--193
  []
 
 [8]
-<figures/next_simam_block.pdf, id=261, 722.7pt x 406.51875pt>
+<figures/next_simam_block.pdf, id=268, 722.7pt x 406.51875pt>
 File: figures/next_simam_block.pdf Graphic file (type pdf)
 <use figures/next_simam_block.pdf>
 Package pdftex.def Info: figures/next_simam_block.pdf  used on input line 199.
@@ -850,13 +850,13 @@ Underfull \hbox (badness 2057) in paragraph at lines 227--229
  []
 
 [10 <./figures/next_simam_block.pdf>]
-<figures/scale_gated_fusion.pdf, id=346, 794.97pt x 614.295pt>
+<figures/scale_gated_fusion.pdf, id=353, 794.97pt x 614.295pt>
 File: figures/scale_gated_fusion.pdf Graphic file (type pdf)
 <use figures/scale_gated_fusion.pdf>
 Package pdftex.def Info: figures/scale_gated_fusion.pdf  used on input line 256
 .
 (pdftex.def)             Requested size: 238.96417pt x 77.74518pt.
-<figures/geometry_output_2x2.pdf, id=349, 722.7pt x 406.51875pt>
+<figures/geometry_output_2x2.pdf, id=356, 722.7pt x 406.51875pt>
 File: figures/geometry_output_2x2.pdf Graphic file (type pdf)
 <use figures/geometry_output_2x2.pdf>
 Package pdftex.def Info: figures/geometry_output_2x2.pdf  used on input line 28
@@ -906,15 +906,19 @@ Underfull \hbox (badness 2393) in paragraph at lines 405--406
 [13]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
 put line 433.
- [14]) (./sections/experiments.tex [15] (./tables/setup.tex) [16]
-(./tables/comparison.tex)) (./sections/results.tex
+ [14]) (./sections/experiments.tex [15] (./tables/setup.tex)
+Underfull \hbox (badness 1158) in paragraph at lines 48--49
+\OT1/cmr/m/n/10 (+20) BN-SiLU trans-for-ma-tion per group. The de-tec-tor
+ []
+
+[16] (./tables/comparison.tex)) (./sections/results.tex
 (./tables/seed_robustness.tex)
-<figures/pareto_tradeoff.pdf, id=532, 1160.59317pt x 512.24814pt>
+<figures/pareto_tradeoff.pdf, id=538, 1160.59317pt x 512.24814pt>
 File: figures/pareto_tradeoff.pdf Graphic file (type pdf)
 <use figures/pareto_tradeoff.pdf>
 Package pdftex.def Info: figures/pareto_tradeoff.pdf  used on input line 11.
 (pdftex.def)             Requested size: 495.0pt x 218.48029pt.
-<figures/pr_all_difficulties_sota.pdf, id=537, 1571.8725pt x 1304.6542pt>
+<figures/pr_all_difficulties_sota.pdf, id=543, 1571.8725pt x 1304.6542pt>
 File: figures/pr_all_difficulties_sota.pdf Graphic file (type pdf)
 <use figures/pr_all_difficulties_sota.pdf>
 Package pdftex.def Info: figures/pr_all_difficulties_sota.pdf  used on input li
@@ -925,47 +929,48 @@ Underfull \hbox (badness 1102) in paragraph at lines 43--44
  []\OT1/cmr/m/it/10 (+20) Pipeline La-tency vs. Model For-ward Through-put. []
  []
 
-
+[18]
 Underfull \hbox (badness 1748) in paragraph at lines 52--54
 \OT1/cmr/m/n/10 (+20) across traf-fic den-sity regimes: Mo-bilePIXORNeXt
  []
 
-[18] [19 <./figures/pareto_tradeoff.pdf>] [20 <./figures/pr_all_difficulties_so
-ta.pdf>]
+[19 <./figures/pareto_tradeoff.pdf>] [20 <./figures/pr_all_difficulties_sota.pd
+f>]
 Underfull \hbox (badness 1735) in paragraph at lines 60--61
 \OT1/cmr/m/n/10 (+20) model for-ward ex-e-cu-tion reached \OT1/cmr/bx/n/10 (+20
 ) 115.32FPS
  []
 
 (./tables/distance_our_vs_mbpixor.tex) (./tables/components.tex)
-(./tables/encoding.tex) [21] [22] (./tables/loss.tex) [23]
-(./tables/attention.tex) [24]
-<figures/training_curves_all_losses.pdf, id=675, 1228.59pt x 1517.67pt>
+(./tables/encoding.tex) [21] [22] [23] (./tables/loss.tex)
+(./tables/attention.tex)
+<figures/training_curves_all_losses.pdf, id=670, 1228.59pt x 1517.67pt>
 File: figures/training_curves_all_losses.pdf Graphic file (type pdf)
 <use figures/training_curves_all_losses.pdf>
 Package pdftex.def Info: figures/training_curves_all_losses.pdf  used on input 
 line 143.
 (pdftex.def)             Requested size: 474.31151pt x 585.91423pt.
-<figures/comparison_mobilepixor_heatmap.pdf, id=678, 722.7pt x 406.51875pt>
+<figures/comparison_mobilepixor_heatmap.pdf, id=673, 722.7pt x 406.51875pt>
 File: figures/comparison_mobilepixor_heatmap.pdf Graphic file (type pdf)
 <use figures/comparison_mobilepixor_heatmap.pdf>
 Package pdftex.def Info: figures/comparison_mobilepixor_heatmap.pdf  used on in
 put line 155.
 (pdftex.def)             Requested size: 495.0pt x 278.43884pt.
-
+ [24] [25 <./figures/training_curves_all_losses.pdf>]
 Underfull \hbox (badness 1642) in paragraph at lines 165--166
 \OT1/cmr/m/n/10 (+20) Down Scale-Gated FPN, which col-lab-o-ra-tively
  []
 
-<figures/qualitative_detections.pdf, id=683, 589.24138pt x 560.57428pt>
+[26]
+<figures/qualitative_detections.pdf, id=722, 589.24138pt x 560.57428pt>
 File: figures/qualitative_detections.pdf Graphic file (type pdf)
 <use figures/qualitative_detections.pdf>
 Package pdftex.def Info: figures/qualitative_detections.pdf  used on input line
  174.
 (pdftex.def)             Requested size: 265.94737pt x 253.00882pt.
-[25] [26 <./figures/training_curves_all_losses.pdf>]) [27 <./figures/comparison
-_mobilepixor_heatmap.pdf>] (./sections/conclusion.tex) [28 <./figures/qualitati
-ve_detections.pdf>] (./sections/declarations.tex
+) [27 <./figures/comparison_mobilepixor_heatmap.pdf>]
+(./sections/conclusion.tex [28 <./figures/qualitative_detections.pdf>])
+(./sections/declarations.tex
 Underfull \hbox (badness 4805) in paragraph at lines 23--24
 \OT1/cmr/m/n/10 (+20) at []$\OT1/cmtt/m/n/10 http : / / www . cvlibs . net / da
 tasets / kitti / eval _
@@ -980,13 +985,13 @@ Package rerunfilecheck Info: File `MobilePIXORNeXt.out' has not changed.
 (rerunfilecheck)             Checksum: A933222AC0012835DD57EBDBFB51CB8E;680.
  ) 
 Here is how much of TeX's memory you used:
- 13315 strings out of 469514
- 207708 string characters out of 5470071
- 692150 words of memory out of 5000000
+ 13317 strings out of 469514
+ 207718 string characters out of 5470071
+ 694257 words of memory out of 5000000
  41200 multiletter control sequences out of 15000+600000
- 653313 words of font info for 265 fonts, out of 8000000 for 9000
+ 653299 words of font info for 266 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,15n,79p,3117b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,15n,79p,3205b,641s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/tex
@@ -1011,10 +1016,10 @@ msfonts/cm/cmti8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 tt8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb>
-Output written on MobilePIXORNeXt.pdf (30 pages, 5813181 bytes).
+Output written on MobilePIXORNeXt.pdf (30 pages, 5888699 bytes).
 PDF statistics:
- 957 PDF objects out of 1000 (max. 8388607)
- 746 compressed objects within 8 object streams
+ 955 PDF objects out of 1000 (max. 8388607)
+ 742 compressed objects within 8 object streams
  223 named destinations out of 1000 (max. 500000)
  40058 words of extra memory for PDF output out of 42996 (max. 10000000)
 

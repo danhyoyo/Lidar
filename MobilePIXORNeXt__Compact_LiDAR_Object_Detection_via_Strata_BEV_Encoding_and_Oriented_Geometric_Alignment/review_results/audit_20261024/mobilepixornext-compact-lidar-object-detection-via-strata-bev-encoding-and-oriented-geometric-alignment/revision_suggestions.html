@@ -1,0 +1,60 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>MobilePIXORNeXt review</title><style>body{font:16px/1.6 system-ui,sans-serif;max-width:1100px;margin:40px auto;padding:0 24px;color:#18212b}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #ccd4df;padding:8px;text-align:left}th{background:#edf2f7}blockquote{border-left:4px solid #9caabc;padding-left:16px;color:#445}code{overflow-wrap:anywhere}a{color:#145ea8}h2{margin-top:2em}</style><body><h1>Việc đã sửa và việc còn thiếu</h1>
+<p>Đã chỉnh source đúng folder được yêu cầu; thư mục <code>paper/</code> không được đồng bộ. Bản gốc của phiên này và diff được giữ trong artifacts.</p>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Đã sửa</th>
+<th>Còn cần bằng chứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entry/abstract</td>
+<td>Một entry source, một abstract; số deployable/train-only nhất quán</td>
+<td>Không</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>Local/reference theo từng nhóm, bỏ winner claim</td>
+<td>Evaluator equivalence hoặc common reference reevaluation</td>
+</tr>
+<tr>
+<td>Run identity</td>
+<td>Sửa sampler/head/context/epoch/selection labels</td>
+<td>Original report/config/checkpoint/prediction hashes</td>
+</tr>
+<tr>
+<td>Bảng loss</td>
+<td>Sửa per-class P1/P11 và params; phân biệt legacy focal</td>
+<td>Đối chứng loss trên final no-focal / shared heads</td>
+</tr>
+<tr>
+<td>Ablation</td>
+<td>Inventory có runID; tách P1/S32; bỏ causal gain không đủ control</td>
+<td>Matched component runs</td>
+</tr>
+<tr>
+<td>Seed</td>
+<td>Giữ mean/std mô tả, ghi encoding/budget khác</td>
+<td>Fixed-recipe seed study</td>
+</tr>
+<tr>
+<td>Timing</td>
+<td>L4/T4 riêng; sửa percentile có nguồn, phân biệt offline boundary</td>
+<td>Common hardware/CPU/pinning/postprocess setup</td>
+</tr>
+<tr>
+<td>Methods</td>
+<td>Modulo-pi, surrogate quality, shared gradient, tensor index</td>
+<td>Soft-min D/units/normalization clarification</td>
+</tr>
+<tr>
+<td>Figures</td>
+<td>Caption giới hạn, không dùng ảnh vehicle chứng minh VRU AP</td>
+<td>Regenerate Pareto/loss legends from run manifests</td>
+</tr>
+</tbody>
+</table>
+<p>Các sửa đổi câu chi tiết ở <code>artifacts/data/source_changes.patch</code>; metadata bảo vệ nội dung ở <code>artifacts/data/rewrite_comments.tex</code>. Không có số liệu thực nghiệm mới được tạo.</p>
+</body></html>

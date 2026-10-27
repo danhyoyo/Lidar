@@ -1,20 +1,20 @@
 \begin{table*}[t]
 \centering\small
-\caption{Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Historical OGA--IQA factorial study (P1--P4) and Q-OGA alternative (P11), evaluated with local Moderate BEV AP $R_{40}$. These runs retain focal context and earlier independent task towers; they are distinct from the final shared-head detector. IQA uses $S_{\mathrm{det}}=\sqrt{P_{\mathrm{cls}}\hat{q}}$ for ranking.}
 \label{tab:loss}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\raggedright\arraybackslash}p{0.30\textwidth}ccrrrr@{}}
 \toprule
 \textbf{Training Objective} & \textbf{\shortstack{IQA\\Head}} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} \\
 \midrule
-Baseline Smooth-L1 & No  & \textbf{0.735} & 83.92 & 55.48 & 62.74 & 67.38 \\
-OGA (MGIoU + $\pi$-Corner) & No  & \textbf{0.735} & 84.09 & 57.93 & 64.88 & 68.97 \\
-Baseline Smooth-L1 & Yes & 0.754 & 84.13 & \underline{59.45} & \textbf{67.34} & 70.31 \\
-\textbf{OGA (MGIoU + $\pi$-Corner)} & \textbf{Yes} & 0.754 & \textbf{84.87} & \textbf{59.63} & \underline{67.24} & \textbf{70.58} \\
+P1: Baseline Smooth-L1 & No & 0.816 & 82.97 & 56.99 & 62.17 & 67.38 \\
+P2: OGA (MGIoU + $\pi$-Corner) & No & 0.816 & 84.09 & 57.93 & 64.88 & 68.97 \\
+P3: Baseline Smooth-L1 & Yes & 0.853 & 84.13 & 59.45 & 67.34 & 70.31 \\
+P4: OGA (MGIoU + $\pi$-Corner) & Yes & 0.853 & 84.87 & 59.63 & 67.24 & 70.58 \\
 \midrule
-Q-OGA (Quality-Coupled Focal Loss) & No & \textbf{0.735} & \underline{84.35} & 58.12 & 65.13 & 69.20 \\
+P11: Q-OGA & No & 0.816 & 84.89 & 57.15 & 65.56 & 69.20 \\
 \bottomrule
 \end{tabular*}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All variants share the identical MobilePIXORNeXt backbone with standardized stage depths $(3, 4, 2)$ across all three stages, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation ($0.754\,\text{M}$ parameters with IQA, $0.735\,\text{M}$ without IQA). Embedding parameter-free Block-SimAM across all nine blocks produces the final configuration A10 without adding any learned parameters ($753{,}569$ parameters total). When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18{,}626$ parameters ($18.63\,\text{K}$) compared with explicit IQA models.}
+{\footnotesize \textit{Note.} P1--P4 used 50-epoch budgets and AP-selected epoch-50 checkpoints; P11 used a 50-epoch budget and an AP-selected epoch-40 checkpoint. Archived detector counts are 815,743 without IQA and 852,929 with IQA, a 37,186-parameter difference for these older towers. Q-OGA also changes corner smoothing and range weighting, so P11--P2 is a comparison of objective packages. No AP value in this table measures the proposed final 753,569-parameter architecture. Local per-class values and counts are taken from the archived P1--P4/P11 records.}
 \end{table*}

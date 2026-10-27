@@ -10,7 +10,7 @@ LiDAR Input Representation & Strata-BEV14 (14 channels; NumPy/Numba CPU) \\
 Spatial ROI bounds ($X, Y, Z$) & $[0.00, 70.40]\,\text{m} \times [-40.00, 40.00]\,\text{m} \times [-2.50, 1.00]\,\text{m}$ \\
 Grid resolution ($\Delta_x, \Delta_y, \Delta_z$) & $0.10\,\text{m} \times 0.10\,\text{m} \times 0.10\,\text{m}$ \\
 Input / Output Grid Dimensions & $800 \times 704$ / $200 \times 176$ ($s_{\mathrm{out}} = 4$) \\
-Detector Parameters & 753,569 trainable ($< 0.76\,\text{M}$); 9.34\,MB FP32 \\
+Detector Parameters & 753,569 deployable (753,581 trainable with 12 T-SBUW logits); 9.34\,MB FP32 \\
 Backbone Stages ($C_2, C_3, C_4$) & Widths: (48, 96, 128); Depths: (3, 4, 2) \\
 Inverted Bottleneck Expansion & $e = 2.50$; $7 \times 7$ Depthwise Convolution \\
 Attention Mechanism & Parameter-free Block-SimAM (9 residual blocks) \\

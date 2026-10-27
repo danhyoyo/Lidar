@@ -1,0 +1,62 @@
+[
+  {
+    "id": "I12",
+    "title": "Factorial study không chứng minh positive synergy",
+    "quote": "These results demonstrate clear methodological synergy",
+    "explanation": "Từ mAP chưa làm tròn: OGA khôngIQA +1.588431pp; cóIQA +0.269471pp. Interaction=P4−P3−P2+P1=−1.318960pp. P4 cao nhất trong factorial không đồng nghĩa tương tác dương; chưa có uncertainty cho hiệu ứng nhỏ. Đã viết lại đúng main effects và interaction.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex:121",
+    "related_sections": [
+      "sections/results.tex"
+    ],
+    "root_cause_key": "i12",
+    "review_lane": "claims_vs_evidence",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I19",
+    "title": "Cơ chế tối ưu hóa chưa có thí nghiệm phân biệt",
+    "quote": "induces severe subspace rank collapse",
+    "explanation": "Không có feature singular values, gradient diagnostics hoặc matched width control. Các suy luận weak-return attenuation, synergy SG-FPN, T-SBUW suppresses spikes và epoch latency do sharpening đều vượt dữ liệu. Đã thay bằng quan sát AP/loss và ghi điều kiện kiểm chứng.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex:99",
+    "related_sections": [
+      "sections/results.tex"
+    ],
+    "root_cause_key": "i19",
+    "review_lane": "claims_vs_evidence",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  },
+  {
+    "id": "I25",
+    "title": "Hình vehicle được dùng xác nhận VRU AP",
+    "quote": "This visual evidence corroborates the substantial",
+    "explanation": "Ví dụ vehicle heatmaps không xác nhận định lượngPed/Cyc30–50m. Whole-model visualization cũng không trực tiếpvalidate BlockSimAM/SGFPN effects hoặc NMSspeed. Đã giới hạn caption và observation vào selectedexamples.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/results.tex:166",
+    "related_sections": [
+      "sections/results.tex"
+    ],
+    "root_cause_key": "i25",
+    "review_lane": "claims_vs_evidence",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  }
+]

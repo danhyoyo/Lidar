@@ -1,0 +1,1879 @@
+ Arabian Journal for Science and Engineering (AJSE) manuscript No.
+ (will be inserted by the editor)
+
+
+
+
+MobilePIXORNeXt: Compact LiDAR Object Detection via
+Strata-BEV Encoding and Oriented Geometric Alignment
+Duyen Huu Nguyen1 · Anh Duc Bui1 · Nhan Trong Phan1 · Hoang Ngoc Tran∗,1
+
+
+
+
+the date of receipt and acceptance should be inserted later
+
+
+Abstract Compact LiDAR perception requires bal-                periments also examine head-free Q-OGA, which reaches
+ancing geometric accuracy and input-to-detection la-           69.20% Moderate mAP on an earlier architecture. The
+tency. We present MobilePIXORNeXt, a proposal-free             results support deterministic statistical encoding as a
+detector of oriented bird’s-eye-view (BEV) footprints          compact BEV detection approach; validation on embed-
+with 753,569 deployable parameters and 12 additional           ded hardware remains future work.
+training-only loss-balancing logits. A deterministic 14-
+channel Strata-BEV14 rasterizer summarizes vertical            Keywords LiDAR object detection · Bird’s-eye
+densities, elevation statistics, reflectance, and horizon-     view representation · Compact convolutional neural
+tal subcell centroid offsets. A ConvNeXt-style backbone        networks · Parameter-free attention · Oriented bounding
+with parameter-free Block-SimAM attention and a scale-         box regression
+gated feature pyramid supplies grouped prediction heads.
+Training combines physics-consistent ground-truth aug-
+                                                               1 Introduction
+mentation, Oriented Geometric Alignment (OGA), and
+localization-quality supervision. On the KITTI valida-         Three-dimensional (3D) spatial perception from Light
+tion split, the seed-42 checkpoint achieves 71.50% Mod-        Detection and Ranging (LiDAR) point clouds provides
+erate mean Average Precision (mAP), 73.45% mean                essential metric localization for autonomous navigation,
+AP across nine class–difficulty cells, and 60.78% Pedes-       mobile robotics, and intelligent transportation systems.
+trian Moderate AP in the archived NVIDIA L4 evalua-            Unlike passive optical cameras that suffer from projec-
+tion using a local loader-aligned evaluator with 40-point      tive depth ambiguity and ambient lighting fluctuations,
+interpolation. The detector has 84.41% fewer parame-           LiDAR sensors emit laser pulses to capture metric geo-
+ters than the evaluated PointPillars model and 85.85%          metric surfaces during day and night [1]. Autonomous
+fewer than SECOND. A separate NVIDIA Tesla T4                  vehicle perception requires detecting, classifying, and
+profiling snapshot reports 60.96 milliseconds per frame        orienting surrounding objects, such as passenger vehi-
+(16.41 frames per second) for sequential offline input         cles, pedestrians, and cyclists, within stringent latency
+preparation, transfer, inference, and post-processing.         constraints. In operational systems, end-to-end execu-
+The T4 snapshot records 71.46% Moderate mAP and                tion must generally remain below 100 ms per LiDAR
+73.42% nine-cell mAP. These snapshots are reported             scan [2]. Deploying accurate 3D detectors on onboard
+separately because evaluator equivalence and checkpoint        edge platforms requires balancing spatial localization
+identity across reports require verification. Historical ex-   precision against computing hardware budgets. Embed-
+∗
+ Correspondence:    Hoang        Ngoc      Tran     (E-mail:   ded accelerators have restricted memory bandwidth,
+hoang2531992@gmail.com)                                        cache sizes, and arithmetic capacity under strict ther-
+1
+                                                               mal envelopes. Compact LiDAR detectors must sustain
+ FPT University (FPT), Can Tho, 94000, VietNam.
+E-mail:       duyennhce200017@gmail.com;        anhb-          high throughput while preserving geometric precision.
+dce200052@gmail.com;       nhanptce200090@gmail.com;               Existing 3D LiDAR detectors present distinct trade-
+hoang2531992@gmail.com                                         offs between geometric precision and edge computational
+2                                                                                                   D. H. Nguyen et al.
+
+
+feasibility across several architectural paradigms. Vol-    Euclidean manifold SE(2) (planar translation and yaw
+umetric 3D voxel architectures such as SECOND [3]           heading). Horizontal clearance is one geometric input to
+introduce spatially sparse convolutions, but voxelization   on-road planning; estimating Time-to-Collision (TTC)
+and 3D convolutions still entail substantial computation    additionally requires temporal or velocity information.
+(5.33 M parameters and 93.7 ms pipeline latency on Tesla    Therefore, predicting high-precision oriented 2D bound-
+T4). Heavyweight two-stage frameworks (e.g., PointR-        ing footprints on a metric Bird’s-Eye View (BEV) plane
+CNN [4], Part-A2 [5], and PV-RCNN [6]) combine point        provides a compact representation of horizontal object
+abstractions with voxel representations, but their heavy    extent for downstream planning. We investigate whether
+parameter counts (4.0–63.8 M) and long pipeline laten-      a deterministic, parameter-free BEV representation can
+cies (133.8–194.5 ms) restrict real-time deployment on      retain fine sub-voxel geometry without learned point
+power-constrained edge platforms.                           encoders. By combining multi-stratum vertical densi-
+    Point-based direct architectures such as Point-         ties, continuous elevation moments, surface reflectiv-
+Net++ [7] process raw coordinates directly without          ity statistics, and continuous horizontal centroid off-
+discretization, but iterative Farthest Point Sampling       sets, a deterministic tensor preserves spatial boundaries
+and neighborhood queries add input-dependent com-           without encoder training overhead. Our core research
+putation and memory traffic. In contrast, Range-View        question is: What BEV detection accuracy and offline
+spherical projection methods such as LaserNet [8]           pipeline latency can a LiDAR detector achieve using a
+project 3D point clouds onto cylindrical range images       parameter-free input representation and a sub-million-
+to apply standard 2D convolutions; however, spherical       parameter network? To address this question, we com-
+projection causes severe perspective scale dilation with    bine statistical input encoding with compact feature ex-
+distance and boundary blurring across foreground-           traction, augmentation, and geometric supervision. We
+background occlusions. Pillar-based detectors, including    pair this representation with a single-branch ConvNeXt-
+PointPillars [9], PillarNeXt [10], and PillarNeSt [11],     style backbone [16] employing 7 × 7 depthwise convo-
+project points into vertical columns and utilize Point-     lutions and parameter-free 3D spatial-energy attention
+Net encoders to construct 2D Bird’s-Eye View (BEV)          (SimAM) [17], expanding physical receptive fields to
+representations. They achieve higher execution speed        cover complete passenger vehicles at stride 8 without
+than volumetric networks, but point gathering, dynamic      multi-branch training overhead. Physics-consistent syn-
+memory allocation, and sparse scattering introduce          thesis (PC-GTA) regularizes distant returns by enforcing
+runtime and PCIe memory transfer overhead.                  local road elevation flushness, static obstacle clearance,
+    Proposal-free BEV architectures such as PIXOR [2]       and range-adaptive point density, while multi-axis geo-
+and MobilePIXOR [12] replace learned encoders with          metric supervision (OGA) and localization-quality rank-
+deterministic vertical occupancy grids. However, binary     ing (IQA) align training losses and detection confidence
+occupancy grids on uniform 0.1 m grids discard con-         with rotated bounding box overlap. We evaluate the
+tinuous subcell centroid displacements and vertical el-     integrated detector and examine historical component
+evation dispersion moments. This spatial quantization       configurations, distinguishing descriptive comparisons
+causes boundary staircasing and localization jitter, par-   from experiments that hold the remaining settings fixed.
+ticularly for small objects. Recent extensions such as          We propose MobilePIXORNeXt, a compact,
+PillarHist [13] and TriBand-BEV [14] explore vertical       proposal-free, multi-class BEV LiDAR object detector
+histograms or multi-band intensity slicing, but exist-      with 753,569 deployable detector parameters (753,581
+ing compact representations generally omit continuous       trainable parameters during training including 12 tran-
+subcell coordinate offsets alongside higher-order ver-      sient loss-balancing logits). Figure 1 illustrates the
+tical spatial moments. Additional bottlenecks include       end-to-end pipeline.
+synthetic placement artifacts from naive cut-and-paste          The parameter-free Strata-BEV14 rasterizer con-
+data augmentation, restricted receptive fields in small     verts an unordered point cloud into a 14-channel sta-
+convolutional backbones, and uncalibrated classifica-       tistical BEV feature map (800 × 704 at 0.1 m grid
+tion heatmaps that allow poorly oriented candidates         resolution) using CPU execution. Point-cloud loading
+to suppress well-localized boxes during Non-Maximum         and rasterization take 20.94 ms in the profiled pipeline.
+Suppression (NMS) [15]. Compact perception systems          The 14 channels capture vertical stratum densities, con-
+must resolve these representation, augmentation, recep-     tinuous elevation moments (zmax , zmean , zspan , zstd ), re-
+tive field, and ranking challenges within a sub-million-    flectance statistics, and subcell centroid displacement off-
+parameter budget.                                           sets (∆x̄, ∆ȳ) to mitigate quantization errors. Physics-
+    Vehicular collision avoidance and kinematic trajec-     Consistent Ground-Truth Augmentation (PC-
+tory planning operate predominantly on the Special          GTA) enforces local road elevation fitting, static ob-
+MobilePIXORNeXt                                                                                                                     3
+
+
+
+
+                                                                                 Proposed
+                                              Strata-BEV14
+                                                                              (MobilePixorNeXt)
+                                             Feature Encoder
+                                                                                  Detector
+
+
+
+
+                                             Gaussian                                        Localization
+                                                          Offset     Size      Orientation
+                                             Heatmap                                           Quality
+
+
+                                                                   [ log w,     [cos2ψ,
+                                                        [Δx, Δy]    log l]       sin2ψ]        𝛔(zqual)
+
+
+
+
+                                               FL + Smooth L1 + OGA + BCE + T-SBUW
+              3D LIDAR Point Cloud                                                                          BEV Detections
+
+
+         3D Lidar                    Scene
+
+
+
+
+Fig. 1 End-to-end architecture and tensor flow of MobilePIXORNeXt. Unordered 3D LiDAR point clouds pass through the
+parameter-free Strata-BEV14 rasterizer into a 14-channel statistical BEV tensor X ∈ RB×14×800×704 without learned pillar
+encoders. ConvNeXt-style stages with parameter-free Block-SimAM attention extract multi-scale features. A top-down Scale-
+Gated Feature Pyramid Network (SG-FPN) fuses them into a 32-channel shared representation at stride 4 (200×176). Decoupled
+GroupedHeader towers process Car and Pedestrian/Cyclist categories independently. Solid arrows show the feedforward inference
+path. Dashed arrows show training-only Oriented Geometric Alignment (OGA), IoU-Aware Quality Alignment (IQA), and
+Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).
+
+
+stacle clearance, and range-adaptive point downsam-                            Q-OGA, a head-free quality-coupled objective that
+pling to prevent unphysical synthesis artifacts. The                           eliminates the separate IQA prediction tower.
+MobilePIXORNeXt-S backbone extracts multi-scale                                    The principal contributions of this work are summa-
+features across stages C2 , C3 , C4 using 7 × 7 depth-                         rized as follows:
+wise inverted bottleneck blocks (e = 2.5), SiLU acti-                           – Ultra-compact proposal-free BEV detection
+vations, LayerScale stabilization, and parameter-free                             architecture. We design MobilePIXORNeXt, a
+Block-SimAM energy attention embedded within all                                  compact (753,569 deployable parameters, 753,581
+nine residual blocks. The top-down Scale-Gated Fea-                               trainable) LiDAR detector that eliminates learned
+ture Pyramid Network (SG-FPN Neck, F32 ) bal-                                     PointNet encoders and 3D sparse convolutions.
+ances semantic abstraction and fine spatial details via                           The architecture integrates the 14-channel deter-
+bilinear upsampling, depthwise refinement at stride 8,                            ministic Strata-BEV14 representation with the
+standard projection at stride 4, and learnable depthwise                          MobilePIXORNeXt-S backbone and parameter-
+scale gates, avoiding transposed-convolution checker-                             free Block-SimAM energy attention. The SG-
+board patterns. Car (K1 = 1) and Pedestrian/Cyclist                               FPN neck (F32 ) fuses multi-scale features for
+(K2 = 2) use separate GroupedHeader towers. Within                                decoupled GroupedHeader towers, separating
+each group, the task branches share an initial 3 × 3                              the final prediction parameters for Car and Pedes-
+Conv-BN-SiLU block. Training utilizes Oriented Ge-                                trian/Cyclist groups.
+ometric Alignment (OGA), which combines Multi-                                  – Physics-consistent augmentation, geometric
+Axis Projection Generalized IoU (MGIoU) [18] with                                 supervision, and head-free alternative. We de-
+scale-normalized π-symmetric corner distance, balanced                            velop PC-GTA to enforce terrain alignment, obsta-
+across tasks by 12-parameter Temperature-Softmax                                  cle clearance, and distance-dependent point subsam-
+Bounded Uncertainty Weighting (T-SBUW). At                                        pling during training. We formulate OGA, coupling
+inference, IoU-Aware Quality Alignment (IQA)                                      Multi-Axis Projection GIoU with scale-normalized
+evaluates composite detection scores sdet = (pcls )1−α q̂ α                       π-symmetric corner supervision, balanced across
+prior to class-wise rotated Non-Maximum Suppression                               task objectives via 12-parameter T-SBUW. Confi-
+(NMS). For memory-critical platforms, we also present                             dence scores are trained against a projection-based
+4                                                                                                        D. H. Nguyen et al.
+
+
+   localization-quality target via IQA. In addition, we       projections suffer from severe metric scale distortion
+   develop Q-OGA as an ultra-compact, head-free al-           with radial distance and foreground-background oc-
+   ternative that integrates localization quality directly    clusion tears. Conversely, modern query-based BEV
+   into classification targets, reaching 69.20% Moderate      Transformers such as TransFusion [19] achieve state-
+   mAP in a historical focal-context configuration. This      of-the-art context modeling via sparse object queries
+   result does not establish the accuracy of a head-free      cross-attending into dense LiDAR and camera feature
+   version of the final architecture.                         maps. While query-to-feature cross-attention scales
+ – Empirical validation and efficiency profiling.             linearly with spatial token count (O(Nquery × HW )),
+   The seed-42 checkpoint reaches 71.50% Moder-               multi-head attention projections, high memory band-
+   ate mAP and 73.45% mAP9 in the archived L4                 width, multi-sensor calibration synchronization, and
+   evaluation using the local loader-aligned protocol.        large parameter footprints (frequently 20–40 M parame-
+   The detector uses 0.754 M parameters, reducing             ters) far outstrip the strict sub-million-parameter limits
+   parameter count by 84.41% relative to PointPillars         of low-power edge microcontrollers.
+   and 85.85% relative to SECOND. A separate T4                   BEV representations commonly use either learned
+   snapshot reports 60.96 ms (16.41 FPS) sequential           PointNet-based pillar encoders or fixed-grid rasteriza-
+   offline pipeline latency. Historical ablations docu-       tion. Pillar encoders [9, 10] learn geometric features
+   ment representation, sampler, head, loss, and atten-       but require point gathering, dynamic memory alloca-
+   tion configurations; differences in architecture, sched-   tion, and sparse scattering, which add latency and
+   ule, and checkpoint selection are stated alongside         energy costs on edge accelerators. Fixed-grid meth-
+   their results. Reference-evaluator AP values provide       ods [2, 12] avoid learned point encoding. However, bi-
+   context, without establishing an accuracy ranking          nary flags or raw cell counts on 0.1 m grids omit con-
+   against the local evaluator.                               tinuous subcell offsets and higher-order vertical dis-
+                                                              tributions, causing boundary staircasing and localiza-
+    Section 2 reviews LiDAR representations, lightweight
+                                                              tion jitter. PillarHist [13] investigated quantization-
+backbones, and geometric losses. Section 3 details the
+                                                              aware height histograms, and TriBand-BEV [14] ex-
+MobilePIXORNeXt architecture and loss formulations.
+                                                              plored multi-band vertical slicing for pedestrian detec-
+Section 4 specifies experimental settings. Section 5 re-
+                                                              tion. Our representation combines continuous subcell
+ports benchmark comparisons, latency breakdowns, abla-
+                                                              centroid displacements with vertical statistics in one
+tion studies, and qualitative results. Section 6 concludes
+                                                              compact tensor. MobilePIXORNeXt uses Strata-BEV14
+the paper.
+                                                              (Section 3.2) to combine four stratified height-band den-
+                                                              sity bins (F0 –F3 ), four continuous elevation moments
+2 Related Work                                                (zmax , zmean , zspan , zstd , F4 –F7 ), two surface reflectance
+                                                              statistics (Imax , Imean , F8 –F9 ), global logarithmic cell
+2.1 Bird’s-Eye View LiDAR Representation and                  density (F10 ), binary occupancy (F11 ), and two con-
+Alternative Paradigms                                         tinuous subcell centroid displacement offsets (∆x̄, ∆ȳ,
+                                                              F12 –F13 ). This 14-channel layout preserves sub-voxel ge-
+Dense horizontal projection enables 2D convolutional          ometry without learned point encoders, while reducing
+networks to process unstructured 3D LiDAR point               Host-to-Device transfer payloads by 60.0% compared to
+clouds. PIXOR [2] introduced proposal-free Bird’s-Eye         35-channel binary grids.
+View (BEV) detection using fixed vertical occupancy
+slices and calibrated reflectance maps. Nguyen et
+                                                              2.2 Ground-Truth Data Augmentation and Physical
+al. [12] developed MobilePIXOR for indoor robotic
+                                                              Regularization
+perception, replacing large convolutional layers with
+inverted residual blocks and Gaussian heatmap super-          Ground-truth database sampling, introduced in SEC-
+vision. PointPillars [9] instead organized points into        OND [3], enriches underrepresented classes by inserting
+vertical columns (pillars) and learned spatial features       object point clouds into training scenes. Placement can
+through local PointNet encoders. PillarNeXt [10] and          nevertheless introduce ground-height inconsistencies, col-
+PillarNeSt [11] extended pillar-based receptive field         lisions with background structures, or unrealistic point
+design and backbone scaling for outdoor perception.           densities at the target range. Our Physics-Consistent
+Beyond Cartesian BEV representations, Range-View ap-          Ground-Truth Augmentation (PC-GTA, Section 3.3) com-
+proaches such as LaserNet [8] represent LiDAR returns         bines local ground-height estimation, static obstacle
+as spherical range images, enabling rapid processing          clearance, and range-adaptive point subsampling. LOS
+with standard 2D convolutions. However, spherical             rejection, shadow masking, and radiometric adjustment
+MobilePIXORNeXt                                                                                                       5
+
+
+are optional implementation mechanisms and were dis-         2.4 Geometric Supervision, Loss Formulations, and
+abled in the primary run. The historical sampler com-        Quality Calibration
+parisons change complete recipes, including sampling
+probability and insertion quotas, so their AP differences    Oriented bounding box regression has developed from
+do not isolate any single physical constraint.               independent coordinate losses toward geometric objec-
+                                                             tives. Early detectors used decoupled Smooth-L1 losses.
+                                                             Independent regression of coordinates, dimensions, and
+2.3 Lightweight Convolutional Backbones and Efficient        angles ignores their geometric dependence and can desta-
+Spatial Attention                                            bilize gradients. Rezatofighi et al. [22] introduced Gener-
+                                                             alized Intersection over Union (GIoU) to provide scale-
+Spatial feature extraction from sparse BEV planes must       invariant feedback when boxes do not overlap. Le et
+balance receptive field coverage against parameter and       al. [18] later formulated Marginalized Generalized In-
+latency limits. For 3D LiDAR perception, SECOND [3]          tersection over Union (MGIoU), a projection-based ob-
+used sparse convolutions to process non-empty voxels.        jective for convex parametric shapes and arbitrarily
+PointRCNN [4], Part-A2 [5], and PV-RCNN [6] devel-           oriented boxes without rotational singularities.
+oped two-stage point processing, part-aware aggrega-             Localization quality calibration also affects detec-
+tion, and voxel-set abstractions. These methods achieve      tion ranking. Li et al. [15] introduced Generalized Fo-
+high accuracy on KITTI [1], but their large parameter        cal Loss (GFL). They showed that classification scores
+counts (4.0–63.8 M) and substantial pipeline latencies       can disagree with localization quality, allowing high-
+(93.7–194.5 ms) restrict real-time deployment on power-      confidence but poorly localized boxes to suppress ac-
+constrained edge accelerators.                               curate candidates during Non-Maximum Suppression
+    Lightweight 2D convolutions offer an alternative to      (NMS). Kendall et al. [23] pioneered multi-task uncer-
+volumetric processing. ConvNeXt [16] modernized stan-        tainty weighting by modeling homoscedastic observation
+dard convolutional hierarchies using 7 × 7 depthwise         noise, using a log σ penalty to prevent variance diver-
+kernels, inverted bottleneck expansions (e = 4), GELU        gence.
+activations, and LayerScale, demonstrating accuracy              Three supervision limitations remain in oriented de-
+competitive with Vision Transformers. For compact Li-        tection. Independent angle and corner losses are sensitive
+DAR BEV feature extraction, we tailor these archi-           to the π-periodicity boundary: small angular deviations
+tectural principles by adopting a slimmer expansion          near ±π/2 or ±π can cause loss spikes and unstable
+ratio (e = 2.5), SiLU activations, and Batch Normal-         yaw gradients. Auxiliary quality heads add parameters
+ization, retaining large receptive fields while avoiding     and can increase gradient competition across classes.
+over-parameterization on edge hardware. Lightweight at-      In addition, unconstrained multi-task weighting can
+tention mechanisms further modulate geometric features.      become unstable when classification, overlap, and ori-
+Efficient Channel Attention (ECA-Net) [20] modeled           entation losses operate on disparate numerical scales.
+1D cross-channel interactions with low complexity but        Unlike probabilistic observation noise formulations that
+did not modulate individual spatial locations. Yang et       require log σ regularization, MobilePIXORNeXt bal-
+al. [17] proposed SimAM, deriving 3D spatial-channel         ances multi-task objectives via Temperature-Softmax
+attention analytically from an energy function inspired      Bounded Weighting (T-SBUW, Section 3.8). T-SBUW
+by visual neuroscience, without trainable parameters.        constrains
+    Prior mobile LiDAR detectors commonly use in-                   P task weights to a normalized, conserved sim-
+                                                             plex ( ωk = J) and employs running Exponential
+verted residual bottlenecks with small 3 × 3 kernels [12],   Moving Average (EMA) loss scale calibration to re-
+which limit context across vehicle and pedestrian scales.    duce disparities between the numerical scales of the
+External attention modules or distillation at coarse         task losses. Together with Oriented Geometric Align-
+downsampling boundaries [21] add overhead while leav-        ment (OGA) and IoU-Aware Quality Alignment (IQA),
+ing receptive field limits within blocks unresolved under    this framework defines a bounded multi-task weight-
+sparse point distributions. MobilePIXORNeXt combines         ing scheme. Bounded weights alone do not establish
+the MobilePIXORNeXt-S backbone with parameter-free           bounded network gradients or convergence.
+Block-SimAM (Sections 3.4–3.5) and a Top-Down Scale-
+Gated FPN (Section 3.6). Large 7 × 7 depthwise kernels
+expand receptive fields, and attention modulates feature     3 Proposed Method
+updates within each residual block without additional
+attention parameters.                                        MobilePIXORNeXt is a compact, proposal-free, multi-
+                                                             class Bird’s-Eye View (BEV) object detector for real-
+                                                             time Light Detection and Ranging (LiDAR) perception
+6                                                                                                                        D. H. Nguyen et al.
+
+
+on resource-constrained embedded platforms, targeting             where (x∗k , yk∗ ) ∈ R2 denotes continuous metric center
+oriented bounding footprints on the Special Euclidean             coordinates and (lk∗ , wk∗ ) ∈ R2 denotes length and width.
+manifold SE(2). Its deterministic Bird’s-Eye View rep-            The heading ψk∗ ∈ [−π/2, π/2] uses a π-symmetric
+resentation avoids learned point-cloud encoders and               doubled-angle representation, and sk ∈ [0, 1] is the
+3D sparse convolutions. Figure 1 shows the data flow              calibrated confidence score. Ground-truth supervision
+from the raw 3D point cloud to decoded oriented BEV               supplies the class and footprint geometry; confidence is
+bounding footprints. During training, PC-GTA operates             a prediction rather than a ground-truth box attribute.
+on points before Strata-BEV14 rasterization; at infer-            The dense BEV representation retains fine geometric
+ence, the unaugmented scan is rasterized directly. Block-         statistics without a learned point encoder.
+SimAM operates within the backbone, SG-FPN fuses its
+outputs, and the grouped heads feed geometry/quality              3.2 Deterministic Strata-BEV14 Feature
+supervision during training and decoding/NMS during               Representation
+inference. Here, 3D SimAM attention refers to modula-
+                                                                                       0-3               4-7             8-9   10   11   12 - 13
+tion across feature channels and two spatial axes, rather
+than volumetric 3D convolution.
+
+                                                                   0   1   2   3   4    5    6   7   8    9    10   11    12   13
+3.1 Problem Formulation and Input/Output Contracts
+
+LiDAR Coordinate Frame and Spatial Region of Interest.
+An unordered LiDAR point cloud acquired by a rotating
+                                             Npts
+scanner is represented as P = {pi }i=1            . Each point
+                             4
+pi = (xi , yi , zi , ιi ) ∈ R contains longitudinal distance xi
+(forward positive), lateral distance yi (leftward positive),
+vertical elevation zi (upward positive), and calibrated
+reflectance intensity ιi ∈ [0, 1]. Perception is restricted
+to a Cartesian Region of Interest (ROI):
+
+xi ∈ [xmin , xmax ],
+                                                                  Fig. 2 Fourteen deterministic feature channels in the Strata-
+yi ∈ [ymin , ymax ],                                       (1)    BEV14 representation for a KITTI driving scene (800 × 704
+zi ∈ [zmin , zmax ].                                              grid at 0.1 m resolution). Channels 0–3 encode logarithmic
+                                                                  point densities across four vertical strata ([−2.5, 1.0] m). Chan-
+We used longitudinal bounds [0.0, 70.4] m, lateral bounds         nels 4–7 encode normalized maximum elevation zmax , mean
+                                                                  elevation zmean , elevation span zspan , and population stan-
+[−40.0, 40.0] m, and vertical bounds [−2.5, 1.0] m. An            dard deviation zstd . Channels 8–9 encode maximum and mean
+open-boundary inward margin of ϵ = 0.001 m reduced                reflectance intensity. Channel 10 records total cell logarithmic
+boundary artifacts. A horizontal resolution of ∆x =               density, and Channel 11 records binary occupancy. Chan-
+∆y = 0.1 m gave a grid of Hin × Win = 800 × 704 cells.            nels 12–13 preserve continuous horizontal subcell centroid
+                                                                  displacements (∆x̄, ∆ȳ) ∈ [−0.5, 0.5] to reduce discretization
+A point pi maps to grid coordinate (ui , vi ), where ui           error. Brighter values indicate higher point concentrations,
+indexes the longitudinal X direction (tensor column)              reflectance, or vertical dispersion.
+and vi indexes the lateral Y direction (tensor row), as:
+                                                              Motivation. Voxel- and pillar-based detectors [9, 10] use
+       xi − xmin               yi − ymin                          PointNet-style column encoders, which add computa-
+ui =               ,    vi =               .           (2)
+          ∆x                      ∆y                              tion and padding overhead. The archived 35-channel bi-
+                                                                  nary occupancy input omits continuous subcell centroid
+Detection Target Contract. The detector predicts ori-             offsets and vertical dispersion statistics, while three-
+ented bounding boxes projected onto the horizontal                channel height bands [14] omit higher-order geometry.
+BEV plane across three semantic categories: Car (c = 0),          We developed Strata-BEV14 (Figure 2), a determin-
+Pedestrian (c = 1), and Cyclist (c = 2). At an output             istic, parameter-free rasterizer, to retain these features
+spatial downsampling factor of sout = 4, the output               with low computational cost.
+feature map resolution is Hout × Wout = 200 × 176. For
+each detected object instance k, the output state is
+                                                                  Mathematical Formulation. For each occupied cell (u, v)
+parameterized by the 7-tuple:
+                                                                  with N points Pu,v = {pi }N  i=1 , we normalized vertical
+bk = (ck , x∗k , yk∗ , lk∗ , wk∗ , ψk∗ , sk ),             (3)    elevations to ζi = (zi − zmin )/(zmax − zmin ) ∈ [0, 1] and
+                                                                  clamped reflectance values ιi to [0, 1]. Strata-BEV14
+MobilePIXORNeXt                                                                                                                7
+
+
+computes fourteen analytical features in four groups           Table 1 Mathematical formulations and physical semantics
+(Table 1):                                                     of the fourteen deterministic feature channels in the Strata-
+                                                               BEV14 representation. All statistical moments and spatial
+    1. Height-Stratified Density Channels (F0 –F3 ): Nor-      offsets are evaluated deterministically over LiDAR points
+malized height ζi is partitioned into four uniform vertical    within horizontal grid cells of size ∆x = ∆y = 0.1 m (800 ×
+intervals b ∈ {0, 1, 2, 3}. For bin point count Nb , a loga-   704 grid) using NumPy or Numba on CPU without learned
+rithmic compression is applied to mitigate LiDAR ray           parameters.
+density fall-off over range:                                    Channel Feature          Mathematical Definition and
+                                                                      Identity         Semantics
+                               ln(1 + Nb )
+Fb = dlog (Nb ) = min 1,                      ,          (4)       0–3     Stratified  Four height-band densities:
+                             ln(1 + Nnorm )
+                                                                           Log Counts Fb = dlog (Nb ), where
+where Nnorm = 32 is a normalization constant chosen                                    b = min(⌊4ζi ⌋, 3).
+                                                                    4      Maximum     F4 = maxi ζi , peak normalized
+to saturate at dense returns.                                              Elevation   elevation.P
+    2. Vertical Spatial Moments (F4 –F7 ): To encode ob-            5      Mean        F5 = N 1     N
+                                                                                                    i=1 ζi , first vertical
+stacle geometry without explicit voxelization, we ex-                      Elevation   moment.
+tract                                                               6      Elevation   F6 = maxi ζi − mini ζi ,
+ 1
+   P peak elevation F4 = maxi ζi , mean elevation F5 =                     Span        continuous    vertical extent.
+      i ζi , vertical span F6 = maxi ζi − mini ζi , and the
+                                                                                              q
+N                                                                                                         1 P      2     2
+population standard deviation:                                      7      Elevation   F7 = max(0, N            i ζi − F5 ),
+                                                                           Deviation   spatial dispersion.
+       r                                                         8      Peak        F8 = maxi ιi , highest material
+        max 0, 1 PN ζ 2 − F 2 , if N > 1,
+                       N   i=1 i   5                                       Reflectance reflectivity.
+F7 =                                                     (5)                                  1 PN
+                                                                    9      Mean        F9 = N       i=1 ιi , average surface
+          0,                              otherwise.
+       
+                                                                           Reflectance intensity.
+                                                                   10      Global      F10 = dlog (N ), overall point
+    3. Reflectance Statistics (F8 –F9 ): Calibrated surface                Density     density.
+returns capture material discrimination (e.g., distin-             11      Binary      F11 = 1.0 if N ≥ 1, and 0.0
+guishing retro-reflective license plates, pedestrian cloth-                Occupancy otherwise.
+                                                                  12–13    Centroid    Subcell offsets
+ing, or road signs):                                                       Displace-   ∆x̄, ∆ȳ ∈ [−0.5, 0.5] relative to
+                                                                           ments       cell center.
+                                 N
+                             1 X
+F8 = max ιi ,         F9 =         ιi .                 (6)
+      i=1,...,N              N i=1
+                                                               no separate encoder-only measurement is available.
+    4. Occupancy and Continuous Subcell Offsets (F10 –         CUDA rasterization and asynchronous CPU–GPU
+F13 ): Channel F10 = dlog (N ) records total point density,    double-buffering are possible deployment extensions,
+and F11 = 1.0 indicates occupancy. For 0.1 m cells, chan-      but neither was measured in this sequential benchmark.
+nels F12 and F13 retain continuous horizontal subcell          Parallel point accumulation would also require handling
+centroid displacements to reduce quantization error:           concurrent updates to the same cell.
+xcell
+ u = xmin + (u + 0.5)∆x ,
+
+yvcell = ymin + (v + 0.5)∆y ,                                  3.3 Physics-Consistent Ground-Truth Augmentation
+               PN                           !
+                            cell
+                 i=1 (xi − xu )                                Motivation. Cut-and-paste ground-truth (GT) augmen-
+ F12 = clip                      , −0.5, 0.5 ,
+                     N ∆x                                      tation balances rare LiDAR categories, but naive in-
+                                                               sertion ignores scene physics. It can produce floating
+               PN                           !
+                            cell
+                 i=1 (yi − yv )
+ F13 = clip                      , −0.5, 0.5 .          (7)    or submerged objects, background collisions, missing
+                    N ∆y
+                                                               raycast shadows, and unrealistic range-dependent point
+Empty cells are assigned zeros across all 14 channels, pro-    densities. We developed Physics-Consistent Ground-
+ducing the structured input tensor X ∈ RB×14×800×704 .         Truth Augmentation (PC-GTA) to address these arti-
+                                                               facts. Historical sampler comparisons are reported in Sec-
+Technical Advantage. Strata-BEV14 provides a NumPy             tion 5.4; they evaluate complete augmentation recipes
+reference implementation and a Numba-accelerated               rather than an isolated physical constraint.
+CPU rasterizer for the same fourteen features. Statistics
+are accumulated per occupied cell, normalized, and             Design Heuristics. The sampler provides five con-
+stored in CHW layout, with cell (u, v) written at tensor       sistency mechanisms when placing  p    a box binsert =
+row v, column u. In the archived T4 pipeline, point-           (x, y, z, l, w, h, ψ) at range d = x2 + y 2 . The mecha-
+cloud loading and rasterization together took 20.94 ms;
+8                                                                                                       D. H. Nguyen et al.
+
+
+nisms can be enabled independently; the settings used             During training, the resulting augmented point cloud
+for the reported final run are given in Section 4.2:              Paugmented is rasterized into the 14-channel input tensor
+1. Adaptive Ground Plane Fitting: To prevent floating             X and fed into the convolutional backbone hierarchy.
+   or sunken objects, local road elevation is estimated
+   within a range-dependent search radius:
+                                                                  3.4 ConvNeXt-Style Multi-Scale BEV Backbone
+      R(d) = clip(2.5 + 0.03 max(0, d − 15), 2.5, 4.0) m,         Hierarchy
+
+    ẑground = percentile({zj | pj ∈ N (x, y)}, 5),         (8)   Motivation. BEV object footprints range from pedes-
+                                                                  trians (l ≈ 0.8 m, w ≈ 0.6 m) and cyclists (l ≈ 1.8 m)
+   where N (x, y) = {pj | (xj − x)2 + (yj − y)2 ≤ R(d)2 }         to passenger vehicles (l ≈ 4.5–5.0 m). Small 3 × 3 con-
+   denotes the local neighborhood used for ground esti-           volutions require deeper networks to cover this spatial
+   mation. The inserted object elevation is anchored              context, increasing latency and parameter count. At an
+   flush with the estimated local ground elevation:               input resolution of ∆x = ∆y = 0.1 m, a 7 × 7 depth-
+   zinsert = ẑground + 0.5h.                                     wise kernel samples a nominal 0.7 × 0.7 m input-grid
+2. Static Obstacle Clearance: To prevent clipping into            region at stride 1. At stride 8, the feature-cell spac-
+   physical structures, a candidate box is rejected               ing gives a nominal 5.6 × 5.6 m sampling region; the
+   if existing background points within its bound-                accumulated network receptive field also depends on
+   ing footprint exceed a strict clearance threshold:             preceding layers. We designed MobilePIXORNeXt
+   Nstatic > Nthresh (Nthresh = 2; valid placement                Backbone with large 7 × 7 depthwise convolutions, in-
+   requires Nstatic ≤ Nthresh ).                                  verted bottleneck expansions, and LayerScale stabiliza-
+3. Optional Line-of-Sight (LOS) Occlusion Check :                 tion in repeated MobilePIXORNeXt-S blocks to obtain
+   When enabled, the optical ray from sensor origin to            this context within a small parameter budget.
+   box center (x, y) is cast. If existing dense clusters
+   obstruct the trajectory, the insertion candidate is            Backbone Topology and Multi-Stage Hierarchy. As de-
+   discarded.                                                     picted in Figure 3, the network topology comprises:
+4. Optional Raycast LiDAR Shadow Masking: In Li-
+   DAR scans, foreground objects occlude returns from             1. Convolutional Stem: Input X ∈ RB×14×800×704
+   objects behind them. When enabled, this mecha-                    passes through two consecutive 3 × 3 convolutions,
+   nism computes intersections for each inserted box                 with stride 2 followed by stride 1 and 32 output
+   using rays r(t) = t · pxyz through background points              channels. Batch Normalization (BN) and Sigmoid
+   with 3D metric coordinates pxyz = (xi , yi , zi ) ∈ R3 ,          Linear Unit (SiLU) activations produce stride-2
+   decoupling reflectance. It masks points behind the                representation F(2) ∈ RB×32×400×352 .
+   exit face (tleave ≤ 1.0) whose radial distance satisfies       2. Progressive Multi-Stage Hierarchy: Three progressive
+   (1 − tleave )∥pxyz ∥ > 0.05 m:                                    stages are separated by strided transition downsam-
+                                                                     ple blocks (DownsampleBlock: Conv 3 × 3 stride 2 +
+    Paugmented = Ptarget \ {p ∈ Ptarget |                            BN + SiLU):
+                       Maskshadow (p) = True} ∪ Pobject .             – Stage 2 (Stride 4): 3 MobilePIXORNeXt-S blocks,
+                                                                         C2 = 48 → F(4) ∈ RB×48×200×176 .
+                                                            (9)
+                                                                      – Stage 3 (Stride 8): 4 MobilePIXORNeXt-S blocks,
+5. Range-Adaptive Point and Intensity Attenuation: If                    C3 = 96 → F(8) ∈ RB×96×100×88 .
+   an object captured at source distance rsrc is placed               – Stage 4 (Stride 16): 2 MobilePIXORNeXt-S
+   at target distance rtgt > rsrc , its point cloud is ran-              blocks, C4 = 128 → F(16) ∈ RB×128×50×44 .
+   domly subsampled according to the inverse-square
+   divergence law:                                                Streamlined Single-Branch Depthwise Design. Mo-
+                          2 !                                   bilePIXORNeXt uses a single-branch large-kernel (7 × 7)
+                      rsrc
+   Pkeep = min 1,               ,                      (10)       depthwise convolution during both training and deploy-
+                      rtgt                                        ment. It avoids the multi-path training topology and
+    and the optional radiometric adjustment attenuates            post-hoc weight folding of multi-branch reparameter-
+    reflectance intensity according to:                           ization. Inverted bottleneck expansion (e = 2.5) and
+                 max(0,2−γ)                                     LayerScale stabilization support optimization without
+             rsrc                                                 auxiliary-branch memory during backpropagation. The
+    ηint =                    ,    γ = 1.7,
+             rtgt                                                 backbone body contains 604, 864 parameters (80.3% of
+    Itgt = clip(Isrc ηint , 0, 1).                                the detector), while the complete multi-scale detector
+MobilePIXORNeXt                                                                                                                                    9
+
+
+                                                                                                      Head: Group 1 Car
+                       Stem                                                    Backbone                                             Gaussian
+                                                                                                                                     Heatmap
+                                                                                                                   Conv
+              Conv 3x3, 14→32 s=2,                                                                                                  1x200x176
+           Conv3x3, 32→32, s=1 BN+SiLU
+                                                                                                                                      Offset
+                 32 x 400 x 352, /2                                                                                Conv             2x200x176
+                                                                            Conv 3×3, 32→32
+                 Conv3x3, 32→48, s=2           BN + SiLU                       BN + SiLU
+                                                                                                                                       Size
+                                                                                                                   Conv             2x200x176
+
+                    Stage 2 / C2                                                                                                       Yaw
+                                                           L3: Conv 1×1                Scale-Gated                 Conv             2x200x176
+        NeXt-S        NeXt-S          NeXt-S                                       G                 3×3 + BN
+                                                              48→32                    Fusion (P3)                                  Localization
+                                                                                                      +SiLU
+                 48 x 200 x 176, /4                                                                                                   Quality
+                                                           32 × 200 × 176                                          Conv
+                                                                                                                                     1x200x176
+                                                                               Bilinear ↑2
+                 Conv3x3, 48→96, s=2                                         Conv3x3, 48→32
+                                                                               BN + SiLU
+                                                                                                     Head: Group 2 Pedestrian/Cyclist
+                    Stage 3 / C3                                                                                                    Gaussian
+                                                           L4: Conv 1×1                                            Conv              Heatmap
+      NeXt-S      NeXt-S    NeXt-S      NeXt-S                                     G Scale-Gated                                    2x200x176
+                                                              96→48                    Fusion (P4)
+                                                                                                                                      Offset
+                 96 x 100 x 88, /8
+                                                           48 × 100 × 88                                           Conv             2x200x176
+
+                                                                               Bilinear ↑2
+               Conv3x3, 96→128, s=2            BN + SiLU                                                                               Size
+                                                                            DWConv3x3, 48→48                       Conv             2x200x176
+                                                                               BN + SiLU
+                    Stage 4 / C4                                                                                                       Yaw
+                                                           L5: Conv 1×1                                            Conv             2x200x176
+           NeXt-S               NeXt-S                       128→48                                  3×3 + BN
+                                                                                                      +SiLU                         Localization
+                 128 x 50 x 44, /16                                                                                Conv               Quality
+                                                            48 × 50 × 44                                                             1x200x176
+
+
+
+
+Fig. 3 MobilePIXORNeXt feedforward hierarchy with layer dimensions, channel widths, and receptive fields. A two-layer stem
+processes 14-channel input at stride 2 (400 × 352). Three stages follow: C2 has 48 channels and depth 3; C3 has 96 channels and
+depth 4; C4 has 128 channels and depth 2. Each stage uses MobilePIXORNeXt-S blocks with Block-SimAM. The Scale-Gated
+FPN (SG-FPN) uses lateral 1 × 1 projections, bilinear 2× upsampling, depthwise 3 × 3 refinement, and learnable scale gates
+Gr . It produces a shared 32-channel feature map (F32 ) at stride 4 (200 × 176). Independent grouped towers separate Car
+predictions from Pedestrian and Cyclist predictions to reduce aspect-ratio conflicts within the parameter budget (753,569 total
+parameters).
+
+
+records 55.94 FPS (17.88 ms) for the model stage in the                      Parameter-Free Block-SimAM Spatial-Energy Attention.
+T4 pipeline. A separate L4 report records 115.32 FPS                         Efficient Channel Attention (ECA-Net) [20] and Squeeze-
+(8.67 ms); hardware and report identity differ.                              and-Excitation compute 1D channel weights by spatial
+                                                                             pooling, applying the same weight to every location
+                                                                             in a channel. Non-local spatial attention instead has
+3.5 MobilePIXORNeXt-S Residual Block with                                    quadratic complexity O((HW )2 ), which is costly on
+Embedded Block-SimAM                                                         dense BEV grids (200 × 176). We integrated Block-
+                                                                             SimAM [17], a parameter-free 3D spatial-energy at-
+Micro-Architecture and Inverted Bottleneck. Figure 4 il-                     tention module, to provide spatial modulation without
+lustrates the MobilePIXORNeXt-S residual block. Given                        learned attention weights.
+input tensor Z ∈ RB×C×H×W , each block applies an
+inverted bottleneck with expansion ratio e = 2.5:                            Design and Placement. As illustrated in Figure 4,
+V = BN(DWConv7×7 (Z)),                                                       SimAM is embedded inside each MobilePIXORNeXt-
+                                                                             S block across all three stages (C2, C3, C4), for nine
+R = BN (Wred SiLU(Wexp V)) ,
+                                                                             attention operators in total. It operates on the interme-
+Z′ = Z + γ blk ⊙ S(R).                                              (11)     diate tensor R ∈ RB×C×H×W after projection BN and
+                                                                             before LayerScale shortcut addition.
+Here, Wexp ∈ R2.5C×C×1×1 and Wred ∈ RC×2.5C×1×1
+                                                                                 For each channel slice with M = H × W spatial
+are pointwise 1 × 1 convolutions. The operator S(·)
+                                                                             locations, spatial mean µc and sample variance νc are
+represents our Block-SimAM attention module, while
+γ blk ∈ RC is a learned LayerScale parameter initial-
+ized to 10−5 to ensure numerical stability during deep
+backpropagation.
+10                                                                                                             D. H. Nguyen et al.
+
+
+  NeXt-S block
+
+               DW 7×7                      PW 1×1                      PW 1×1
+     X                            BN                      SiLU                     BN         SimAM             γ        +    Y
+                C→C                        C→2.5C                      2.5C→C                S(R) = A(R) ⊙ R
+
+
+
+
+              Identity shortcut
+
+
+
+                                                         SimAM Block
+             S(R) = A(R) ⊙ R
+
+
+
+
+                Feature map R                          Feature Values R                                   ⊙
+                                                                                    Element-wise
+                B×C×H×W                                                             multiplication
+
+
+
+
+Fig. 4 The MobilePIXORNeXt-S residual block and parameter-free Block-SimAM attention. Top: Residual path from input Z
+to output Z′ . It applies a 7 × 7 depthwise convolution, inverted bottleneck expansion with ratio e = 2.5, and SiLU activation,
+followed by pointwise projection. Parameter-free 3D spatial-energy attention S(R) precedes LayerScale scaling γ blk (initialized
+to 10−5 ) and the identity shortcut. Bottom: SimAM computes channel-wise spatial moments (µc , νc ) in FP32 precision
+and inverse-energy importance st = (t − µc )2 /(4(νc + λsim )) + 0.5. Sigmoid scaling produces the 3D modulation tensor
+A ∈ [0, 1]B×C×H×W without learned parameters.
+
+
+computed:                                                        Moments and gating scalars are computed in FP32 pre-
+     1 X                                                         cision to prevent underflow, then multiplied elementwise
+µc =       Rc,u,v ,                                              with features.
+     M u,v
+                                                          (12)
+             1        X
+                                                                  Technical Advantage. Block-SimAM adds zero learned
+νc =                      (Rc,u,v − µc )2 .
+        max(M − 1, 1) u,v                                         attention parameters, whereas stage-level adapters
+                                                                  can include a learned scalar residual gain β. It modulates
+Following the energy-minimization formulation of
+                                                                  each channel’s spatial responses using the analytical
+SimAM [17], the minimized energy e⋆t and its inverse-
+                                                                  energy score. The historical attention configurations in
+energy importance score st for neuron t = Rc,u,v are:
+                                                                  Section 5.4 differ in context modules, neck width, or
+                                                                  checkpoint history; their AP differences do not isolate
+          4(νc + λsim )
+e⋆t =                          ,                                  the contribution of Block-SimAM in the final detector.
+    (t − µc )2 + 2(νc + λsim )
+                                                          (13)
+     1       (t − µc )2    1
+st = ⋆ =                + .
+    et    4(νc + λsim ) 2                                        3.6 Top-Down Scale-Gated Feature Pyramid Network
+                                                                 (SG-FPN Neck)
+Here, λsim = 10−4 is a numerical regularizer. For fixed
+channel moments, a larger squared deviation (t − µc )2           Motivation. Transposed convolutions used for feature
+decreases the minimized energy e⋆t and increases the             upsampling can produce checkerboard artifacts in con-
+inverse-energy importance st . The sigmoid gate there-           tinuous coordinate regression maps. Bidirectional multi-
+fore assigns greater weight to more distinctive spa-             scale networks such as PANet and BiFPN add bottom-
+tial responses. The attended 3D modulation tensor                up pathways and memory latency. Unweighted addition
+A ∈ [0, 1]B×C×H×W and output S(R) are:                           in conventional FPN can also dilute semantic features.
+                        1                                        We designed Top-Down Scale-Gated Feature Pyra-
+Ac,u,v = σ(st ) =             ,        S(R) = A ⊙ R.      (14)
+                     1 + e−st
+MobilePIXORNeXt                                                                                                              11
+
+
+mid Network (SG-FPN Neck) as a unidirectional top-             (l ≈ 1.8 m, w ≈ 0.7 m) are smaller and more deformable.
+down neck with depthwise scale gating to balance these         A shared prediction head can introduce gradient com-
+features at lower cost.                                        petition across these scales; separate heads for every
+                                                               class add parameters. We designed Shared Grouped
+  (B) Scale-gated fusion
+                                                               Prediction Towers (GroupedHeader) to balance class
+                                                               separation and model size.
+                  DWConv3×3
+   L      +                       2 · sigmoid   ×
+                   zero-init
+                                                    +    P
+                                                               Topology and Target Formulation. We partitioned
+  U
+                                                               classes into Group 1 for car (K1 = 1) and Group 2 for
+                                                               ped cyc (K2 = 2). For each group g ∈ {1, 2}, feature
+Fig. 5 Scale-Gated Feature Pyramid Network (SG-FPN) fu-        map Fout passes through an initial 3 × 3 Conv-BN-SiLU
+sion at stride r ∈ {8, 4}. Bilinear interpolation upsamples
+top-down features. Depthwise refinement at stride 8 and
+                                                               block with 32 → 32 channels. Five task-specific branches
+projection convolution at stride 4 produce representations     follow:
+U4 and U3 without deconvolution checkerboard artifacts.
+Lateral high-resolution features Lr are weighted by a zero-     – cls: Classification heatmap [B, Kg , 200, 176] yield-
+initialized depthwise gate Gr = 2σ(DWConv3×3 (Lr + Ur ))          ing foreground category probability pcls at grid point
+before element-wise summation Pr = Ur + Gr ⊙ Lr to retain         P (Fig. 6d).
+boundary detail and suppress background responses.              – offset: Metric subcell coordinate offsets [B, 2, 200,
+                                                                  176] predicting (ôx , ôy ), corresponding to continuous
+Mathematical Formulation. As shown in Figure 5, lat-
+                                                                  displacements (∆x, ∆y) from grid reference point P
+eral features from Stages C4 (128 ch), C3 (96 ch), and
+                                                                  to object center C (Fig. 6a).
+C2 (48 ch) are projected via 1 × 1 convolutions into
+                                                                – size: Bounding box log-dimensions [B, 2, 200, 176]
+matching lateral dimensions L5 ∈ RB×48×50×44 , L4 ∈
+                                                                  predicting (dˆ1 , dˆ2 ) = (log ŵ, log ˆl) (denoted as regres-
+RB×48×100×88 , and L3 ∈ RB×32×200×176 .
+                                                                  sion targets (tw , tl ) in Fig. 6b, decoded via exp).
+   Feature aggregation follows a unidirectional top-
+                                                                – yaw: Orientation doubled-angle vector [B, 2, 200, 176]
+down path. At stride 8, 2× bilinear interpolation and
+                                                                  predicting (â1 , â2 ) = (cos 2ψ̂, sin 2ψ̂) (denoted as
+depthwise 3 × 3 refinement with BN and SiLU produce
+                                                                  (c2 , s2 ) with heading angle θ ≡ ψ̂ on the unit circle
+U4 ∈ RB×48×100×88 :
+                                                                  in Fig. 6c to resolve π-heading ambiguity).
+U4 = Refine3×3 (Bilinear2× (L5 )) ,                             – iou: Localization quality score [B, 1, 200, 176] pre-
+                                                                  dicting continuous overlap q̂ ∈ [0, 1] (q(P ) in Fig. 6d),
+P4 = U4 + G4 ⊙ L4 ,                                     (15)
+                                                                  fused with classification into √    composite ranking con-
+where G4 = 2σ(DWConv3×3 (L4 + U4 )). At stride 4,                 fidence sdet = (pcls )1−α q̂ α = pcls q̂ (α = 0.5).
+2× bilinear interpolation and standard 3 × 3 convo-               For output cell (u, v), the ground-truth geometric
+lution (48 → 32) with BN and SiLU produce U3 ∈                 targets are formulated as:
+RB×32×200×176 :                                                       ∗                        
+                                                                ∗     x − (usout ∆x + xmin )
+U3 = Proj3×3 (Bilinear2× (P4 )) ,                              o =                                ,
+                                                                       y ∗ − (vsout ∆y + ymin )
+P3 = U3 + G3 ⊙ L3 ,                                     (16)   d∗ = (log w∗ , log l∗ ),     a∗ = (cos 2ψ ∗ , sin 2ψ ∗ ).   (17)
+where G3 = 2σ(DWConv3×3 (L3 + U3 )). Zero-initialized          During inference, predicted bounding box parameters
+gating weights and biases make Gr initially equal to           are decoded from regression outputs via:
+1.0, corresponding to standard residual addition. The
+feature P3 passes through a 3 × 3 convolution, BN,             x̂ = usout ∆x + xmin + ôx ,     ŷ = vsout ∆y + ymin + ôy ,
+and SiLU to form the shared detector representation                                                    1
+Fout ∈ RB×32×200×176 . The neck contains 36, 784 pa-           ŵ = exp(dˆ1 ),   lˆ = exp(dˆ2 ), ψ̂ = atan2(â2 , â1 ).
+                                                                                                       2
+rameters and passes the fused multi-scale features to                                                                    (18)
+the prediction towers.
+                                                               The doubled-angle target is continuous under rotations
+                                                               modulo π, avoiding the scalar target discontinuity at the
+3.7 Shared Grouped Prediction Towers                           ±π/2 boundary. Decoding with 12 atan2(â2 , â1 ) returns
+                                                               a representative footprint angle; the scalar representa-
+Motivation. Road categories have different BEV foot-           tive still wraps at its interval boundary. The footprint
+prints. Cars are rectangular (l ≈ 4.5 m, w ≈ 1.8 m),           representation does not distinguish front from rear, and
+while Pedestrians (l ≈ 0.8 m, w ≈ 0.6 m) and Cyclists          the direction is undefined for a zero predicted vector.
+12                                                                                                             D. H. Nguyen et al.
+
+     (a) Offset head                                                      (b) Size head
+ y
+
+
+
+                                                                                     l
+                C
+                                                                                          θ
+                                                                                                x
+                Δy
+                                                                                                    w
+       P   Δx
+                                 x
+                                                                        (d) IQA head
+     (c) Yaw head
+                                                                      Task-group feature
+
+
+                    y                                               Classification       IQA
+                                                                       pcls(P)           q(P)
+       sin 2θ
+
+                        2θ                                              Combined score
+                                                                                1- α
+                                                                          s = p cls  qα
+                        cos 2θ
+                                 x
+                                                                        Peak selection +
+                                                                          rotated NMS
+
+Fig. 6 Prediction-head geometry, orientation, and quality-aware scoring. (a) Metric subcell offsets (ôx , ôy ) from grid reference
+point P to object center C. (b) Log-dimension targets (tw , tl ) = (log w, log l) decoded by exponentiation. (c) Doubled-angle
+yaw representation (c2 , s2 ) = (cos 2θ, sin 2θ) on the unit circle, resolving 180◦ heading ambiguity through π-rotational symmetry
+of BEV footprints. (d) Joint quality scoring combines overlap prediction q̂ ∈ [0, 1] and classification probability pcls as
+sdet = (pcls )1−α q̂ α (α = 0.5). This score prioritizes well-aligned boxes during peak filtering and rotated NMS.
+
+
+    Classification supervision utilizes 2D Gaussian                 the ground-truth instance with the nearest continuous
+heatmaps centered at continuous ground-truth object                 Euclidean center distance.
+projections with a minimum radius of 4 cells. Regres-
+sion targets are assigned within half the Gaussian
+peak radius, evaluated on decoupled validity masks                  3.8 Multi-Task Geometric Alignment and Quality
+Mreg,g for each group g ∈ {1, 2}. Specifically, category            Supervision (OGA and IQA)
+target ownership is strictly partitioned: anchor cells
+within the regression radius of a car object activate              Motivation. We developed Oriented Geometric
+Mreg,1 (u, v) = 1 to supervise Group 1, while cells                Alignment (OGA) with IoU-Aware Quality Align-
+within the regression radius of a pedestrian or cyclist            ment (IQA) to connect box-parameter regression
+activate Mreg,2 (u, v) = 1 to supervise Group 2. Each              with oriented overlap. Standard anchor-free regression
+group tower computes regression losses independently               applies separate Smooth-L1 losses to center (x, y), foot-
+on its respective positive mask, decoupling gradient               print (w, l), and heading ψ. These errors do not vary
+backpropagation between categories with radically                  monotonically with rotated Intersection-over-Union
+divergent aspect ratios (4.5 m passenger cars vs. 0.8 m            (IoU). Classification confidence can also disagree with
+pedestrians). In the rare event where a vehicle and a              localization accuracy, degrading candidate ranking
+vulnerable road user are immediately adjacent such                 during rotated Non-Maximum Suppression (NMS).
+that both masks activate at cell (u, v), both towers
+regress their respective targets concurrently. Their final         Oriented Geometric Alignment (OGA). For each cell
+prediction parameters are separate, while gradients                (u, v) with Mreg = 1, we decoded predicted and ground-
+still meet in the shared neck and backbone. Within                                                   cm }4m=1 and {c∗m }4m=1 .
+                                                                   truth boxes into four 2D corners {b
+Group 2 (ped cyc), where pedestrians and cyclists share            Given center (x, y), dimensions (l, w), and longitudi-
+a single regression head, conflicting assignments on               nal/lateral unit vectors nlen = (cos ψ, sin ψ), nwid =
+overlapping cells are resolved by assigning ownership to           (− sin ψ, cos ψ), the four bounding box corners are in-
+MobilePIXORNeXt                                                                                                               13
+
+
+dexed in quadrant order [++, +−, −+, −−]:                   IoU-Aware Quality Alignment (IQA). The quality head
+                                                            predicts a continuous localization quality score q̂ =
+c1 = (x, y) + 12 lnlen + 21 wnwid ,                         σ(Ẑqual ) ∈ [0, 1]. It is supervised via Binary Cross-
+c2 = (x, y) + 12 lnlen − 21 wnwid ,                         Entropy (BCE) over positive anchor cells using the de-
+                                                     (19)
+c3 = (x, y) − 12 lnlen + 21 wnwid ,                         tached surrogate multi-axis GIoU metric as the ground-
+c4 = (x, y) − 12 lnlen − 21 wnwid .                         truth target:
+                                                              q ∗ = stopgrad(clip(ḡ, 0, 1)),
+OGA combines two geometric objectives:
+                                                                        1     X                                          (24)
+1. Multi-Axis Projection GIoU (ℓproj ): Projected bound-    Lqual =                BCE(q̂i , qi∗ ).
+                                                                    Npos + ϵ i∈pos
+ing box overlap is evaluated following Marginalized Gen-
+eralized IoU [18] across four unit normal projection axes   The projection score ḡ serves as a surrogate for local-
+defining the prediction and ground-truth rectangles:        ization quality; it is not the exact rotated 2D polygon
+      n                          o                          IoU used for evaluation. Detaching q ∗ blocks gradients
+nk ∈ npred      pred   gt     gt
+         len , nwid , nlen , nwid .                  (20)   through the target construction. Quality and geomet-
+                                                            ric objectives can still interact through shared network
+For each axis nk , 1D intervals of intersection length
+                                                            features.
+Ik , union length Uk , and smallest enclosing hull Ek are
+determined, yielding 1D GIoU [22]:                          Head-Free Alternative: Quality-Coupled OGA (Q-OGA).
+      Ik    Ek − U k                                        An explicit IQA branch predicts localization quality for
+gk =      −          ,                                      score fusion. Q-OGA instead couples classification super-
+      Uk         Ek
+         4                                           (21)   vision to detached projection quality without a separate
+      1X                    1 − ḡ                          quality prediction branch. The parameter saving de-
+ ḡ =       gk ,    ℓproj =        .
+      4                       2                             pends on the prediction-head architecture: the historical
+        k=1
+                                                            experiment in Table 9 uses earlier independent task tow-
+2. Scale-Normalized π-Symmetric Corner Distance             ers and is distinct from the final shared-head detector.
+(ℓcorner ):
+Under a π-rotation (180◦ ), corner m maps determin-
+istically to corner 5 − m. To ensure accurate vertex        y ∗ = (q ∗ )β   (β = 1.0).                                   (25)
+localization under doubled-angle symmetry, we evaluate      To supervise continuous quality-coupled classification
+the minimum L1 distance across direct and π-permuted        without dedicated parameters, we adapt the Quality
+corner correspondences:                                     Focal Loss (QFL) formulation [15] to Bird’s-Eye View
+                   4                                       object detection as Quality-Coupled Focal Loss (CQFL):
+                    X
+                          cm − c∗m ∥1 ,
+                  
+                        ∥b                                  Lpos = |y ∗ − p̂|γ [y ∗ (− ln p̂) + (1 − y ∗ )(− ln(1 − p̂))] ,
+                  
+                  
+                  
+                  
+              min m=14                                      Lneg = p̂γ (− ln(1 − p̂)),                                   (26)
+                   X
+                        ∥bcm − c∗5−m ∥1
+                  
+                                                            where γ = 2.0. Crucially, rather than introducing a novel
+                  
+                  
+                  
+                    m=1
+ℓcorner =         p                        .    (22)      mathematical weighting function, our methodological
+            4 max    (w∗ )2 + (l∗ )2 , 10−6                 contribution lies in the head-free geometric coupling:
+                                                            replacing discrete one-hot classification targets with
+Normalizing by the target bounding box diagonal en-         the continuous projection-based geometric quality q ∗ ,
+sures scale invariance across categories. The compos-       thereby eliminating separate quality regression heads
+ite geometric loss is Lgeo = ℓproj + βcorner ℓcorner with   while retaining joint confidence-localization ranking. In
+βcorner = 1.0.                                              addition, Q-OGA replaces hard π-minimum corner dis-
+P For positive anchor cells with Mreg = 1 (Npos =           tance with a soft-min corner formulation:
+   Mreg ), the subcell offset, log-size, and doubled-yaw                                                     
+heads are supervised using masked Smooth-L1 loss:           Dsmooth = −τsoft ln e−Ddirect /τsoft + e−Dπ /τsoft , (27)
+
+              1     X                                       with τsoft = 0.05, and incorporates the range-adaptive
+Ltask =                    SmoothL1(ŷi , yi∗ ),            weighting denoted RDA in the implementation w(r) =
+          Npos + ϵ i∈pos                             (23)   1.0 + γrda (r/rmax )αrda (γrda = 1.5, αrda = 2.0). In the
+        for task ∈ {off, size, yaw},                        historical focal-context experiment, Q-OGA achieved
+                                                            69.20% Moderate mAP with 815,743 detector parame-
+with threshold βreg = 1/9 and ϵ = 10−6 .                    ters, compared with 852,929 for the explicit-IQA config-
+                                                            uration. These values do not measure a head-free version
+                                                            of the final 753,569-parameter detector.
+14                                                                                                              D. H. Nguyen et al.
+
+
+Temperature-Softmax Bounded Uncertainty Weight-                3.9 Coordinate Decoding and Inference Pipeline
+ing (T-SBUW). To balance six multi-task losses
+T = {cls, off, size, yaw, geo, qual} (J = 6) across decou-
+pled groups with normalized trainable weights, we devel-      Algorithm 1 End-to-end MobilePIXORNeXt inference and
+                                                              box decoding pipeline.
+oped Temperature-Softmax Bounded Weighting
+(T-SBUW). Unlike Bayesian homoscedastic uncer-                 Require: Raw LiDAR point cloud P = {(xi , yi , zi , ιi )}N           i=1 ,
+tainty weighting [23], which relies on unconstrained           ROI bounds [xmin , xmax ] × [ymin , ymax ] × [zmin , zmax ]
+variance parameters with a log σ penalty to prevent            Require: Score threshold τscore = 0.05, Rotated NMS thresh-
+trivial zero-weight minimization, T-SBUW uses two              old τnms = 0.10, quality exponent α = 0.5
+                                                               Ensure: Final decoded oriented BEV bounding footprints
+mechanisms to control task-weight magnitudes and loss          B = {(ck , sk , x̂k , ŷk , l̂k , ŵk , ψ̂k )}M
+                                                                                                             k=1
+scales:                                                        1: Filter raw points P within inward margin ϵ = 0.001 m of
+1. Bounded Softmax Weights on a Conserved Simplex :                spatial ROI.
+Learnable logit parameters ak (initialized to 0.0, yielding    2: Deterministically rasterize points into 14-channel Strata-
+                                                                   BEV14 tensor X ∈ R14×800×704 via Eq. (4)–(7).
+initial weights ωk = 1.0) are soft-clamped via hyperbolic      3: Forward X through ConvNeXt stem to obtain stride-2
+tangent with bound buw = 3.0 to prevent numerical di-              feature F(2) ∈ R32×400×352 .
+vergence, and mapped to positive normalized weights on         4: Extract multi-scale features through Stages 2, 3, 4 via
+                                                                   MobilePIXORNeXt-S blocks to obtain F(4) , F(8) , F(16) .
+a simplex of size J via temperature-controlled softmax         5: Fuse multi-scale features via Top-Down SG-FPN Neck
+(τuw = 2.0):                                                       into shared map Fout ∈ R32×200×176 .
+                                                               6: Evaluate Grouped Prediction Towers for Car (g = 1) and
+āk = buw tanh(ak /buw ),                                          Pedestrian/Cyclist (g = 2), yielding classification maps
+        X                                                          Pcls , subcell offsets o       b, log-sizes b d, doubled yaws a
+                                                                                                                                 b, and
+Zuw =       exp(āj /τuw ),                                        quality qb.
+        j∈T                                                    7: for each class c ∈ {Car, Pedestrian, Cyclist} do
+                                                      (28)     8:     Compute IoU-aware composite ranking map across grid:
+            exp(āk /τuw )                                         Sdet,c = (Pcls,c )1−α · (b          q)α .
+ ωk = J ·                  ,
+                Zuw                                            9:     Identify local 3×3 candidate peaks on composite ranking
+      X                                                            map Sdet,c .
+            ωk = J.                                           10:     Filter candidate cells satisfying Sdet,c > τscore and
+      k∈T                                                          Pcls,c > τscore .
+                P                                             11:     Decode metric coordinates, dimensions, and heading
+The constraint k∈T ωk = J conserves the sum of task                angles via Eq. (30).
+weights; it does not conserve the norm of the combined        12:     Apply Classwise Rotated Non-Maximum Suppression
+network gradient without requiring an explicit log σ               with IoU threshold τnms ranked by sdet .
+                                                              13: end for
+barrier.                                                      14: return Final detection set B sorted in descending order
+2. Running Scale Calibration: On a simplex, uncalibrated           of composite score sdet .
+loss weighting would cause gradient descent to dispropor-
+tionately favor tasks with smaller numerical magnitudes.
+                                                                   Algorithm 1 specifies inference. For candidate cells
+To prevent loss scale collapse, an Exponential Moving
+                                                               satisfying the joint score threshold and local peak fil-
+Average (EMA) with momentum βEMA = 0.99 (initial-
+                                                               tering, oriented BEV bounding footprints on SE(2) are
+ized from the first observed loss batch) tracks the un-
+                                                               decoded in metric coordinates as:
+weighted running loss magnitude µk ← 0.99µk + 0.01Lk
+during training. Each task loss is calibrated to a di-         x̂ = xmin + usout ∆x + ôx ,
+mensionless scale Lk / max(µk , 10−4 ) ≈ 1.0, equalizing        ŷ = ymin + vsout ∆y + ôy ,
+competition across disparate loss scales. The balanced
+                                                               ŵ = exp(dˆ1 ),     lˆ = exp(dˆ2 ),
+objective for group g is formulated as:
+                                                                   1
+                  !                                            ψ̂ =  atan2(â2 , â1 ).                              (30)
+         1 X        X            Lk                                2
+Lg =           µk       ωk                 .         (29)     The decoded angle represents footprint orientation mod-
+         J                 max(µk , 10−4 )
+            k∈T       k∈T
+                                                              ulo π; it does not recover a directed 2π heading.
+The overall scale factor J1 k∈T µk preserves the de-              To align classification confidence with geometric over-
+                             P
+tector’s natural optimization magnitude. The total net-       lap precision, detection candidates are ranked via a joint
+work objective is Ltotal = 0.5L1 + 0.5L2 . The twelve         IoU-aware composite confidence score:
+logit parameters are utilized strictly during training and     sdet = (pcls )1−αscore · (q̂)αscore ,        αscore = 0.5.          (31)
+discarded at inference.
+                                                               Candidates with sdet > 0.05 undergo class-wise rotated
+                                                               NMS at IoU threshold τnms = 0.10. The output is capped
+                                                               at 500 boxes per scan.
+MobilePIXORNeXt                                                                                                    15
+
+
+Parameter Distribution Breakdown. Our complete detec-        Evaluation Metrics. We evaluated oriented 2D Bird’s-
+tor architecture contains 753,569 deployable param-          Eye View (BEV) footprints on the KITTI validation
+eters (< 0.76 M, requiring 753,581 trainable parameters      set using 40-point interpolated Average Precision (AP
+during training including loss-balancing logits), with a     R40 ). This metric averages interpolated precision at 40
+serialized checkpoint size of 9.34 MB. The deployable        recall positions R40 = {1/40, 2/40, . . . , 1.0}:
+tensors alone require approximately 3.01 MB in FP32;                     1 X
+serialization may include additional state:                  AP|R40 =            max    p(r′ ).                  (33)
+                                                                        40       r ′ ≥r
+                                                                          r∈R40
+ – Backbone Body: 604, 864 parameters (80.3%).
+ – Scale-Gated Neck (SG-FPN): 36, 784 parameters             We used nominal oriented BEV Intersection-over-Union
+   (4.9%).                                                   (IoU) thresholds of τIoU = 0.70 for Car and τIoU = 0.50
+ – Grouped Prediction Heads: 111, 921 parameters             for Pedestrian and Cyclist. We grouped detections into
+   (14.8%), divided into 55, 944 parameters for Group        three difficulty regimes:
+   car and 55, 977 parameters for Group ped cyc.              – Easy: 2D bounding box height ≥ 40 px, maximum
+ – Training-Only T-SBUW Logits: 12 parameters                   occlusion level = 0 (fully visible), maximum trunca-
+   (< 0.01%), optimized exclusively during training and         tion ≤ 15%.
+   eliminated during deployment.                              – Moderate: 2D bounding box height ≥ 25 px, maxi-
+The complete pipeline achieved 16.41 FPS (60.96 ms)             mum occlusion level = 1 (partially occluded), maxi-
+on an NVIDIA Tesla T4 GPU, with a model stage                   mum truncation ≤ 30%.
+of 17.88 ms (55.94 FPS). The separate L4 evaluation           – Hard: 2D bounding box height ≥ 25 px, maximum
+records 8.67 ms (115.32 FPS) for its model stage; this is       occlusion level = 2 (difficult to see), maximum trun-
+not an isolated T4 forward measurement.                         cation ≤ 50%.
+                                                             Following autonomous driving literature, Moderate
+                                                             macro mAP (mAPM ) was adopted as the primary
+4 Experiments                                                accuracy summary metric:
+
+4.1 Dataset and Evaluation Protocol                                    1     X
+                                                             mAPM =                   APc,M .              (34)
+                                                                       3
+                                                                         c∈{Car,Ped,Cyc}
+Dataset and Partitioning. We evaluated the detector
+on the KITTI 3D Object Detection dataset [1]. The            We also reported the unweighted mean across all nine
+dataset contains 7,481 calibrated LiDAR scans with           class-difficulty combinations:
+synchronized rectified camera images and 3D bounding                    1X X
+                                                             mAP9 =                    APc,d .               (35)
+box annotations from road scenes. We used the 50/50                     9
+                                                                        c∈C d∈{E,M,H}
+split introduced by Chen et al. [24], with 3,712 train-
+ing frames and 3,769 validation frames. Ground-truth         E, M, and H denote Easy, Moderate, and Hard. mAP9
+sampling databases were generated exclusively from the       averages the nine class–difficulty AP values; it does not
+3,712 training frames to prevent validation data leakage.    denote AP at an IoU threshold of 0.9.
+
+Spatial Region of Interest (ROI) and Target Parameter-       Unified Benchmark Protocol and Evaluation Environ-
+ization. Following Section 3.1, we aligned the LiDAR         ment. The archived results use two evaluation imple-
+coordinate frame with the vehicle body (forward X,           mentations. MobilePIXOR and MobilePIXORNeXt use
+leftward Y , upward Z). We restricted perception to the      a local loader-aligned BEV evaluator with strict hori-
+Cartesian Region of Interest:                                zontal ROI filtering. PIXOR and the five external 3D
+                                                             detectors use a pinned reference evaluator with native
+x ∈ [0.0, 70.4] m,                                           ground-truth handling and preprocessing. Both report
+y ∈ [−40.0, 40.0] m,                                 (32)    40-point interpolation at the nominal class IoU thresh-
+z ∈ [−2.5, 1.0] m.                                           olds, but this does not establish evaluator equivalence.
+                                                             Table 3 therefore reports protocol groups without a
+We applied an open-boundary inward margin of ϵ =             shared AP ranking. Accuracy for the seed study was
+0.001 m along all three axes. A horizontal grid resolution   evaluated on an NVIDIA L4; the separate pipeline pro-
+of ∆x = ∆y = 0.1 m produced an input tensor of Hin ×         filing snapshot for MobilePIXORNeXt and the external
+Win = 800 × 704 cells. An output stride of sout = 4          detectors used Tesla T4. Native ROI, checkpoint selec-
+gave feature maps of size Hout × Wout = 200 × 176. We        tion, training budgets, and model-stage boundaries also
+evaluated Car, Pedestrian, and Cyclist detections.           differ.
+16                                                                                                    D. H. Nguyen et al.
+
+
+Table 2 Final detector architecture and configured optimizer    depthwise convolutions, an inverted expansion ratio of
+settings. The seed-42 run completed 160 epochs and selected     e = 2.5, SiLU activations, and LayerScale initialized
+epoch 130; seeds 43/44 completed 100 epochs. The L4 accuracy
+reports and separate T4 timing snapshot are distinguished in
+                                                                to 10−5 . Parameter-free Block-SimAM attention was
+the text.                                                       embedded in all nine residual blocks. The Scale-Gated
+                                                                Feature Pyramid Network (SG-FPN) fused stages C4,
+Configuration             Specification / Value
+Element
+                                                                C3, and C2 into a F32 (32-channel) representation
+                                                                at stride 4 (200 × 176). Decoupled GroupedHeader
+LiDAR Input               Strata-BEV14 (14 channels;
+Representation            NumPy/Numba CPU)
+                                                                towers processed Car (K1 = 1) and Pedestrian/Cyclist
+Spatial ROI bounds        [0.00, 70.40] m ×                     (K2 = 2) independently, with an initial 3 × 3 Conv-
+(X, Y, Z)                 [−40.00, 40.00] m × [−2.50, 1.00] m   BN-SiLU transformation per group. The detector
+Horizontal grid /         0.10 m × 0.10 m / four uniform        contained 753,569 deployable parameters (753,581 train-
+vertical strata           height bands
+Input / Output Grid       800 × 704 / 200 × 176 (sout = 4)
+                                                                able parameters during training including 12 transient
+Dimensions                                                      T-SBUW multi-task logits), with an FP32 checkpoint
+Detector Parameters      753,569 deployable (753,581            size of 9.34 MB.
+                         trainable with 12 T-SBUW logits);
+                         9.34 MB serialized checkpoint
+Backbone Stages          Widths: (48, 96, 128); Depths: (3,     Training Schedule and Optimization. The configured op-
+(C2 , C3 , C4 )          4, 2)                                  timizer is AdamW with base learning rate η0 = 7×10−4 ,
+Inverted Bottleneck      e = 2.50; 7 × 7 Depthwise              minimum learning rate ηmin = 1.0 × 10−6 , weight decay
+Expansion                Convolution                            λ = 0.001 on multidimensional weights, and maximum
+Attention Mechanism      Parameter-free Block-SimAM (9
+                         residual blocks)                       gradient L2 norm 10.0. Biases, normalization parame-
+Multiscale Neck          Scale-Gated FPN (SG-FPN, F32           ters, and loss-balancing logits are exempt from weight
+                         fusion width)                          decay. Archived run metadata take precedence over a
+Prediction Towers        GroupedHeader: Car (K1 = 1),           nominal common schedule: the final seed-42 run com-
+                         Ped/Cyc (K2 = 2)
+Loss Formulation         OGA (MGIoU + π-Corner) +               pleted 160 epochs and its AP-selected checkpoint is at
+                         IQA + T-SBUW                           epoch 130, whereas final seeds 43 and 44 completed
+Data Augmentation        Physics-Consistent GT (PC-GTA)         100 epochs with selected checkpoints at epoch 100. The
+                         + Global                               seed-42 MobilePIXOR run was archived at 38 of 100
+Optimizer / Base         AdamW (fused) / η = 7.00 × 10−4
+Learning Rate                                                   planned epochs and evaluated at epoch 30; seeds 43 and
+Minimum LR /              1.00 × 10−6 / Run-dependent;          44 completed 100 epochs. The early B1/Binary35 run
+Training Schedule         seed 42: 160 epochs                   completed 100 epochs and used a loss-selected epoch-
+Final Reported            AP-selected seed-42 checkpoint at     13 checkpoint. Most later historical component runs
+Checkpoint                epoch 130
+Weight Decay              λ = 1.00 × 10−3 (2D+ tensors          used a 50-epoch budget with AP-selected checkpoints,
+                          only; biases/norm: 0.00)              often before epoch 50. These records do not constitute
+Gradient Clipping         Maximum L2 norm = 10.00               a uniform-budget component or random-seed study. T-
+Norm                                                            SBUW balances task losses as defined in Section 3.8.
+Batch Size (Train /       16 / 32
+Val)
+Numerical Precision      Automatic Mixed Precision (AMP         Data Augmentation Pipeline. Training used Physics-
+                         / FP32)                                Consistent Ground-Truth Augmentation (PC-GTA; Sec-
+Hardware Environment     L4 accuracy; separate T4 timing        tion 3.3). The final reported run enabled local ground
+                         (98.44 MiB peak)
+                                                                fitting, static obstacle clearance, range-adaptive point
+                                                                subsampling, and visibility protection. The static ob-
+4.2 Implementation Details                                      stacle clearance threshold was set to Nthresh = 2 points
+                                                                within the expanded footprint, and estimated ground
+Table 2 summarizes the primary implementation settings          elevation was bounded within [−2.5, −0.8] m. LOS re-
+and architectural hyperparameters across all pipeline           jection, shadow masking, and radiometric calibration
+components.                                                     were available as configurable options but disabled in
+                                                                the primary benchmark. Ground height was estimated
+Network and Model Configuration. MobilePIXORNeXt                within R(d) = clip(2.5 + 0.03 max(0, d − 15), 2.5, 4.0) m.
+processes 14-channel Strata-BEV14 tensors. We used              GT sampling was applied with probability 0.5. Sub-
+a two-layer 3 × 3 convolutional stem (32 channels,              sequent world transforms included flipping along the
+stride 2) and three backbone stages with channel                X-axis with probability 0.5, rotation θ ∼ U(−45◦ , 45◦ ),
+widths (48, 96, 128) and block depths (3, 4, 2). The            and isotropic scaling s ∼ U(0.95, 1.05). World transla-
+stages used MobilePIXORNeXt-S blocks with 7 × 7                 tion was applied with probability 0.5, using independent
+MobilePIXORNeXt                                                                                                    17
+
+
+Gaussian noise with standard deviations (0.2, 0.2, 0.1) m   than the aggregate alone, are needed to assess how
+along (X, Y, Z).                                            errors vary across object types and visibility conditions.
+                                                                4. Summary of Archived Seed Runs. Table 4 sum-
+Batching, Precision, and Hardware Environment. The          marizes the three archived runs for each detector. Mo-
+configured training batch size was 16, with validation      bilePIXORNeXt has a mean Moderate mAP of 70.94 ±
+batch size 32 and six persistent DataLoader workers.        0.89% and mAP9 of 73.01 ± 0.68%, compared with
+The saved seed-study reports record FP32 inference on       47.21 ± 5.06% and 48.55 ± 5.45% for MobilePIXOR. The
+NVIDIA L4 with PyTorch 2.11.0 and CUDA 13.0. Of-            descriptive mean differences are 23.73 pp and 24.46 pp.
+fline timing uses batch size 1. The separate T4 profiling   These are sample summaries of the available records,
+report records 98.44 MiB peak allocated evaluation mem-     rather than evidence from a fixed-budget seed experi-
+ory. Architecture, hardware, checkpoint epoch, and eval-    ment.
+uation protocol must be matched before using archived           The records differ beyond random initialization: Mo-
+timings or AP differences to attribute a component gain.    bilePIXOR seed 42 uses Binary35 and an incompletely
+Table 4 summarizes the available runs and explicitly        archived training run, whereas seeds 43/44 use Hist14
+identifies their configuration and budget differences.      and complete 100-epoch runs. The final detector also
+                                                            uses 160 epochs for seed 42 and 100 for seeds 43/44.
+                                                            Therefore, the observed standard deviations cannot iso-
+5 Results and Discussion                                    late initialization sensitivity, and they do not identify
+                                                            LayerScale, T-SBUW, or PC-GTA as the cause of the
+5.1 Quantitative Comparison on KITTI Benchmark              dispersion difference.
+
+Detection Quality and Parameter Efficiency. Ta-
+ble 3 separates local loader-aligned BEV results            5.2 Inference Latency and Real-Time Complexity
+from reference-evaluator results. The shared nomi-
+nal IoU thresholds and R40 interpolation do not remove      Pipeline Latency vs. Model Forward Throughput. Net-
+differences in ground-truth filtering, matching, and        work time covers only part of the offline pipeline. Input
+ignored-object handling. The comparison therefore           preparation, H2D transfer, decoding, and NMS con-
+provides implementation context rather than a common        tribute additional latency. Two archived reports are
+accuracy leaderboard.                                       available, with different GPUs and slightly different AP
+    1. Overall Accuracy-to-Parameter Pareto Efficiency.     results:
+MobilePIXORNeXt contains 753,569 deployable param-
+                                                            1. L4 model stage: 8.67 ms (115.32 FPS) in the seed-
+eters (0.754 M) and 12 training-only logits. The seed-42
+                                                               42 L4 evaluation report. This value is not a stan-
+L4 report gives 71.50% Moderate mAP and 73.45%
+                                                               dalone T4 measurement.
+mAP9 , while the separate T4 report gives 71.46% and
+                                                            2. T4 model stage: 17.88 ms (55.94 FPS) within the
+73.42%. Relative to the parameter counts of PointPil-
+                                                               separate T4 profiling snapshot, whose offline pipeline
+lars [9] and SECOND [3], the reductions are 84.41% and
+                                                               totals 60.96 ms.
+85.85%. These are parameter-count comparisons; the
+heterogeneous AP values in Figure 7 do not establish        Table 5 retains GPU identity and the measured network-
+an accuracy advantage.                                      stage boundary. The T4 rows use batch size 1 and 3,759
+    2. Performance on Vulnerable Pedestrians. The lo-       timed frames after 10 warmup frames. The historical
+cal L4 report gives 60.78% Pedestrian Moderate AP           MobilePIXOR row is from L4 and must not be used for
+for MobilePIXORNeXt and 28.16% for the historical           a same-hardware speedup estimate.
+MobilePIXOR checkpoint. The numerical difference is              1. End-to-End Pipeline Latency Comparison. The
+32.62 pp, but architecture, input representation, and       T4 profiling snapshot records 60.96 ms (16.41 FPS)
+training history all differ. SECOND and PointPillars        for MobilePIXORNeXt and 63.84 ms (15.66 FPS) for
+report 56.56% and 56.01% under the reference evaluator;     PointPillars. Their median latencies are 58.28 ms and
+these values do not establish that the local detector is    62.10 ms. MobilePIXORNeXt has higher P95/P99 val-
+the best single-stage pedestrian detector.                  ues (80.85/95.91 ms) than PointPillars (75.88/92.73 ms).
+    3. Per-Class Results. MobilePIXORNeXt records           Both archived P99 values are below 100 ms, but these
+86.90% Car and 66.81% Cyclist Moderate AP in the            offline statistics neither establish a worst-case deadline
+same local L4 evaluation. Its 73.45% nine-cell mean         nor validate latency in closed-loop driving. No scene-
+summarizes the three classes across Easy, Moderate,         density stratification is available to assign a cause to
+and Hard. Per-class and per-difficulty results, rather      the tail.
+18                                                                                                             D. H. Nguyen et al.
+
+
+Table 3 Archived Moderate BEV AP (%) on KITTI validation. Superscripts L and R identify the local loader-aligned evaluator
+and the pinned reference evaluator, respectively; both use 40-point interpolation with nominal IoU thresholds 0.70 for Car
+and 0.50 for Pedestrian/Cyclist. Protocol differences preclude a shared AP ranking. Parameter counts describe the evaluated
+implementations.
+
+                                                 Params Car APM Pedestrian Cyclist mAPM mAP9
+             Method                               (M) ↓   (%)   APM (%) APM (%)     (%)  (%)
+             PIXOR (Car only)R [2]                   2.135        72.02               –           –        –        –
+             MobilePIXORL [12]                       0.598        75.52           28.16       20.53    41.40    42.27
+             PointPillarsR [9]                       4.835        88.02           56.01       66.34    70.13    72.25
+             SECONDR [3]                             5.326        88.56           56.56       71.16    72.09    73.79
+             MobilePIXORNeXt (Ours)L                 0.754        86.90           60.78       66.81    71.50    73.45
+             Heavyweight 3D Anchor-Based Reference Detectors
+             PointRCNNR [4]                    4.039      88.42                   57.84       73.87    73.38    75.31
+             Part-A2 -AnchorR [5]            63.815       90.05                   64.20       74.60    76.28    78.04
+             PV-RCNNR [6]                    13.116       90.29                   58.48       74.54    74.44    76.49
+  Note. mAPM averages the three Moderate class AP values; mAP9 averages all nine class–difficulty cells. Dashes indicate
+unavailable classes. The MobilePIXORNeXt row is from the L4 seed-42 report (selected epoch 130); the separate T4 snapshot
+ gives 71.46% and 73.42%, respectively. MobilePIXOR is a historical epoch-30 checkpoint from a run archived at 38 of 100
+planned epochs. Reference models retain native preprocessing, ROI, checkpoint selection, and evaluation rules. The rows are
+           descriptive and do not establish superiority across evaluators. Timing is reported separately in Table 5.
+
+Table 4 Descriptive summary of archived runs labeled by seeds 42, 43, and 44 (local BEV R40 , L4 evaluation). Means and
+sample standard deviations summarize these runs; their settings differ, so the dispersion is not an estimate of initialization
+variance under a fixed training protocol.
+
+                                  Baseline MobilePIXOR [12]                 MobilePIXORNeXt (Ours)
+     Category / Metric           S42     S43     S44    Mean      Std      S42     S43     S44    Mean      Std    Gain (∆)
+     Car APM (%)                75.52   77.17   78.83    77.17   ±1.66    86.90   86.33   85.42   86.22   ±0.75       +9.05
+     Pedestrian APM (%)         28.16   40.45   37.91    35.51   ±6.49    60.78   61.94   60.06   60.93   ±0.95      +25.42
+     Cyclist APM (%)            20.53   34.17   32.18    28.96   ±7.37    66.81   65.96   64.26   65.68   ±1.30      +36.72
+     Moderate mAP (%)           41.40   50.60   49.64    47.21   ±5.06    71.50   71.41   69.91   70.94   ±0.89      +23.73
+     Overall mAP9 (%)           42.27   52.12   51.25    48.55   ±5.45    73.45   73.35   72.22   73.01   ±0.68      +24.46
+   Note. Final MobilePIXORNeXt seed 42 completed 160 epochs (selected epoch 130), whereas seeds 43/44 completed 100
+ (selected epoch 100). MobilePIXOR seed 42 uses Binary35 and a run archived at 38/100 epochs (selected epoch 30); seeds
+   43/44 use Hist14 and 100-epoch runs (selected epochs 90/100). The numerical summary therefore combines changes in
+representation, training duration, and initialization. Gains are descriptive mean differences, not a matched-seed significance test.
+
+
+    2. Component Latency Profiling and Host-to-Device                  pinning, and implementation differ, so the timing
+Efficiency. The four profiled T4 stage means sum to                    ratio cannot isolate the benefit of channel reduction.
+60.67 ms; the difference from the directly measured                  – Model Stage (17.88 ms): The T4 report records
+60.96 ms pipeline mean is 0.29 ms. This is a measurement               55.94 FPS for this stage. The separate 8.67 ms value
+residual, not a separately profiled metadata-processing                is from L4; no same-GPU isolated-versus-pipeline
+stage:                                                                 experiment establishes the cause of their difference.
+ – Input Preprocessing (20.94 ms): Point-cloud file                  – Decoding and Rotated NMS (14.94 ms): This is
+   loading and Strata-BEV14 rasterization with the                     the combined post-processing stage. It does not sepa-
+   Numba CPU backend took 20.94 ms combined. The                       rately measure peak extraction, coordinate decoding,
+   implementation uses occupied-cell accumulators and                  NMS, and output transfer.
+   precomputed logarithmic lookup tables. Recorded
+   preprocessing took 27.75 ms for PointPillars and
+                                                                    5.3 Distance-Stratified Detection Performance
+   27.20 ms for SECOND. These measurements cover
+   complete input preparation from disk to memory.
+                                                                    Range-Dependent Accuracy on Vulnerable Road Users.
+ – Host-to-Device Transfer (6.91 ms): The 800 ×
+                                                                    LiDAR returns generally become sparser with increasing
+   704 × 14 FP32 tensor requires 31.54 MB, compared
+                                                                    range. Table 6 reports local Moderate AP for three dis-
+   with 78.85 MB for 35 channels, a 60.0% payload
+                                                                    tance intervals: 0–30 m, 30–50 m, and 50–70.4 m. These
+   reduction. The historical Binary35 report records
+                                                                    aggregate range results compare the full detector con-
+   40.63 ms transfer time on L4. Hardware, memory
+MobilePIXORNeXt                                                                                                                                                                                                                             19
+
+                                           (a) Accuracy vs. Parameter Footprint                                                                           (b) Accuracy vs. End-to-End Pipeline Latency
+                                   80                                                                                                          80
+
+
+
+
+KITTI Moderate BEV mAP R40 (%) ↑                                                                            KITTI Moderate BEV mAP R40 (%) ↑
+                                   75                                                                                                          75
+
+                                   70                                                                                                          70
+
+                                   65                                                                                                          65
+
+                                   60                                                                                                          60
+
+
+
+
+                                                                                                                                                                                Real-time limit (10 FPS)
+                                   55                                                                                                          55
+
+                                   50                                                                                                          50
+
+                                   45                                                                                                          45
+
+                                   40                                                                                                          40
+
+                                   35                                                                                                          35
+                                               0                             1
+                                          10                            10                                                                          40      60      80        100                          120    140     160   180   200
+                                                   Model Parameters (M) [log scale]                                                                                 End-to-End Pipeline Latency (ms) ↓
+
+                                                                    Pareto frontier        MobilePIXORNeXt (Ours)                                          SECOND                  Part-A²
+                                                                    MobilePIXOR            PointPillars                                                    PointRCNN               PV-RCNN
+
+
+Fig. 7 Archived accuracy, parameter-count, and offline-latency context. Panel (a) shows Moderate mAP versus parameter count;
+panel (b) shows mAP versus pipeline latency. Local and reference AP values use different evaluators, and the MobilePIXOR
+timing is from a different GPU. Consequently, the plotted frontier is illustrative and does not establish cross-protocol Pareto
+dominance. The local L4 accuracy snapshot and T4 profiling snapshot for MobilePIXORNeXt are distinguished in the text.
+
+Table 5 Archived sequential offline pipeline latency on KITTI validation (3,759 timed frames after 10 warmup frames), FP32
+and batch size 1. MobilePIXOR uses L4; the remaining rows use T4. GPU labels are retained per row. Network-stage boundaries
+and native preprocessing differ by implementation.
+
+                                                                                      Params Model Model E2E      E2E   P50    P95    P99
+                                        Method                                         (M) ↓ (ms) ↓ FPS ↑ (ms) ↓ FPS ↑ (ms) ↓ (ms) ↓ (ms) ↓
+                                        PIXOR [2]                                       2.135      70.79             14.13                               144.00      6.94        142.29                          159.38    175.43
+                                        MobilePIXOR (L4) [12]                           0.598      11.05             90.50                                85.92     11.64         84.11                          112.52    124.94
+                                        PointPillars [9]                                4.835      32.13             31.12                                63.84     15.66         62.10                           75.88     92.73
+                                        SECOND [3]                                      5.326      62.64             15.96                                93.70     10.67         92.02                          107.42    126.35
+                                        MobilePIXORNeXt (Ours)                          0.754      17.88             55.94                                60.96     16.41         58.28                           80.85     95.91
+                                        Heavyweight 3D Anchor-Based Reference Detectors
+                                        PointRCNN [4]                   4.039 169.36                                                 5.90                194.50        5.14      194.77                          213.48    222.37
+                                        Part-A2 -Anchor [5]            63.815 102.57                                                 9.75                133.75        7.48      132.40                          150.49    169.13
+                                        PV-RCNN [6]                    13.116 160.79                                                 6.22                188.60        5.30      187.35                          202.62    219.07
+Note. Except for the explicitly marked L4 row, timing comes from the archived T4 snapshot. The offline boundary covers input
+preparation, H2D transfer, network execution, and final decoding/NMS; it excludes sensor acquisition, tracking, control, and
+AP computation. Learned encoding or internal proposal processing may lie inside the network stage of reference detectors. The
+ 8.67 ms / 115.32 FPS model measurement belongs to a separate L4 report, rather than an isolated T4 benchmark. CPU/IO
+       conditions and checkpoint identity must be matched before attributing timing differences to individual modules.
+
+
+figurations and do not isolate a representation or aug-                                                     Table 6 Distance-stratified detection performance (Moder-
+mentation mechanism.                                                                                        ate AP, %) on Vulnerable Road Users (Pedestrian and Cy-
+                                                                                                            clist) across Near (0–30 m), Intermediate (30–50 m), and Far
+    1. Near-Range Detection (0–30 m). Within 0–30 m,                                                        (50–70.4 m) range intervals on the KITTI validation bench-
+MobilePIXORNeXt records 65.23% Pedestrian AP ver-                                                           mark using BEV AP R40 . Best results across competing com-
+sus 30.45% for MobilePIXOR, a 34.78 pp difference. Cy-                                                      pact models are in bold.
+clist AP is 76.32% versus 25.55%, a 50.77 pp difference.
+                                                                                                                Category Model                                                                              0–30 m 30–50 m 50–70.4 m
+These are gains for the integrated configurations under
+the local evaluator.                                                                                            Pedestrian MobilePIXOR [12]   30.45                                                                         3.75        0.99
+                                                                                                                           Ours              65.23                                                                         11.49        0.80
+    2. Intermediate and Long Ranges (30–70.4 m). At                                                                        Diff.            +34.78                                                                         +7.74       -0.19
+30–50 m, Pedestrian AP is 11.49% versus 3.75%, and
+                                                                                                                Cyclist                                     MobilePIXOR [12]   25.55                                        12.61       0.56
+Cyclist AP is 44.30% versus 12.61%. At 50–70.4 m, Cy-                                                                                                       Ours              76.32                                        44.30       14.94
+clist AP is 14.94% versus 0.56%. Far-range Pedestrian                                                                                                       Diff.            +50.77                                       +31.69      +14.38
+20                                                                                                                                                              D. H. Nguyen et al.
+
+
+                                                                                       Precision–Recall
+
+                          Car | Easy | IoU 0.70                                       Pedestrian | Easy | IoU 0.50                                  Cyclist | Easy | IoU 0.50
+            1.0                                                             1.0                                                           1.0
+
+            0.8                                                             0.8                                                           0.8
+
+
+
+Precision                                                       Precision                                                     Precision
+            0.6                                                             0.6                                                           0.6
+
+            0.4                                                             0.4                                                           0.4
+
+            0.2                                                             0.2                                                           0.2
+
+            0.0                                                             0.0                                                           0.0
+              0.0   0.2       0.4     0.6         0.8     1.0                 0.0     0.2     0.4     0.6     0.8       1.0                 0.0   0.2     0.4     0.6      0.8    1.0
+                                 Recall                                                          Recall                                                      Recall
+                     Car | Moderate | IoU 0.70                                      Pedestrian | Moderate | IoU 0.50                              Cyclist | Moderate | IoU 0.50
+            1.0                                                             1.0                                                           1.0
+
+            0.8                                                             0.8                                                           0.8
+
+
+
+Precision                                                       Precision                                                     Precision
+            0.6                                                             0.6                                                           0.6
+
+            0.4                                                             0.4                                                           0.4
+
+            0.2                                                             0.2                                                           0.2
+
+            0.0                                                             0.0                                                           0.0
+              0.0   0.2       0.4     0.6         0.8     1.0                 0.0     0.2     0.4     0.6     0.8       1.0                 0.0   0.2     0.4     0.6      0.8    1.0
+                                 Recall                                                          Recall                                                      Recall
+                          Car | Hard | IoU 0.70                                       Pedestrian | Hard | IoU 0.50                                  Cyclist | Hard | IoU 0.50
+            1.0                                                             1.0                                                           1.0
+
+            0.8                                                             0.8                                                           0.8
+
+
+
+Precision                                                       Precision                                                     Precision
+            0.6                                                             0.6                                                           0.6
+
+            0.4                                                             0.4                                                           0.4
+
+            0.2                                                             0.2                                                           0.2
+
+            0.0                                                             0.0                                                           0.0
+              0.0   0.2       0.4     0.6         0.8     1.0                 0.0     0.2     0.4     0.6     0.8       1.0                 0.0   0.2     0.4     0.6      0.8    1.0
+                                 Recall                                                          Recall                                                      Recall
+
+
+                                                    MobilePIXOR                     SECOND        PointRCNN          PV-RCNN
+                                                    PointPillars                    PIXOR         Part-A²            MobilePIXORNeXt (Ours)
+
+
+
+Fig. 8 Archived precision–recall curves on the KITTI validation split. Columns show Car (τIoU = 0.70), Pedestrian (0.50), and
+Cyclist (0.50); rows show Easy, Moderate, and Hard. MobilePIXOR and MobilePIXORNeXt use the local evaluator, whereas
+PIXOR and the external 3D detectors use the reference evaluator. Colors identify the models as indicated by the legend. Curves
+from these protocol groups are descriptive and cannot establish a shared accuracy ranking.
+
+
+AP remains very low and decreases from 0.99% to 0.80%                                               1. Historical Backbone Configurations (A0, A1). The
+(−0.19 pp). The results therefore show an uneven range                                              archived B0 and B1 results are 41.40% and 47.60%
+benefit; neither the table nor the selected visual ex-                                              Moderate mAP. B0 was archived at 38 of 100 planned
+amples establishes the contribution of range-adaptive                                               epochs and uses an epoch-30 checkpoint; B1 completed
+sampling or kernel width.                                                                           100 epochs and uses a loss-selected epoch-13 checkpoint.
+                                                                                                    The 6.20 pp difference is descriptive and cannot be at-
+                                                                                                    tributed solely to replacing residual blocks.
+5.4 Ablation Studies
+                                                                                                    2. Historical BEV Representations (A1–A3). Table 8
+Historical Configuration Inventory. Table 7 now records                                             reports the early representation experiments. Strata-
+source run identities alongside the historical configu-                                             BEV14 reaches 50.14% Moderate mAP, compared with
+rations. The records change multiple factors, training                                              47.60% for Binary35, 47.37% for Strata-BEV8, and
+budgets, and selection criteria. They document the ex-                                              44.42% for the local TriBand-BEV adaptation. The
+perimental trajectory rather than a controlled additive                                             14-channel payload is 31.54 MB versus 78.85 MB for
+decomposition of the final detector.                                                                Binary35. Because Binary35 uses a different training
+MobilePIXORNeXt                                                                                                               21
+
+
+Table 7 Source-linked inventory of historical configurations and the final detector. Labels A0–A10 are retained for navigation;
+they do not denote a sequence of experiments changing one factor at a time. AP is local BEV R40 on KITTI validation. The
+schedule column records archived/completed epochs (planned total when incomplete), followed by selected checkpoint epoch.
+
+                                                                      Epochs;       mAP M           mAP9          Model
+Label      Run           Configuration                                selected       (%)             (%)          (ms)      FPS
+A0         B0           MobilePIXOR / Binary35 / legacy              38/100; 30         41.40           42.27      11.05    90.50
+                        head
+A1         B1           Binary35 / single H16 / F24 SumFPN              100; 13         47.60           49.08       5.88   169.97
+A2         E8           Strata-BEV8 / single H16 / F24                   50; 20         47.37           48.95       6.06   165.02
+A3         E14          Strata-BEV14 / single H16 / F24                  50; 30         50.14           52.00       5.92   169.01
+A4         G16          Grouped H16 / global augmentation /              50; 30         51.30           53.96       6.92   144.58
+                        F24
+A5         O32          Grouped H32 / simplified GT V1 /                  50; 50        60.22           61.11       6.70   149.15
+                        F32 SumFPN
+A6         O32G16       Grouped H16 / simplified GT V2 /                  50; 50        66.25           68.45       7.45   134.25
+                        F32 SG-FPN
+A7         H32          Grouped H32 / hybrid GT (6/8/10) /                50; 50        68.12           70.05       6.72   148.82
+                        SumFPN
+A8         S32          Grouped H32 / hybrid GT (15/10/10)                50; 50        68.46           70.28       6.94   144.16
+                        / SG-FPN
+A8F        P1           Focal context / baseline loss / no IQA            50; 50        67.38           69.46       7.77   128.66
+A9         P4           Focal context / OGA + IQA /                       50; 50        70.58           72.66       8.19   122.16
+                        independent towers
+A10        Final S42    No focal / Block-SimAM / shared                160; 130         71.50           73.45       8.67   115.32
+                        grouped towers
+Note. B1 uses loss-based selection; the other listed AP checkpoints follow their archived selection records. A5 changes both head
+ width and sampler relative to A4. A6 is a simplified-sampler H16 run, rather than the claimed PC-GTA H32/F24 addition.
+A7–A8 also change insertion quotas. A8F identifies the focal-context P1 result previously conflated with A8. A9 and A10 have
+  different context modules, head architectures, and schedules. Historical model timings are archived values; the final model
+timing is from L4. These rows do not isolate backbone, head, PC-GTA, neck, or Block-SimAM gains under a common budget.
+
+Table 8 Archived BEV representation results on KITTI validation using the local evaluator with R40 interpolation. The early
+configurations use a MobilePIXORNeXt backbone, F24 neck, and single H16 head. Training budgets and checkpoint-selection
+criteria differ, so these are descriptive representation comparisons. Payload is the FP32 tensor size for an 800 × 704 grid.
+
+                                 H2D Payload Car APM Pedestrian Cyclist  mAPM mAP9 Archived model
+Representation             Cin     (MB) ↓     (%) ↑  APM (%) ↑ APM (%) ↑ (%) ↑ (%) ↑   FPS ↑
+TriBand-BEV [14]     3                     6.76        74.10         38.05          21.12       44.42     46.55            188.43
+Strata-BEV8         8                     18.02        78.35         38.48          25.29       47.37     48.95            165.02
+Binary35 [2]        35                    78.85        75.24         44.36          23.20       47.60     49.08            169.97
+Strata-BEV14 (Ours) 14                    31.54        79.97         45.36          25.10       50.14     52.00            169.01
+Note. Binary35 is the historical B1 run (100-epoch budget, loss-selected epoch 13); Strata-BEV8 and Strata-BEV14 are E8 and
+E14 (50-epoch budgets, AP-selected epochs 20 and 30). The reported forward rates are archived measurements, rather than a
+new common-T4 benchmark. The 14-channel tensor is 60.0% smaller than Binary35. The AP gap does not isolate the effects of
+individual height statistics or centroid offsets. TriBand-BEV denotes the local three-channel adaptation used in this experiment,
+                                    rather than a reproduction of the complete cited detector.
+
+
+budget and checkpoint-selection criterion, the 2.54 pp            and neck width as well as head width relative to G16.
+AP difference is not a controlled estimate of the repre-          Accordingly, the 8.92 pp difference does not establish a
+sentation effect. These comparisons also change groups            head-capacity effect, and no rank or gradient analysis
+of input features together rather than isolating centroid         demonstrates latent subspace collapse.
+offsets or elevation moments.
+                                                                  4. Historical Sampler Recipes (A5–A7). The result
+3. Historical Head and Sampler Configurations (A3–A5).            66.25% Moderate mAP belongs to O32G16: a simplified-
+The grouped-H16 configuration G16 records 51.30%                  sampler V2 run with H16 heads and F32 SG-FPN.
+Moderate mAP versus 50.14% for the earlier single-                It is not an H32/F24 PC-GTA addition to O32. The
+head E14 configuration. The 60.22% result assigned to             historical O32 and H32 runs share the recorded archi-
+A5 is O32, which uses grouped H32 heads, F32 fusion,              tecture and score 60.22% and 68.12%, but also change
+and a simplified GT sampler. It changes augmentation              sampler probability, quotas, and placement settings.
+22                                                                                                  D. H. Nguyen et al.
+
+
+Their 7.91 pp difference therefore compares complete        so these records do not demonstrate a positive additive
+sampler recipes and does not isolate ground fitting,        synergy.
+obstacle rejection, or range subsampling.                       P11 Q-OGA records 69.20% Moderate mAP with
+                                                            815,743 detector parameters, versus 852,929 for histori-
+5. Neck and Context Configurations (A7, A8, A8F).           cal P4 with IQA. Q-OGA differs from P2 OGA in classi-
+H32 records 68.12% Moderate mAP using SumFPN,               fication targets, corner smoothing, and range weighting;
+while S32 records 68.46% using SG-FPN. Their inser-         their 0.23 pp difference cannot isolate quality coupling
+tion quotas also differ (6/8/10 versus 15/10/10), so the    alone. The final detector uses different shared towers,
+0.34 pp difference is not an isolated neck effect. The      so this historical AP must not be paired with a claimed
+previously assigned A8 score of 67.38% belongs instead      734,943-parameter final Q-OGA model.
+to P1, which adds focal context. Table 7 identifies it
+separately as A8F.                                          3D Spatial-Energy Attention Integration and Placement.
+                                                            Table 10 investigates the placement of parameter-free
+6. Historical Geometric Supervision (A8F, A9).              SimAM energy attention.
+Within the earlier focal-context architecture, P1 and           The historical stage-attention results are 69.44%,
+P4 score 67.38% and 70.58% Moderate mAP. This               69.80%, and 69.36% Moderate mAP. The middle row
+3.20 pp difference combines OGA and the IQA predic-         uses F24 in the source record, unlike F32 in the final
+tion/supervision/ranking branch. It does not demon-         model; the no-attention P4 row also retains focal context.
+strate a specific interaction with SG-FPN or establish      The table describes available configurations and does
+the gain of the same package in the final shared-head       not establish that stage attention degrades the final
+model.                                                      architecture or that block attention alone accounts for
+                                                            its accuracy.
+7. Final Block-SimAM Configuration (A10). The final
+shared-head seed-42 detector with Block-SimAM records       Multi-Task Optimization Dynamics and Convergence.
+71.50% Moderate mAP and 73.45% mAP9 in the L4               Figure 9 shows archived loss trajectories over the first 50
+report. Its difference from historical P4 (70.58%) is       epochs. The historical figure retains its original configu-
+0.92 pp, but P4 retains focal context and earlier inde-     ration labels, which require reconciliation with the run
+pendent towers and uses a different training budget. This   identities in Table 7. It is a qualitative view of optimiza-
+is not an isolated Block-SimAM gain. Block-SimAM it-        tion traces rather than a matched component experi-
+self adds no learned attention parameters. A matched        ment. The displayed losses generally decrease, with tran-
+final-architecture run with only Block-SimAM disabled       sient validation fluctuations. A downward trend does not
+is needed to quantify its accuracy and latency contri-      establish asymptotic convergence, and transient spikes
+bution; no such comparison has been established by          are incompatible with describing every trajectory as
+the listed records. The historical placement results in     monotonic. Because the configurations and task objec-
+Table 10 also change neck width or configuration his-       tives differ, total loss magnitudes cannot be used to rank
+tory. Their AP and speed differences are therefore not      detector quality across runs. T-SBUW constrains the
+controlled placement effects.                               sum and range of task weights and calibrates running
+                                                            loss scales. The trajectories do not isolate its effect from
+Geometric Supervision and Quality Head Factorial            augmentation, architecture, or schedule. A controlled
+Study. Table 9 reports a historical 2 × 2 OGA–IQA           weighting ablation and gradient telemetry would be
+study with focal context and independent prediction         needed to attribute numerical stability to T-SBUW.
+towers retained in P1–P4. It is distinct from the final
+no-focal shared-head detector.                              Checkpoint Selection and Timing Sensitivity. The
+    Without IQA, OGA raises Moderate mAP from               archived T4 sensitivity records compare an AP-selected
+67.38% (P1) to 68.97% (P2), a 1.59 pp difference. The       epoch-130 checkpoint (71.46% Moderate mAP, 73.42%
+per-class differences, calculated from unrounded records,   mAP9 , 60.96 ms pipeline latency) with a loss-selected
+are 1.12 pp for Car, 0.94 pp for Pedestrian, and 2.71 pp    epoch-47 checkpoint (71.48%, 73.57%, 81.23 ms). These
+for Cyclist. Adding IQA to baseline supervision gives       are different checkpoint-selection outcomes from the
+70.31% (P3); combining IQA with OGA gives 70.58%            archived final-run history, rather than independently
+(P4). OGA therefore adds only 0.27 pp when IQA is           trained 100- and 50-epoch schedules. Although their
+present, compared with 1.59 pp when absent. The fac-        aggregate AP is similar, their per-class profiles dif-
+torial interaction on mAP is approximately −1.32 pp,        fer. The 25.0% latency difference is observational; no
+                                                            matched candidate-count or timing experiment assigns
+MobilePIXORNeXt                                                                                                               23
+
+
+Table 9 Historical OGA–IQA factorial study (P1–P4) and Q-OGA alternative (P11), evaluated with local Moderate BEV AP
+R40 . These runs retain
+                  √     focal context and earlier independent task towers; they are distinct from the final shared-head detector.
+IQA uses Sdet = Pcls q̂ for ranking.
+
+                                            IQA       Params        Car APM         Pedestrian         Cyclist          mAPM
+Training Objective                          Head       (M) ↓         (%) ↑          APM (%) ↑         APM (%) ↑         (%) ↑
+P1: Baseline Smooth-L1                      No          0.816             82.97             56.99             62.17        67.38
+P2: OGA (MGIoU + π-Corner)                  No          0.816             84.09             57.93             64.88        68.97
+P3: Baseline Smooth-L1                      Yes         0.853             84.13             59.45             67.34        70.31
+P4: OGA (MGIoU + π-Corner)                  Yes         0.853             84.87             59.63             67.24        70.58
+P11: Q-OGA                                   No         0.816             84.89             57.15             65.56        69.20
+Note. P1–P4 used 50-epoch budgets and AP-selected epoch-50 checkpoints; P11 used a 50-epoch budget and an AP-selected
+epoch-40 checkpoint. Archived detector counts are 815,743 without IQA and 852,929 with IQA, a 37,186-parameter difference
+ for these older towers. Q-OGA also changes corner smoothing and range weighting, so P11–P2 is a comparison of objective
+ packages. No AP value in this table measures the proposed final 753,569-parameter architecture. Local per-class values and
+                                  counts are taken from the archived P1–P4/P11 records.
+
+Table 10 Historical attention-related configurations and final-detector snapshot on KITTI validation (local BEV AP R40 ).
+Neck width, focal context, prediction towers, schedule, and checkpoint identity are not held fixed across all rows; this table is
+not a controlled placement ablation.
+
+       SimAM Attention                Neck Fusion mAPM mAP9 Archived model Archived model
+       Placement                      Width       (%) ↑ (%) ↑ Forward (ms) ↓   FPS ↑
+       None (P4, focal context)       F32                  70.58     72.66                   8.19                122.16
+       Stage-2 (C2 )                  F32                  69.44     71.49                   7.30                136.91
+       Stage-3 (C3 , R25)             F24                  69.80     71.98                   6.94                144.05
+       Stage-4 (C4 )                  F32                  69.36     71.34                   7.44                134.43
+       Block-level (C2 , C3 , C4 )    F32                  71.50     73.45                   8.67                115.32
+ Note. The no-attention row is historical P4 (852,929 parameters, focal context); the final Block-SimAM row is the seed-42
+shared-head detector (753,569 parameters, no focal context). The archived R25 stage-attention row uses F24, unlike the F32
+   final detector. The final 8.67 ms model time comes from the L4 report; a common GPU/timing boundary has not been
+ established for every row. Accordingly, differences in AP or latency cannot be assigned solely to attention placement. The
+                                      separate T4 pipeline timing is reported in Table 5.
+
+
+it to heatmap sharpening, orientation calibration, or                 SG-FPN, or the cause of a post-processing speed
+training duration alone.                                              difference.
+                                                                    – Sparse object examples: Some displayed dis-
+                                                                      tant vehicles receive stronger responses from Mo-
+5.5 Qualitative Visualizations and Analysis                           bilePIXORNeXt. Vehicle examples cannot indepen-
+                                                                      dently validate the Pedestrian/Cyclist range-AP
+Comparative Heatmap and Detection Analysis against                    gains in Table 6, and the selected images do not
+Baseline. Figure 10 provides a side-by-side qualitative               quantify recall over all validation scenes.
+comparison between the baseline MobilePIXOR and
+MobilePIXORNeXt across two challenging driving sce-                Visual Inspection on Representative Driving Scenarios.
+narios, illustrating both oriented BEV bounding foot-              Figure 11 presents MobilePIXORNeXt predictions on
+prints and the corresponding foreground classification             three KITTI validation frames (top to bottom: 007038,
+heatmaps.                                                          005571, and 006761). Class labels and confidence scores
+   Two critical observations emerge from this compari-             are retained in the camera overlays to support inspection
+son:                                                               of the predicted footprints; the BEV panels retain class
+ – Heatmap concentration: The selected Mo-                         annotations.
+   bilePIXORNeXt panels show more concentrated                         The paired camera and BEV views in Figure 11
+   foreground responses and less visible background                support inspection of the following prediction patterns:
+   activation than the displayed MobilePIXOR panels.                – Vehicle Predictions: Frame 007038 contains sev-
+   This qualitative comparison concerns the complete                  eral predicted vehicle footprints at different forward
+   configurations; it does not isolate Block-SimAM,
+24                                                                                                                                                                                                 D. H. Nguyen et al.
+
+
+                                                                   Training loss                                                                                              Validation loss
+                                                 104
+                                                                                                                                                               4
+                                                                                                                                                          10
+
+                                                 103
+
+
+
+
+                              Loss (log scale)                                                                                         Loss (log scale)
+                                                                                                                                                          103
+                                                 102
+                                                                                                                                                          102
+                                                 101
+
+                                                                                                                                                          101
+                                                 100
+
+                                                                                                                                                          100
+                                                          0   10    20            30        40         50                                                          0   10        20           30      40        50
+                                                                          Epoch                                                                                                       Epoch
+
+                                                                   Classification                                                                                                Geometry
+                                                                                                                                     2 × 100
+                                                      4
+                                                 10
+
+
+
+
+                              Loss (log scale)                                                                Loss (log scale)
+                                                 103                                                                                                      100
+
+                                                 102
+                                                                                                                                 6 × 10−1
+                                                      1
+                                                 10
+                                                                                                                                 4 × 10−1
+
+                                                 100                                                                             3 × 10−1
+
+                                                          0   10    20            30        40         50                                                          0   10        20           30      40        50
+                                                                          Epoch                                                                                                       Epoch
+
+                                                                           IoU                                                                                                        Offset
+                        7 × 10−1
+
+
+
+
+     Loss (log scale)                                                                                                            Loss (log scale)
+                        6 × 10−1
+                                                                                                                                                      10−1
+
+
+
+                        5 × 10−1
+
+
+                                                                                                                                                      10−2
+
+                                                          0   10    20            30        40         50                                                          0   10        20           30      40        50
+                                                                          Epoch                                                                                                       Epoch
+
+                                                                          Size                                                                                                         Yaw
+                                                                                                                                                               0
+                                                 100                                                                                                      10
+
+
+
+
+                        Loss (log scale)     10−1                                                                                Loss (log scale)
+
+                                                                                                                                                      10−1
+
+
+
+                                                          0   10    20            30        40         50                                                          0   10        20           30      40        50
+                                                                          Epoch                                                                                                       Epoch
+
+
+
+
+                                                                         A1 · MobilePIXORNeXt / Binary35                                                  A6 · Hybrid GT / F24
+                                                                         A2 · MobilePIXORNeXt / Strata-BEV8                                               A7 · Hybrid GT / F32
+                                                                         A3 · Strata-BEV14 / Single H16                                                   A8 · Hybrid GT / SG-FPN
+                                                                         A4 · Strata-BEV14 / Grouped H16                                                  A9 · OGA + IQA
+                                                                         A5 · Strata-BEV14 / Grouped H32                                                  A10 · OGA + IQA + Block-SimAM
+
+
+Fig. 9 Archived training and validation loss trajectories over the first 50 epochs. Panels show total training/validation losses
+and classification, geometry, quality, offset, size, and yaw terms. The historical A-label legend requires reconciliation with the
+source-linked inventory in Table 7. Different objectives and configurations limit direct loss-magnitude comparisons; the curves
+alone do not establish monotonic convergence or a causal effect of T-SBUW.
+MobilePIXORNeXt                                                                                                              25
+
+
+
+
+                                                      A) MobilePIXOR
+
+
+
+
+                                                           B) Ours
+
+Fig. 10 Selected BEV detections and foreground heatmaps for MobilePIXOR (Row A) and MobilePIXORNeXt (Row B) in
+two driving scenes. The panels permit qualitative inspection of response concentration and predicted footprints; they do not
+quantify dataset-level recall or isolate a component effect.
+
+
+
+
+Fig. 11 Qualitative BEV predictions from MobilePIXORNeXt on KITTI validation frames 007038, 005571, and 006761 (top to
+bottom). Left: Front-camera images with calibrated projections of predicted BEV footprints, class labels, and confidence scores.
+Right: Corresponding LiDAR BEV views with predicted oriented footprints and class annotations. Prediction colors are cyan
+for Car, magenta for Pedestrian, and yellow for Cyclist. The panels visualize predicted footprints rather than full 3D boxes.
+
+
+   distances, visible in both the camera projection and            – Mixed-Class Predictions: Frame 005571 con-
+   the BEV panel.                                                    tains Car, Pedestrian, and Cyclist predictions. The
+26                                                                                                    D. H. Nguyen et al.
+
+
+   retained labels and confidence scores identify the        count is 84.41% below PointPillars and 85.85% below
+   classes assigned to nearby footprints.                    SECOND. A separate T4 snapshot reports 71.46% Mod-
+ – Nearby Road Users: Frame 006761 shows pre-                erate mAP, 73.42% mAP9 , and 60.96 ms offline pipeline
+   dicted footprints around vehicles, pedestrians, and       latency (16.41 FPS). The historical OGA–IQA factorial
+   cyclists in the same scene. The two views reveal the      study improves Moderate mAP from 67.38% to 70.58%
+   spatial arrangement of these predictions.                 within its earlier focal-context architecture. Historical
+                                                             Q-OGA reaches 69.20% using that earlier architecture
+                                                             without a dedicated quality head. These experiments
+5.6 Discussion and Practical Limitations                     motivate compact statistical BEV detection, while
+                                                             their differing configurations limit component-level
+Discussion and Insights. The local evaluation supports       attribution to the final detector.
+compact oriented BEV footprint detection without                 The evaluation concerns horizontal footprints rather
+learned point encoders or 3D sparse convolutions.            than full 3D cuboids, directed heading, tracking, or
+Strata-BEV14 retains point-cloud statistics for a de-        closed-loop collision avoidance. Local and reference eval-
+tector with fewer than 0.76 M deployable parameters.         uator outputs have not been shown equivalent. The
+Historical results motivate grouped heads, physical          available seed runs change training budgets and, for
+augmentation, and geometric supervision, but their con-      MobilePIXOR, input representations; matched repeated
+founded settings do not support an additive attribution      runs are needed to quantify initialization sensitivity. Val-
+of the final accuracy to individual components. The          idation uses KITTI’s 64-beam LiDAR, leaving sparse
+empirical scope is BEV detection; complete 3D cuboid         sensors, adverse weather, non-planar roads, and embed-
+detection and closed-loop safety are not evaluated.          ded deployment untested. Future work will establish a
+                                                             common reference-evaluation protocol, reproduce con-
+Limitations and Future Scope. MobilePIXORNeXt pre-           trolled component ablations, and evaluate hardware-
+dicts horizontal footprints and orientation modulo π,        specific quantization on embedded accelerators.
+without vertical extent, directed heading, tracking, or
+time-to-collision estimation. The empirical study uses
+                                                             Acknowledgements The authors acknowledge FPT Univer-
+KITTI 64-beam LiDAR, leaving sparse sensors, adverse         sity, Vietnam, for providing the computational infrastructure,
+weather, non-planar roads, and embedded platforms            GPU workstation clusters, and laboratory facilities used in
+untested. Local and reference evaluator outputs require      this research.
+an equivalence study before a common accuracy ranking
+is justified. Matched component runs, fixed-budget seed
+                                                             Statements and Declarations
+repetitions, consistent checkpoint selection, and verified
+hardware/timing boundaries are needed to resolve the         Funding
+remaining experimental attribution questions. Future
+work will examine these controls and hardware-specific       The authors declare that no funds, grants, or other
+deployment.                                                  financial support were received during the preparation
+                                                             of this manuscript.
+6 Conclusion                                                 Competing Interests
+We presented MobilePIXORNeXt, a compact proposal-            The authors declare that they have no competing fi-
+free detector of oriented BEV footprints. Strata-BEV14       nancial or non-financial interests that are directly or
+summarizes point-cloud densities, elevation statis-          indirectly related to the work submitted for publication.
+tics, reflectance, and subcell centroid offsets without
+learned point encoders. A ConvNeXt-style backbone,           Ethics Approval and Consent to Participate
+Block-SimAM attention, scale-gated feature fusion,
+and grouped heads predict horizontal object geome-           Not applicable. This study does not involve human
+try. Training combines PC-GTA augmentation, OGA              participants, vertebrate animals, or clinical data.
+geometric supervision, IQA quality supervision, and
+bounded multi-task weighting.                                Consent for Publication
+    The seed-42 checkpoint achieves 71.50% Moderate
+mAP and 73.45% mAP9 in the archived L4 local-                Not applicable. This manuscript does not contain any
+evaluator report, using 753,569 deployable parameters        personal identifying information, individual patient
+and 12 additional training-only logits. Its parameter        records, or individual photographs.
+MobilePIXORNeXt                                                                                                          27
+
+
+Data Availability                                             3. Yan, Y., Mao, Y., Li, B.: SECOND: Sparsely embedded
+                                                                 convolutional detection. Sensors 18(10), 3337 (2018).
+The 3D point cloud and camera calibration data ana-              DOI 10.3390/s18103337
+                                                              4. Shi, S., Wang, X., Li, H.: PointRCNN: 3d object
+lyzed during the current study are publicly available in         proposal generation and detection from point cloud. In:
+the KITTI 3D Object Detection Benchmark repository               Proceedings of the IEEE/CVF Conference on Computer
+at http://www.cvlibs.net/datasets/kitti/eval_                    Vision and Pattern Recognition, pp. 770–779 (2019).
+object.php?obj_benchmark=3d.                                     DOI 10.1109/CVPR.2019.00086
+                                                              5. Shi, S., Wang, Z., Shi, J., Wang, X., Li, H.: From points
+                                                                 to parts: 3d object detection from point cloud with
+Code Availability                                                part-aware and part-aggregation network. IEEE Trans.
+                                                                 Pattern Anal. Mach. Intell. 43(8), 2647–2664 (2020).
+The source code, model configurations, and trained               DOI 10.1109/TPAMI.2020.2977026
+                                                              6. Shi, S., Guo, C., Jiang, L., Wang, Z., Shi, J., Wang, X.,
+checkpoints supporting the findings of this study are            Li, H.: PV-RCNN: Point-voxel feature set abstraction for
+available from the corresponding author upon reason-             3d object detection. In: Proceedings of the IEEE/CVF
+able request, and will be made publicly accessible in an         Conference on Computer Vision and Pattern
+open repository upon publication.                                Recognition, pp. 10529–10538 (2020).
+                                                                 DOI 10.1109/CVPR42600.2020.01054
+                                                              7. Qi, C.R., Yi, L., Su, H., Guibas, L.J.: PointNet++: Deep
+Use of Generative AI and AI-assisted Technologies                hierarchical feature learning on point sets in a metric
+                                                                 space. In: Advances in Neural Information Processing
+During the preparation of this manuscript, generative            Systems, vol. 30, pp. 5099–5108 (2017). URL
+                                                                 https://arxiv.org/abs/1706.02413
+AI tools were used solely for English grammar check-
+                                                              8. Meyer, G.P., Laddha, A., Kee, E., Kuan, C.X.,
+ing and stylistic polishing. All conceptual modeling,            Vallespi-Gonzalez, C.: LaserNet: An efficient probabilistic
+mathematical formulations, software algorithms, and              3D object detector for autonomous driving. In:
+experimental evaluations were conducted exclusively by           IEEE/CVF Conference on Computer Vision and Pattern
+                                                                 Recognition, pp. 12677–12686 (2019).
+the authors, who take full responsibility for the contents
+                                                                 DOI 10.1109/CVPR.2019.01296
+of this publication.                                          9. Lang, A.H., Vora, S., Caesar, H., Zhou, L., Yang, J.,
+                                                                 Beijbom, O.: PointPillars: Fast encoders for object
+Author Contributions                                             detection from point clouds. In: IEEE/CVF Conference
+                                                                 on Computer Vision and Pattern Recognition, pp.
+                                                                 12697–12705 (2019). DOI 10.1109/CVPR.2019.01298
+All authors contributed to the study conception,             10. Li, J., Luo, C., Yang, X.: PillarNeXt: Rethinking
+architecture design, and empirical evaluation. Duyen             network designs for 3D object detection in LiDAR point
+Huu Nguyen: Conceptualization, model architecture                clouds. In: IEEE/CVF Conference on Computer Vision
+design, core pipeline software development, and writing          and Pattern Recognition, pp. 17567–17576 (2023).
+                                                                 DOI 10.1109/CVPR52729.2023.01685
+the original draft. Anh Duc Bui: Data preprocessing          11. Mao, W., Wang, T., Zhang, D., Yan, J., Yoshie, O.:
+pipeline, physics-consistent augmentation (PC-GTA)               PillarNeSt: Embracing backbone scaling and pretraining
+design, experimental benchmarking, and writing the               for pillar-based 3D object detection. arXiv preprint
+original draft. Nhan Trong Phan: Formal analysis,                arXiv:2311.17770 (2023).
+                                                                 DOI 10.48550/arXiv.2311.17770
+loss ablation studies (OGA, IQA, T-SBUW),                    12. Nguyen, D.A., Hoang, K.N., Nguyen, N.T., Nguyen,
+quantitative visualization, and writing the original             D.A., Tran, H.N.: Enhancing indoor robot pedestrian
+draft. Hoang Ngoc Tran: Research supervision,                    detection using improved PIXOR backbone and gaussian
+conceptual validation, project administration, critical          heatmap regression in 3D LiDAR point clouds. IEEE
+                                                                 Access 12, 9162–9176 (2024).
+revision, and final review of the manuscript. All                DOI 10.1109/ACCESS.2024.3351868
+authors read, reviewed, and approved the final               13. Zhou, S., Yuan, Z., Yang, D., Hu, X., Qian, J., Zhao, Z.:
+manuscript for publication.                                      PillarHist: A quantization-aware pillar feature encoder
+                                                                 based on height-aware histogram. In: Proceedings of the
+                                                                 IEEE/CVF Conference on Computer Vision and Pattern
+                                                                 Recognition, pp. 27336–27345 (2025).
+References                                                       DOI 10.1109/CVPR52733.2025.02568
+                                                             14. Khoshkdahan, M., Vinel, A.: TriBand-BEV: Real-time
+ 1. Geiger, A., Lenz, P., Urtasun, R.: Are we ready for          LiDAR-only 3d pedestrian detection via height-aware
+    autonomous driving? the KITTI vision benchmark suite.        BEV and high-resolution feature fusion (2026).
+    In: IEEE Conference on Computer Vision and Pattern           DOI 10.48550/arXiv.2605.12220. Accepted at AAMAS
+    Recognition, pp. 3354–3361 (2012).                           2026
+    DOI 10.1109/CVPR.2012.6248074                            15. Li, X., Wang, W., Wu, L., Chen, S., Hu, X., Li, J., Tang,
+ 2. Yang, B., Luo, W., Urtasun, R.: PIXOR: Real-time 3D          J., Yang, J.: Generalized focal loss: Learning qualified
+    object detection from point clouds. In: IEEE/CVF             and distributed bounding boxes for dense object
+    Conference on Computer Vision and Pattern Recognition,       detection. In: Advances in Neural Information
+    pp. 7652–7660 (2018). DOI 10.1109/CVPR.2018.00798
+28                                                              D. H. Nguyen et al.
+
+
+    Processing Systems, vol. 33, pp. 21002–21012 (2020).
+    URL https://arxiv.org/abs/2006.04388
+16. Liu, Z., Mao, H., Wu, C.Y., Feichtenhofer, C., Darrell,
+    T., Xie, S.: A ConvNet for the 2020s. In: IEEE/CVF
+    Conference on Computer Vision and Pattern
+    Recognition, pp. 11976–11986 (2022).
+    DOI 10.1109/CVPR52688.2022.01167
+17. Yang, L., Zhang, R.Y., Li, L., Xie, X.: SimAM: A simple,
+    parameter-free attention module for convolutional neural
+    networks. In: Proceedings of the 38th International
+    Conference on Machine Learning, Proceedings of
+    Machine Learning Research, vol. 139, pp. 11863–11874
+    (2021). URL
+    https://proceedings.mlr.press/v139/yang21o.html
+18. Le, D.T., Pham, T., Cai, J., Rezatofighi, H.:
+    Marginalized generalized IoU (MGIoU): A unified
+    objective function for optimizing convex parametric
+    shapes. Proc. AAAI Conf. Artif. Intell. 40(7), 5836–5844
+    (2026). DOI 10.1609/aaai.v40i7.37505
+19. Bai, X., Hu, Z., Zhu, X., Huang, Q., Chen, Y., Fu, H.,
+    Tai, C.L.: TransFusion: Robust LiDAR-camera fusion for
+    3D object detection with soft association. In: IEEE/CVF
+    Conference on Computer Vision and Pattern
+    Recognition, pp. 2760–2769 (2022).
+    DOI 10.1109/CVPR52688.2022.00279
+20. Wang, Q., Wu, B., Zhu, P., Li, P., Zuo, W., Hu, Q.:
+    ECA-Net: Efficient channel attention for deep
+    convolutional neural networks. In: IEEE/CVF
+    Conference on Computer Vision and Pattern
+    Recognition, pp. 11534–11542 (2020).
+    DOI 10.1109/CVPR42600.2020.01155
+21. Tran, H.N., Nguyen, C.T., Duong, T.T., Nguyen, M.L.,
+    Nguyen, N.V.: Attention-augmented lightweight 3D
+    LiDAR object detection for rubber trees via
+    MobilePIXOR and model distillation. Arab. J. Sci. Eng.
+    (2026). DOI 10.1007/s13369-026-11720-1
+22. Rezatofighi, H., Tsoi, N., Gwak, J., Sadeghian, A., Reid,
+    I., Savarese, S.: Generalized intersection over union: A
+    metric and a loss for bounding box regression. In:
+    Proceedings of the IEEE/CVF Conference on Computer
+    Vision and Pattern Recognition (2019).
+    DOI 10.1109/CVPR.2019.00075
+23. Kendall, A., Gal, Y., Cipolla, R.: Multi-task learning
+    using uncertainty to weigh losses for scene geometry and
+    semantics. In: IEEE/CVF Conference on Computer
+    Vision and Pattern Recognition, pp. 7482–7491 (2018).
+    DOI 10.1109/CVPR.2018.00781
+24. Chen, X., Kundu, K., Zhang, Z., Ma, H., Fidler, S.,
+    Urtasun, R.: 3D object proposals using stereo imagery
+    for autonomous vehicles. In: IEEE Conference on
+    Computer Vision and Pattern Recognition, pp.
+    2144–2152 (2015). DOI 10.1109/CVPR.2015.7298826
+

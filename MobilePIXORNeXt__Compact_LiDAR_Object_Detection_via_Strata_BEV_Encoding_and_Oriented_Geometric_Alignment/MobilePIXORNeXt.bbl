@@ -70,8 +70,7 @@ Li, J., Luo, C., Yang, X.: {PillarNeXt}: Rethinking network designs for {3D}
   object detection in {LiDAR} point clouds.
 \newblock In: IEEE/CVF Conference on Computer Vision and Pattern Recognition,
   pp. 17567--17576 (2023).
-\newblock \doi{10.1109/CVPR52729.2023.01685}.
-\newblock \urlprefix\url{https://arxiv.org/abs/2305.04925}
+\newblock \doi{10.1109/CVPR52729.2023.01685}
 
 \bibitem{mao2023pillarnest}
 Mao, W., Wang, T., Zhang, D., Yan, J., Yoshie, O.: {PillarNeSt}: Embracing
@@ -91,15 +90,13 @@ Zhou, S., Yuan, Z., Yang, D., Hu, X., Qian, J., Zhao, Z.: {PillarHist}: A
   quantization-aware pillar feature encoder based on height-aware histogram.
 \newblock In: Proceedings of the IEEE/CVF Conference on Computer Vision and
   Pattern Recognition, pp. 27336--27345 (2025).
-\newblock
-  \urlprefix\url{https://openaccess.thecvf.com/content/CVPR2025/html/Zhou_PillarHist_A_Quantization-aware_Pillar_Feature_Encoder_based_on_Height-aware_Histogram_CVPR_2025_paper.html}
+\newblock \doi{10.1109/CVPR52733.2025.02568}
 
 \bibitem{khoshkdahan2026triband}
 Khoshkdahan, M., Vinel, A.: {TriBand-BEV}: Real-time {LiDAR}-only 3d pedestrian
   detection via height-aware {BEV} and high-resolution feature fusion (2026).
 \newblock \doi{10.48550/arXiv.2605.12220}.
-\newblock \urlprefix\url{https://arxiv.org/abs/2605.12220}.
-\newblock Version 1; accepted at AAMAS 2026
+\newblock Accepted at AAMAS 2026
 
 \bibitem{li2020gfl}
 Li, X., Wang, W., Wu, L., Chen, S., Hu, X., Li, J., Tang, J., Yang, J.:
@@ -114,8 +111,7 @@ Liu, Z., Mao, H., Wu, C.Y., Feichtenhofer, C., Darrell, T., Xie, S.: A
   {ConvNet} for the 2020s.
 \newblock In: IEEE/CVF Conference on Computer Vision and Pattern Recognition,
   pp. 11976--11986 (2022).
-\newblock \doi{10.1109/CVPR52688.2022.01167}.
-\newblock \urlprefix\url{https://arxiv.org/abs/2201.03545}
+\newblock \doi{10.1109/CVPR52688.2022.01167}
 
 \bibitem{yang2021simam}
 Yang, L., Zhang, R.Y., Li, L., Xie, X.: {SimAM}: A simple, parameter-free
@@ -145,8 +141,7 @@ Wang, Q., Wu, B., Zhu, P., Li, P., Zuo, W., Hu, Q.: {ECA-Net}: Efficient
   channel attention for deep convolutional neural networks.
 \newblock In: IEEE/CVF Conference on Computer Vision and Pattern Recognition,
   pp. 11534--11542 (2020).
-\newblock \doi{10.1109/CVPR42600.2020.01155}.
-\newblock \urlprefix\url{https://arxiv.org/abs/1910.03151}
+\newblock \doi{10.1109/CVPR42600.2020.01155}
 
 \bibitem{tran2026rubber}
 Tran, H.N., Nguyen, C.T., Duong, T.T., Nguyen, M.L., Nguyen, N.V.:
@@ -168,8 +163,7 @@ Kendall, A., Gal, Y., Cipolla, R.: Multi-task learning using uncertainty to
   weigh losses for scene geometry and semantics.
 \newblock In: IEEE/CVF Conference on Computer Vision and Pattern Recognition,
   pp. 7482--7491 (2018).
-\newblock \doi{10.1109/CVPR.2018.00781}.
-\newblock \urlprefix\url{https://arxiv.org/abs/1705.07115}
+\newblock \doi{10.1109/CVPR.2018.00781}
 
 \bibitem{chen20153d}
 Chen, X., Kundu, K., Zhang, Z., Ma, H., Fidler, S., Urtasun, R.: {3D} object

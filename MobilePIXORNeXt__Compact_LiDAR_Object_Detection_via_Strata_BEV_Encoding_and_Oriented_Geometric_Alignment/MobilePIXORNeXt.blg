@@ -5,37 +5,37 @@ The style file: spmpsci.bst
 Database file #1: references.bib
 You've used 24 entries,
             2939 wiz_defined-function locations,
-            751 strings with 10295 characters,
-and the built_in function-call counts, 13302 in all, are:
-= -- 1080
+            746 strings with 9988 characters,
+and the built_in function-call counts, 13253 in all, are:
+= -- 1071
 > -- 369
 < -- 19
 + -- 139
 - -- 115
-* -- 744
-:= -- 1479
-add.period$ -- 53
+* -- 734
+:= -- 1470
+add.period$ -- 48
 call.type$ -- 24
 change.case$ -- 59
 chr.to.int$ -- 0
 cite$ -- 24
-duplicate$ -- 1289
-empty$ -- 1280
+duplicate$ -- 1290
+empty$ -- 1281
 format.name$ -- 139
-if$ -- 3083
+if$ -- 3075
 int.to.chr$ -- 0
 int.to.str$ -- 24
 missing$ -- 286
-newline$ -- 131
+newline$ -- 126
 num.names$ -- 24
-pop$ -- 459
+pop$ -- 463
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 421
+skip$ -- 420
 stack$ -- 0
 substring$ -- 811
-swap$ -- 826
+swap$ -- 828
 text.length$ -- 19
 text.prefix$ -- 0
 top$ -- 0
@@ -43,4 +43,4 @@ type$ -- 0
 warning$ -- 0
 while$ -- 79
 width$ -- 26
-write$ -- 299
+write$ -- 289

@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering\small
-\caption{Multi-seed statistical robustness and variance comparison between baseline MobilePIXOR and the proposed MobilePIXORNeXt on the KITTI validation benchmark across three random seeds ($42, 43, 44$) under a 100-epoch training schedule. Detections are evaluated under the unified BEV evaluation protocol with 40-point interpolation ($R_{40}$). Performance is reported across individual seeds alongside the sample mean and standard deviation ($\text{Mean} \pm \text{Std}$, \%). The best mean and lowest variance values are highlighted in \textbf{bold}.}
+\caption{Descriptive summary of archived runs labeled by seeds 42, 43, and 44 (local BEV $R_{40}$, L4 evaluation). Means and sample standard deviations summarize these runs; their settings differ, so the dispersion is not an estimate of initialization variance under a fixed training protocol.}
 \label{tab:seed_robustness}
 \setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}lrrrrrrrrrrr@{}}
@@ -17,4 +17,6 @@ Cyclist AP$_{\mathrm{M}}$ (\%) & 20.53 & 34.17 & 32.18 & 28.96 & $\pm 7.37$ & 66
 \textbf{Overall mAP$_{9}$ (\%)} & 42.27 & 52.12 & 51.25 & 48.55 & $\pm 5.45$ & 73.45 & 73.35 & 72.22 & \textbf{73.01} & $\mathbf{\pm 0.68}$ & \textit{\textbf{+24.46}} \\
 \bottomrule
 \end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} Final MobilePIXORNeXt seed 42 completed 160 epochs (selected epoch 130), whereas seeds 43/44 completed 100 (selected epoch 100). MobilePIXOR seed 42 uses Binary35 and a run archived at 38/100 epochs (selected epoch 30); seeds 43/44 use Hist14 and 100-epoch runs (selected epochs 90/100). The numerical summary therefore combines changes in representation, training duration, and initialization. Gains are descriptive mean differences, not a matched-seed significance test.}
 \end{table*}

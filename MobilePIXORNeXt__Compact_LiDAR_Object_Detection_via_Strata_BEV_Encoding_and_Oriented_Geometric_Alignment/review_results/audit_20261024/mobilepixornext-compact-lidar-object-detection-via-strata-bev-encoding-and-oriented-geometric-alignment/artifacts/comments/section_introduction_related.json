@@ -1,0 +1,22 @@
+[
+  {
+    "id": "I14",
+    "title": "Related Work gán cơ chế LOS/shadow bị tắt cho kết quả chính",
+    "quote": "integrating adaptive local ground plane fitting, static obstacle clearance filtering, line-of-sight ray checks, and shadow masking",
+    "explanation": "Experiments và Results ghi LOS, shadow, radiometric disabled. Đã mô tả core enabled mechanisms và optional options, không quy AP gain cho cơ chế không bật.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "high",
+    "source_kind": "llm",
+    "source_section": "sections/related_work.tex:11",
+    "related_sections": [
+      "sections/related_work.tex"
+    ],
+    "root_cause_key": "i14",
+    "review_lane": "section_introduction_related",
+    "gate_blocker": false,
+    "quote_verified": false,
+    "status": "Đã sửa",
+    "action": ""
+  }
+]

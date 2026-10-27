@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering\small
+\caption{Multi-seed statistical robustness and variance comparison between baseline MobilePIXOR and the proposed MobilePIXORNeXt on the KITTI validation benchmark across three random seeds ($42, 43, 44$) under a 100-epoch training schedule. Detections are evaluated under the unified BEV evaluation protocol with 40-point interpolation ($R_{40}$). Performance is reported across individual seeds alongside the sample mean and standard deviation ($\text{Mean} \pm \text{Std}$, \%). The best mean and lowest variance values are highlighted in \textbf{bold}.}
+\label{tab:seed_robustness}
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{@{}lrrrrrrrrrrr@{}}
+\toprule
+& \multicolumn{5}{c}{\textbf{Baseline MobilePIXOR~\cite{nguyen2024indoor}}} & \multicolumn{5}{c}{\textbf{MobilePIXORNeXt (Ours)}} & \\
+\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+\textbf{Category / Metric} & \textbf{S42} & \textbf{S43} & \textbf{S44} & \textbf{Mean} & \textbf{Std} & \textbf{S42} & \textbf{S43} & \textbf{S44} & \textbf{Mean} & \textbf{Std} & \textbf{Gain ($\Delta$)} \\
+\midrule
+Car AP$_{\mathrm{M}}$ (\%) & 75.52 & 77.17 & 78.83 & 77.17 & $\pm 1.66$ & 86.90 & 86.33 & 85.42 & \textbf{86.22} & $\mathbf{\pm 0.75}$ & \textit{+9.05} \\
+Pedestrian AP$_{\mathrm{M}}$ (\%) & 28.16 & 40.45 & 37.91 & 35.51 & $\pm 6.49$ & 60.78 & 61.94 & 60.06 & \textbf{60.93} & $\mathbf{\pm 0.95}$ & \textit{\textbf{+25.42}} \\
+Cyclist AP$_{\mathrm{M}}$ (\%) & 20.53 & 34.17 & 32.18 & 28.96 & $\pm 7.37$ & 66.81 & 65.96 & 64.26 & \textbf{65.68} & $\mathbf{\pm 1.30}$ & \textit{\textbf{+36.72}} \\
+\midrule
+\textbf{Moderate mAP (\%)} & 41.40 & 50.60 & 49.64 & 47.21 & $\pm 5.06$ & 71.50 & 71.41 & 69.91 & \textbf{70.94} & $\mathbf{\pm 0.89}$ & \textit{\textbf{+23.73}} \\
+\textbf{Overall mAP$_{9}$ (\%)} & 42.27 & 52.12 & 51.25 & 48.55 & $\pm 5.45$ & 73.45 & 73.35 & 72.22 & \textbf{73.01} & $\mathbf{\pm 0.68}$ & \textit{\textbf{+24.46}} \\
+\bottomrule
+\end{tabular}
+\end{table*}

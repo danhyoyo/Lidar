@@ -1,0 +1,151 @@
+% METHOD-NARRATIVE (sections/methodology.tex:21) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:21-24
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:63) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:63-69
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:72) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:72-75
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:78) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (align) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:78-84
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:136) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:136-145
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:148) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:148-151
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:206) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (align) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:206-211
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:221) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:221-227
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:229) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:229-235
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:237) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:237-240
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:304) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (align) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:304-308
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:327) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:327-335
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:338) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:338-341
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:343) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:343-350
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:353) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:353-361
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:365) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:365-371
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:376) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:376-382
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:387) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:387-390
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:398) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:398-401
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:407) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:407-415
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:418) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:418-421
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:468) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (align) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:468-474
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% METHOD-NARRATIVE (sections/methodology.tex:478) [Severity: Minor] [Priority: P2]: [Script] M-EQUATION The numbered equation group (equation) has no 'where' gloss within 3 non-empty visible lines.
+% Current: Equation range sections/methodology.tex:478-481
+% Suggested: Explain new symbols and output semantics, then state the downstream use.
+% Rationale: An equation needs purpose, symbol meaning, and a downstream interface to close the argument.
+% Meaning-Check: NEEDS-LLM
+
+% M-EDGETABLE [Script] Method-module interface skeleton (not a finding)
+% Subsection list: Problem Formulation and Input/Output Contracts -> Deterministic Strata-BEV14 Feature Representation -> Physics-Consistent Ground-Truth Augmentation -> ConvNeXt-Style Multi-Scale BEV Backbone Hierarchy -> MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM -> Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck) -> Shared Grouped Prediction Towers -> Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA) -> Coordinate Decoding and Inference Pipeline
+% | Upstream subsection | Upstream output | Connection type | Intermediate transform | Downstream use |
+% | --- | --- | --- | --- | --- |
+% | Problem Formulation and Input/Output Contracts |  |  |  |  |
+% | Deterministic Strata-BEV14 Feature Representation |  |  |  |  |
+% | Physics-Consistent Ground-Truth Augmentation |  |  |  |  |
+% | ConvNeXt-Style Multi-Scale BEV Backbone Hierarchy |  |  |  |  |
+% | MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM |  |  |  |  |
+% | Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck) |  |  |  |  |
+% | Shared Grouped Prediction Towers |  |  |  |  |
+% | Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA) |  |  |  |  |
+% [LLM] 待填写
