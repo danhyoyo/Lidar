@@ -2,7 +2,7 @@
 % Written according to Springer Nature - Arabian Journal for Science and Engineering (AJSE)
 % Structure: Module Triad (Motivation -> Design -> Technical Advantage) + Equation Closure + Pseudocode Algorithm
 
-MobilePIXORNeXt is a compact, proposal-free, multi-class Bird's-Eye View (BEV) object detector for real-time Light Detection and Ranging (LiDAR) perception on resource-constrained embedded platforms, targeting oriented bounding footprints on the Special Euclidean manifold $SE(2)$. Its deterministic Bird's-Eye View representation avoids learned point-cloud encoders and 3D sparse convolutions. Figure~\ref{fig:r37_overview} shows the data flow from the raw 3D point cloud to decoded oriented BEV bounding footprints.
+MobilePIXORNeXt is a compact, proposal-free, multi-class Bird's-Eye View (BEV) object detector for Light Detection and Ranging (LiDAR) point clouds, targeting oriented bounding footprints on the Special Euclidean manifold $SE(2)$. Its deterministic Bird's-Eye View representation avoids learned point-cloud encoders and 3D sparse convolutions. Figure~\ref{fig:r37_overview} shows the data flow from the raw 3D point cloud to decoded oriented BEV bounding footprints.
 
 \par\vspace{-0.5\baselineskip}
 \subsection{Problem Formulation and Input/Output Contracts}
@@ -17,19 +17,19 @@ An unordered LiDAR point cloud acquired by a rotating scanner is represented as 
     \end{aligned}
     \label{eq:spatial_roi}
 \end{equation}
-We used longitudinal bounds $[0.0, 70.4]$\,m, lateral bounds $[-40.0, 40.0]$\,m, and vertical bounds $[-2.5, 1.0]$\,m. An open-boundary inward margin of $\epsilon = 0.001$\,m reduced boundary artifacts. A horizontal resolution of $\Delta_x = \Delta_y = 0.1$\,m gave a grid of $H_{\mathrm{in}} \times W_{\mathrm{in}} = 800 \times 704$ cells. A point $\mathbf{p}_i$ maps to grid coordinate $(u_i, v_i)$ as:
+We used longitudinal bounds $[0.0, 70.4]$\,m, lateral bounds $[-40.0, 40.0]$\,m, and vertical bounds $[-2.5, 1.0]$\,m. An open-boundary inward margin of $\epsilon = 0.001$\,m reduced boundary artifacts. A horizontal resolution of $\Delta_x = \Delta_y = 0.1$\,m gave a grid of $H_{\mathrm{in}} \times W_{\mathrm{in}} = 800 \times 704$ cells. A point $\mathbf{p}_i$ maps to grid coordinate $(u_i, v_i)$, where $u_i$ indexes the longitudinal $X$ direction (tensor column) and $v_i$ indexes the lateral $Y$ direction (tensor row), as:
 \begin{equation}
     u_i = \left\lfloor \frac{x_i - x_{\min}}{\Delta_x} \right\rfloor, \qquad v_i = \left\lfloor \frac{y_i - y_{\min}}{\Delta_y} \right\rfloor.
     \label{eq:grid_assignment}
 \end{equation}
 
 \paragraph{Detection Target Contract.}
-The detector predicts oriented bounding boxes projected onto the horizontal BEV plane across three semantic categories: Car ($c=0$), Pedestrian ($c=1$), and Cyclist ($c=2$). At an output spatial downsampling factor of $s_{\mathrm{out}} = 4$, the output feature map resolution is $H_{\mathrm{out}} \times W_{\mathrm{out}} = 200 \times 176$. For each detected object instance $k$, the target state is parameterized by the 7-tuple:
+The detector predicts oriented bounding boxes projected onto the horizontal BEV plane across three semantic categories: Car ($c=0$), Pedestrian ($c=1$), and Cyclist ($c=2$). At an output spatial downsampling factor of $s_{\mathrm{out}} = 4$, the output feature map resolution is $H_{\mathrm{out}} \times W_{\mathrm{out}} = 200 \times 176$. For each detected object instance $k$, the output state is parameterized by the 7-tuple:
 \begin{equation}
     \mathbf{b}_k = (c_k, x_k^*, y_k^*, l_k^*, w_k^*, \psi_k^*, s_k),
     \label{eq:target_tuple}
 \end{equation}
-where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes continuous metric center coordinates and $(l_k^*, w_k^*) \in \mathbb{R}^2$ denotes length and width. The heading $\psi_k^* \in [-\pi/2, \pi/2]$ uses a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated confidence score. These targets require a dense BEV representation that retains fine 3D geometry without a learned point encoder.
+where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes continuous metric center coordinates and $(l_k^*, w_k^*) \in \mathbb{R}^2$ denotes length and width. The heading $\psi_k^* \in [-\pi/2, \pi/2]$ uses a $\pi$-symmetric doubled-angle representation, and $s_k \in [0, 1]$ is the calibrated confidence score. Ground-truth supervision supplies the class and footprint geometry; confidence is a prediction rather than a ground-truth box attribute. The dense BEV representation retains fine geometric statistics without a learned point encoder.
 
 \par\vspace{-0.5\baselineskip}
 \subsection{Deterministic Strata-BEV14 Feature Representation}
@@ -46,7 +46,7 @@ where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes continuous metric center coordin
 \par
 
 \paragraph{Motivation.}
-Voxel- and pillar-based detectors~\cite{lang2019pointpillars,li2023pillarnext} use PointNet-style column encoders, which add computation and padding overhead. 35-channel binary slicing~\cite{yang2018pixor} omits continuous height and reflectance cues, while three-channel height bands~\cite{khoshkdahan2026triband} omit higher-order geometry. We developed \textbf{Strata-BEV14} (Figure~\ref{fig:strata_bev14}), a deterministic, parameter-free rasterizer, to retain these features with low computational cost.
+Voxel- and pillar-based detectors~\cite{lang2019pointpillars,li2023pillarnext} use PointNet-style column encoders, which add computation and padding overhead. The archived 35-channel binary occupancy input omits continuous subcell centroid offsets and vertical dispersion statistics, while three-channel height bands~\cite{khoshkdahan2026triband} omit higher-order geometry. We developed \textbf{Strata-BEV14} (Figure~\ref{fig:strata_bev14}), a deterministic, parameter-free rasterizer, to retain these features with low computational cost.
 
 
 \paragraph{Mathematical Formulation.}
@@ -108,13 +108,13 @@ Empty cells are assigned zeros across all 14 channels, producing the structured 
 \end{table}
 
 \paragraph{Technical Advantage.}
-Strata-BEV14 provides both a NumPy reference implementation and a Numba-accelerated CPU rasterizer. Both compute identical fourteen deterministic feature channels without learned parameters. The Numba backend accumulates point statistics, normalizes occupied cells, and formats the output into CHW layout for direct backbone ingestion. In the measured single-threaded pipeline, point-cloud loading and rasterization together require $20.94\,\text{ms}$, encompassing disk I/O, coordinate parsing, and cell aggregation. Because point-to-cell binning and statistic accumulation (extents, mean intensity, log-density lookups) operate on spatially disjoint grid cells with zero inter-cell data dependencies, the rasterization algorithm is embarrassingly parallel. On embedded System-on-Chip (SoC) architectures (e.g., NVIDIA Jetson platforms), this deterministic accumulation is architecturally suited for direct CUDA parallelization with negligible thread synchronization, offering a clear path to eliminate host-device memory transfers. Alternatively, in vehicular streaming deployment, CPU rasterization operates via asynchronous double-buffering: a companion CPU core rasterizes scan $t+1$ concurrently with GPU neural network inference on scan $t$, effectively hiding preprocessing latency behind the GPU execution window.
+Strata-BEV14 provides a NumPy reference implementation and a Numba-accelerated CPU rasterizer for the same fourteen features. Statistics are accumulated per occupied cell, normalized, and stored in CHW layout, with cell $(u,v)$ written at tensor row $v$, column $u$. In the archived T4 pipeline, point-cloud loading and rasterization together took $20.94\,\text{ms}$; no separate encoder-only measurement is available. CUDA rasterization and asynchronous CPU--GPU double-buffering are possible deployment extensions, but neither was measured in this sequential benchmark. Parallel point accumulation would also require handling concurrent updates to the same cell.
 
 \subsection{Physics-Consistent Ground-Truth Augmentation}
 \label{sec:pc_gta}
 
 \paragraph{Motivation.}
-Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics. It can produce floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities. We developed \textbf{Physics-Consistent Ground-Truth Augmentation} (\texttt{PC-GTA}) to address these artifacts. It improved Moderate mAP by $+6.03\,\text{pp}$ over naive sampling in the ablations.
+Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics. It can produce floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities. We developed \textbf{Physics-Consistent Ground-Truth Augmentation} (\texttt{PC-GTA}) to address these artifacts. Historical sampler comparisons are reported in Section~\ref{sec:ablations}; they evaluate complete augmentation recipes rather than an isolated physical constraint.
 
 \paragraph{Design Heuristics.}
 The sampler provides five consistency mechanisms when placing a box $\mathbf{b}_{\mathrm{insert}} = (x, y, z, l, w, h, \psi)$ at range $d = \sqrt{x^2 + y^2}$. The mechanisms can be enabled independently; the settings used for the reported final run are given in Section~\ref{sec:implementation_details}:
@@ -174,7 +174,7 @@ During training, the resulting physically consistent point cloud $\mathcal{P}_{\
 
 
 \paragraph{Motivation.}
-BEV object footprints range from pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and cyclists ($l \approx 1.8$\,m) to passenger vehicles ($l \approx 4.5$--$5.0$\,m). Small $3 \times 3$ convolutions require deeper networks to cover this spatial context, increasing latency and parameter count. At an input resolution of $\Delta_x = \Delta_y = 0.1$\,m, a $7 \times 7$ depthwise receptive field spans $0.7 \times 0.7$\,m at stride 1. It expands to over $5.6 \times 5.6$\,m by Stage 3 (stride 8), enough to cover a passenger vehicle without dilation. We designed \textbf{MobilePIXORNeXt Backbone} with large $7 \times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale stabilization in repeated \texttt{MobilePIXORNeXt-S} blocks to obtain this context within a small parameter budget.
+BEV object footprints range from pedestrians ($l \approx 0.8$\,m, $w \approx 0.6$\,m) and cyclists ($l \approx 1.8$\,m) to passenger vehicles ($l \approx 4.5$--$5.0$\,m). Small $3 \times 3$ convolutions require deeper networks to cover this spatial context, increasing latency and parameter count. At an input resolution of $\Delta_x = \Delta_y = 0.1$\,m, a $7 \times 7$ depthwise kernel samples a nominal $0.7 \times 0.7$\,m input-grid region at stride 1. At stride 8, the feature-cell spacing gives a nominal $5.6 \times 5.6$\,m sampling region; the accumulated network receptive field also depends on preceding layers. We designed \textbf{MobilePIXORNeXt Backbone} with large $7 \times 7$ depthwise convolutions, inverted bottleneck expansions, and LayerScale stabilization in repeated \texttt{MobilePIXORNeXt-S} blocks to obtain this context within a small parameter budget.
 
 \paragraph{Backbone Topology and Multi-Stage Hierarchy.}
 As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
@@ -189,7 +189,7 @@ As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
 \end{enumerate}
 
 \paragraph{Streamlined Single-Branch Depthwise Design.}
-MobilePIXORNeXt uses a single-branch large-kernel ($7 \times 7$) depthwise convolution during both training and deployment. It avoids the multi-path training topology and post-hoc weight folding of multi-branch reparameterization. Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation. The backbone body contains $604,864$ parameters ($80.3\%$ of the detector), while the complete multi-scale detector achieves $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) in synchronous pipeline execution on Tesla T4 ($115.32\,\text{FPS}$ or $8.67\,\text{ms}$ in standalone execution).
+MobilePIXORNeXt uses a single-branch large-kernel ($7 \times 7$) depthwise convolution during both training and deployment. It avoids the multi-path training topology and post-hoc weight folding of multi-branch reparameterization. Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation. The backbone body contains $604,864$ parameters ($80.3\%$ of the detector), while the complete multi-scale detector records $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) for the model stage in the T4 pipeline. A separate L4 report records $115.32\,\text{FPS}$ ($8.67\,\text{ms}$); hardware and report identity differ.
 
 \subsection{MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM}
 \label{sec:next_s_block}
@@ -241,7 +241,7 @@ Here, $\lambda_{\mathrm{sim}} = 10^{-4}$ is a numerical regularizer. For fixed c
 Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.
 
 \paragraph{Technical Advantage.}
-Block-SimAM adds \textbf{zero parameters} ($0$\,M), whereas stage-level adapters add a learned scalar residual gain $\beta$. Its 3D spatial-and-channel weights modulate sparse LiDAR clusters relative to flat terrain backgrounds. In the ablation, SimAM placement inside each \texttt{MobilePIXORNeXt-S} block improved mAP by $+0.88\,\text{pp}$ over no attention and by up to $+2.10\,\text{pp}$ over stage-level adapters (evaluated in Section~\ref{sec:ablations}).
+Block-SimAM adds \textbf{zero learned attention parameters}, whereas stage-level adapters can include a learned scalar residual gain $\beta$. It modulates each channel's spatial responses using the analytical energy score. The historical attention configurations in Section~\ref{sec:ablations} differ in context modules, neck width, or checkpoint history; their AP differences do not isolate the contribution of Block-SimAM in the final detector.
 
 
 \subsection{Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)}
@@ -282,8 +282,8 @@ where $\mathbf{G}_3 = 2\sigma(\operatorname{DWConv}_{3\times3}(\mathbf{L}_3 + \m
 
 \begin{figure*}[t]
     \centering
-    \paperfigure[width=\textwidth,height=0.55\textheight,keepaspectratio]{geometry_output_2x2.pdf}{0.55\textheight}{Geometric parameterization, orientation encoding, and quality-aware score calibration across prediction heads: (a) Continuous subcell coordinate offsets $(\Delta x, \Delta y)$ from anchor point $P$ to object center $C$; (b) Log-transformed bounding box dimension targets $(\log w, \log l)$; (c) Doubled-angle trigonometric yaw representation $(c_2, s_2) = (\cos 2\theta, \sin 2\theta)$ on the unit circle resolving $\pi$-heading ambiguity; and (d) IoU-quality-aware composite score ranking $s = (p_{\mathrm{cls}})^{1-\alpha} q^{\alpha}$ calibrated for post-processing peak selection and rotated NMS.}
-    \caption{Prediction-head geometry, orientation, and quality-aware scoring. \textbf{(a)} Metric subcell offsets $(\hat{o}_x, \hat{o}_y)$ from grid anchor center $P$ to object center $C$. \textbf{(b)} Log-dimension targets $(t_w, t_l) = (\log w, \log l)$ decoded by exponentiation. \textbf{(c)} Doubled-angle yaw representation $(c_2, s_2) = (\cos 2\theta, \sin 2\theta)$ on the unit circle, resolving $180^\circ$ heading ambiguity through $\pi$-rotational symmetry of BEV footprints. \textbf{(d)} Joint quality scoring combines overlap prediction $\hat{q} \in [0, 1]$ and classification probability $p_{\mathrm{cls}}$ as $s_{\mathrm{det}} = (p_{\mathrm{cls}})^{1-\alpha} \hat{q}^\alpha$ ($\alpha = 0.5$). This score prioritizes well-aligned boxes during peak filtering and rotated NMS.}
+    \paperfigure[width=\textwidth,height=0.55\textheight,keepaspectratio]{geometry_output_2x2.pdf}{0.55\textheight}{Geometric parameterization, orientation encoding, and quality-aware score calibration across prediction heads: (a) Continuous subcell coordinate offsets $(\Delta x, \Delta y)$ from grid reference point $P$ to object center $C$; (b) Log-transformed bounding box dimension targets $(\log w, \log l)$; (c) Doubled-angle trigonometric yaw representation $(c_2, s_2) = (\cos 2\theta, \sin 2\theta)$ on the unit circle resolving $\pi$-heading ambiguity; and (d) IoU-quality-aware composite score ranking $s = (p_{\mathrm{cls}})^{1-\alpha} q^{\alpha}$ calibrated for post-processing peak selection and rotated NMS.}
+    \caption{Prediction-head geometry, orientation, and quality-aware scoring. \textbf{(a)} Metric subcell offsets $(\hat{o}_x, \hat{o}_y)$ from grid reference point $P$ to object center $C$. \textbf{(b)} Log-dimension targets $(t_w, t_l) = (\log w, \log l)$ decoded by exponentiation. \textbf{(c)} Doubled-angle yaw representation $(c_2, s_2) = (\cos 2\theta, \sin 2\theta)$ on the unit circle, resolving $180^\circ$ heading ambiguity through $\pi$-rotational symmetry of BEV footprints. \textbf{(d)} Joint quality scoring combines overlap prediction $\hat{q} \in [0, 1]$ and classification probability $p_{\mathrm{cls}}$ as $s_{\mathrm{det}} = (p_{\mathrm{cls}})^{1-\alpha} \hat{q}^\alpha$ ($\alpha = 0.5$). This score prioritizes well-aligned boxes during peak filtering and rotated NMS.}
     \label{fig:geometry_output}
 \end{figure*}
 
@@ -294,7 +294,7 @@ Road categories have different BEV footprints. Cars are rectangular ($l \approx 
 We partitioned classes into Group 1 for \texttt{car} ($K_1 = 1$) and Group 2 for \texttt{ped\_cyc} ($K_2 = 2$). For each group $g \in \{1, 2\}$, feature map $\mathbf{F}_{\mathrm{out}}$ passes through an initial $3 \times 3$ Conv-BN-SiLU block with $32 \rightarrow 32$ channels. Five task-specific branches follow:
 \begin{itemize}
     \item \texttt{cls}: Classification heatmap $[B, K_g, 200, 176]$ yielding foreground category probability $p_{\mathrm{cls}}$ at grid point $P$ (Fig.~\ref{fig:geometry_output}d).
-    \item \texttt{offset}: Metric subcell coordinate offsets $[B,\allowbreak 2,\allowbreak 200,\allowbreak 176]$ predicting $(\hat{o}_x, \hat{o}_y)$, corresponding to continuous displacements $(\Delta x, \Delta y)$ from anchor point $P$ to object center $C$ (Fig.~\ref{fig:geometry_output}a).
+    \item \texttt{offset}: Metric subcell coordinate offsets $[B,\allowbreak 2,\allowbreak 200,\allowbreak 176]$ predicting $(\hat{o}_x, \hat{o}_y)$, corresponding to continuous displacements $(\Delta x, \Delta y)$ from grid reference point $P$ to object center $C$ (Fig.~\ref{fig:geometry_output}a).
     \item \texttt{size}: Bounding box log-dimensions $[B, 2, 200, 176]$ predicting $(\hat{d}_1, \hat{d}_2) = (\log \hat{w}, \log \hat{l})$ (denoted as regression targets $(t_w, t_l)$ in Fig.~\ref{fig:geometry_output}b, decoded via $\exp$).
     \item \texttt{yaw}: Orientation doubled-angle vector $[B, 2, 200, 176]$ predicting $(\hat{a}_1, \hat{a}_2) = (\cos 2\hat{\psi}, \sin 2\hat{\psi})$ (denoted as $(c_2, s_2)$ with heading angle $\theta \equiv \hat{\psi}$ on the unit circle in Fig.~\ref{fig:geometry_output}c to resolve $\pi$-heading ambiguity).
     \item \texttt{iou}: Localization quality score $[B, 1, 200, 176]$ predicting continuous overlap $\hat{q} \in [0, 1]$ ($q(P)$ in Fig.~\ref{fig:geometry_output}d), fused with classification into composite ranking confidence $s_{\mathrm{det}} = (p_{\mathrm{cls}})^{1-\alpha} \hat{q}^\alpha = \sqrt{p_{\mathrm{cls}} \hat{q}}$ ($\alpha=0.5$).
@@ -312,9 +312,9 @@ During inference, predicted bounding box parameters are decoded from regression 
     \hat{w} &= \exp(\hat{d}_1), \quad \hat{l} = \exp(\hat{d}_2), \quad \hat{\psi} = \frac{1}{2}\operatorname{atan2}(\hat{a}_2, \hat{a}_1).
     \label{eq:decoded_targets}
 \end{align}
-The doubled-angle formulation $\mathbf{a}^*$ and decoding rule in Eq.~(\ref{eq:decoded_targets}) strictly resolve periodic boundary singularities. Standard scalar regression of heading $\psi \in [-\pi/2, \pi/2)$ suffers from boundary instability: across the periodic boundary $\pm \pi/2$, an infinitesimal geometric rotation yields a jump discontinuity of $\pi$, producing explosive gradient penalties under Smooth-L1 or L2 regression. By projecting $\psi^*$ onto the unit circle $S^1$ via $\mathbf{a}^* = (\cos 2\psi^*, \sin 2\psi^*)$, the mapping $\psi \mapsto \mathbf{a}$ is continuous and inherently periodic with period $\pi$, capturing the geometric $\pi$-rotational symmetry (unoriented bounding box orientation modulo $\pi$) on the horizontal BEV plane. At inference, candidate heading modulo $\pi$ is recovered continuously via $\frac{1}{2}\operatorname{atan2}(\hat{a}_2, \hat{a}_1)$, eliminating periodic loss jump discontinuities during gradient backpropagation.
+The doubled-angle target is continuous under rotations modulo $\pi$, avoiding the scalar target discontinuity at the $\pm\pi/2$ boundary. Decoding with $\frac{1}{2}\operatorname{atan2}(\hat{a}_2,\hat{a}_1)$ returns a representative footprint angle; the scalar representative still wraps at its interval boundary. The footprint representation does not distinguish front from rear, and the direction is undefined for a zero predicted vector.
 
-Classification supervision utilizes 2D Gaussian heatmaps centered at continuous ground-truth object projections with a minimum radius of 4 cells. Regression targets are assigned within half the Gaussian peak radius, evaluated on decoupled validity masks $\mathbf{M}_{\mathrm{reg}, g}$ for each group $g \in \{1, 2\}$. Specifically, category target ownership is strictly partitioned: anchor cells within the regression radius of a car object activate $\mathbf{M}_{\mathrm{reg}, 1}(u, v) = 1$ to supervise Group 1, while cells within the regression radius of a pedestrian or cyclist activate $\mathbf{M}_{\mathrm{reg}, 2}(u, v) = 1$ to supervise Group 2. Each group tower computes regression losses independently on its respective positive mask, decoupling gradient backpropagation between categories with radically divergent aspect ratios ($4.5$\,m passenger cars vs. $0.8$\,m pedestrians). In the rare event where a vehicle and a vulnerable road user are immediately adjacent such that both masks activate at cell $(u, v)$, both towers regress their respective targets concurrently without inter-head gradient interference. Within Group 2 (\texttt{ped\_cyc}), where pedestrians and cyclists share a single regression head, conflicting assignments on overlapping cells are resolved by assigning ownership to the ground-truth instance with the nearest continuous Euclidean center distance.
+Classification supervision utilizes 2D Gaussian heatmaps centered at continuous ground-truth object projections with a minimum radius of 4 cells. Regression targets are assigned within half the Gaussian peak radius, evaluated on decoupled validity masks $\mathbf{M}_{\mathrm{reg}, g}$ for each group $g \in \{1, 2\}$. Specifically, category target ownership is strictly partitioned: anchor cells within the regression radius of a car object activate $\mathbf{M}_{\mathrm{reg}, 1}(u, v) = 1$ to supervise Group 1, while cells within the regression radius of a pedestrian or cyclist activate $\mathbf{M}_{\mathrm{reg}, 2}(u, v) = 1$ to supervise Group 2. Each group tower computes regression losses independently on its respective positive mask, decoupling gradient backpropagation between categories with radically divergent aspect ratios ($4.5$\,m passenger cars vs. $0.8$\,m pedestrians). In the rare event where a vehicle and a vulnerable road user are immediately adjacent such that both masks activate at cell $(u, v)$, both towers regress their respective targets concurrently. Their final prediction parameters are separate, while gradients still meet in the shared neck and backbone. Within Group 2 (\texttt{ped\_cyc}), where pedestrians and cyclists share a single regression head, conflicting assignments on overlapping cells are resolved by assigning ownership to the ground-truth instance with the nearest continuous Euclidean center distance.
 
 \subsection{Multi-Task Geometric Alignment and Quality Supervision (OGA and IQA)}
 \label{sec:losses_and_oga}
@@ -380,10 +380,10 @@ The quality head predicts a continuous localization quality score $\hat{q} = \si
     \end{aligned}
     \label{eq:iqa_loss}
 \end{equation}
-Because the closed-form 2D rotated polygon intersection is non-differentiable across arbitrary overlap configurations, $\bar{g}$ provides an analytically stable 1D projection surrogate. Detaching $q^*$ prevents gradient competition between regression and confidence calibration while supervising ranking accuracy.
+The projection score $\bar{g}$ serves as a surrogate for localization quality; it is not the exact rotated 2D polygon IoU used for evaluation. Detaching $q^*$ blocks gradients through the target construction. Quality and geometric objectives can still interact through shared network features.
 
-\paragraph{Head-Free Alternative: Quality-Coupled OGA (Q-OGA).}
-The explicit IQA branch gave the highest ranking accuracy, adding $18{,}626$ parameters ($18.63\,\text{K}$) and $1.25\,\text{ms}$ forward latency. We developed \textbf{Q-OGA} as a head-free alternative for resource-constrained platforms. Q-OGA modulates positive classification targets ($y=1.0$) directly with the detached surrogate projection quality $q^*$, without an auxiliary head:
+\paragraph{Head-Free Alternative: \textbf{Quality-Coupled OGA} (Q-OGA).}
+An explicit IQA branch predicts localization quality for score fusion. Q-OGA instead couples classification supervision to detached projection quality without a separate quality prediction branch. The parameter saving depends on the prediction-head architecture: the historical experiment in Table~\ref{tab:loss} uses earlier independent task towers and is distinct from the final shared-head detector.
 \begin{equation}
     y^* = (q^*)^\beta \quad (\beta = 1.0).
     \label{eq:cqfl_target}
@@ -399,10 +399,10 @@ where $\gamma = 2.0$. Crucially, rather than introducing a novel mathematical we
     \mathcal{D}_{\mathrm{smooth}} = -\tau_{\mathrm{soft}} \ln\left( \mathrm{e}^{-D_{\mathrm{direct}}/\tau_{\mathrm{soft}}} + \mathrm{e}^{-D_\pi/\tau_{\mathrm{soft}}} \right),
     \label{eq:softmin_corner}
 \end{equation}
-with $\tau_{\mathrm{soft}} = 0.05$, and incorporates Range and Density-Adaptive (RDA) weighting $w(r) = 1.0 + \gamma_{\mathrm{rda}}(r / r_{\max})^{\alpha_{\mathrm{rda}}}$ ($\gamma_{\mathrm{rda}} = 1.5, \alpha_{\mathrm{rda}} = 2.0$). In the evaluation, Q-OGA saved $18{,}626$ parameters and achieved $69.20\%$ Moderate mAP, providing a competitive compact option.
+with $\tau_{\mathrm{soft}} = 0.05$, and incorporates Range and Density-Adaptive (RDA) weighting $w(r) = 1.0 + \gamma_{\mathrm{rda}}(r / r_{\max})^{\alpha_{\mathrm{rda}}}$ ($\gamma_{\mathrm{rda}} = 1.5, \alpha_{\mathrm{rda}} = 2.0$). In our final shared-head architecture, eliminating the dedicated quality heads reduces detector parameters to 734, 943 (saving 18, 626 parameters compared with the 753, 569-parameter explicit-IQA model). On the validation benchmark, Q-OGA establishes the effectiveness of this head-free design by attaining 69.20\% Moderate mAP without separate quality predictionbranches.
 
 \paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
-To balance six multi-task losses $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$) across decoupled groups without manual hyperparameter tuning, we developed \textbf{Temperature-Softmax Bounded Weighting (T-SBUW)}. Unlike Bayesian homoscedastic uncertainty weighting~\cite{kendall2018uncertainty}, which relies on unconstrained variance parameters with a $\log \sigma$ penalty to prevent trivial zero-weight minimization, T-SBUW enforces optimization stability through two coupled mechanisms on a conserved gradient simplex:
+To balance six multi-task losses $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$) across decoupled groups with normalized trainable weights, we developed \textbf{Temperature-Softmax Bounded Weighting (T-SBUW)}. Unlike Bayesian homoscedastic uncertainty weighting~\cite{kendall2018uncertainty}, which relies on unconstrained variance parameters with a $\log \sigma$ penalty to prevent trivial zero-weight minimization, T-SBUW uses two mechanisms to control task-weight magnitudes and loss scales:
 \par\noindent 1. \textit{Bounded Softmax Weights on a Conserved Simplex}: Learnable logit parameters $a_k$ (initialized to $0.0$, yielding initial weights $\omega_k = 1.0$) are soft-clamped via hyperbolic tangent with bound $b_{\mathrm{uw}} = 3.0$ to prevent numerical divergence, and mapped to positive normalized weights on a simplex of size $J$ via temperature-controlled softmax ($\tau_{\mathrm{uw}} = 2.0$):
 \begin{equation}
     \begin{gathered}
@@ -413,8 +413,8 @@ To balance six multi-task losses $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \m
     \end{gathered}
     \label{eq:tsbuw_weights}
 \end{equation}
-The constraint $\sum_{k \in \mathcal{T}} \omega_k = J$ strictly conserves the total gradient budget across all tasks without requiring an explicit $\log \sigma$ barrier.
-\par\noindent 2. \textit{Running Scale Calibration}: On a simplex, uncalibrated loss weighting would cause gradient descent to disproportionately favor tasks with smaller numerical magnitudes. To prevent loss scale collapse, an Exponential Moving Average (EMA) with momentum $\beta_{\mathrm{EMA}} = 0.99$ (initialized with $\mu_k^{(0)} = 1.0$) tracks the unweighted running loss magnitude $\mu_k \leftarrow 0.99\mu_k + 0.01\mathcal{L}_k$ during training. Each task loss is calibrated to a dimensionless scale $\mathcal{L}_k / \max(\mu_k, 10^{-4}) \approx 1.0$, equalizing competition across disparate loss scales. The balanced objective for group $g$ is formulated as:
+The constraint $\sum_{k \in \mathcal{T}} \omega_k = J$ conserves the sum of task weights; it does not conserve the norm of the combined network gradient without requiring an explicit $\log \sigma$ barrier.
+\par\noindent 2. \textit{Running Scale Calibration}: On a simplex, uncalibrated loss weighting would cause gradient descent to disproportionately favor tasks with smaller numerical magnitudes. To prevent loss scale collapse, an Exponential Moving Average (EMA) with momentum $\beta_{\mathrm{EMA}} = 0.99$ (initialized from the first observed loss batch) tracks the unweighted running loss magnitude $\mu_k \leftarrow 0.99\mu_k + 0.01\mathcal{L}_k$ during training. Each task loss is calibrated to a dimensionless scale $\mathcal{L}_k / \max(\mu_k, 10^{-4}) \approx 1.0$, equalizing competition across disparate loss scales. The balanced objective for group $g$ is formulated as:
 \begin{equation}
     \mathcal{L}_g = \left(\frac{1}{J}\sum_{k \in \mathcal{T}} \mu_k\right) \sum_{k \in \mathcal{T}} \omega_k \frac{\mathcal{L}_k}{\max(\mu_k, 10^{-4})}.
     \label{eq:balanced_loss}
@@ -472,7 +472,7 @@ Algorithm~\ref{alg:inference_pipeline} specifies inference. For candidate cells 
     \hat{\psi} &= \frac{1}{2}\operatorname{atan2}(\hat{a}_2, \hat{a}_1).
     \label{eq:box_decode}
 \end{align}
-Predicted orientation angle $\hat{\psi} \in [-\pi/2, \pi/2]$ is fully recovered without trigonometric ambiguity.
+The decoded angle represents footprint orientation modulo $\pi$; it does not recover a directed $2\pi$ heading.
 
 To align classification confidence with geometric overlap precision, detection candidates are ranked via a joint IoU-aware composite confidence score:
 \begin{equation}
@@ -482,11 +482,11 @@ To align classification confidence with geometric overlap precision, detection c
 Candidates with $s_{\mathrm{det}} > 0.05$ undergo class-wise rotated NMS at IoU threshold $\tau_{\mathrm{nms}} = 0.10$. The output is capped at 500 boxes per scan.
 
 \paragraph{Parameter Distribution Breakdown.}
-Our complete detector architecture contains \textbf{753,569 deployable parameters} ($< 0.76$\,M, requiring $753{,}581$ trainable parameters during training including loss-balancing logits), with an FP32 checkpoint size of $9.34$\,MB:
+Our complete detector architecture contains \textbf{753,569 deployable parameters} ($< 0.76$\,M, requiring $753{,}581$ trainable parameters during training including loss-balancing logits), with a serialized checkpoint size of $9.34$\,MB. The deployable tensors alone require approximately $3.01$\,MB in FP32; serialization may include additional state:
 \begin{itemize}
     \item \textbf{Backbone Body}: $604,864$ parameters ($80.3\%$).
     \item \textbf{Scale-Gated Neck (SG-FPN)}: $36,784$ parameters ($4.9\%$).
     \item \textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\%$), divided into $55,944$ parameters for Group \texttt{car} and $55,977$ parameters for Group \texttt{ped\_cyc}.
     \item \textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\%$), optimized exclusively during training and eliminated during deployment.
 \end{itemize}
-The complete pipeline achieved $16.41$\,FPS ($60.96$\,ms) on an NVIDIA Tesla T4 GPU, while in-pipeline model forward execution took $17.88$\,ms ($55.94$\,FPS) and standalone model forward reached $8.67$\,ms ($115.32$\,FPS).
+The complete pipeline achieved $16.41$\,FPS ($60.96$\,ms) on an NVIDIA Tesla T4 GPU, with a model stage of $17.88$\,ms ($55.94$\,FPS). The separate L4 evaluation records $8.67$\,ms ($115.32$\,FPS) for its model stage; this is not an isolated T4 forward measurement.

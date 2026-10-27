@@ -1,5 +1,0 @@
-usage: deai_check.py [-h] [--section SECTION] [--analyze] [--score]
-                     [--fix-suggestions] [--output OUTPUT]
-                     [--tier {light,medium,heavy}]
-                     file
-deai_check.py: error: unrecognized arguments: --json

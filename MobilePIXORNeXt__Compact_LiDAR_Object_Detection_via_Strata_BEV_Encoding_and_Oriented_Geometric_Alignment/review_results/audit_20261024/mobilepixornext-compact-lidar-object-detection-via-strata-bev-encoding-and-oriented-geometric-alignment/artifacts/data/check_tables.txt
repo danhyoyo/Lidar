@@ -1,9 +1,0 @@
-============================================================
-Table Structure Check Report
-============================================================
-File: /home/duyennh/AI_projects/research_lidar/Lidar/MobilePIXORNeXt__Compact_LiDAR_Object_Detection_via_Strata_BEV_Encoding_and_Oriented_Geometric_Alignment/main.tex
-Tables found: 10
-Status: PASS
-Issues: 0
-
-============================================================

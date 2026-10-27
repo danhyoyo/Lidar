@@ -1,6 +1,0 @@
-Checking figures in /home/duyennh/AI_projects/research_lidar/Lidar/paper/MobilePIXORNeXt.tex...
-Found 1 figures.
-------------------------------------------------------------
-[ERROR] sections/figure_helpers.tex:4: Image not found: figures/#2
-------------------------------------------------------------
-[WARN] Found 1 potential issues.

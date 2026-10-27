@@ -1459,8 +1459,8 @@ FUNCTION {presort}
   #1 entry.max$ substring$
   'sort.key$ :=
 }
-ITERATE {presort}
-SORT
+% ITERATE {presort}
+% SORT
 STRINGS { longest.label }
 INTEGERS { number.label longest.label.width }
 FUNCTION {initialize.longest.label}
@@ -1491,11 +1491,7 @@ FUNCTION {begin.bib}
   write$ newline$
   "\providecommand{\urlprefix}{URL }"
   write$ newline$
-  "\expandafter\ifx\csname urlstyle\endcsname\relax"
-  write$ newline$
-  "  \providecommand{\doi}[1]{DOI~\discretionary{}{}{}#1}\else"
-  write$ newline$
-  "  \providecommand{\doi}{DOI~\discretionary{}{}{}\begingroup \urlstyle{rm}\Url}\fi"
+  "  \providecommand{\doi}[1]{DOI~\href{https://doi.org/#1}{\nolinkurl{#1}}}"
   write$ newline$
 }
 EXECUTE {begin.bib}

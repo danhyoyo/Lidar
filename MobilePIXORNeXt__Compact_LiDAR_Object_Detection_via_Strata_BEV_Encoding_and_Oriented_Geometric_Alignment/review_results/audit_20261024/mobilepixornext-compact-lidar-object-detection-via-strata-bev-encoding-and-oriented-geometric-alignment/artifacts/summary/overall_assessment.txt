@@ -1,1 +1,0 @@
-Execution: sequential single-agent. Major Revision: source identities and descriptions corrected where evidenced; controlled component/seed/evaluator evidence and reconciled figures remain incomplete.

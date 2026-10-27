@@ -1,3 +1,0 @@
-% WARN: include file not found: tables/setup (experiments.tex:54)
-% CONTRACT [Script]: goal=grammar strength=moderate
-% GRAMMAR: No rule-based issues detected in selected scope.

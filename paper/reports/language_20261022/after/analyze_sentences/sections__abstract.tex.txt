@@ -1,2 +1,0 @@
-% CONTRACT [Script]: goal=grammar strength=moderate
-% LONG SENTENCE: No sentences exceeded configured thresholds.

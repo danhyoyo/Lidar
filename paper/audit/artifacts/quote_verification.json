@@ -1,5 +1,0 @@
-{
-  "verifier": "paper-audit/scripts/verify_quotes.py::verify_quotes",
-  "verified": 12,
-  "total": 12
-}
