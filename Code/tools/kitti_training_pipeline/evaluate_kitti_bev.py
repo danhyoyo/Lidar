@@ -540,7 +540,7 @@ def run_evaluation(*, name: str, backend: str, model_path: Path,
         )
     )
     if pred_config["peak_mode"] not in {"per_class", "legacy"}:
-        raise ValueError("peak_mode must be 'per_class' or 'legacy'")
+        raise ValueError(f"peak_mode must be 'per_class' or 'legacy', got {pred_config['peak_mode']!r}")
     if nms_alpha is not None:
         pred_config["nms_alpha"] = nms_alpha
     elif "nms_alpha" in config:
