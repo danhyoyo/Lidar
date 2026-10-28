@@ -4,7 +4,7 @@ from typing import Any, Dict
 import torch
 import torch.nn.functional as F
 
-from core.losses.l1_loss import l1_loss
+from core.losses.l1_loss import l1_loss, smooth_l1_loss
 from core.losses.strategies.base import BaseLossStrategy
 from core.losses.iou_targets import compute_iou_targets
 
@@ -15,6 +15,7 @@ class BaselineLossStrategy(BaseLossStrategy):
     def __init__(self, cls_encoding: str, config: Dict[str, Any] = None):
         super().__init__(cls_encoding, config)
         config = self.config
+        self.reg_loss = str(config.get("reg_loss", "l1")).lower()
         self.use_iou = bool(config.get("use_iou", False))
         self.iou_target_type = str(config.get("iou_target_type", "mgiou"))
         self.iou_loss_weight = float(config.get("iou_loss_weight", 1.0))
@@ -26,10 +27,11 @@ class BaselineLossStrategy(BaseLossStrategy):
     ) -> Dict[str, Any]:
         self._validate_inputs(pred, target)
 
+        reg_fn = smooth_l1_loss if self.reg_loss == "smooth_l1" else l1_loss
         cls_loss = self._compute_cls_loss(pred["cls"], target["cls"])
-        offset_loss = l1_loss(pred["offset"], target["offset"], target["reg_mask"])
-        size_loss = l1_loss(pred["size"], target["size"], target["reg_mask"])
-        yaw_loss = l1_loss(pred["yaw"], target["yaw"], target["reg_mask"])
+        offset_loss = reg_fn(pred["offset"], target["offset"], target["reg_mask"])
+        size_loss = reg_fn(pred["size"], target["size"], target["reg_mask"])
+        yaw_loss = reg_fn(pred["yaw"], target["yaw"], target["reg_mask"])
 
         comp_list = [cls_loss.float(), offset_loss.float(), size_loss.float(), yaw_loss.float()]
         ret_dict = {
