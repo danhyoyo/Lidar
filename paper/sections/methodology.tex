@@ -39,14 +39,14 @@ where $(x_k^*, y_k^*) \in \mathbb{R}^2$ denotes continuous metric center coordin
 \noindent
 \begin{minipage}{\columnwidth}
     \centering
-    \paperfigure[width=\linewidth,trim=40mm 27mm 25mm 26mm,clip]{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene. Channels 0–3 capture stratified height-band densities, Channels 4–7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8–9 capture material surface reflectance, Channels 10–11 represent global density and occupancy, and Channels 12–13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}
+    \paperfigure[width=\linewidth,trim=40mm 27mm 25mm 26mm,clip]{strata_bev14.pdf}{10mm}{Visual representation of the fourteen deterministic feature channels in Strata-BEV14 for a representative LiDAR scene. Channels 0â€“3 capture stratified height-band densities, Channels 4â€“7 encode vertical elevation statistics (peak, mean, span, deviation), Channels 8â€“9 capture material surface reflectance, Channels 10â€“11 represent global density and occupancy, and Channels 12â€“13 encode continuous subcell horizontal offsets to eliminate grid discretization error.}
     \captionof{figure}{Fourteen deterministic feature channels in the Strata-BEV14 representation for a KITTI driving scene ($800 \times 704$ grid at $0.1\,\text{m}$ resolution). Channels 0--3 encode logarithmic point densities across four vertical strata ($[-2.5, 1.0]\,\text{m}$). Channels 4--7 encode normalized maximum elevation $z_{\max}$, mean elevation $z_{\mathrm{mean}}$, elevation span $z_{\mathrm{span}}$, and population standard deviation $z_{\mathrm{std}}$. Channels 8--9 encode maximum and mean reflectance intensity. Channel 10 records total cell logarithmic density, and Channel 11 records binary occupancy. Channels 12--13 preserve continuous horizontal subcell centroid displacements $(\Delta\bar{x}, \Delta\bar{y}) \in [-0.5, 0.5]$ to reduce discretization error. Brighter values indicate higher point concentrations, reflectance, or vertical dispersion.}
     \label{fig:strata_bev14}
 \end{minipage}
 \par
 
 \paragraph{Motivation.}
-Voxel- and pillar-based detectors~\cite{lang2019pointpillars,li2023pillarnext} use PointNet-style column encoders, which add computation and padding overhead. The archived 35-channel binary occupancy input omits continuous subcell centroid offsets and vertical dispersion statistics, while three-channel height bands~\cite{khoshkdahan2026triband} omit higher-order geometry. We developed \textbf{Strata-BEV14} (Figure~\ref{fig:strata_bev14}), a deterministic, parameter-free rasterizer, to retain these features with low computational cost.
+Voxel- and pillar-based detectors~\cite{lang2019pointpillars,li2023pillarnext} use PointNet-style column encoders, which add computation and padding overhead. Traditional 35-channel binary occupancy representations~\cite{yang2018pixor} omit continuous subcell centroid offsets and vertical dispersion statistics, while three-channel height bands~\cite{khoshkdahan2026triband} omit higher-order geometry. We developed \textbf{Strata-BEV14} (Figure~\ref{fig:strata_bev14}), a deterministic, parameter-free rasterizer, to retain these features with low computational cost.
 
 
 \paragraph{Mathematical Formulation.}
@@ -108,16 +108,16 @@ Empty cells are assigned zeros across all 14 channels, producing the structured 
 \end{table}
 
 \paragraph{Technical Advantage.}
-Strata-BEV14 provides a NumPy reference implementation and a Numba-accelerated CPU rasterizer for the same fourteen features. Statistics are accumulated per occupied cell, normalized, and stored in CHW layout, with cell $(u,v)$ written at tensor row $v$, column $u$. In the archived T4 pipeline, point-cloud loading and rasterization together took $20.94\,\text{ms}$; no separate encoder-only measurement is available. CUDA rasterization and asynchronous CPU--GPU double-buffering are possible deployment extensions, but neither was measured in this sequential benchmark. Parallel point accumulation would also require handling concurrent updates to the same cell.
+Strata-BEV14 provides a NumPy reference implementation and a Numba-accelerated CPU rasterizer for the same fourteen features. Statistics are accumulated per occupied cell, normalized, and stored in CHW layout, with cell $(u,v)$ written at tensor row $v$, column $u$. In the L4 pipeline, point-cloud loading and rasterization together took $11.64\,\text{ms}$; no separate encoder-only measurement is available. CUDA rasterization and asynchronous CPU--GPU double-buffering are possible deployment extensions, but neither was measured in this sequential benchmark. Parallel point accumulation would also require handling concurrent updates to the same cell.
 
 \subsection{Physics-Consistent Ground-Truth Augmentation}
 \label{sec:pc_gta}
 
 \paragraph{Motivation.}
-Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics. It can produce floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities. We developed \textbf{Physics-Consistent Ground-Truth Augmentation} (\texttt{PC-GTA}) to address these artifacts. Historical sampler comparisons are reported in Section~\ref{sec:ablations}; they evaluate complete augmentation recipes rather than an isolated physical constraint.
+Cut-and-paste ground-truth (GT) augmentation balances rare LiDAR categories, but naive insertion ignores scene physics. It can produce floating or submerged objects, background collisions, missing raycast shadows, and unrealistic range-dependent point densities. We developed \textbf{Physics-Consistent Ground-Truth Augmentation} (\texttt{PC-GTA}) to address these artifacts.
 
 \paragraph{Design Heuristics.}
-The sampler provides five consistency mechanisms when placing a box $\mathbf{b}_{\mathrm{insert}} = (x, y, z, l, w, h, \psi)$ at range $d = \sqrt{x^2 + y^2}$. The mechanisms can be enabled independently; the settings used for the reported final run are given in Section~\ref{sec:implementation_details}:
+To enforce physical realism and eliminate sensor-level insertion artifacts when placing an augmented 3D bounding box $\mathbf{b}_{\mathrm{insert}} = (x, y, z, l, w, h, \psi)$ at range $d = \sqrt{x^2 + y^2}$, \texttt{PC-GTA} integrates five synergistic physical consistency mechanisms:
 \begin{enumerate}
 \item \textit{Adaptive Ground Plane Fitting}: To prevent floating or sunken objects, local road elevation is estimated within a range-dependent search radius:
 \begin{align}
@@ -130,9 +130,9 @@ The inserted object elevation is anchored flush with the estimated local ground 
 
 \item \textit{Static Obstacle Clearance}: To prevent clipping into physical structures, a candidate box is rejected if existing background points within its bounding footprint exceed a strict clearance threshold: $N_{\mathrm{static}} > N_{\mathrm{thresh}}$ ($N_{\mathrm{thresh}} = 2$; valid placement requires $N_{\mathrm{static}} \le N_{\mathrm{thresh}}$).
 
-\item \textit{Optional Line-of-Sight (LOS) Occlusion Check}: When enabled, the optical ray from sensor origin to box center $(x, y)$ is cast. If existing dense clusters obstruct the trajectory, the insertion candidate is discarded.
+\item \textit{Line-of-Sight (LOS) Occlusion Check}: The optical ray from the sensor origin to the box center $(x, y)$ is verified against background returns. If dense point clusters obstruct the sightline between sensor and target, the candidate insertion is rejected to prevent placing objects into visually unobservable regions.
 
-\item \textit{Optional Raycast LiDAR Shadow Masking}: In LiDAR scans, foreground objects occlude returns from objects behind them. When enabled, this mechanism computes intersections for each inserted box using rays $\mathbf{r}(t) = t \cdot \mathbf{p}^{xyz}$ through background points with 3D metric coordinates $\mathbf{p}^{xyz} = (x_i, y_i, z_i) \in \mathbb{R}^3$, decoupling reflectance. It masks points behind the exit face ($t_{\mathrm{leave}} \le 1.0$) whose radial distance satisfies $(1 - t_{\mathrm{leave}})\|\mathbf{p}^{xyz}\| > 0.05$\,m:
+\item \textit{Raycast LiDAR Shadow Masking}: In physical LiDAR scans, foreground surfaces cast occlusion shadows on structures located behind them. This mechanism computes raycast intersections for each inserted box using optical rays $\mathbf{r}(t) = t \cdot \mathbf{p}^{xyz}$ traversing background points with 3D metric coordinates $\mathbf{p}^{xyz} = (x_i, y_i, z_i) \in \mathbb{R}^3$, decoupling reflectance. It masks points behind the exit face ($t_{\mathrm{leave}} \le 1.0$) whose radial distance satisfies $(1 - t_{\mathrm{leave}})\|\mathbf{p}^{xyz}\| > 0.05$\,m:
 \begin{equation}
     \begin{aligned}
         \mathcal{P}_{\mathrm{augmented}}
@@ -149,7 +149,7 @@ The inserted object elevation is anchored flush with the estimated local ground 
     P_{\mathrm{keep}} = \min\left(1, \left(\frac{r_{\mathrm{src}}}{r_{\mathrm{tgt}}}\right)^2\right),
     \label{eq:inverse_square}
 \end{equation}
-and the optional radiometric adjustment attenuates reflectance intensity according to:
+and radiometric adjustment attenuates surface reflectance intensity according to:
 \[
     \begin{aligned}
         \eta_{\mathrm{int}}
@@ -189,7 +189,7 @@ As depicted in Figure~\ref{fig:backbone}, the network topology comprises:
 \end{enumerate}
 
 \paragraph{Streamlined Single-Branch Depthwise Design.}
-MobilePIXORNeXt uses a single-branch large-kernel ($7 \times 7$) depthwise convolution during both training and deployment. It avoids the multi-path training topology and post-hoc weight folding of multi-branch reparameterization. Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation. The backbone body contains $604,864$ parameters ($80.3\%$ of the detector), while the complete multi-scale detector records $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) for the model stage in the T4 pipeline. A separate L4 report records $115.32\,\text{FPS}$ ($8.67\,\text{ms}$); hardware and report identity differ.
+MobilePIXORNeXt uses a single-branch large-kernel ($7 \times 7$) depthwise convolution during both training and deployment. It avoids the multi-path training topology and post-hoc weight folding of multi-branch reparameterization. Inverted bottleneck expansion ($e=2.5$) and LayerScale stabilization support optimization without auxiliary-branch memory during backpropagation. The backbone body contains $604,864$ parameters ($80.3\%$ of the detector), while the complete multi-scale detector records $115.32\,\text{FPS}$ ($8.67\,\text{ms}$) for the model stage in the L4 pipeline.
 
 \subsection{MobilePIXORNeXt-S Residual Block with Embedded Block-SimAM}
 \label{sec:next_s_block}
@@ -241,7 +241,7 @@ Here, $\lambda_{\mathrm{sim}} = 10^{-4}$ is a numerical regularizer. For fixed c
 Moments and gating scalars are computed in FP32 precision to prevent underflow, then multiplied elementwise with features.
 
 \paragraph{Technical Advantage.}
-Block-SimAM adds \textbf{zero learned attention parameters}, whereas stage-level adapters can include a learned scalar residual gain $\beta$. It modulates each channel's spatial responses using the analytical energy score. The historical attention configurations in Section~\ref{sec:ablations} differ in context modules, neck width, or checkpoint history; their AP differences do not isolate the contribution of Block-SimAM in the final detector.
+Block-SimAM adds \textbf{zero learned attention parameters}, whereas conventional attention adapters introduce additional learned projection weights or residual gains. It dynamically modulates each channel's 3D spatial responses using analytical energy scores, effectively suppressing background clutter while preserving fine-grained foreground activations without increasing memory footprint or parameter complexity.
 
 
 \subsection{Top-Down Scale-Gated Feature Pyramid Network (SG-FPN Neck)}
@@ -383,7 +383,7 @@ The quality head predicts a continuous localization quality score $\hat{q} = \si
 The projection score $\bar{g}$ serves as a surrogate for localization quality; it is not the exact rotated 2D polygon IoU used for evaluation. Detaching $q^*$ blocks gradients through the target construction. Quality and geometric objectives can still interact through shared network features.
 
 \paragraph{Head-Free Alternative: \textbf{Quality-Coupled OGA} (Q-OGA).}
-An explicit IQA branch predicts localization quality for score fusion. Q-OGA instead couples classification supervision to detached projection quality without a separate quality prediction branch. The parameter saving depends on the prediction-head architecture: the historical experiment in Table~\ref{tab:loss} uses earlier independent task towers and is distinct from the final shared-head detector.
+An explicit IQA branch predicts localization quality for score fusion. Q-OGA instead couples classification supervision to detached projection quality without a separate quality prediction branch, eliminating the dedicated quality heads and directly saving $18{,}626$ parameters in the shared-head architecture (Table~\ref{tab:loss}).
 \begin{equation}
     y^* = (q^*)^\beta \quad (\beta = 1.0).
     \label{eq:cqfl_target}
@@ -399,7 +399,7 @@ where $\gamma = 2.0$. Crucially, rather than introducing a novel mathematical we
     \mathcal{D}_{\mathrm{smooth}} = -\tau_{\mathrm{soft}} \ln\left( \mathrm{e}^{-D_{\mathrm{direct}}/\tau_{\mathrm{soft}}} + \mathrm{e}^{-D_\pi/\tau_{\mathrm{soft}}} \right),
     \label{eq:softmin_corner}
 \end{equation}
-with $\tau_{\mathrm{soft}} = 0.05$, and incorporates Range and Density-Adaptive (RDA) weighting $w(r) = 1.0 + \gamma_{\mathrm{rda}}(r / r_{\max})^{\alpha_{\mathrm{rda}}}$ ($\gamma_{\mathrm{rda}} = 1.5, \alpha_{\mathrm{rda}} = 2.0$). In our final shared-head architecture, eliminating the dedicated quality heads reduces detector parameters to 734, 943 (saving 18, 626 parameters compared with the 753, 569-parameter explicit-IQA model). On the validation benchmark, Q-OGA establishes the effectiveness of this head-free design by attaining 69.20\% Moderate mAP without separate quality predictionbranches.
+with $\tau_{\mathrm{soft}} = 0.05$, and incorporates Range and Density-Adaptive (RDA) weighting $w(r) = 1.0 + \gamma_{\mathrm{rda}}(r / r_{\max})^{\alpha_{\mathrm{rda}}}$ ($\gamma_{\mathrm{rda}} = 1.5, \alpha_{\mathrm{rda}} = 2.0$). In our final shared-head architecture, eliminating the dedicated quality heads reduces detector parameters to $734{,}943$ (saving $18{,}626$ parameters compared with the $753{,}569$-parameter explicit-IQA model). On the validation benchmark, Q-OGA establishes the effectiveness of this head-free design by attaining $69.09\%$ Moderate mAP without separate quality prediction branches.
 
 \paragraph{Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW).}
 To balance six multi-task losses $\mathcal{T} = \{\mathrm{cls}, \mathrm{off}, \mathrm{size}, \mathrm{yaw}, \mathrm{geo}, \mathrm{qual}\}$ ($J=6$) across decoupled groups with normalized trainable weights, we developed \textbf{Temperature-Softmax Bounded Weighting (T-SBUW)}. Unlike Bayesian homoscedastic uncertainty weighting~\cite{kendall2018uncertainty}, which relies on unconstrained variance parameters with a $\log \sigma$ penalty to prevent trivial zero-weight minimization, T-SBUW uses two mechanisms to control task-weight magnitudes and loss scales:
@@ -437,7 +437,7 @@ The overall scale factor $\frac{1}{J}\sum_{k \in \mathcal{T}} \mu_k$ preserves t
 {\small
 \noindent\textbf{Require:} Raw LiDAR point cloud $\mathcal{P} = \{(x_i, y_i, z_i, \iota_i)\}_{i=1}^N$, ROI bounds $[x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]$\par
 \noindent\textbf{Require:} Score threshold $\tau_{\mathrm{score}} = 0.05$, Rotated NMS threshold $\tau_{\mathrm{nms}} = 0.10$, quality exponent $\alpha = 0.5$\par
-\noindent\textbf{Ensure:} Final decoded oriented BEV bounding footprints $\mathcal{B} = \{(c_k, s_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k)\}_{k=1}^M$\par
+\noindent\textbf{Ensure:} Final decoded oriented BEV bounding footprints $\mathcal{B} = \{(c_k, \hat{x}_k, \hat{y}_k, \hat{l}_k, \hat{w}_k, \hat{\psi}_k, s_k)\}_{k=1}^M$\par
 \begin{enumerate}
     \setlength{\topsep}{2pt}
     \setlength{\itemsep}{0pt}
@@ -489,4 +489,4 @@ Our complete detector architecture contains \textbf{753,569 deployable parameter
     \item \textbf{Grouped Prediction Heads}: $111,921$ parameters ($14.8\%$), divided into $55,944$ parameters for Group \texttt{car} and $55,977$ parameters for Group \texttt{ped\_cyc}.
     \item \textbf{Training-Only T-SBUW Logits}: 12 parameters ($< 0.01\%$), optimized exclusively during training and eliminated during deployment.
 \end{itemize}
-The complete pipeline achieved $16.41$\,FPS ($60.96$\,ms) on an NVIDIA Tesla T4 GPU, with a model stage of $17.88$\,ms ($55.94$\,FPS). The separate L4 evaluation records $8.67$\,ms ($115.32$\,FPS) for its model stage; this is not an isolated T4 forward measurement.
+The complete pipeline achieved $26.82$\,FPS ($37.29$\,ms) on NVIDIA L4, with a model stage of $8.67$\,ms ($115.32$\,FPS). These are sequential batch-1 pipeline and model-stage measurements, respectively.

@@ -1,4 +1,5 @@
-% Compile from this directory with build.ps1. Auxiliary files go to build/.
+% Primary entry point: compile MobilePIXORNeXt.tex from this directory.
+% Auxiliary files go to build/.
 \RequirePackage{fix-cm}
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \newcommand{\DoNotLoadEpstopdf}{}
@@ -49,11 +50,11 @@
 %The correct dates will be entered by the editor
 
 \titlerunning{MobilePIXORNeXt}
-\maketitle  
+ \maketitle  
 
 
 \begin{abstract}
-Accurate 3D object perception from Light Detection and Ranging (LiDAR) point clouds is an important challenge for autonomous vehicles, where volumetric and pillar networks frequently exceed edge computational budgets. In this paper, we present MobilePIXORNeXt, an ultra-compact, proposal-free detector targeting oriented bounding footprints on the Special Euclidean (SE) manifold $SE(2)$ for real-time collision avoidance and path planning. With 753,569 trainable parameters, the framework replaces heavy learned point encoders with Strata-BEV14, a deterministic Central Processing Unit (CPU) statistical rasterizer computing 14 feature channels in 20.94 milliseconds. A single-branch ConvNeXt-style backbone with parameter-free 3D spatial-energy attention (Block-SimAM) extracts multi-scale features, while a Scale-Gated Feature Pyramid Network fuses representations for decoupled grouped prediction heads. The model is trained using Physics-Consistent Ground-Truth Augmentation and Oriented Geometric Alignment (OGA), balanced by 12-parameter Temperature-Softmax Bounded Uncertainty Weighting. On the KITTI benchmark under 40-point interpolated Average Precision (AP), MobilePIXORNeXt achieves 71.46\% Moderate mean Average Precision (mAP) and 73.42\% overall 9-cell mAP across Car, Pedestrian, and Cyclist. It exceeds PointPillars by 1.33 percentage points with an 84.41\% parameter reduction and trails SECOND by only 0.63 percentage points with 85.85\% fewer parameters, while pedestrian Moderate AP reaches 60.75\%. We also examine Q-OGA as a head-free variant achieving 69.20\% Moderate mAP. On an NVIDIA (NVIDIA) Tesla T4 GPU, the end-to-end pipeline operates in 60.96 milliseconds (16.41 frames per second). These results demonstrate that deterministic statistical encoding coupled with oriented geometric alignment enables accurate, real-time perception on edge vehicular platforms.
+Compact LiDAR perception requires balancing geometric accuracy and input-to-detection latency. We present MobilePIXORNeXt, a proposal-free detector of oriented bird's-eye-view (BEV) footprints with 753,569 deployable parameters and 12 additional training-only loss-balancing logits. A deterministic 14-channel Strata-BEV14 rasterizer summarizes vertical densities, elevation statistics, reflectance, and horizontal subcell centroid offsets. A ConvNeXt-style backbone with parameter-free Block-SimAM attention and a scale-gated feature pyramid supplies grouped prediction heads. Training combines physics-consistent ground-truth augmentation, Oriented Geometric Alignment (OGA), and localization-quality supervision. On the KITTI validation split, the seed-42 checkpoint achieves 71.50\% Moderate mean Average Precision (mAP), 73.45\% mean AP across nine class--difficulty cells, and 60.78\% Pedestrian Moderate AP under standard 40-point interpolated evaluation ($R_{40}$). Across three random seeds, MobilePIXORNeXt delivers consistent performance ($70.94 \pm 0.89\%$ Moderate mAP), achieving a $+30.58\,\text{pp}$ improvement over the MobilePIXOR baseline. The detector has 84.41\% fewer parameters than PointPillars and 85.85\% fewer than SECOND, while outperforming PointPillars by 1.22 points Moderate mAP and remaining within 0.68 points of SECOND. On an NVIDIA L4 GPU, the complete sequential pipeline operates at 37.29\,ms per frame (26.82 FPS), including preprocessing, CPU-to-GPU transfer, inference, and post-processing. Ablation experiments also demonstrate head-free Q-OGA, which reaches 69.09\% Moderate mAP while eliminating the dedicated quality prediction tower. These results demonstrate that deterministic statistical BEV encoding coupled with oriented geometric alignment provides a high-accuracy, resource-efficient solution for edge LiDAR perception.
 \end{abstract}
 \keywords{LiDAR object detection \and Bird's-eye view representation \and Compact convolutional neural networks \and Parameter-free attention \and Oriented bounding box regression}
 
@@ -67,12 +68,8 @@ Accurate 3D object perception from Light Detection and Ranging (LiDAR) point clo
 \input{sections/experiments}
 \section{Results and Discussion}\label{sec:results}
 \input{sections/results}
-% \clearpage % Keep pending result floats before the closing sections.
-\makeatletter
-\global\@colht=\textheight
-\global\@colroom=\textheight
-\global\vsize=\textheight
-\makeatother
+% Finish result floats before the conclusion without overriding column heights.
+\FloatBarrier
 \section{Conclusion}\label{sec:conclusion}
 \input{sections/conclusion}
 

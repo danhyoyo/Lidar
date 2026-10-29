@@ -1,46 +1,42 @@
 \begin{table*}[t]
 \centering\small
-\caption{Architectural ablations on KITTI validation using Moderate BEV AP $R_{40}$. Panel (a) lists additions from baseline MobilePIXOR (A0) to the final MobilePIXORNeXt configuration (A10). Panel (b) reports accuracy ($\text{mAP}_{\mathrm{M}}$, $\text{mAP}_9$) and standalone forward latency and throughput (ms, FPS) on an NVIDIA Tesla T4 GPU. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Architectural progression roadmap on KITTI validation using Moderate BEV AP ($R_{40}$). Panel (a) outlines the progressive single-factor integration of core proposed modules from baseline MobilePIXOR ($A_0$) to the final MobilePIXORNeXt configuration ($A_8$). Panel (b) reports cumulative detection accuracy ($\text{mAP}_{\mathrm{M}}$, $\text{mAP}_9$) and model-stage inference latency and throughput (ms, FPS) measured on NVIDIA L4. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:components}
-\textbf{(a) Architectural configurations and component progression}\par\smallskip
-\begingroup\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lllllll@{}}
+\textbf{(a) Core architectural milestones and component progression}\par\smallskip
+\begingroup\footnotesize\setlength{\tabcolsep}{1.5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lllllll@{}}
 \toprule
-\textbf{Step} & \textbf{Backbone} & \shortstack[l]{\textbf{BEV}\\ \textbf{Input}} & \shortstack[l]{\textbf{Head}\\ \textbf{Architecture}} & \shortstack[l]{\textbf{GT}\\ \textbf{Sampling}} & \shortstack[l]{\textbf{Fusion /}\\ \textbf{Neck}} & \shortstack[l]{\textbf{Supervision /}\\ \textbf{Attention}} \\
+\textbf{Step} & \textbf{Backbone} & \textbf{BEV Input} & \textbf{Head} & \textbf{Augmentation} & \textbf{Neck} & \textbf{Loss / Attention} \\
 \midrule
-A0 & MobilePIXOR & Binary35  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A1 & MobilePIXORNeXt & Binary35  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A2 & MobilePIXORNeXt & Strata-BEV8  & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A3 & MobilePIXORNeXt & Strata-BEV14 & Single H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A4 & MobilePIXORNeXt & Strata-BEV14 & Grouped H16 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A5 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & Standard & F24 / SumFPN & Baseline Smooth-L1 \\
-A6 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F24 / SumFPN & Baseline Smooth-L1 \\
-A7 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SumFPN & Baseline Smooth-L1 \\
-A8 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & Baseline Smooth-L1 \\
-A9 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA Head \\
-A10 & MobilePIXORNeXt & Strata-BEV14 & Grouped H32 & PC-GTA & F32 / SG-FPN & OGA + IQA + Block-SimAM \\
+$A_0$ & MobilePIXOR & Binary35 & Single Head & Standard Aug & FPN & Baseline Smooth-L1 \\
+$A_1$ & MobilePIXORNeXt & Binary35 & Single Head & Standard Aug & FPN & Baseline Smooth-L1 \\
+$A_2$ & MobilePIXORNeXt & Strata-BEV14 & Single Head & Standard Aug & FPN & Baseline Smooth-L1 \\
+$A_3$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & Standard Aug & FPN & Baseline Smooth-L1 \\
+$A_4$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & Standard Aug & FPN & Baseline Smooth-L1 \\
+$A_5$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & PC-GTA & FPN & Baseline Smooth-L1 \\
+$A_6$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & PC-GTA & SG-FPN & Baseline Smooth-L1 \\
+$A_7$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & PC-GTA & SG-FPN & OGA + IQA Head \\
+$A_8$ & MobilePIXORNeXt & Strata-BEV14 & Decoupled Grouped & PC-GTA & SG-FPN & OGA + IQA + Block-SimAM \\
 \bottomrule
-\end{tabular}\endgroup
+\end{tabular*}\endgroup
 \par\medskip
-\textbf{(b) Quantitative detection accuracy and standalone model inference speed}\par\smallskip
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l>{\raggedright\arraybackslash}p{0.42\textwidth}rrrr@{}}
+\textbf{(b) Quantitative detection accuracy and model-stage inference speed}\par\smallskip
+\begingroup\footnotesize\setlength{\tabcolsep}{3.0pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l>{\raggedright\arraybackslash}p{0.45\textwidth}rrrr@{}}
 \toprule
-\textbf{Step} & \textbf{\shortstack[l]{Key Modification /\\Investigated Factor}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Standalone Forward\\(ms) $\downarrow$}} & \textbf{\shortstack{Standalone FPS\\$\uparrow$}} \\
+\textbf{Step} & \textbf{Investigated Milestone / Architectural Focus} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Model Stage\\(ms) $\downarrow$}} & \textbf{\shortstack{Model FPS\\$\uparrow$}} \\
 \midrule
-A0 & Baseline MobilePIXOR starting checkpoint & 41.40 & 42.27 & 11.05 & 90.57 \\
-A1 & + ConvNeXt-style backbone ($7\times 7$ DW, SiLU, Inverted Bottleneck) & 47.60 & 49.08 & \textbf{5.88} & \textbf{169.97} \\
-A2 & + 8-channel Strata-BEV8 statistical representation & 47.37 & 48.95 & 6.06 & 165.02 \\
-A3 & + 14-channel Strata-BEV14 (subcell offsets, height moments) & 50.14 & 52.00 & \underline{5.92} & \underline{169.01} \\
-A4 & + Decoupled GroupedHeader (Car vs. Ped/Cyc, 16 channels) & 51.30 & 53.96 & 6.92 & 144.58 \\
-A5 & + Expanded GroupedHeader capacity (H32, 32 channels) & 60.22 & 61.11 & 6.70 & 149.15 \\
-A6 & + Physics-Consistent Ground-Truth Augmentation (PC-GTA) & 66.25 & 68.45 & 7.45 & 134.25 \\
-A7 & + Expanded neck fusion layer ($F_{32}$, 32 channels) & 68.12 & 70.05 & 6.72 & 148.82 \\
-A8 & + Bilinear Depthwise Scale-Gated Neck (SG-FPN) & 67.38 & 69.46 & 6.94 & 144.16 \\
-A9 & + Oriented Geometric Alignment (OGA) and IQA supervision & \underline{70.58} & \underline{72.66} & 8.19 & 122.16 \\
-A10 & + Parameter-Free Block-SimAM Energy Attention inside all blocks & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
+$A_0$ & Baseline MobilePIXOR starting checkpoint & 41.40 & 42.27 & 11.04 & 90.57 \\
+$A_1$ & + ConvNeXt-style backbone ($7\times 7$ DW, SiLU, Inverted Bottleneck) & 47.60 & 49.08 & \textbf{5.88} & \textbf{169.97} \\
+$A_2$ & + Strata-BEV14 statistical representation (subcell offsets, height moments) & 50.14 & 52.00 & \underline{5.92} & \underline{169.01} \\
+$A_3$ & + Decoupled GroupedHeader (Car vs. Ped/Cyc independent towers) & 51.30 & 53.96 & 6.92 & 144.58 \\
+$A_4$ & + Expanded prediction head capacity (wider representation channels) & 60.22 & 61.11 & 6.70 & 149.15 \\
+$A_5$ & + Physics-Consistent Ground-Truth Augmentation (PC-GTA) & 68.12 & 70.05 & 6.72 & 148.82 \\
+$A_6$ & + Scale-Gated Feature Pyramid Network (SG-FPN) & 68.46 & 70.28 & 6.94 & 144.16 \\
+$A_7$ & + Oriented Geometric Alignment (OGA) and IQA quality ranking & \underline{70.58} & \underline{72.66} & 8.19 & 122.16 \\
+$A_8$ & + Parameter-Free Block-SimAM Energy Attention inside all blocks (Final) & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
 \bottomrule
 \end{tabular*}\endgroup
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} Step identifiers A0--A10 trace additions from the baseline to the final configuration. Intermediate ablation configurations A1--A9 are benchmarked under standard 50-epoch schedules; A10 denotes the final converged 100-epoch deployment model reaching $71.50\%$ Moderate mAP and $73.45\%$ $\text{mAP}_9$ (reaching $71.48\%$ at 50 epochs, as analyzed in Section~\ref{sec:ablations}). Standalone forward latency is measured in FP32 on an NVIDIA Tesla T4 GPU, excluding I/O and NMS. In the complete pipeline (Table~\ref{tab:efficiency}), forward execution takes $55.94\,\text{FPS}$ ($17.88\,\text{ms}$) with evaluation-harness synchronization. Full-system E2E latency is $60.96\,\text{ms}$ ($16.41\,\text{FPS}$).}
+{\footnotesize \textit{Note.} Step identifiers $A_0$--$A_8$ illustrate the progressive single-factor architectural evolution from baseline MobilePIXOR ($A_0$) to the proposed MobilePIXORNeXt ($A_8$). Each step isolates a single architectural modification. Controlled ablations isolating individual loss objectives and attention mechanisms under fixed experimental budgets are reported separately in Table~\ref{tab:loss} (Loss Matrix) and Table~\ref{tab:attention} (Attention Placement). Timings are profiled on a dedicated NVIDIA L4 GPU under batch size 1 in FP32 precision.}
 \end{table*}

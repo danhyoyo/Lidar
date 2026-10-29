@@ -1,0 +1,23 @@
+\begin{table*}[t]
+\centering\small
+\caption{KITTI validation BEV AP ($R_{40}$, \%) under the Unified KITTI BEV Evaluation Protocol, using the common local ground-truth loader and ROI/ignore rules. IoU thresholds are 0.70 for Car and 0.50 for Pedestrian and Cyclist. All reported inference runs use NVIDIA L4. Best and second-best values among compact models are bold and underlined.}
+\label{tab:comparison}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{mAP$_9$\\(\%)}} \\
+\midrule
+MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & \underline{88.60} & 55.83 & 66.38 & 70.27 & 71.80 \\
+SECOND~\cite{yan2018second} & 5.326 & \textbf{89.36} & \underline{56.47} & \textbf{70.70} & \textbf{72.18} & \underline{73.16} \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & 86.90 & \textbf{60.78} & \underline{66.81} & \underline{71.50} & \textbf{73.45} \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Larger 3D Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 87.12 & 57.16 & 73.69 & 72.66 & 74.68 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 89.39 & 63.56 & 73.69 & 75.55 & 76.92 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 89.35 & 58.11 & 73.67 & 73.71 & 75.60 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} $\mathrm{mAP}_{\mathrm{M}}$ denotes the mean of the three Moderate class AP scores; $\mathrm{mAP}_9$ averages all nine class--difficulty evaluation cells. All models are evaluated using the unified KITTI BEV protocol ($R_{40}$) on a dedicated NVIDIA L4 GPU. Multi-seed statistical robustness across seeds 42, 43, and 44 is reported in Table~\ref{tab:seed_robustness}.}
+\end{table*}

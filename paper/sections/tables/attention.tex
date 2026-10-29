@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering\normalsize
+\caption{Ablation of 3D spatial-energy attention (SimAM) integration topologies and placement strategies within the MobilePIXORNeXt backbone on the KITTI validation benchmark ($R_{40}$) on NVIDIA L4. Stage-level variants append a single attention adapter at stage downsampling boundaries ($C_2, C_3, C_4$), whereas the proposed Block-SimAM embeds parameter-free 3D energy attention inside all nine \texttt{MobilePIXORNeXt-S} residual blocks before LayerScale scaling. The no-attention baseline is strictly matched to the final depth $[3, 4, 2]$ and 100-epoch schedule. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\label{tab:attention}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+\textbf{\shortstack[l]{SimAM Attention\\Placement}} & \textbf{\shortstack[l]{Neck Fusion\\Width}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Model\\Stage (ms) $\downarrow$}} & \textbf{\shortstack{Model\\FPS $\uparrow$}} \\
+\midrule
+None (No attention, 100 ep) & $F_{32}$ & 68.94 & 71.35 & \underline{6.82} & \underline{146.60} \\
+Stage-2 ($C_2$) & $F_{32}$ & 69.44 & 71.49 & 7.30 & 136.91 \\
+Stage-3 ($C_3$) & $F_{24}$ & \underline{69.80} & \underline{71.98} & \textbf{6.94} & \textbf{144.05} \\
+Stage-4 ($C_4$) & $F_{32}$ & 69.36 & 71.34 & 7.44 & 134.43 \\
+\textbf{Block-level ($C_2, C_3, C_4$)} & \textbf{$F_{32}$} & \textbf{71.50} & \textbf{73.45} & 8.67 & 115.32 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} The no-attention configuration uses the standardized depth $(3, 4, 2)$ backbone, SG-FPN neck, decoupled grouped heads, OGA+IQA, and 100-epoch schedule on NVIDIA L4, cleanly isolating the $+2.52\,\mathrm{pp}$ Moderate mAP ($+2.07\,\mathrm{pp}$ $\mathrm{mAP}_9$) gain of parameter-free Block-SimAM without depth or schedule confounding. The 3D energy computation incurs only $1.85\,\mathrm{ms}$ model-stage overhead ($6.82\,\mathrm{ms}$ vs. $8.67\,\mathrm{ms}$).}
+\end{table*}

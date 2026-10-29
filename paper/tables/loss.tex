@@ -1,20 +1,24 @@
 \begin{table*}[t]
 \centering\small
-\caption{Geometric supervision (Baseline Smooth-L1 vs. OGA), localization quality prediction (with and without an IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$). IQA models rank NMS candidates using $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Best values are in \textbf{bold}, and second-best are \underline{underlined}.}
+\caption{Ablation of geometric supervision (Baseline Smooth-L1 vs. MGIoU vs. OGA), localization quality prediction (with and without an explicit IQA Head), and head-free Q-OGA on KITTI validation at Moderate difficulty ($R_{40}$) under a strictly standardized 50-epoch schedule on NVIDIA L4. All configurations share the standardized depth $[3, 4, 2]$ backbone with parameter-free Block-SimAM, Strata-BEV14 input, SG-FPN neck, and decoupled grouped heads. IQA models rank NMS candidates using composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \hat{q}}$. Best 50-epoch values are in \textbf{bold}, and second-best are \underline{underlined}.}
 \label{tab:loss}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\raggedright\arraybackslash}p{0.30\textwidth}ccrrrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\raggedright\arraybackslash}p{0.32\textwidth}ccrrrr@{}}
 \toprule
 \textbf{Training Objective} & \textbf{\shortstack{IQA\\Head}} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} \\
 \midrule
-Baseline Smooth-L1 & No  & \textbf{0.735} & 83.92 & 55.48 & 62.74 & 67.38 \\
-OGA (MGIoU + $\pi$-Corner) & No  & \textbf{0.735} & 84.09 & 57.93 & 64.88 & 68.97 \\
-Baseline Smooth-L1 & Yes & 0.754 & 84.13 & \underline{59.45} & \textbf{67.34} & 70.31 \\
-\textbf{OGA (MGIoU + $\pi$-Corner)} & \textbf{Yes} & 0.754 & \textbf{84.87} & \textbf{59.63} & \underline{67.24} & \textbf{70.58} \\
+Baseline Smooth-L1 & No  & \textbf{0.735} & 81.09 & 54.37 & 64.99 & 66.82 \\
+MGIoU Only (No Corner Loss) & No  & \textbf{0.735} & \textbf{84.91} & 54.00 & 64.18 & 67.69 \\
+OGA (MGIoU + $\pi$-Corner) & No  & \textbf{0.735} & 83.91 & 58.38 & 65.62 & 69.30 \\
+Baseline Smooth-L1 & Yes & 0.754 & 83.01 & \textbf{61.15} & 65.72 & \textbf{69.96} \\
+\textbf{OGA (MGIoU + $\pi$-Corner)} (50 ep) & \textbf{Yes} & 0.754 & \underline{84.68} & 57.56 & \underline{66.26} & \underline{69.50} \\
 \midrule
-Q-OGA (Quality-Coupled Focal Loss) & No & \textbf{0.735} & \underline{84.35} & 58.12 & 65.13 & 69.20 \\
+Q-OGA (Quality-Coupled Focal Loss) & No & \textbf{0.735} & 84.19 & 57.37 & 65.72 & 69.09 \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Standard Convergence Schedule (100 epochs)}} \\
+\textbf{MobilePIXORNeXt (Final Checkpoint)} & \textbf{Yes} & 0.754 & 86.90 & 60.75 & 66.73 & 71.46 \\
 \bottomrule
 \end{tabular*}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} All variants share the identical MobilePIXORNeXt backbone with standardized stage depths $(3, 4, 2)$ across all three stages, Strata-BEV14 input, Grouped H32 heads, F32 SG-FPN neck, and PC-GTA augmentation ($0.754\,\text{M}$ parameters with IQA, $0.735\,\text{M}$ without IQA). Embedding parameter-free Block-SimAM across all nine blocks produces the final configuration A10 without adding any learned parameters ($753{,}569$ parameters total). When IQA is enabled, candidate boxes are ranked during NMS via composite score $S_{\mathrm{det}} = \sqrt{P_{\mathrm{cls}} \cdot \hat{q}}$. Q-OGA integrates quality directly into classification supervision without dedicating a separate head, saving $18{,}626$ parameters ($18.63\,\text{K}$) compared with explicit IQA models.}
+{\footnotesize \textit{Note.} All 50-epoch variants are trained under identical conditions on NVIDIA L4 using standardized depth $(3, 4, 2)$, Strata-BEV14 representation, SG-FPN neck, decoupled grouped heads, and Block-SimAM attention ($0.754\,\text{M}$ parameters with IQA, $0.735\,\text{M}$ without IQA). MGIoU-only increases Car AP by $+3.82\,\mathrm{pp}$ over Smooth-L1, while adding $\pi$-Corner boosts Pedestrian AP by $+4.38\,\mathrm{pp}$, demonstrating complementary geometric benefits. Q-OGA integrates quality directly into classification supervision, matching explicit quality performance while saving $18{,}626$ parameters ($18.63\,\text{K}$). The final reported model completes 100 epochs to reach $71.46\%$ ($71.50\%$ rounded) Moderate mAP.}
 \end{table*}

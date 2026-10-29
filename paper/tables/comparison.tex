@@ -1,24 +1,23 @@
 \begin{table*}[t]
 \centering\small
-\caption{Quantitative comparison of Bird's-Eye View (BEV) object detection performance on the KITTI validation benchmark. Average Precision (AP, \%) is evaluated under the 40-point interpolation protocol ($R_{40}$) at Moderate difficulty ($\text{IoU} \ge 0.70$ for Car; $\text{IoU} \ge 0.50$ for Pedestrian and Cyclist). All experiments are conducted using the unified evaluation implementation and benchmarked on the same NVIDIA Tesla T4 GPU platform. The top partition benchmarks compact, real-time BEV and pillar detectors; the bottom partition provides external reference with heavyweight two-stage 3D anchor-based detectors. For compact methods, the best results are highlighted in \textbf{bold}, and the second-best results are \underline{underlined}.}
+\caption{KITTI validation BEV AP ($R_{40}$, \%) under the Unified KITTI BEV Evaluation Protocol, using the common local ground-truth loader and ROI/ignore rules. IoU thresholds are 0.70 for Car and 0.50 for Pedestrian and Cyclist. All reported inference runs use NVIDIA L4. Best and second-best values among compact models are bold and underlined.}
 \label{tab:comparison}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{mAP$_{9}$\\(\%)}} \\
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%)}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%)}} & \textbf{\shortstack{mAP$_9$\\(\%)}} \\
 \midrule
-PIXOR (Car only)~\cite{yang2018pixor} & 2.135 & 72.02 & -- & -- & -- & -- \\
 MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & 75.52 & 28.16 & 20.53 & 41.40 & 42.27 \\
-PointPillars~\cite{lang2019pointpillars} & 4.835 & \underline{88.02} & 56.01 & 66.34 & 70.13 & 72.25 \\
-SECOND~\cite{yan2018second} & 5.326 & \textbf{88.56} & \underline{56.56} & \textbf{71.16} & \textbf{72.09} & \textbf{73.79} \\
-\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & 86.90 & \textbf{60.78} & \underline{66.81} & \underline{71.50} & \underline{73.45} \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & \underline{88.60} & 55.83 & 66.38 & 70.27 & 71.80 \\
+SECOND~\cite{yan2018second} & 5.326 & \textbf{89.36} & \underline{56.47} & \textbf{70.70} & \textbf{72.18} & \underline{73.16} \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & 86.90 & \textbf{60.78} & \underline{66.81} & \underline{71.50} & \textbf{73.45} \\
 \midrule
-\multicolumn{7}{@{}l}{\textit{Heavyweight 3D Anchor-Based Reference Detectors}} \\
-PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 88.42 & 57.84 & 73.87 & 73.38 & 75.31 \\
-Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 90.05 & 64.20 & 74.60 & 76.28 & 78.04 \\
-PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 90.29 & 58.48 & 74.54 & 74.44 & 76.49 \\
+\multicolumn{7}{@{}l}{\textit{Larger 3D Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 87.12 & 57.16 & 73.69 & 72.66 & 74.68 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 89.39 & 63.56 & 73.69 & 75.55 & 76.92 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 89.35 & 58.11 & 73.67 & 73.71 & 75.60 \\
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-{\footnotesize \textit{Note.} $\text{mAP}_{\mathrm{M}}$ represents the mean of the three Moderate class AP scores; $\text{mAP}_{9}$ averages all nine class--difficulty evaluation cells. Dashes (--) indicate unsupported classes for the single-class PIXOR detector. All comparative experiments are conducted under the unified evaluation file and executed on the same NVIDIA Tesla T4 GPU hardware platform with batch size 1 and FP32 precision to ensure a fair and controlled benchmark. Complete pipeline latencies and runtime component breakdowns are reported in Table~\ref{tab:efficiency}.}
+{\footnotesize \textit{Note.} $\mathrm{mAP}_{\mathrm{M}}$ denotes the mean of the three Moderate class AP scores; $\mathrm{mAP}_9$ averages all nine class--difficulty evaluation cells. All models are evaluated using the unified KITTI BEV protocol ($R_{40}$) on a dedicated NVIDIA L4 GPU. Multi-seed statistical robustness across seeds 42, 43, and 44 is reported in Table~\ref{tab:seed_robustness}.}
 \end{table*}

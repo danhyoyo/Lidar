@@ -1,0 +1,23 @@
+\begin{table*}[t]
+\centering\small
+\caption{Offline pipeline latency and throughput on NVIDIA L4, batch size 1, FP32. Accuracy uses all 3,769 validation frames; latency uses 3,759 frames after 10 warmup frames. Best and second-best values among compact models are bold and underlined.}
+\label{tab:efficiency}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{\shortstack{Params\\(M) $\downarrow$}} & \textbf{\shortstack{Model\\(ms) $\downarrow$}} & \textbf{\shortstack{Model\\FPS $\uparrow$}} & \textbf{\shortstack{E2E\\(ms) $\downarrow$}} & \textbf{\shortstack{E2E\\FPS $\uparrow$}} & \textbf{\shortstack{P50\\(ms) $\downarrow$}} & \textbf{\shortstack{P95\\(ms) $\downarrow$}} & \textbf{\shortstack{P99\\(ms) $\downarrow$}} \\
+\midrule
+MobilePIXOR~\cite{nguyen2024indoor} & \textbf{0.598} & \underline{11.04} & \underline{90.57} & 88.02 & 11.36 & 86.04 & 116.13 & 130.45 \\
+PointPillars~\cite{lang2019pointpillars} & 4.835 & 12.04 & 83.02 & \textbf{27.48} & \textbf{36.40} & \textbf{27.03} & \textbf{31.11} & \textbf{33.10} \\
+SECOND~\cite{yan2018second} & 5.326 & 26.39 & 37.89 & 40.83 & 24.49 & 40.91 & \underline{44.31} & \underline{48.43} \\
+\textbf{MobilePIXORNeXt (Ours)} & \underline{0.754} & \textbf{8.67} & \textbf{115.32} & \underline{37.29} & \underline{26.82} & \underline{36.05} & 46.98 & 51.32 \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Larger 3D Reference Detectors}} \\
+PointRCNN~\cite{shi2019pointrcnn} & 4.039 & 79.48 & 12.58 & 90.86 & 11.01 & 90.90 & 95.04 & 97.00 \\
+Part-A$^2$-Anchor~\cite{shi2020part} & 63.815 & 61.81 & 16.18 & 76.81 & 13.02 & 76.65 & 81.77 & 86.10 \\
+PV-RCNN~\cite{shi2020pvrcnn} & 13.116 & 101.36 & 9.87 & 114.08 & 8.77 & 113.89 & 119.91 & 122.41 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} End-to-end (E2E) pipeline latency encompasses point-cloud file loading, CPU input rasterization, H2D memory transfer, network execution, and rotated NMS decoding. All models are benchmarked under sequential batch-1 execution on a dedicated NVIDIA L4 GPU in FP32 precision. FPS is calculated as $1000/\text{mean latency}$.}
+\end{table*}

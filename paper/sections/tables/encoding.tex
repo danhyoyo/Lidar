@@ -1,0 +1,18 @@
+\begin{table*}[t]
+\centering\small
+\caption{Ablation of Bird's-Eye View (BEV) input representation paradigms on the KITTI validation split using the local BEV evaluator with $R_{40}$ interpolation (Section~\ref{sec:dataset_and_metrics}). The listed models are benchmarked under the standardized baseline configuration (MobilePIXORNeXt backbone, SumFPN neck, single head, standard augmentation, baseline loss, seed 42). Best results across all configurations are in \textbf{bold}, and second-best are \underline{underlined}.}
+\label{tab:encoding}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcrrrrrrr@{}}
+\toprule
+\textbf{Representation} & \textbf{$C_{\mathrm{in}}$} & \textbf{\shortstack{H2D Payload\\(MB) $\downarrow$}} & \textbf{\shortstack{Car AP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Pedestrian\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{Cyclist\\AP$_{\mathrm{M}}$ (\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{\mathrm{M}}$\\(\%) $\uparrow$}} & \textbf{\shortstack{mAP$_{9}$\\(\%) $\uparrow$}} & \textbf{\shortstack{Standalone\\FPS $\uparrow$}} \\
+\midrule
+TriBand-BEV~\cite{khoshkdahan2026triband} & 3 & \textbf{6.76} & 74.10 & 38.05 & 21.12 & 44.42 & 46.55 & \textbf{188.43} \\
+Strata-BEV8  & 8 & \underline{18.02} & \underline{78.35} & 38.48 & \textbf{25.29} & 47.37 & 48.95 & 165.02 \\
+Binary35~\cite{yang2018pixor} & 35 & 78.85 & 75.24 & \underline{44.36} & 23.20 & \underline{47.60} & \underline{49.08} & \underline{169.97} \\
+\textbf{Strata-BEV14 (Ours)} & \textbf{14} & 31.54 & \textbf{79.97} & \textbf{45.36} & \underline{25.10} & \textbf{50.14} & \textbf{52.00} & 169.01 \\
+\bottomrule
+\end{tabular*}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} All configurations are evaluated under the baseline architecture (MobilePIXORNeXt backbone, SumFPN neck, single head, standard augmentation, baseline loss, seed 42). Payloads assume an $800\times704$ FP32 tensor grid. Strata-BEV14 achieves the highest detection accuracy while reducing host-to-device memory transfer payload by $60.0\%$ relative to Binary35 ($31.54\,\mathrm{MB}$ vs. $78.85\,\mathrm{MB}$).}
+\end{table*}

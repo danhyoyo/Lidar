@@ -1,6 +1,6 @@
 \begin{table}[t]
 \centering\small
-\caption{Experimental settings, architecture hyperparameters, and training configuration for MobilePIXORNeXt. Training uses a deterministic single-seed setup ($\text{seed} = 42$) with PyTorch 2.11.0 and CUDA 13.0. Timing uses a dedicated NVIDIA Tesla T4 GPU (16\,GB GDDR6 VRAM), batch size 1, and FP32 precision.}
+\caption{Experimental settings, architecture hyperparameters, and training configuration for MobilePIXORNeXt. The primary reported run uses seed 42; additional runs use seeds 43 and 44. The recorded software environment is PyTorch 2.11.0 and CUDA 13.0. Timing uses a dedicated NVIDIA L4 GPU, batch size 1, and FP32 precision.}
 \label{tab:setup}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{.38\columnwidth}>{\raggedright\arraybackslash}p{.56\columnwidth}@{}}
 \toprule
@@ -10,7 +10,7 @@ LiDAR Input Representation & Strata-BEV14 (14 channels; NumPy/Numba CPU) \\
 Spatial ROI bounds ($X, Y, Z$) & $[0.00, 70.40]\,\text{m} \times [-40.00, 40.00]\,\text{m} \times [-2.50, 1.00]\,\text{m}$ \\
 Grid resolution ($\Delta_x, \Delta_y, \Delta_z$) & $0.10\,\text{m} \times 0.10\,\text{m} \times 0.10\,\text{m}$ \\
 Input / Output Grid Dimensions & $800 \times 704$ / $200 \times 176$ ($s_{\mathrm{out}} = 4$) \\
-Detector Parameters & 753,569 trainable ($< 0.76\,\text{M}$); 9.34\,MB FP32 \\
+Detector Parameters & 753,569 deployable; 12 training-only logits; 9.34\,MB checkpoint \\
 Backbone Stages ($C_2, C_3, C_4$) & Widths: (48, 96, 128); Depths: (3, 4, 2) \\
 Inverted Bottleneck Expansion & $e = 2.50$; $7 \times 7$ Depthwise Convolution \\
 Attention Mechanism & Parameter-free Block-SimAM (9 residual blocks) \\
@@ -19,13 +19,13 @@ Prediction Towers & GroupedHeader: Car ($K_1=1$), Ped/Cyc ($K_2=2$) \\
 Loss Formulation & OGA (MGIoU + $\pi$-Corner) + IQA + T-SBUW \\
 Data Augmentation & Physics-Consistent GT (PC-GTA) + Global \\
 Optimizer / Base Learning Rate & AdamW (fused) / $\eta = 7.00 \times 10^{-4}$ \\
-Minimum LR / Training Schedule & $1.00 \times 10^{-6}$ / 100 epochs: 10 warmup + 90 cosine \\
-Final Reported Checkpoint & Converged deployment checkpoint evaluated at epoch 100 \\
+Minimum LR / Training Schedule & $1.00 \times 10^{-6}$ / 100 epochs (10 warmup, 90 cosine decay) \\
+Final Reported Checkpoint & Seed-42 epoch 100 (AP-selected) \\
 Weight Decay & $\lambda = 1.00 \times 10^{-3}$ (2D+ tensors only; biases/norm: 0.00) \\
 Gradient Clipping Norm & Maximum $L_2$ norm = 10.00 \\
 Batch Size (Train / Val) & 16 / 32 \\
-Numerical Precision & Automatic Mixed Precision (AMP / FP32) \\
-Hardware Environment & NVIDIA Tesla T4 GPU (16\,GB GDDR6, 98.44\,MiB peak) \\
+Numerical Precision & BF16 training / FP32 inference \\
+Hardware Environment & NVIDIA L4; reported peak allocation 104.92\,MB \\
 \bottomrule
 \end{tabular}
 \end{table}

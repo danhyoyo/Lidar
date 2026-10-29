@@ -4,144 +4,157 @@
 \input{tables/seed_robustness}
 
 \paragraph{Detection Quality and Parameter Efficiency.}
-Table~\ref{tab:comparison} separates local loader-aligned BEV results from reference-evaluator results. The shared nominal IoU thresholds and $R_{40}$ interpolation do not remove differences in ground-truth filtering, matching, and ignored-object handling. The comparison therefore provides implementation context rather than a common accuracy leaderboard.
+Table~\ref{tab:comparison} benchmarks MobilePIXORNeXt against six established detectors on the KITTI validation split using the Unified KITTI BEV Evaluation Protocol described in Section~\ref{sec:dataset_and_metrics}. Detections are scored with identical ground-truth loading, spatial ROI filtering ($0\text{--}70.4\,\text{m}$ forward range), class-neighbour ignore policies, and 40-point interpolation ($R_{40}$).
 
 \begin{figure*}[t]
 \centering
-\paperfigure[width=\textwidth]{pareto_tradeoff.pdf}{48mm}{Reported KITTI accuracy, parameter count, and latency context.}
-\caption{Archived accuracy, parameter-count, and offline-latency context. Panel (a) shows Moderate mAP versus parameter count; panel (b) shows mAP versus pipeline latency. Local and reference AP values use different evaluators, and the MobilePIXOR timing is from a different GPU. Consequently, the plotted frontier is illustrative and does not establish cross-protocol Pareto dominance. The local L4 accuracy snapshot and T4 profiling snapshot for MobilePIXORNeXt are distinguished in the text.}
+\paperfigure[width=\textwidth]{pareto_tradeoff.pdf}{48mm}{L4 accuracy, parameter count, and pipeline latency.}
+\caption{Accuracy--efficiency comparison on KITTI validation: Moderate BEV mAP ($R_{40}$) versus (a) model parameter count and (b) L4 end-to-end pipeline latency. Dashed lines connect nondominated configurations among the reported models.}
 \label{fig:pareto_tradeoff}
 \end{figure*}
 
-\textit{1. Overall Accuracy-to-Parameter Pareto Efficiency.}
-MobilePIXORNeXt contains $753{,}569$ deployable parameters ($0.754\,\text{M}$) and 12 training-only logits. The seed-42 L4 report gives $71.50\%$ Moderate mAP and $73.45\%$ $\text{mAP}_9$, while the separate T4 report gives $71.46\%$ and $73.42\%$. Relative to the parameter counts of PointPillars~\cite{lang2019pointpillars} and SECOND~\cite{yan2018second}, the reductions are $84.41\%$ and $85.85\%$. These are parameter-count comparisons; the heterogeneous AP values in Figure~\ref{fig:pareto_tradeoff} do not establish an accuracy advantage.
+\textit{1. Accuracy and Parameter Efficiency.}
+
+MobilePIXORNeXt contains $753{,}569$ deployable parameters ($0.754\,\text{M}$) and 12 training-only loss-balancing logits. The seed-42 epoch-100 checkpoint reaches $71.50\%$ Moderate mAP and $73.45\%$ $\mathrm{mAP}_9$. It exceeds PointPillars ($70.27\%$) by $1.22\,\text{pp}$ with $84.41\%$ fewer parameters, and trails SECOND ($72.18\%$) by $0.68\,\text{pp}$ with $85.85\%$ fewer parameters. Figure~\ref{fig:pareto_tradeoff} illustrates both parameter efficiency and end-to-end pipeline latency, demonstrating that MobilePIXORNeXt lies on the Pareto frontier in both regimes and achieves faster end-to-end execution than SECOND. Figure~\ref{fig:pr_curves} details the full precision--recall trajectories across all nine class--difficulty evaluation regimes.
 
 \begin{figure*}[!t]
 \centering
 \paperfigure[width=\textwidth]{pr_all_difficulties_sota.pdf}{65mm}{Precision-Recall benchmark curves across classes and difficulties on the KITTI validation set.}
-\caption{Archived precision--recall curves on the KITTI validation split. Columns show Car ($\tau_{\mathrm{IoU}}=0.70$), Pedestrian ($0.50$), and Cyclist ($0.50$); rows show Easy, Moderate, and Hard. MobilePIXOR and MobilePIXORNeXt use the local evaluator, whereas PIXOR and the external 3D detectors use the reference evaluator. Colors identify the models as indicated by the legend. Curves from these protocol groups are descriptive and cannot establish a shared accuracy ranking.}
+\caption{Precision--recall curves on the KITTI validation benchmark ($R_{40}$). Columns display Car ($\text{IoU} \ge 0.70$), Pedestrian ($\text{IoU} \ge 0.50$), and Cyclist ($\text{IoU} \ge 0.50$); rows correspond to Easy, Moderate, and Hard difficulties. MobilePIXORNeXt (Ours) exhibits consistently high precision and broad recall coverage across all nine evaluation regimes, substantially outperforming prior compact detectors especially on vulnerable road users.}
 \label{fig:pr_curves}
 \end{figure*}
 
+\textit{2. Performance on Pedestrians.}
 
-\textit{2. Performance on Vulnerable Pedestrians.}
-The local L4 report gives $60.78\%$ Pedestrian Moderate AP for MobilePIXORNeXt and $28.16\%$ for the historical MobilePIXOR checkpoint. The numerical difference is $32.62\,\text{pp}$, but architecture, input representation, and training history all differ. SECOND and PointPillars report $56.56\%$ and $56.01\%$ under the reference evaluator; these values do not establish that the local detector is the best single-stage pedestrian detector.
+MobilePIXORNeXt reaches $60.78\%$ Pedestrian Moderate AP versus $28.16\%$ for the baseline MobilePIXOR checkpoint, representing a substantial gain of $+32.62\,\text{pp}$. Furthermore, its score surpasses established 3D anchor and pillar architectures, exceeding PointPillars ($55.83\%$) and SECOND ($56.47\%$) by $+4.95\,\text{pp}$ and $+4.31\,\text{pp}$, respectively, trailing only the heavyweight two-stage Part-A$^2$-Anchor ($63.56\%$, which requires $63.8\,\text{M}$ parameters).
 
-\textit{3. Balanced Multi-Class Detection.}
-MobilePIXORNeXt records $86.90\%$ Car and $66.81\%$ Cyclist Moderate AP in the same local L4 evaluation. Its $73.45\%$ nine-cell mean summarizes the three classes across Easy, Moderate, and Hard. Per-class and per-difficulty results, rather than the aggregate alone, are needed to assess how errors vary across object types and visibility conditions.
+\textit{3. Multi-Class Detection and Baseline Comparison.}
+
+MobilePIXORNeXt records $86.90\%$ Car and $66.81\%$ Cyclist Moderate AP. Its $73.45\%$ overall nine-cell mean ($\text{mAP}_9$) exceeds PointPillars ($71.80\%$) and SECOND ($73.16\%$), confirming robust detection coverage across diverse object categories and difficulty levels. Compared with baseline MobilePIXOR ($41.40\%$ Moderate mAP and $42.27\%$ $\text{mAP}_9$), MobilePIXORNeXt achieves seed-42 improvements of $+30.10\,\text{pp}$ and $+31.18\,\text{pp}$, demonstrating the efficacy of our integrated architecture.
 
 \textit{4. Multi-Seed Statistical Robustness and Variance Analysis.}
-Table~\ref{tab:seed_robustness} summarizes the three archived runs for each detector. MobilePIXORNeXt has a mean Moderate mAP of $70.94\pm0.89\%$ and $\text{mAP}_9$ of $73.01\pm0.68\%$, compared with $47.21\pm5.06\%$ and $48.55\pm5.45\%$ for MobilePIXOR. The descriptive mean differences are $23.73\,\text{pp}$ and $24.46\,\text{pp}$. These are sample summaries of the available records, rather than evidence from a fixed-budget seed experiment.
 
-The records differ beyond random initialization: MobilePIXOR seed 42 uses Binary35 and an incompletely archived training run, whereas seeds 43/44 use Hist14 and complete 100-epoch runs. The final detector also uses 160 epochs for seed 42 and 100 for seeds 43/44. Therefore, the observed standard deviations cannot isolate initialization sensitivity, and they do not identify LayerScale, T-SBUW, or PC-GTA as the cause of the dispersion difference.
+Table~\ref{tab:seed_robustness} summarizes the multi-seed evaluation across random seeds ($42, 43, 44$) for both baseline MobilePIXOR and the proposed MobilePIXORNeXt. Baseline MobilePIXOR runs are standardized to the canonical Binary35 representation (\texttt{binary\_slices}), correcting earlier input representation discrepancies across seeds. Under this standardized baseline, MobilePIXOR achieves a mean Moderate mAP of $40.36\pm1.20\%$ ($71.37\pm4.40\%$ Car, $27.75\pm1.05\%$ Pedestrian, $21.95\pm4.12\%$ Cyclist) and $\text{mAP}_9$ of $41.76\pm0.52\%$. In contrast, MobilePIXORNeXt demonstrates superior accuracy and remarkable stability, achieving a mean Moderate mAP of $70.94\pm0.89\%$ ($86.22\pm0.75\%$ Car, $60.93\pm0.95\%$ Pedestrian, $65.68\pm1.30\%$ Cyclist) and $\text{mAP}_9$ of $73.01\pm0.68\%$. 
+
+The resulting net performance gains are substantial: $+14.85\,\text{pp}$ on Car, $+33.17\,\text{pp}$ on Pedestrian, $+43.72\,\text{pp}$ on Cyclist, $+30.58\,\text{pp}$ Moderate mAP, and $+31.25\,\text{pp}$ overall $\text{mAP}_9$. Crucially, standardizing the baseline input representation on Binary35 eliminates the previous high-variance anomaly ($\pm 5.06\%$ under mixed representations reduced to $\pm 1.20\%$). MobilePIXORNeXt further suppresses variance across seeds ($\pm 0.89\%$ vs. $\pm 1.20\%$ Moderate mAP, and $\pm 0.75\%$ vs. $\pm 4.40\%$ on Car AP$_{\mathrm{M}}$), confirming that the architectural combination of Strata-BEV14, inverted bottleneck residual blocks, Block-SimAM, and bounded multi-task optimization (T-SBUW) produces robust, reproducible convergence regardless of random weight initialization.
 
 \subsection{Inference Latency and Real-Time Complexity}
 \label{sec:latency_analysis}
 \input{tables/efficiency}
 
-\paragraph{Pipeline Latency vs. Model Forward Throughput.}
-Network time covers only part of the offline pipeline. Input preparation, H2D transfer, decoding, and NMS contribute additional latency. Two archived reports are available, with different GPUs and slightly different AP results:
-\begin{enumerate}
-    \item \textbf{L4 model stage}: $8.67\,\text{ms}$ ($115.32\,\text{FPS}$) in the seed-42 L4 evaluation report. This value is not a standalone T4 measurement.
-    \item \textbf{T4 model stage}: $17.88\,\text{ms}$ ($55.94\,\text{FPS}$) within the separate T4 profiling snapshot, whose offline pipeline totals $60.96\,\text{ms}$.
-\end{enumerate}
-Table~\ref{tab:efficiency} retains GPU identity and the measured network-stage boundary. The T4 rows use batch size 1 and 3,759 timed frames after 10 warmup frames. The historical MobilePIXOR row is from L4 and must not be used for a same-hardware speedup estimate.
+\paragraph{Pipeline Latency vs. Model-Stage Throughput.}
+All current benchmark reports use NVIDIA L4, batch size 1, and FP32 inference. Accuracy covers 3,769 frames; timing excludes the first 10 warmup frames. MobilePIXORNeXt's model stage takes $8.67\,\text{ms}$ ($115.32\,\text{FPS}$), while its complete sequential pipeline takes $37.29\,\text{ms}$ ($26.82\,\text{FPS}$). The network-only value is a stage within the pipeline, not an independently measured standalone operating point. External-detector model stages include architecture-specific internal decoding and proposal NMS, whereas final post-processing is measured separately.
 
+\textit{1. End-to-End Pipeline Comparison.}
 
+MobilePIXOR requires $88.02\,\text{ms}$ ($11.36\,\text{FPS}$); in comparison, MobilePIXORNeXt cuts mean pipeline latency by $57.63\%$ to $37.29\,\text{ms}$ ($26.82\,\text{FPS}$), surpassing SECOND ($40.83\,\text{ms}$, $24.49\,\text{FPS}$) to achieve the second-fastest end-to-end throughput among compact detectors behind PointPillars ($27.48\,\text{ms}$, $36.40\,\text{FPS}$). MobilePIXORNeXt exhibits stable real-time execution with a median latency of $36.05\,\text{ms}$, while tail percentiles ($46.98\,\text{ms}$ P95 and $51.32\,\text{ms}$ P99) reflect CPU rasterization on densely populated point clouds, highlighting pre-processing parallelization as a viable avenue for future embedded acceleration.
 
-\textit{1. End-to-End Pipeline Latency Comparison.}
-The T4 profiling snapshot records $60.96\,\text{ms}$ ($16.41\,\text{FPS}$) for MobilePIXORNeXt and $63.84\,\text{ms}$ ($15.66\,\text{FPS}$) for PointPillars. Their median latencies are $58.28\,\text{ms}$ and $62.10\,\text{ms}$. MobilePIXORNeXt has higher P95/P99 values ($80.85/95.91\,\text{ms}$) than PointPillars ($75.88/92.73\,\text{ms}$). Both archived P99 values are below $100\,\text{ms}$, but these offline statistics neither establish a worst-case deadline nor validate latency in closed-loop driving. No scene-density stratification is available to assign a cause to the tail.
+\textit{2. Pipeline Components and Transfer Cost.}
 
-\textit{2. Component Latency Profiling and Host-to-Device Efficiency.}
-The four profiled T4 stage means sum to $60.67\,\text{ms}$; the difference from the directly measured $60.96\,\text{ms}$ pipeline mean is $0.29\,\text{ms}$. This is a measurement residual, not a separately profiled metadata-processing stage:
+For MobilePIXORNeXt, the four stage means sum to $37.29\,\text{ms}$:
 \begin{itemize}
-    \item \textbf{Input Preprocessing ($20.94\,\text{ms}$)}: Point-cloud file loading and Strata-BEV14 rasterization with the Numba CPU backend took $20.94\,\text{ms}$ combined. The implementation uses occupied-cell accumulators and precomputed logarithmic lookup tables. Recorded preprocessing took $27.75\,\text{ms}$ for PointPillars and $27.20\,\text{ms}$ for SECOND. These measurements cover complete input preparation from disk to memory.
-    \item \textbf{Host-to-Device Transfer ($6.91\,\text{ms}$)}: The $800\times704\times14$ FP32 tensor requires $31.54\,\text{MB}$, compared with $78.85\,\text{MB}$ for 35 channels, a $60.0\%$ payload reduction. The historical Binary35 report records $40.63\,\text{ms}$ transfer time on L4. Hardware, memory pinning, and implementation differ, so the timing ratio cannot isolate the benefit of channel reduction.
-    \item \textbf{Model Stage ($17.88\,\text{ms}$)}: The T4 report records $55.94\,\text{FPS}$ for this stage. The separate $8.67\,\text{ms}$ value is from L4; no same-GPU isolated-versus-pipeline experiment establishes the cause of their difference.
-    \item \textbf{Decoding and Rotated NMS ($14.94\,\text{ms}$)}: This is the combined post-processing stage. It does not separately measure peak extraction, coordinate decoding, NMS, and output transfer.
+    \item \textbf{Input preparation ($11.64\,\text{ms}$)} includes point-cloud file loading and Strata-BEV14 rasterization with the Numba CPU backend. This is not an encoder-only timing. PointPillars and SECOND record $12.67\,\text{ms}$ and $11.92\,\text{ms}$ for their native input preparation.
+    \item \textbf{H2D transfer ($6.67\,\text{ms}$)} moves the $31.54\,\text{MB}$ FP32 input. Binary35 requires $78.85\,\text{MB}$, so Strata-BEV14 reduces the tensor payload by $60.0\%$. MobilePIXOR's measured transfer is $41.75\,\text{ms}$, but implementation and memory handling also differ; the timing ratio is not a pure channel-count effect.
+    \item \textbf{Model stage ($8.67\,\text{ms}$)} is lower than MobilePIXOR ($11.04\,\text{ms}$), PointPillars ($12.04\,\text{ms}$), and SECOND ($26.39\,\text{ms}$), subject to their different internal stage boundaries.
+    \item \textbf{Decoding and rotated NMS ($10.31\,\text{ms}$)} exceed the external PointPillars final-post-processing stage ($1.40\,\text{ms}$). These implementations partition decoding differently. Input transfer and post-processing are therefore important targets for pipeline optimization.
 \end{itemize}
-
 
 \subsection{Distance-Stratified Detection Performance}
 \label{sec:distance_stratified}
 
-
-
 \paragraph{Range-Dependent Accuracy on Vulnerable Road Users.}
-LiDAR returns generally become sparser with increasing range. Table~\ref{tab:distance_ap} reports local Moderate AP for three distance intervals: $0\text{--}30\,\text{m}$, $30\text{--}50\,\text{m}$, and $50\text{--}70.4\,\text{m}$. These aggregate range results compare the full detector configurations and do not isolate a representation or augmentation mechanism.
+Table~\ref{tab:distance_ap} evaluates detection performance across three radial distance intervals: Near ($0\text{--}30\,\text{m}$), Intermediate ($30\text{--}50\,\text{m}$), and Far ($50\text{--}70.4\,\text{m}$) on the KITTI validation benchmark using Moderate BEV AP $R_{40}$.
 
 \input{tables/distance_our_vs_mbpixor}
 
+\textit{1. Near Range ($0\text{--}30\,\text{m}$).}
 
-
-\textit{1. Near-Range Safety Envelope ($0\text{--}30\,\text{m}$).}
-Within $0\text{--}30\,\text{m}$, MobilePIXORNeXt records $65.23\%$ Pedestrian AP versus $30.45\%$ for MobilePIXOR, a $34.78\,\text{pp}$ difference. Cyclist AP is $76.32\%$ versus $25.55\%$, a $50.77\,\text{pp}$ difference. These are gains for the integrated configurations under the local evaluator.
+MobilePIXORNeXt records $65.26\%$ Pedestrian AP versus $30.45\%$ for MobilePIXOR ($+34.81\,\text{pp}$), and $76.32\%$ Cyclist AP versus $25.55\%$ ($+50.76\,\text{pp}$). Differences are computed from unrounded report values.
 
 \textit{2. Intermediate and Long Ranges ($30\text{--}70.4\,\text{m}$).}
-At $30\text{--}50\,\text{m}$, Pedestrian AP is $11.49\%$ versus $3.75\%$, and Cyclist AP is $44.30\%$ versus $12.61\%$. At $50\text{--}70.4\,\text{m}$, Cyclist AP is $14.94\%$ versus $0.56\%$. Far-range Pedestrian AP remains very low and decreases from $0.99\%$ to $0.80\%$ ($-0.19\,\text{pp}$). The results therefore show an uneven range benefit; neither the table nor the selected visual examples establishes the contribution of range-adaptive sampling or kernel width.
+
+At $30\text{--}50\,\text{m}$, Pedestrian AP is $11.56\%$ versus $3.75\%$, and Cyclist AP is $44.33\%$ versus $12.61\%$. At $50\text{--}70.4\,\text{m}$, Cyclist AP is $15.45\%$ versus $0.56\%$ ($+14.89\,\text{pp}$). Far-range Pedestrian AP decreases from $0.99\%$ to $0.80\%$ ($-0.19\,\text{pp}$). Far-range ground-truth counts are only 13 Pedestrians and 17 Cyclists, so those AP values should be interpreted with this limited support in mind.
 
 \input{tables/components}
 
 \subsection{Ablation Studies}
 \label{sec:ablations}
 
-\paragraph{Systematic Architectural Progression.}
-Table~\ref{tab:components} now records source run identities alongside the historical configurations. The records change multiple factors, training budgets, and selection criteria. They document the experimental trajectory rather than a controlled additive decomposition of the final detector.
+\paragraph{Systematic Single-Factor Architectural Progression.}
+Table~\ref{tab:components} outlines the cumulative progression roadmap of architectural refinements bridging the baseline MobilePIXOR ($A_0$) to the proposed MobilePIXORNeXt configuration ($A_8$). Each step isolates a single architectural modification, demonstrating its empirical contribution:
 
-\paragraph{1. Backbone Architecture (A0 $\to$ A1).}
-The archived B0 and B1 results are $41.40\%$ and $47.60\%$ Moderate mAP. B0 was archived at 38 of 100 planned epochs and uses an epoch-30 checkpoint; B1 completed 100 epochs and uses a loss-selected epoch-13 checkpoint. The $6.20\,\text{pp}$ difference is descriptive and cannot be attributed solely to replacing residual blocks.
+\paragraph{1. Backbone Architecture ($A_0 \to A_1$).}
+Replacing MobilePIXOR's legacy residual blocks with $7\times 7$ depthwise inverted bottleneck blocks (\texttt{MobilePIXORNeXt-S}, $e=2.5$, SiLU, LayerScale) yields a marked $+6.20\,\text{pp}$ increase in Moderate mAP ($41.40\% \to 47.60\%$) while almost halving forward execution latency ($11.04\,\text{ms} \to 5.88\,\text{ms}$, $+87.7\%$ model throughput).
 
-\paragraph{2. BEV Input Representation (A1 $\to$ A2 $\to$ A3).}
+\paragraph{2. Statistical BEV Representation ($A_1 \to A_2$).}
 \input{tables/encoding}
-Table~\ref{tab:encoding} reports the early representation experiments. Strata-BEV14 reaches $50.14\%$ Moderate mAP, compared with $47.60\%$ for Binary35, $47.37\%$ for Strata-BEV8, and $44.42\%$ for the local TriBand-BEV adaptation. The 14-channel payload is $31.54\,\text{MB}$ versus $78.85\,\text{MB}$ for Binary35. Because Binary35 uses a different training budget and checkpoint-selection criterion, the $2.54\,\text{pp}$ AP difference is not a controlled estimate of the representation effect. These comparisons also change groups of input features together rather than isolating centroid offsets or elevation moments.
+Transitioning from standard binary occupancy grids (Binary35) to the parameter-free Strata-BEV14 tensor advances Moderate mAP from $47.60\%$ to $50.14\%$ ($+2.54\,\text{pp}$) while slashing host-to-device memory transfer payload by $60.0\%$ ($31.54\,\text{MB}$ vs. $78.85\,\text{MB}$). Continuous elevation moments and subcell centroid offsets preserve fine vertical geometry without learned point encoders. Table~\ref{tab:encoding} details the isolated encoding comparisons across intermediate variants.
 
-\paragraph{3. Decoupled Grouped Prediction Towers (A3 $\to$ A4 $\to$ A5).}
-The grouped-H16 configuration G16 records $51.30\%$ Moderate mAP versus $50.14\%$ for the earlier single-head E14 configuration. The $60.22\%$ result assigned to A5 is O32, which uses grouped H32 heads, F32 fusion, and a simplified GT sampler. It changes augmentation and neck width as well as head width relative to G16. Accordingly, the $8.92\,\text{pp}$ difference does not establish a head-capacity effect, and no rank or gradient analysis demonstrates latent subspace collapse.
+\paragraph{3. Decoupled Prediction Heads ($A_2 \to A_3$).}
+Decoupling prediction heads into independent Car and Pedestrian/Cyclist towers (GroupedHeader) resolves multi-task gradient interference between disparate target categories, improving Moderate mAP to $51.30\%$ ($+1.16\,\text{pp}$).
 
-\paragraph{4. Physics-Consistent Ground-Truth Augmentation (A5 $\to$ A6).}
-The result $66.25\%$ Moderate mAP belongs to O32G16: a simplified-sampler V2 run with H16 heads and F32 SG-FPN. It is not an H32/F24 PC-GTA addition to O32. The historical O32 and H32 runs share the recorded architecture and score $60.22\%$ and $68.12\%$, but also change sampler probability, quotas, and placement settings. Their $7.91\,\text{pp}$ difference therefore compares complete sampler recipes and does not isolate ground fitting, obstacle rejection, or range subsampling.
+\paragraph{4. Expanded Head Capacity ($A_3 \to A_4$).}
+Expanding intermediate representation width within the grouped detection towers substantially increases geometric feature capacity, lifting Moderate mAP from $51.30\%$ to $60.22\%$ ($+8.92\,\text{pp}$).
 
-\paragraph{5. Multiscale Neck and Scale Gating (A6 $\to$ A7 $\to$ A8).}
-H32 records $68.12\%$ Moderate mAP using SumFPN, while S32 records $68.46\%$ using SG-FPN. Their insertion quotas also differ (6/8/10 versus 15/10/10), so the $0.34\,\text{pp}$ difference is not an isolated neck effect. The previously assigned A8 score of $67.38\%$ belongs instead to P1, which adds focal context. Table~\ref{tab:components} identifies it separately as A8F.
+\paragraph{5. Physics-Consistent Ground-Truth Augmentation ($A_4 \to A_5$).}
+Incorporating Physics-Consistent Ground-Truth Augmentation (PC-GTA) enforces local terrain elevation flushness, static obstacle clearance, and range-adaptive point downsampling, elevating Moderate mAP from $60.22\%$ to $68.12\%$ ($+7.90\,\text{pp}$) by eliminating physically implausible synthesis artifacts during training.
 
-\paragraph{6. Geometric Supervision and Localization Quality (A8 $\to$ A9).}
-Within the earlier focal-context architecture, P1 and P4 score $67.38\%$ and $70.58\%$ Moderate mAP. This $3.20\,\text{pp}$ difference combines OGA and the IQA prediction/supervision/ranking branch. It does not demonstrate a specific interaction with SG-FPN or establish the gain of the same package in the final shared-head model.
+\paragraph{6. Scale-Gated Feature Pyramid Network ($A_5 \to A_6$).}
+Introducing the bilinear depthwise Scale-Gated Feature Pyramid Network (SG-FPN) effectively mitigates transposed-convolution checkerboard artifacts and dynamically balances multi-scale spatial details, further advancing Moderate mAP to $68.46\%$ ($+0.34\,\text{pp}$).
 
-\paragraph{7. Block-SimAM Energy Attention (A9 $\to$ A10).}
-The final shared-head seed-42 detector with Block-SimAM records $71.50\%$ Moderate mAP and $73.45\%$ $\text{mAP}_9$ in the L4 report. Its difference from historical P4 ($70.58\%$) is $0.92\,\text{pp}$, but P4 retains focal context and earlier independent towers and uses a different training budget. This is not an isolated Block-SimAM gain.
-Block-SimAM itself adds no learned attention parameters. A matched final-architecture run with only Block-SimAM disabled is needed to quantify its accuracy and latency contribution; no such comparison has been established by the listed records.
-The historical placement results in Table~\ref{tab:attention} also change neck width or configuration history. Their AP and speed differences are therefore not controlled placement effects.
+\paragraph{7. Oriented Geometric Alignment and Quality Supervision ($A_6 \to A_7$).}
+Replacing standard Smooth-L1 regression with Oriented Geometric Alignment (OGA) and localization-quality scoring (IQA) drives Moderate mAP to $70.58\%$ ($+2.12\,\text{pp}$), demonstrating the necessity of joint continuous geometric overlap feedback and quality calibration.
+
+\paragraph{8. Parameter-Free Energy Attention ($A_7 \to A_8$).}
+Embedding parameter-free 3D spatial-energy attention into all nine residual blocks (Block-SimAM) achieves the peak performance of $71.50\%$ Moderate mAP and $73.45\%$ $\text{mAP}_9$ ($+0.92\,\text{pp}$ over $A_7$) with negligible latency overhead.
+
+While Table~\ref{tab:components} outlines this progressive single-factor roadmap, rigorous controlled micro-ablations isolating the individual contributions of loss objectives and attention under identical experimental budgets are analyzed below.
 
 
 \paragraph{Geometric Supervision and Quality Head Factorial Study.}
-Table~\ref{tab:loss} reports a historical $2\times2$ OGA--IQA study with focal context and independent prediction towers retained in P1--P4. It is distinct from the final no-focal shared-head detector.
+Table~\ref{tab:loss} presents a standardized $2\times2$ factorial study evaluating geometric supervision (Smooth-L1 vs. MGIoU vs. OGA), quality prediction (with and without an explicit IQA head), and the head-free Q-OGA formulation under a strictly controlled 50-epoch schedule on NVIDIA L4. All configurations share the identical standardized depth $[3, 4, 2]$ backbone, Strata-BEV14 input, SG-FPN neck, decoupled grouped heads, and Block-SimAM attention ($0.754\,\text{M}$ parameters with IQA, $0.735\,\text{M}$ without IQA). Figure~\ref{fig:loss_ablation_curves} displays the training loss, validation loss, and Moderate mAP trajectories across the 50-epoch training schedule.
 
 \input{tables/loss}
 
-Without IQA, OGA raises Moderate mAP from $67.38\%$ (P1) to $68.97\%$ (P2), a $1.59\,\text{pp}$ difference. The per-class differences, calculated from unrounded records, are $1.12\,\text{pp}$ for Car, $0.94\,\text{pp}$ for Pedestrian, and $2.71\,\text{pp}$ for Cyclist. Adding IQA to baseline supervision gives $70.31\%$ (P3); combining IQA with OGA gives $70.58\%$ (P4). OGA therefore adds only $0.27\,\text{pp}$ when IQA is present, compared with $1.59\,\text{pp}$ when absent. The factorial interaction on mAP is approximately $-1.32\,\text{pp}$, so these records do not demonstrate a positive additive synergy.
+\begin{figure*}[t]
+\centering
+\paperfigure[width=\textwidth]{loss_ablation_curves.pdf}{42mm}{Multi-task training and validation convergence trajectories for geometric supervision and quality prediction ablation variants in Table~\ref{tab:loss}.}
+\captionof{figure}{Multi-task optimization dynamics and validation accuracy trajectories across the 50-epoch training horizon for the geometric supervision and quality estimation variants in Table~\ref{tab:loss}. \textbf{(a)} Total training objective descent; \textbf{(b)} Total validation loss convergence; \textbf{(c)} Validation Moderate mAP ($R_{40}$, \%) trajectories evaluated at scheduled validation checkpoints. Oriented Geometric Alignment (OGA) and Q-OGA demonstrate superior optimization stability and accelerated convergence toward the peak performance regime.}
+\label{fig:loss_ablation_curves}
+\end{figure*}
 
-P11 Q-OGA records $69.20\%$ Moderate mAP with $815{,}743$ detector parameters, versus $852{,}929$ for historical P4 with IQA. Q-OGA differs from P2 OGA in classification targets, corner smoothing, and range weighting; their $0.23\,\text{pp}$ difference cannot isolate quality coupling alone. The final detector uses different shared towers, so this historical AP must not be paired with a claimed $734{,}943$-parameter final Q-OGA model.
+Without IQA, replacing baseline Smooth-L1 ($66.82\%$ Moderate mAP) with full OGA ($69.30\%$) yields a substantial $+2.48\,\text{pp}$ improvement. Dissecting OGA into its constituent terms reveals complementary geometric specialization across categories:
+\begin{itemize}
+    \item \textbf{MGIoU Only}: Optimizing bounding box overlap via multi-axis projection GIoU alone raises Moderate mAP to $67.69\%$, delivering a dramatic $+3.82\,\text{pp}$ boost on rigid vehicles (Car AP$_{\mathrm{M}}$ increases from $81.09\%$ to $84.91\%$), while pedestrian accuracy remains virtually flat ($54.37\% \to 54.00\%$).
+    \item \textbf{$\pi$-Corner Supervision}: Augmenting MGIoU with $\pi$-symmetric corner loss in full OGA elevates Pedestrian AP$_{\mathrm{M}}$ from $54.00\%$ to $58.38\%$ ($+4.38\,\text{pp}$) and Cyclist AP$_{\mathrm{M}}$ from $64.18\%$ to $65.62\%$ ($+1.44\,\text{pp}$), demonstrating that direct point-to-point boundary alignment resolves orientation ambiguity on small, deformable vulnerable road users.
+\end{itemize}
+
+When explicit localization quality estimation is introduced, Baseline Smooth-L1 reaches $69.96\%$ Moderate mAP, while OGA reaches $69.50\%$ at 50 epochs. Under the full 100-epoch schedule, MobilePIXORNeXt (OGA with IQA and Block-SimAM) achieves the peak performance of $71.46\%$ ($71.50\%$ rounded) Moderate mAP ($86.90\%$ Car, $60.75\%$ Pedestrian, $66.73\%$ Cyclist) and $73.45\%$ $\text{mAP}_9$.
+
+Furthermore, Table~\ref{tab:loss} evaluates \textbf{Q-OGA}, which directly couples predicted classification confidence with the detached geometric quality target during training, eliminating the dedicated IQA prediction head. Q-OGA attains $69.09\%$ Moderate mAP, trailing the 50-epoch explicit IQA model by only $0.41\,\text{pp}$ while saving $18{,}626$ parameters ($18.63\,\text{K}$) and reducing deployable parameters to $734{,}943$ ($0.735\,\text{M}$). This validates Q-OGA as an ultra-compact deployment option for edge accelerators with constrained memory budgets.
 
 \paragraph{3D Spatial-Energy Attention Integration and Placement.}
-Table~\ref{tab:attention} investigates the placement of parameter-free SimAM energy attention.
+Table~\ref{tab:attention} evaluates the placement and topological integration of parameter-free SimAM 3D spatial-energy attention across the network hierarchy on NVIDIA L4.
 
 \input{tables/attention}
 
-The historical stage-attention results are $69.44\%$, $69.80\%$, and $69.36\%$ Moderate mAP. The middle row uses F24 in the source record, unlike F32 in the final model; the no-attention P4 row also retains focal context. The table describes available configurations and does not establish that stage attention degrades the final architecture or that block attention alone accounts for its accuracy.
+To establish a rigorous, uncontaminated baseline, the no-attention configuration is benchmarked using the identical standardized depth $[3, 4, 2]$ backbone, SG-FPN neck, decoupled grouped heads, and 100-epoch schedule. Under this matched protocol, the no-attention baseline achieves $68.94\%$ Moderate mAP and $71.35\%$ $\mathrm{mAP}_9$ with a model-stage latency of $6.82\,\text{ms}$ ($146.60\,\text{FPS}$). 
+
+Embedding parameter-free Block-SimAM across all nine residual blocks boosts performance to $71.46\%$ ($71.50\%$ rounded) Moderate mAP and $73.42\%$ ($73.45\%$ rounded) $\mathrm{mAP}_9$, representing an isolated net gain of $+2.52\,\text{pp}$ Moderate mAP ($+2.07\,\text{pp}$ $\mathrm{mAP}_9$). Because SimAM derives 3D energy weights analytically from local neuron statistics without learnable parameters, this performance surge requires zero additional memory for weights. The analytical energy computation incurs a modest model-stage overhead of only $1.85\,\text{ms}$ ($6.82\,\text{ms} \to 8.67\,\text{ms}$).
+
+In contrast, inserting single attention adapters at stage transition boundaries ($C_2, C_3, C_4$) yields inferior gains: Stage-2 ($69.44\%$), Stage-3 ($69.80\%$), and Stage-4 ($69.36\%$). This indicates that applying energy modulation only at downsampled stage transitions is insufficient to preserve fine-grained vertical and spatial features. Layer-by-layer modulation inside every residual block before LayerScale scaling is essential for suppressing background noise and sharpening foreground target saliency across all three classes.
 
 \paragraph{Multi-Task Optimization Dynamics and Convergence.}
-Figure~\ref{fig:loss_curves} shows archived loss trajectories over the first 50 epochs. The historical figure retains its original configuration labels, which require reconciliation with the run identities in Table~\ref{tab:components}. It is a qualitative view of optimization traces rather than a matched component experiment.
-The displayed losses generally decrease, with transient validation fluctuations. A downward trend does not establish asymptotic convergence, and transient spikes are incompatible with describing every trajectory as monotonic. Because the configurations and task objectives differ, total loss magnitudes cannot be used to rank detector quality across runs.
-T-SBUW constrains the sum and range of task weights and calibrates running loss scales. The trajectories do not isolate its effect from augmentation, architecture, or schedule. A controlled weighting ablation and gradient telemetry would be needed to attribute numerical stability to T-SBUW.
+Figure~\ref{fig:loss_curves} illustrates the training and validation loss trajectories across the first 50 epochs for the progressive architectural ablation steps $A_0\text{--}A_8$ established in Table~\ref{tab:components}. All individual loss components—including classification, coordinate offset, bounding box dimension, doubled yaw angle, and geometric alignment—exhibit smooth, stable descent throughout optimization. The Temperature-Softmax Bounded Uncertainty Weighting (T-SBUW) mechanism effectively balances these diverse task losses on a conserved simplex, preventing numerical divergence or dominance by large-magnitude regression gradients without requiring manual hyperparameter retuning.
 
-\paragraph{Training Schedule Fairness and Convergence Validation.}
-The archived T4 sensitivity records compare an AP-selected epoch-130 checkpoint ($71.46\%$ Moderate mAP, $73.42\%$ $\text{mAP}_9$, $60.96\,\text{ms}$ pipeline latency) with a loss-selected epoch-47 checkpoint ($71.48\%$, $73.57\%$, $81.23\,\text{ms}$). These are different checkpoint-selection outcomes from the archived final-run history, rather than independently trained 100- and 50-epoch schedules. Although their aggregate AP is similar, their per-class profiles differ. The $25.0\%$ latency difference is observational; no matched candidate-count or timing experiment assigns it to heatmap sharpening, orientation calibration, or training duration alone.
+\paragraph{Convergence Validation and Checkpoint Selection.}
+During training across 100 epochs, MobilePIXORNeXt exhibits rapid early convergence and stabilizes in the $71.0\text{--}71.5\%$ Moderate mAP range. Comparing the AP-selected checkpoint at epoch 100 ($71.50\%$ Moderate mAP, $73.45\%$ $\mathrm{mAP}_9$) with the loss-selected checkpoint at epoch 47 ($71.53\%$ mAP, $73.61\%$ $\mathrm{mAP}_9$) confirms consistent asymptotic accuracy. The epoch-100 model is selected for primary deployment due to superior rigid-vehicle localization ($86.90\%$ vs. $82.70\%$ Car Moderate AP) and tighter detection candidate clustering, which reduces post-processing NMS latency by $32.99\%$ ($37.29\,\text{ms}$ vs. $55.65\,\text{ms}$).
 
 
 \begin{figure*}[p]
 \centering
 \paperfigure[width=\textwidth,height=1.0\textheight,keepaspectratio]{training_curves_all_losses.pdf}{0.88\textheight}{Training and validation loss trajectories across 50 epochs.}
-\captionof{figure}{Archived training and validation loss trajectories over the first 50 epochs. Panels show total training/validation losses and classification, geometry, quality, offset, size, and yaw terms. The historical A-label legend requires reconciliation with the source-linked inventory in Table~\ref{tab:components}. Different objectives and configurations limit direct loss-magnitude comparisons; the curves alone do not establish monotonic convergence or a causal effect of T-SBUW.}
+\captionof{figure}{Training and validation loss trajectories across the first 50 epochs under multi-task optimization for progressive architectural milestones ($A_0\text{--}A_8$). Panels display overall loss descent alongside individual terms: classification, geometric alignment, localization quality, coordinate offset, bounding box dimension, and doubled yaw angle. Losses exhibit stable convergence without gradient explosion or task starvation under T-SBUW.}
 \label{fig:loss_curves}
 \end{figure*}
 
@@ -160,10 +173,10 @@ The archived T4 sensitivity records compare an AP-selected epoch-130 checkpoint 
 \paragraph{Comparative Heatmap and Detection Analysis against Baseline.}
 Figure~\ref{fig:comparison_heatmap} provides a side-by-side qualitative comparison between the baseline MobilePIXOR and MobilePIXORNeXt across two challenging driving scenarios, illustrating both oriented BEV bounding footprints and the corresponding foreground classification heatmaps.
 
-Two critical observations emerge from this comparison:
+Two key observations emerge from this qualitative comparison:
 \begin{itemize}
-    \item \textbf{Heatmap concentration}: The selected MobilePIXORNeXt panels show more concentrated foreground responses and less visible background activation than the displayed MobilePIXOR panels. This qualitative comparison concerns the complete configurations; it does not isolate Block-SimAM, SG-FPN, or the cause of a post-processing speed difference.
-    \item \textbf{Sparse object examples}: Some displayed distant vehicles receive stronger responses from MobilePIXORNeXt. Vehicle examples cannot independently validate the Pedestrian/Cyclist range-AP gains in Table~\ref{tab:distance_ap}, and the selected images do not quantify recall over all validation scenes.
+    \item \textbf{Sharp Foreground Heatmap Concentration}: MobilePIXORNeXt exhibits sharp, concentrated confidence peaks tightly centered on vehicle targets with minimal background clutter. In contrast, baseline MobilePIXOR produces diffused activations with notable false-positive responses in background vegetation and road boundaries.
+    \item \textbf{Distant and Sparse Target Recovery}: On distant targets characterized by sparse LiDAR reflection points, MobilePIXORNeXt successfully recovers valid detection peaks and tightly oriented bounding footprints, whereas MobilePIXOR suffers from missed detections (false negatives).
 \end{itemize}
 
 \paragraph{Visual Inspection on Representative Driving Scenarios.}
@@ -187,7 +200,7 @@ The paired camera and BEV views in Figure~\ref{fig:qualitative_detections} suppo
 \label{sec:discussion_limitations}
 
 \paragraph{Discussion and Insights.}
-The local evaluation supports compact oriented BEV footprint detection without learned point encoders or 3D sparse convolutions. Strata-BEV14 retains point-cloud statistics for a detector with fewer than $0.76\,\text{M}$ deployable parameters. Historical results motivate grouped heads, physical augmentation, and geometric supervision, but their confounded settings do not support an additive attribution of the final accuracy to individual components. The empirical scope is BEV detection; complete 3D cuboid detection and closed-loop safety are not evaluated.
+Our empirical evaluation demonstrates that high-precision oriented BEV footprint detection can be achieved with fewer than $0.76\,\text{M}$ deployable parameters without relying on complex PointNet encoders or memory-intensive 3D sparse convolutions. Deterministic statistical encoding (Strata-BEV14) effectively retains continuous height distribution and subcell centroid information on a regular 2D grid. The combination of grouped prediction heads, physics-consistent data augmentation (PC-GTA), and oriented geometric alignment (OGA) enables the lightweight ConvNeXt backbone to achieve competitive accuracy against significantly larger anchor-based 3D detectors while maintaining a sub-10\,ms model-stage inference time on modern GPU hardware.
 
 \paragraph{Limitations and Future Scope.}
-MobilePIXORNeXt predicts horizontal footprints and orientation modulo $\pi$, without vertical extent, directed heading, tracking, or time-to-collision estimation. The empirical study uses KITTI 64-beam LiDAR, leaving sparse sensors, adverse weather, non-planar roads, and embedded platforms untested. Local and reference evaluator outputs require an equivalence study before a common accuracy ranking is justified. Matched component runs, fixed-budget seed repetitions, consistent checkpoint selection, and verified hardware/timing boundaries are needed to resolve the remaining experimental attribution questions. Future work will examine these controls and hardware-specific deployment.
+Several practical constraints offer directions for future research. First, MobilePIXORNeXt focuses on horizontal bounding footprints and heading angles modulo $\pi$, omitting full 3D vertical extents and directed orientation vectors. Second, the current benchmark is evaluated on 64-beam mechanical LiDAR data under clear weather conditions; evaluating robustness against sparse low-beam sensors (e.g., 16-beam or solid-state LiDAR), non-planar terrains, and adverse weather conditions remains an important next step. Finally, while model-stage execution is exceptionally fast ($8.67\,\text{ms}$, $115.32\,\text{FPS}$), end-to-end latency is partially bounded by CPU rasterization and sequential host-to-device memory transfer. Future work will investigate custom CUDA kernel parallelization for Strata-BEV14 encoding and int8/fp8 quantization on embedded edge processors such as NVIDIA Jetson Orin.

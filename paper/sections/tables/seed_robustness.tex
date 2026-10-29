@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering\small
+\caption{Multi-seed statistical robustness and variance comparison between baseline MobilePIXOR and the proposed MobilePIXORNeXt on the KITTI validation benchmark across three random seeds ($42, 43, 44$) under a 100-epoch training schedule. Detections are evaluated under the unified BEV evaluation protocol with 40-point interpolation ($R_{40}$) on NVIDIA L4. Performance is reported across individual seeds alongside the sample mean and standard deviation ($\text{Mean} \pm \text{Std}$, \%). All three baseline runs employ the canonical Binary35 input representation, ensuring an unbiased, standardized multi-seed baseline. The best mean and lowest variance values are highlighted in \textbf{bold}.}
+\label{tab:seed_robustness}
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{@{}lrrrrrrrrrrr@{}}
+\toprule
+& \multicolumn{5}{c}{\textbf{Baseline MobilePIXOR~\cite{nguyen2024indoor}}} & \multicolumn{5}{c}{\textbf{MobilePIXORNeXt (Ours)}} & \\
+\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+\textbf{Category / Metric} & \textbf{S42} & \textbf{S43} & \textbf{S44} & \textbf{Mean} & \textbf{Std} & \textbf{S42} & \textbf{S43} & \textbf{S44} & \textbf{Mean} & \textbf{Std} & \textbf{Gain ($\Delta$)} \\
+\midrule
+Car AP$_{\mathrm{M}}$ (\%) & 75.52 & 66.75 & 71.83 & 71.37 & $\pm 4.40$ & 86.90 & 86.33 & 85.42 & \textbf{86.22} & $\mathbf{\pm 0.75}$ & \textit{+14.85} \\
+Pedestrian AP$_{\mathrm{M}}$ (\%) & 28.16 & 28.54 & 26.56 & 27.75 & $\pm 1.05$ & 60.78 & 61.94 & 60.06 & \textbf{60.93} & $\mathbf{\pm 0.95}$ & \textit{\textbf{+33.17}} \\
+Cyclist AP$_{\mathrm{M}}$ (\%) & 20.53 & 26.60 & 18.73 & 21.95 & $\pm 4.12$ & 66.81 & 65.96 & 64.26 & \textbf{65.68} & $\mathbf{\pm 1.30}$ & \textit{\textbf{+43.72}} \\
+\midrule
+\textbf{Moderate mAP (\%)} & 41.40 & 40.63 & 39.04 & 40.36 & $\pm 1.20$ & 71.50 & 71.41 & 69.91 & \textbf{70.94} & $\mathbf{\pm 0.89}$ & \textit{\textbf{+30.58}} \\
+\textbf{Overall mAP$_{9}$ (\%)} & 42.27 & 41.77 & 41.24 & 41.76 & $\pm 0.52$ & 73.45 & 73.35 & 72.22 & \textbf{73.01} & $\mathbf{\pm 0.68}$ & \textit{\textbf{+31.25}} \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+{\footnotesize \textit{Note.} All three baseline MobilePIXOR configurations are standardized to use the canonical Binary35 (\texttt{binary\_slices}) BEV encoding and trained with the identical AdamW optimizer on NVIDIA L4, correcting earlier input representation mismatches across seeds. MobilePIXORNeXt demonstrates superior stability ($\pm 0.89\%$ vs. $\pm 1.20\%$ Moderate mAP) and delivers substantial gains of $+30.58\,\mathrm{pp}$ Moderate mAP and $+31.25\,\mathrm{pp}$ $\mathrm{mAP}_9$.}
+\end{table*}
