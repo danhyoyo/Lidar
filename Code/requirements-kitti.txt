@@ -1,0 +1,9 @@
+numpy>=1.24,<3
+numba>=0.59
+shapely>=2.0
+torch>=2.1
+tensorboard>=2.14
+tqdm>=4.66
+onnx>=1.16
+
+# TensorRT is optional and must match the local CUDA/TensorRT installation.

@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+"""Evaluate multiple KITTI BEV models with one protocol and compare them."""
+from __future__ import annotations
+
+import argparse
+import csv
+import gc
+import re
+import time
+from pathlib import Path
+from typing import Any, Dict, Tuple
+
+import torch
+
+from common import write_json
+from evaluate_kitti_bev import CLASSES, DIFFICULTIES, run_evaluation
+
+
+def parse_model(value: str) -> Tuple[str, str, Path]:
+    if "=" not in value:
+        raise argparse.ArgumentTypeError("model must be NAME=BACKEND:PATH")
+    name, remainder = value.split("=", 1)
+    if ":" not in remainder:
+        raise argparse.ArgumentTypeError("model must be NAME=BACKEND:PATH")
+    backend, path = (part.strip() for part in remainder.split(":", 1))
+    if not name.strip() or backend not in {"pytorch", "tensorrt"} or not path:
+        raise argparse.ArgumentTypeError("backend must be pytorch or tensorrt")
+    return name.strip(), backend, Path(path)
+
+
+def safe_name(value: str) -> str:
+    result = re.sub(r"[^A-Za-z0-9_.-]+", "_", value).strip("._")
+    return result or "model"
+
+
+def nested(value: Dict[str, Any], *keys, default=None):
+    current: Any = value
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    return current
+
+
+def flatten(result: Dict[str, Any]) -> Dict[str, Any]:
+    accuracy = result.get("accuracy", {})
+    row = {
+        "metric_mode": nested(result,"protocol","metric_mode",default="local_bev"),
+        "name": result.get("name"),
+        "status": result.get("status"),
+        "backend": nested(result, "model", "backend"),
+        "path": nested(result, "model", "path"),
+        "bytes": nested(result, "model", "bytes"),
+        "sha256": nested(result, "model", "sha256"),
+        "frames": nested(result, "data", "frames"),
+        "mean_ap_9_percent": accuracy.get("mean_ap_9_percent"),
+        "map_moderate_percent": accuracy.get("map_moderate_percent"),
+        "detections": nested(result, "counts", "detections"),
+        "torch_peak_memory_mb": nested(result, "runtime", "torch_peak_memory_mb"),
+        "elapsed_seconds": nested(result, "runtime", "elapsed_seconds"),
+        "error_type": result.get("error_type"),
+        "error": result.get("error"),
+        "head_mode": nested(result, "protocol", "head_mode"),
+        "cls_encoding": nested(result, "protocol", "cls_encoding"),
+        "quality_target": nested(result, "protocol", "quality_target"),
+        "nms_alpha": nested(result, "protocol", "nms_alpha"),
+        "resolved_config_sha256": nested(result, "data", "resolved_config_sha256"),
+        "split_sha256": nested(result, "data", "split_sha256"),
+    }
+    for component in ("backbone_body", "neck", "backbone_including_neck", "heads", "total_detector", "criterion_train_only"):
+        row[component + "_parameters"] = nested(result, "model", "parameter_counts", component)
+    for class_name in CLASSES:
+        for difficulty in DIFFICULTIES:
+            row[f"{class_name.lower()}_{difficulty.lower()}_ap_r40_percent"] = nested(
+                accuracy, "per_class", class_name, "difficulties",
+                difficulty, "ap_r40_percent")
+    for stage in ("preprocess", "host_to_device", "model", "decode_nms",
+                  "input_to_detections"):
+        for metric in ("mean_ms", "p50_ms", "p95_ms", "p99_ms", "fps"):
+            row[f"{stage}_{metric}"] = nested(result, "latency", stage, metric)
+    mode = row["metric_mode"]
+    if mode in {"3d","bev"}:
+        for sampling in ("R11","R40"):
+            for metric in ("map_moderate_percent","mean_ap_9_percent"):
+                row[f"{mode}_{sampling}_{metric}"] = nested(result,"accuracy",sampling,metric)
+            for name in CLASSES:
+                for difficulty in DIFFICULTIES:
+                    row[f"{mode}_{sampling}_{name}_{difficulty}"] = nested(result,"accuracy",sampling,"per_class",name,difficulty)
+    return row
+
+
+def fmt(value, decimals=2) -> str:
+    return "n/a" if value is None else f"{value:.{decimals}f}"
+
+
+def markdown_cell(value: Any) -> str:
+    return str(value).replace("\n", " ").replace("|", "\\|")
+
+
+def markdown_table(results) -> str:
+    modes = {nested(result,"protocol","metric_mode") for result in results if result.get("status")=="ok"}
+    if modes and modes <= {"3d","bev"}:
+        lines = ["# KITTI reference comparison", "", "Both recall samplings are reported separately; verify split/reference/decode/checkpoint selection parity before comparing.", "",
+                 "| Model | Metric | R11 Moderate macro (%) | R40 Moderate macro (%) |", "| --- | --- | ---: | ---: |"]
+        for result in results:
+            mode = nested(result,"protocol","metric_mode")
+            label = 'AP3D' if mode == '3d' else 'APBEV'
+            if result.get("status") != "ok":
+                label += f": error: {markdown_cell(result.get('error'))}"
+            lines.append(f"| {markdown_cell(result.get('name'))} | {label} | {fmt(nested(result,'accuracy','R11','map_moderate_percent'))} | {fmt(nested(result,'accuracy','R40','map_moderate_percent'))} |")
+        return "\n".join(lines)+"\n"
+    lines = [
+        "# KITTI MobileBEV model comparison",
+        "",
+        "All successful models used the same frame IDs, decoder, score threshold, NMS, ROI, IoU thresholds and AP R40 implementation.",
+        "",
+        "| Model | Status | BEV mAP Moderate (%) | Mean BEV AP-9 (%) | Model mean (ms) | Model p95 (ms) | Model FPS | E2E mean (ms) | E2E p95 (ms) | E2E FPS | Peak MiB |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for result in results:
+        if result.get("status") != "ok":
+            lines.append(f"| {markdown_cell(result.get('name'))} | error: {markdown_cell(result.get('error'))} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |")
+            continue
+        accuracy = result.get("accuracy", {})
+        lines.append(
+            f"| {markdown_cell(result['name'])} | ok | "
+            f"{fmt(accuracy.get('map_moderate_percent'))} | "
+            f"{fmt(accuracy.get('mean_ap_9_percent'))} | "
+            f"{fmt(nested(result, 'latency', 'model', 'mean_ms'))} | "
+            f"{fmt(nested(result, 'latency', 'model', 'p95_ms'))} | "
+            f"{fmt(nested(result, 'latency', 'model', 'fps'))} | "
+            f"{fmt(nested(result, 'latency', 'input_to_detections', 'mean_ms'))} | "
+            f"{fmt(nested(result, 'latency', 'input_to_detections', 'p95_ms'))} | "
+            f"{fmt(nested(result, 'latency', 'input_to_detections', 'fps'))} | "
+            f"{fmt(nested(result, 'runtime', 'torch_peak_memory_mb'), 1)} |"
+        )
+    lines.extend([
+        "",
+        "AP values are percentages. E2E here is the offline input-to-detections boundary and excludes ROS transport, tracking, rendering and HMI.",
+        "",
+    ])
+    return "\n".join(lines)
+
+
+def parser() -> argparse.ArgumentParser:
+    value = argparse.ArgumentParser(description=__doc__)
+    value.add_argument("--model", action="append", required=True, type=parse_model,
+                       metavar="NAME=BACKEND:PATH")
+    value.add_argument("--config", required=True, type=Path)
+    value.add_argument("--detector-root", required=True, type=Path)
+    value.add_argument("--kitti-root", required=True, type=Path)
+    value.add_argument("--split", required=True, type=Path)
+    value.add_argument("--output-dir", required=True, type=Path)
+    value.add_argument("--device", default="cuda")
+    value.add_argument("--metric-mode",choices=("local_bev","3d","bev"),default="local_bev",
+                       help="Historical local ROI BEV, or pinned reference AP3D/APBEV with R11 and R40")
+    value.add_argument("--score-threshold", type=float, default=0.05)
+    value.add_argument("--nms-threshold", type=float, default=0.10)
+    value.add_argument("--max-detections", type=int, default=500)
+    value.add_argument("--warmup-frames", type=int, default=10)
+    value.add_argument("--max-frames", type=int)
+    value.add_argument("--progress-every", type=int, default=50)
+    value.add_argument("--fail-on-model-error", action="store_true")
+    return value
+
+
+def main(argv=None):
+    args = parser().parse_args(argv)
+    names = [model[0] for model in args.model]
+    if len(names) != len(set(names)):
+        raise ValueError("Every --model NAME must be unique")
+    started = time.time()
+    safe_names = [safe_name(name) for name in names]
+    if len(safe_names) != len(set(safe_names)):
+        raise ValueError("Model names must produce unique output filenames")
+    results = []
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    for name, backend, path in args.model:
+        output = args.output_dir / f"{safe_name(name)}.json"
+        print(f"\n=== Evaluating {name} ({backend}) ===", flush=True)
+        try:
+            evaluator = run_evaluation
+            metric_options = {}
+            if args.metric_mode != "local_bev":
+                from evaluate_kitti_3d import run_evaluation as reference_evaluation
+                evaluator = reference_evaluation
+                metric_options = {"metric_mode":args.metric_mode}
+            result = evaluator(
+                name=name, backend=backend, model_path=path,
+                config_path=args.config, detector_root=args.detector_root,
+                kitti_root=args.kitti_root, split_path=args.split,
+                output_path=output, device=args.device,
+                score_threshold=args.score_threshold,
+                nms_threshold=args.nms_threshold,
+                max_detections=args.max_detections,
+                warmup_frames=args.warmup_frames,
+                max_frames=args.max_frames,
+                progress_every=args.progress_every,**metric_options)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as error:
+            result = {
+                "status": "error", "name": name,
+                "model": {"backend": backend, "path": str(path.resolve())},
+                "protocol": {"metric_mode":args.metric_mode},
+                "error_type": type(error).__name__, "error": str(error),
+            }
+            write_json(output, result)
+            print(f"[{name}] ERROR: {type(error).__name__}: {error}", flush=True)
+        results.append(result)
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    comparison = {
+        "status": "partial" if any(x["status"] != "ok" for x in results) else "ok",
+        "created_unix": time.time(), "elapsed_seconds": time.time() - started,
+        "models_requested": len(results),
+        "models_succeeded": sum(x["status"] == "ok" for x in results),
+        "models_failed": sum(x["status"] != "ok" for x in results),
+        "models": results,
+    }
+    json_path = args.output_dir / "comparison.json"
+    csv_path = args.output_dir / "comparison.csv"
+    md_path = args.output_dir / "comparison.md"
+    write_json(json_path, comparison)
+    rows = [flatten(result) for result in results]
+    with csv_path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(dict.fromkeys(key for row in rows for key in row)))
+        writer.writeheader()
+        writer.writerows(rows)
+    md_path.write_text(markdown_table(results), encoding="utf-8")
+    print(f"\nWrote {json_path.resolve()}")
+    print(f"Wrote {csv_path.resolve()}")
+    print(f"Wrote {md_path.resolve()}")
+    print(markdown_table(results))
+    if args.fail_on_model_error and comparison["models_failed"]:
+        raise SystemExit(2)
+
+
+if __name__ == "__main__":
+    main()

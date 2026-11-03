@@ -29,8 +29,13 @@ outputs/
 
 # Local datasets, reports, and experiment results
 /artifacts/
+/Code/artifacts/
 /data/
-/docs/
+/Kitti_Raw/
+/docs/*
+!/docs/superpowers/
+!/docs/plans/
+!/docs/*.md
 /evaluation/
 /outputs/
 /result/
@@ -38,7 +43,49 @@ outputs/
 /splits/
 
 *.pdf
+!/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
+!paper/figures/*.pdf
+!paper/figures/*.png
 *.xlsx
+*.dot
 
 # AI Agents
 .agents/
+e2e_demo/
+
+# Local upstream checkout for architecture drawing
+/third_party/PlotNeuralNet/
+/diagrams/plotneuralnet/*_latex.aux
+/diagrams/plotneuralnet/*_latex.log
+
+# Reorganized project tree
+/Code/data/
+/Code/Kitti_Raw/
+/Code/splits/
+/Code/evaluation/
+/Code/docs/*
+!/Code/docs/superpowers/
+!/Code/docs/plans/
+!/Code/docs/*.md
+/Code/third_party/PlotNeuralNet/
+/Code/diagrams/plotneuralnet/*_latex.aux
+/Code/diagrams/plotneuralnet/*_latex.log
+/Result/artifacts/
+/Code/artifacts/
+
+
+/Result
+/References
+/Demo
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/*.log
+paper/*.synctex.gz
+.~lock.*
+.~lock*
