@@ -314,7 +314,7 @@ If you find this repository or MobilePixorNeXt helpful in your academic research
 
 ```bibtex
 @misc{duyen2026mobilepixornext,
-  author       = {Nguyen Huu Duyen (DuyenNH2401)},
+  author       = {},
   title        = {MobilePixorNeXt: Ultra-Lightweight Real-Time 3D LiDAR Object Detection from Bird's-Eye View},
   year         = {2026},
   institution  = {FPT University Can Tho Campus},
@@ -323,5 +323,5 @@ If you find this repository or MobilePixorNeXt helpful in your academic research
 }
 ```
 
-- **Primary Contact**: DuyenNH2401 (`duyennhce200017@gmail.com`)
+- **Primary Contact**: 
 - **Affiliation**: FPT University Can Tho Campus (Trường Đại học FPT Cần Thơ), Vietnam
