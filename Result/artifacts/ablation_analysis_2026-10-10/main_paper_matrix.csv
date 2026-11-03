@@ -1,0 +1,13 @@
+id,hist14,grouped,focal,oga,iqa,role,existing_run
+M0,0,0,0,0,0,baseline,not_run
+M1,1,0,0,0,0,+hist14,not_run
+M2,1,1,0,0,0,+grouped,R6_conditional
+M3,1,1,1,0,0,+focal,not_run
+M4,1,1,1,1,0,+OGA,not_run
+M5,1,1,1,1,1,full_candidate,not_run
+M6,0,1,1,1,1,full_without_hist14,not_run
+M7,1,0,1,1,1,full_without_grouped,not_run
+M8,1,1,0,1,1,full_without_focal,not_run
+M9,1,1,1,0,1,full_without_OGA,not_run
+M10,0,1,0,0,0,rich8_grouped_anchor,R7_conditional
+M11,0,1,1,0,0,rich8_grouped_focal,not_run

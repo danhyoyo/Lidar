@@ -1,0 +1,522 @@
+{
+  "drive": "2011_09_26_drive_0014_sync",
+  "frame_count": 174,
+  "raw_frame_range": [
+    77,
+    250
+  ],
+  "consecutive_raw_frames_verified": true,
+  "fps": 10,
+  "duration_seconds": 17.4,
+  "video": {
+    "codec_name": "h264",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "10/1",
+    "duration": "17.400000",
+    "nb_read_frames": "174"
+  },
+  "video_sha256": "c01f15dd228896e25efea1e9da99aadc94b162927dbe8185e818af4b699422f6",
+  "camera_mode": "stereo",
+  "left_image_size": [
+    1242,
+    375
+  ],
+  "right_image_size": [
+    1242,
+    375
+  ],
+  "camera_images_used_for_inference": false,
+  "camera_box_overlay_applied": false,
+  "inference": {
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/selected/best.pt",
+    "checkpoint_sha256": "c9ae020384f171cc52512b00deb015948429f19eed0a1cdbb3dba88114c66d36",
+    "config_source": "embedded checkpoint config",
+    "config_sha256": "c7a72845cb362844428f55d379ae58ede1ccf4f6169272518501728fc3a03545",
+    "checkpoint_epoch": 50,
+    "box_mode": "bev",
+    "strict_state_dict": true,
+    "checkpoint_identity_validated": true,
+    "vertical_prediction": false,
+    "ground_truth_used_for_inference": false,
+    "torch_version": "2.11.0",
+    "device": "cpu",
+    "precision": "fp32",
+    "encoding": "hist14",
+    "encoding_backend": "numba",
+    "score_threshold": 0.3,
+    "nms_threshold": 0.1,
+    "max_detections": 500,
+    "use_iou": true,
+    "nms_alpha": 0.5,
+    "checkpoint_identity": {
+      "box_mode": "bev",
+      "class_order": [
+        "Car",
+        "Pedestrian",
+        "Cyclist"
+      ],
+      "encoding": {
+        "metadata": {
+          "bin_edges": [
+            -2.5,
+            -1.625,
+            -0.75,
+            0.125,
+            1.0
+          ],
+          "boundary": {
+            "epsilon": 0.001,
+            "interval": "open"
+          },
+          "channel_names": [
+            "height_count_b0",
+            "height_count_b1",
+            "height_count_b2",
+            "height_count_b3",
+            "z_max",
+            "z_mean",
+            "z_span",
+            "z_std",
+            "intensity_max",
+            "intensity_mean",
+            "log_density",
+            "occupancy",
+            "point_offset_x",
+            "point_offset_y"
+          ],
+          "channels": 14,
+          "density_norm": 32.0,
+          "finite_filter": "first_four_columns",
+          "geometry": {
+            "x_max": 70.4,
+            "x_min": 0.0,
+            "x_res": 0.1,
+            "y_max": 40.0,
+            "y_min": -40.0,
+            "y_res": 0.1,
+            "z_max": 1.0,
+            "z_min": -2.5,
+            "z_res": 0.1
+          },
+          "grid_shape_xyz": [
+            704,
+            800,
+            35
+          ],
+          "height_bin_ties": "upper",
+          "intensity_scale": 1.0,
+          "layout": {
+            "encoding": "YXC",
+            "model": "BCYX"
+          },
+          "name": "hist14",
+          "precision": {
+            "accumulation": "float64",
+            "coordinates": "float64",
+            "index": "int64",
+            "output": "float32"
+          },
+          "version": 1
+        },
+        "sha256": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0"
+      },
+      "group_weights": [
+        [
+          "car",
+          0.5
+        ],
+        [
+          "ped_cyc",
+          0.5
+        ]
+      ],
+      "groups": [
+        {
+          "classes": [
+            "Car"
+          ],
+          "global_ids": [
+            0
+          ],
+          "name": "car"
+        },
+        {
+          "classes": [
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "global_ids": [
+            1,
+            2
+          ],
+          "name": "ped_cyc"
+        }
+      ],
+      "model": {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 32,
+        "cls_encoding": "gaussian",
+        "deploy": false,
+        "expansion": 2.5,
+        "features": {
+          "config": {
+            "c4_attention": "none",
+            "c4_attention_qk_norm": "none",
+            "c4_attention_scales": [],
+            "c4_context": "focal",
+            "c4_context_bottleneck": 64,
+            "c4_context_dilations": [
+              1,
+              2,
+              3
+            ],
+            "c4_context_layer_scale_init": 0.001,
+            "c4_context_version": 1,
+            "detail_path": false,
+            "local_attention": "none",
+            "neck_fusion_channels": 32
+          },
+          "placement": {
+            "context_stride": 8,
+            "local_attention_stride": 4
+          },
+          "resolver_version": 1
+        },
+        "head_mode": "grouped",
+        "header_act": "silu",
+        "header_use_bn": true,
+        "header_use_iou": true,
+        "neck_type": "scale_gated_fpn",
+        "num_range_bands": 4,
+        "scale_gated_fpn": true,
+        "stage_depths": [
+          3,
+          4,
+          2
+        ],
+        "use_reparam": false
+      },
+      "objective": {
+        "iou_loss_weight": 1.0,
+        "iou_target_type": "mgiou",
+        "name": "oga",
+        "use_iou": true
+      },
+      "output_stride": 4,
+      "training": {
+        "accumulation_steps": 1,
+        "checkpoint_selection": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "policy": "maximum validation AP",
+          "primary": "ap",
+          "sampling": "R40"
+        },
+        "epochs": 50,
+        "grad_clip_norm": 10.0,
+        "learning_rate": 0.0007,
+        "min_lr": 1e-06,
+        "optimizer": "adamw",
+        "physical_batch_size": 16,
+        "precision": "bf16",
+        "scheduler": "cosine",
+        "selection_decode": {
+          "max_detections": 500,
+          "nms_alpha": 0.5,
+          "nms_threshold": 0.1,
+          "peak_mode": "per_class",
+          "score_threshold": 0.05
+        },
+        "warmup_epochs": 4,
+        "weight_decay": 0.001
+      },
+      "version": 1
+    }
+  },
+  "inference_reused_from": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video",
+  "new_model_forward_count": 0,
+  "ground_truth_used": false,
+  "generated_points": false,
+  "temporal_smoothing_applied": false,
+  "camera_zip": {
+    "source_zip": "/home/duyennh/Downloads/kitti_training_174frames_images.zip",
+    "source_zip_sha256": "894b647b158f030232931ac54546211bf0da8d05a6b6d6c53c8e028567faec0d",
+    "image_count": 348,
+    "image_size": [
+      1242,
+      375
+    ],
+    "split": "training",
+    "frame_ids": [
+      "002425",
+      "006794",
+      "006759",
+      "003318",
+      "000533",
+      "004864",
+      "006288",
+      "006786",
+      "004687",
+      "003259",
+      "000042",
+      "007262",
+      "004000",
+      "002619",
+      "004460",
+      "006698",
+      "003447",
+      "005262",
+      "006884",
+      "000881",
+      "001719",
+      "003689",
+      "006012",
+      "003365",
+      "001329",
+      "006636",
+      "000229",
+      "002749",
+      "006484",
+      "005555",
+      "004947",
+      "003750",
+      "000773",
+      "002025",
+      "003530",
+      "003869",
+      "004485",
+      "003583",
+      "003179",
+      "003878",
+      "001216",
+      "001863",
+      "001517",
+      "005297",
+      "004131",
+      "000792",
+      "002661",
+      "006643",
+      "000916",
+      "006533",
+      "005405",
+      "001318",
+      "006633",
+      "000589",
+      "005322",
+      "005062",
+      "005222",
+      "007391",
+      "000452",
+      "004697",
+      "003679",
+      "002356",
+      "001131",
+      "007164",
+      "007205",
+      "006561",
+      "005649",
+      "002919",
+      "004669",
+      "005375",
+      "000440",
+      "004256",
+      "004108",
+      "007292",
+      "000939",
+      "004792",
+      "001143",
+      "001658",
+      "000270",
+      "005827",
+      "001978",
+      "005926",
+      "004599",
+      "000235",
+      "006836",
+      "002866",
+      "003181",
+      "006954",
+      "003470",
+      "007247",
+      "001536",
+      "005923",
+      "006286",
+      "005807",
+      "002985",
+      "007119",
+      "004064",
+      "004124",
+      "002292",
+      "005642",
+      "000938",
+      "001296",
+      "007415",
+      "000506",
+      "005712",
+      "003300",
+      "001094",
+      "000376",
+      "007240",
+      "001755",
+      "002991",
+      "001145",
+      "004383",
+      "003302",
+      "000804",
+      "000035",
+      "003042",
+      "006623",
+      "002266",
+      "005213",
+      "005571",
+      "006785",
+      "005448",
+      "004850",
+      "005133",
+      "005528",
+      "006761",
+      "007016",
+      "003367",
+      "002690",
+      "006997",
+      "007157",
+      "000521",
+      "002625",
+      "000106",
+      "003058",
+      "004556",
+      "001133",
+      "003129",
+      "000569",
+      "004649",
+      "002556",
+      "000650",
+      "005656",
+      "005619",
+      "001786",
+      "002420",
+      "001263",
+      "000329",
+      "004173",
+      "005077",
+      "007385",
+      "006762",
+      "001148",
+      "000683",
+      "002702",
+      "006385",
+      "005325",
+      "001275",
+      "001542",
+      "007038",
+      "002021",
+      "000319",
+      "004891",
+      "002988",
+      "005334",
+      "000524",
+      "006999",
+      "001952",
+      "005081",
+      "001936",
+      "007083",
+      "002506",
+      "007030"
+    ]
+  },
+  "panels": [
+    "Left colour camera / image_2",
+    "Right colour camera / image_3",
+    "Measured XYZ LiDAR orthographic 3D view",
+    "Predicted BEV boxes",
+    "Predicted classification heatmap"
+  ],
+  "cache_sources": {
+    "metadata.json": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video/metadata.json",
+      "sha256": "3dd8a76cf06935a096894cde65aa670c713a8e8e1a7220d1c1989ca15fd1ba3b"
+    },
+    "frame_manifest.json": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video/frame_manifest.json",
+      "sha256": "f3d1158ed837daaf7f512e6bff9448ebeae228f7050de57bb84778a232ab82a4"
+    },
+    "config.inference.json": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video/config.inference.json",
+      "sha256": "a1f3d53bed74b80a66ccb6c85ba2831186fd1877d1bff3050bbe745dc39371ef"
+    },
+    "bev_predictions.npz": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video/bev_predictions.npz",
+      "sha256": "29f6552a7cceb4c4a0fdf552eda7a1b4e11a6e7bf35e94a544f85a365c01fe6c"
+    }
+  },
+  "split_membership": {
+    "train": {
+      "frame_count": 0,
+      "manifest": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/splits/kitti/train.txt",
+      "sha256": "040e6b83709797dcb8637370affda638f4338c4b942053c74ca347a4b1f1a887"
+    },
+    "val": {
+      "frame_count": 174,
+      "manifest": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/splits/kitti/val.txt",
+      "sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+    }
+  },
+  "display_roi": [
+    0.0,
+    45.2,
+    -24.0,
+    24.0,
+    -2.8,
+    4.0
+  ],
+  "heatmap_colour_range": [
+    0,
+    1
+  ],
+  "class_order": [
+    "Car",
+    "Pedestrian",
+    "Cyclist"
+  ],
+  "ffmpeg_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-framerate",
+    "10",
+    "-start_number",
+    "0",
+    "-i",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video_camera/frames/frame_%06d.png",
+    "-frames:v",
+    "174",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "18",
+    "-threads",
+    "4",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video_camera/visualization.mp4"
+  ],
+  "elapsed_seconds": 75.16093359699971,
+  "reproduce_command": [
+    "/home/duyennh/miniconda3/envs/AI_env/bin/python",
+    "Code/tools/visualization/export_kitti_camera_video.py"
+  ]
+}

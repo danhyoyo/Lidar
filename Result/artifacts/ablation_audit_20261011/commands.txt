@@ -1,0 +1,29 @@
+P01: Focal effect with baseline objective
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p01_focal-baseline-noiqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p01-focal-baseline-noiqa-s42
+
+P02: OGA effect without IQA; focal held fixed
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p02_focal-oga-noiqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p02-focal-oga-noiqa-s42
+
+P03: IQA effect with baseline objective; focal held fixed
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p03_focal-baseline-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p03-focal-baseline-iqa-s42
+
+P04: Full candidate; OGA/IQA interaction
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p04_focal-oga-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p04-focal-oga-iqa-s42
+
+P05: Remove focal from full candidate
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p05_none-oga-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p05-none-oga-iqa-s42
+
+P06: Matched SGFPN versus RC-SGFPN; fusion24 versus fusion32
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p06_sgfpn-f24-h32-hybrid.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p06-sgfpn-f24-h32-hybrid-s42
+
+P07: Gate on/off under identical quotas and full hybrid augmentation
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p07_fpn-f32-h32-hybrid.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p07-fpn-f32-h32-hybrid-s42
+
+P08: Global transforms only; remove GT sampler, preserve flip/rot/scale/translation
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p08_global-only-no-gt.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p08-global-only-no-gt-s42
+
+P09: Four enabled hybrid heuristics removed as a bundle; same P=.5, quotas, neck and widths
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p09_simplified-hybrid-matched.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p09-simplified-hybrid-matched-s42
+
+P10: Actual repository standard GT sampler versus hybrid; keep global transforms, P=.5 and quotas
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p10_standard-gt-sampling.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p10-standard-gt-sampling-s42

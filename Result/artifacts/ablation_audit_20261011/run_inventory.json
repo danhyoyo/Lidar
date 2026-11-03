@@ -1,0 +1,1902 @@
+[
+  {
+    "run_id": "R01",
+    "run_name": "mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/config.resolved.json",
+    "backbone": "mobilepixor",
+    "encoding": "binary_slices",
+    "stage_depths": null,
+    "head_mode": "legacy_single",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "FPN ungated",
+    "augmentation": "legacy OneOf",
+    "sampler_probability": null,
+    "sampler_quotas": null,
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 38,
+    "epochs_configured": 100,
+    "complete_history": false,
+    "selection": "loss",
+    "selected_epoch": 30,
+    "map_moderate": 41.399044634156304,
+    "ap9": 42.27369345603039,
+    "map_loss_checkpoint": 41.399044634156304,
+    "class_ap": {
+      "Car": {
+        "Easy": 80.99681623919815,
+        "Moderate": 75.51541782859535,
+        "Hard": 71.44091806203085
+      },
+      "Cyclist": {
+        "Easy": 28.13498455359078,
+        "Moderate": 20.525469900361415,
+        "Hard": 19.051325068482335
+      },
+      "Pedestrian": {
+        "Easy": 31.606367226058406,
+        "Moderate": 28.15624617351215,
+        "Hard": 25.035696052444074
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 25.553037975648618,
+          "false_positives": 4027,
+          "ground_truth": 346,
+          "ignored_predictions": 91,
+          "iou_threshold": 0.5,
+          "max_recall": 0.49421965317919075,
+          "ranked_predictions": 4289,
+          "true_positives": 171
+        },
+        "30_50m": {
+          "ap_r40_percent": 12.610933108402838,
+          "false_positives": 2804,
+          "ground_truth": 181,
+          "ignored_predictions": 39,
+          "iou_threshold": 0.5,
+          "max_recall": 0.48066298342541436,
+          "ranked_predictions": 2930,
+          "true_positives": 87
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.5561797752808988,
+          "false_positives": 569,
+          "ground_truth": 17,
+          "ignored_predictions": 7,
+          "iou_threshold": 0.5,
+          "max_recall": 0.23529411764705882,
+          "ranked_predictions": 580,
+          "true_positives": 4
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 30.448746847366014,
+          "false_positives": 8611,
+          "ground_truth": 1589,
+          "ignored_predictions": 136,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5166771554436753,
+          "ranked_predictions": 9568,
+          "true_positives": 821
+        },
+        "30_50m": {
+          "ap_r40_percent": 3.7460632872013178,
+          "false_positives": 4424,
+          "ground_truth": 137,
+          "ignored_predictions": 3,
+          "iou_threshold": 0.5,
+          "max_recall": 0.29927007299270075,
+          "ranked_predictions": 4468,
+          "true_positives": 41
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.9874288323263736,
+          "false_positives": 1477,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5384615384615384,
+          "ranked_predictions": 1490,
+          "true_positives": 7
+        }
+      }
+    },
+    "parameters": 597817,
+    "parameter_counts": {
+      "backbone_including_neck": 579232,
+      "criterion_train_only": 0,
+      "heads": 18585,
+      "total_detector": 597817
+    },
+    "latency_mean_ms": {
+      "decode_nms": 18.838373988535245,
+      "host_to_device": 40.6298693316704,
+      "input_to_detections": 85.92311181245304,
+      "model": 11.04995809079612,
+      "preprocess": 15.07694642059476
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/best_loss.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+    "logged_total_hours": 3.3161612263961127,
+    "ap_curve": []
+  },
+  {
+    "run_id": "R02",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 32,
+    "neck": "FPN ungated",
+    "augmentation": "simplified hybrid",
+    "sampler_probability": 1.0,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 60.21793749207129,
+    "ap9": 61.109951897464335,
+    "map_loss_checkpoint": 59.69201413401686,
+    "class_ap": {
+      "Car": {
+        "Easy": 69.82624315426257,
+        "Moderate": 73.70230212500672,
+        "Hard": 73.48863967719497
+      },
+      "Cyclist": {
+        "Easy": 72.49734965042516,
+        "Moderate": 59.65493959549153,
+        "Hard": 57.07597329669084
+      },
+      "Pedestrian": {
+        "Easy": 52.955858352457774,
+        "Moderate": 47.29657075571564,
+        "Hard": 43.49169046993393
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 66.98836972557525,
+          "false_positives": 23431,
+          "ground_truth": 346,
+          "ignored_predictions": 152,
+          "iou_threshold": 0.5,
+          "max_recall": 0.846820809248555,
+          "ranked_predictions": 23876,
+          "true_positives": 293
+        },
+        "30_50m": {
+          "ap_r40_percent": 47.02278175014154,
+          "false_positives": 22486,
+          "ground_truth": 181,
+          "ignored_predictions": 76,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8176795580110497,
+          "ranked_predictions": 22710,
+          "true_positives": 148
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 7.712671118965922,
+          "false_positives": 4210,
+          "ground_truth": 17,
+          "ignored_predictions": 16,
+          "iou_threshold": 0.5,
+          "max_recall": 0.47058823529411764,
+          "ranked_predictions": 4234,
+          "true_positives": 8
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 52.81988040579208,
+          "false_positives": 50535,
+          "ground_truth": 1589,
+          "ignored_predictions": 300,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7375707992448081,
+          "ranked_predictions": 52007,
+          "true_positives": 1172
+        },
+        "30_50m": {
+          "ap_r40_percent": 0.8843544704884052,
+          "false_positives": 36199,
+          "ground_truth": 137,
+          "ignored_predictions": 8,
+          "iou_threshold": 0.5,
+          "max_recall": 0.41605839416058393,
+          "ranked_predictions": 36264,
+          "true_positives": 57
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.5783510473635334,
+          "false_positives": 10224,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.38461538461538464,
+          "ranked_predictions": 10235,
+          "true_positives": 5
+        }
+      }
+    },
+    "parameters": 789823,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 640848,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 35984,
+      "total_detector": 789823
+    },
+    "latency_mean_ms": {
+      "decode_nms": 40.47803358899946,
+      "host_to_device": 6.727405969498481,
+      "input_to_detections": 65.78907885236897,
+      "model": 6.70471456615999,
+      "preprocess": 11.614802767776938
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.687810802420277,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 53.50455277723221
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 49.06057321298209
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 55.58181230648694
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 57.84415622425551
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 60.21793749207129
+      }
+    ]
+  },
+  {
+    "run_id": "R03",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 32,
+    "neck": "FPN ungated",
+    "augmentation": "hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:6",
+      "Pedestrian:8",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 68.12417843249604,
+    "ap9": 70.0513616221642,
+    "map_loss_checkpoint": 66.94068501413841,
+    "class_ap": {
+      "Car": {
+        "Easy": 89.17804947016658,
+        "Moderate": 83.51290917572976,
+        "Hard": 81.29592514218285
+      },
+      "Cyclist": {
+        "Easy": 79.20368229441357,
+        "Moderate": 64.24188138736027,
+        "Hard": 61.11110992075569
+      },
+      "Pedestrian": {
+        "Easy": 63.658773160906776,
+        "Moderate": 56.61774473439809,
+        "Hard": 51.64217931356425
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 72.34557534618295,
+          "false_positives": 13614,
+          "ground_truth": 346,
+          "ignored_predictions": 137,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8236994219653179,
+          "ranked_predictions": 14036,
+          "true_positives": 285
+        },
+        "30_50m": {
+          "ap_r40_percent": 48.08009029667111,
+          "false_positives": 14167,
+          "ground_truth": 181,
+          "ignored_predictions": 65,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8066298342541437,
+          "ranked_predictions": 14378,
+          "true_positives": 146
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 11.469323442760944,
+          "false_positives": 4921,
+          "ground_truth": 17,
+          "ignored_predictions": 17,
+          "iou_threshold": 0.5,
+          "max_recall": 0.4117647058823529,
+          "ranked_predictions": 4945,
+          "true_positives": 7
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 61.58845823395349,
+          "false_positives": 25961,
+          "ground_truth": 1589,
+          "ignored_predictions": 333,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7684078036500944,
+          "ranked_predictions": 27515,
+          "true_positives": 1221
+        },
+        "30_50m": {
+          "ap_r40_percent": 3.9310882026675937,
+          "false_positives": 19761,
+          "ground_truth": 137,
+          "ignored_predictions": 7,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5036496350364964,
+          "ranked_predictions": 19837,
+          "true_positives": 69
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.9682938419839955,
+          "false_positives": 8817,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.38461538461538464,
+          "ranked_predictions": 8828,
+          "true_positives": 5
+        }
+      }
+    },
+    "parameters": 789823,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 640848,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 35984,
+      "total_detector": 789823
+    },
+    "latency_mean_ms": {
+      "decode_nms": 19.92703169325828,
+      "host_to_device": 6.766529336195101,
+      "input_to_detections": 45.29374482072328,
+      "model": 6.719489998245341,
+      "preprocess": 11.620952625972661
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.4890215564797233,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 60.476056533139804
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 64.06460567598262
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 65.80577295680796
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 66.94068501413841
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 68.12417843249604
+      }
+    ]
+  },
+  {
+    "run_id": "R04",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 24,
+    "neck": "RC-SGFPN-mul",
+    "augmentation": "hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 67.78546212287944,
+    "ap9": 69.91683355846703,
+    "map_loss_checkpoint": 68.25795528397452,
+    "class_ap": {
+      "Car": {
+        "Easy": 88.97441068806712,
+        "Moderate": 82.87446402131143,
+        "Hard": 80.49625508488474
+      },
+      "Cyclist": {
+        "Easy": 82.36289366417053,
+        "Moderate": 66.0236640218401,
+        "Hard": 62.44427095464658
+      },
+      "Pedestrian": {
+        "Easy": 61.43695738116834,
+        "Moderate": 54.45825832548679,
+        "Hard": 50.180327884627616
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 74.27236643429954,
+          "false_positives": 10400,
+          "ground_truth": 346,
+          "ignored_predictions": 140,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8092485549132948,
+          "ranked_predictions": 10820,
+          "true_positives": 280
+        },
+        "30_50m": {
+          "ap_r40_percent": 50.61879408444796,
+          "false_positives": 10643,
+          "ground_truth": 181,
+          "ignored_predictions": 50,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8453038674033149,
+          "ranked_predictions": 10846,
+          "true_positives": 153
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 9.520379847147789,
+          "false_positives": 3569,
+          "ground_truth": 17,
+          "ignored_predictions": 13,
+          "iou_threshold": 0.5,
+          "max_recall": 0.35294117647058826,
+          "ranked_predictions": 3588,
+          "true_positives": 6
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 58.74538533241424,
+          "false_positives": 17854,
+          "ground_truth": 1589,
+          "ignored_predictions": 317,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7482693517935809,
+          "ranked_predictions": 19360,
+          "true_positives": 1189
+        },
+        "30_50m": {
+          "ap_r40_percent": 6.443506548767311,
+          "false_positives": 13404,
+          "ground_truth": 137,
+          "ignored_predictions": 10,
+          "iou_threshold": 0.5,
+          "max_recall": 0.45985401459854014,
+          "ranked_predictions": 13477,
+          "true_positives": 63
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.05829778854405615,
+          "false_positives": 7833,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.3076923076923077,
+          "ranked_predictions": 7843,
+          "true_positives": 4
+        }
+      }
+    },
+    "parameters": 785031,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 636056,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 31192,
+      "total_detector": 785031
+    },
+    "latency_mean_ms": {
+      "decode_nms": 19.15614923648334,
+      "host_to_device": 6.72032047884678,
+      "input_to_detections": 45.06979516283435,
+      "model": 7.250298610041832,
+      "preprocess": 11.684043708418022
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-rc_sgfpn-ctx_none_local_none_f24_detail0_49723c0ff51f-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.9639869258575016,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 54.66146504640162
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 65.3465984976534
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 67.30412212832941
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 67.49262965530293
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 67.78546212287944
+      }
+    ]
+  },
+  {
+    "run_id": "R05",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "SGFPN",
+    "augmentation": "simplified hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 66.55598131642687,
+    "ap9": 68.97634421196192,
+    "map_loss_checkpoint": 66.6239072732634,
+    "class_ap": {
+      "Car": {
+        "Easy": 88.27289277009852,
+        "Moderate": 82.36955226975195,
+        "Hard": 80.13590974387388
+      },
+      "Cyclist": {
+        "Easy": 81.17578737540576,
+        "Moderate": 62.17861882475578,
+        "Hard": 59.4292507482997
+      },
+      "Pedestrian": {
+        "Easy": 62.064429124209354,
+        "Moderate": 55.1197728547729,
+        "Hard": 50.0408841964893
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 73.16184395451343,
+          "false_positives": 10565,
+          "ground_truth": 346,
+          "ignored_predictions": 145,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8121387283236994,
+          "ranked_predictions": 10991,
+          "true_positives": 281
+        },
+        "30_50m": {
+          "ap_r40_percent": 38.894776309810666,
+          "false_positives": 9585,
+          "ground_truth": 181,
+          "ignored_predictions": 51,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7734806629834254,
+          "ranked_predictions": 9776,
+          "true_positives": 140
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 13.978808914870294,
+          "false_positives": 2894,
+          "ground_truth": 17,
+          "ignored_predictions": 16,
+          "iou_threshold": 0.5,
+          "max_recall": 0.47058823529411764,
+          "ranked_predictions": 2918,
+          "true_positives": 8
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 60.18008514279176,
+          "false_positives": 20778,
+          "ground_truth": 1589,
+          "ignored_predictions": 315,
+          "iou_threshold": 0.5,
+          "max_recall": 0.764002517306482,
+          "ranked_predictions": 22307,
+          "true_positives": 1214
+        },
+        "30_50m": {
+          "ap_r40_percent": 3.9526877659629935,
+          "false_positives": 15860,
+          "ground_truth": 137,
+          "ignored_predictions": 8,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5036496350364964,
+          "ranked_predictions": 15937,
+          "true_positives": 69
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.2043270953825154,
+          "false_positives": 8115,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6153846153846154,
+          "ranked_predictions": 8129,
+          "true_positives": 8
+        }
+      }
+    },
+    "parameters": 669551,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 631920,
+      "criterion_train_only": 0,
+      "heads": 37631,
+      "neck": 27056,
+      "total_detector": 669551
+    },
+    "latency_mean_ms": {
+      "decode_nms": 20.137016540551972,
+      "host_to_device": 6.629532541801207,
+      "input_to_detections": 45.43599146261885,
+      "model": 7.105354546422367,
+      "preprocess": 11.324279638208203
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_31da6d889331-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.3627999238502784,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 53.53444366781619
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 62.45496262775555
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 63.76686299569292
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 65.62202770537009
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 66.55598131642687
+      }
+    ]
+  },
+  {
+    "run_id": "R06",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 24,
+    "neck": "SGFPN",
+    "augmentation": "simplified hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 67.28026335332615,
+    "ap9": 69.60776454460873,
+    "map_loss_checkpoint": 66.58488667249397,
+    "class_ap": {
+      "Car": {
+        "Easy": 91.00940266252474,
+        "Moderate": 84.88063152107905,
+        "Hard": 82.57372074416509
+      },
+      "Cyclist": {
+        "Easy": 79.12275655688501,
+        "Moderate": 62.078365377893284,
+        "Hard": 58.943467957624726
+      },
+      "Pedestrian": {
+        "Easy": 63.065251273366485,
+        "Moderate": 54.88179316100611,
+        "Hard": 49.91449164693403
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 71.91426481798597,
+          "false_positives": 10241,
+          "ground_truth": 346,
+          "ignored_predictions": 136,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8005780346820809,
+          "ranked_predictions": 10654,
+          "true_positives": 277
+        },
+        "30_50m": {
+          "ap_r40_percent": 42.97083503650618,
+          "false_positives": 10200,
+          "ground_truth": 181,
+          "ignored_predictions": 60,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7790055248618785,
+          "ranked_predictions": 10401,
+          "true_positives": 141
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 2.9517285066133785,
+          "false_positives": 2776,
+          "ground_truth": 17,
+          "ignored_predictions": 13,
+          "iou_threshold": 0.5,
+          "max_recall": 0.4117647058823529,
+          "ranked_predictions": 2796,
+          "true_positives": 7
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 59.80942428366978,
+          "false_positives": 21323,
+          "ground_truth": 1589,
+          "ignored_predictions": 337,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7558212712397735,
+          "ranked_predictions": 22861,
+          "true_positives": 1201
+        },
+        "30_50m": {
+          "ap_r40_percent": 3.0516363523221077,
+          "false_positives": 17112,
+          "ground_truth": 137,
+          "ignored_predictions": 9,
+          "iou_threshold": 0.5,
+          "max_recall": 0.45985401459854014,
+          "ranked_predictions": 17184,
+          "true_positives": 63
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.4981985555778977,
+          "false_positives": 7386,
+          "ground_truth": 13,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.46153846153846156,
+          "ranked_predictions": 7398,
+          "true_positives": 6
+        }
+      }
+    },
+    "parameters": 784383,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 635408,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 30544,
+      "total_detector": 784383
+    },
+    "latency_mean_ms": {
+      "decode_nms": 22.62189380208502,
+      "host_to_device": 6.764025678657477,
+      "input_to_detections": 47.96332942380809,
+      "model": 6.877254437245914,
+      "preprocess": 11.43693818250168
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f24_detail0_aa4491a30122-grouped_e02c0e499671-s42-Fake_opengt-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.6275235070844465,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 58.83854266689431
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 59.43897698740822
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 64.37964428682692
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 67.24660277331442
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 67.28026335332615
+      }
+    ]
+  },
+  {
+    "run_id": "R07",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 32,
+    "neck": "SGFPN",
+    "augmentation": "hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 68.45994050846693,
+    "ap9": 70.28316112673194,
+    "map_loss_checkpoint": 67.8929244874907,
+    "class_ap": {
+      "Car": {
+        "Easy": 89.25626056873193,
+        "Moderate": 83.30714194359864,
+        "Hard": 81.14756195665692
+      },
+      "Cyclist": {
+        "Easy": 78.94375613418333,
+        "Moderate": 63.744392674172765,
+        "Hard": 60.84649995032845
+      },
+      "Pedestrian": {
+        "Easy": 64.38401745695327,
+        "Moderate": 58.328286907629376,
+        "Hard": 52.59053254833279
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 70.9198994135231,
+          "false_positives": 9428,
+          "ground_truth": 346,
+          "ignored_predictions": 136,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8034682080924855,
+          "ranked_predictions": 9842,
+          "true_positives": 278
+        },
+        "30_50m": {
+          "ap_r40_percent": 52.427719003954266,
+          "false_positives": 9644,
+          "ground_truth": 181,
+          "ignored_predictions": 48,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8066298342541437,
+          "ranked_predictions": 9838,
+          "true_positives": 146
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 9.081063635663234,
+          "false_positives": 3465,
+          "ground_truth": 17,
+          "ignored_predictions": 14,
+          "iou_threshold": 0.5,
+          "max_recall": 0.4117647058823529,
+          "ranked_predictions": 3486,
+          "true_positives": 7
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 62.87157723334001,
+          "false_positives": 18785,
+          "ground_truth": 1589,
+          "ignored_predictions": 332,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7809943360604154,
+          "ranked_predictions": 20358,
+          "true_positives": 1241
+        },
+        "30_50m": {
+          "ap_r40_percent": 6.480592073206407,
+          "false_positives": 13777,
+          "ground_truth": 137,
+          "ignored_predictions": 7,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5036496350364964,
+          "ranked_predictions": 13853,
+          "true_positives": 69
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.4140899691621456,
+          "false_positives": 7810,
+          "ground_truth": 13,
+          "ignored_predictions": 5,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6153846153846154,
+          "ranked_predictions": 7823,
+          "true_positives": 8
+        }
+      }
+    },
+    "parameters": 790623,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 641648,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 36784,
+      "total_detector": 790623
+    },
+    "latency_mean_ms": {
+      "decode_nms": 19.765791031140456,
+      "host_to_device": 6.771922041996263,
+      "input_to_detections": 45.51932020428996,
+      "model": 6.936692776468149,
+      "preprocess": 11.774705965940967
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 3.039564525961666,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 51.13219207374582
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 57.88914724474469
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 67.80789624733738
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 67.03310583300389
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 68.45994050846693
+      }
+    ]
+  },
+  {
+    "run_id": "R08",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 16,
+    "fusion_width": 32,
+    "neck": "SGFPN",
+    "augmentation": "simplified hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 66.24731547546891,
+    "ap9": 68.45319242604057,
+    "map_loss_checkpoint": 65.7974288357933,
+    "class_ap": {
+      "Car": {
+        "Easy": 86.26443706999407,
+        "Moderate": 81.07214271064586,
+        "Hard": 79.227673021492
+      },
+      "Cyclist": {
+        "Easy": 80.35242559918625,
+        "Moderate": 62.970213817466544,
+        "Hard": 60.24974375170936
+      },
+      "Pedestrian": {
+        "Easy": 61.430545610735685,
+        "Moderate": 54.699589898294306,
+        "Hard": 49.811960354841005
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 72.05376746266366,
+          "false_positives": 10356,
+          "ground_truth": 346,
+          "ignored_predictions": 147,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8005780346820809,
+          "ranked_predictions": 10780,
+          "true_positives": 277
+        },
+        "30_50m": {
+          "ap_r40_percent": 44.82373940936847,
+          "false_positives": 10823,
+          "ground_truth": 181,
+          "ignored_predictions": 66,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8121546961325967,
+          "ranked_predictions": 11036,
+          "true_positives": 147
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 7.1992123208323235,
+          "false_positives": 3890,
+          "ground_truth": 17,
+          "ignored_predictions": 17,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5294117647058824,
+          "ranked_predictions": 3916,
+          "true_positives": 9
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 59.86051625150106,
+          "false_positives": 19606,
+          "ground_truth": 1589,
+          "ignored_predictions": 322,
+          "iou_threshold": 0.5,
+          "max_recall": 0.762114537444934,
+          "ranked_predictions": 21139,
+          "true_positives": 1211
+        },
+        "30_50m": {
+          "ap_r40_percent": 2.489998110810241,
+          "false_positives": 17001,
+          "ground_truth": 137,
+          "ignored_predictions": 6,
+          "iou_threshold": 0.5,
+          "max_recall": 0.45255474452554745,
+          "ranked_predictions": 17069,
+          "true_positives": 62
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.5711826493598993,
+          "false_positives": 7555,
+          "ground_truth": 13,
+          "ignored_predictions": 8,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5384615384615384,
+          "ranked_predictions": 7570,
+          "true_positives": 7
+        }
+      }
+    },
+    "parameters": 674639,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 637008,
+      "criterion_train_only": 0,
+      "heads": 37631,
+      "neck": 32144,
+      "total_detector": 674639
+    },
+    "latency_mean_ms": {
+      "decode_nms": 21.398395551208345,
+      "host_to_device": 6.898195195052179,
+      "input_to_detections": 47.94337352779946,
+      "model": 7.448959805604529,
+      "preprocess": 11.903460138337726
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_c5b0155ec765-grouped_ff947e4c9cc2-s42-Fake_opengt/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.4357104677186108,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 54.08536890727302
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 60.59647747731449
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 64.64801415388678
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 65.38642411763578
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 66.24731547546891
+      }
+    ]
+  },
+  {
+    "run_id": "R09",
+    "run_name": "mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "legacy_single",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "FPN ungated",
+    "augmentation": "legacy OneOf",
+    "sampler_probability": null,
+    "sampler_quotas": null,
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 30,
+    "map_moderate": 50.142748907657484,
+    "ap9": 52.002394640438816,
+    "map_loss_checkpoint": 49.83065351191746,
+    "class_ap": {
+      "Car": {
+        "Easy": 86.72036726520066,
+        "Moderate": 79.966754012406,
+        "Hard": 75.5578199332306
+      },
+      "Cyclist": {
+        "Easy": 40.341879184166956,
+        "Moderate": 25.103847203229662,
+        "Hard": 24.063931761616573
+      },
+      "Pedestrian": {
+        "Easy": 49.49814728362948,
+        "Moderate": 45.357645507336805,
+        "Hard": 41.41115961313256
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 36.49265614527103,
+          "false_positives": 3126,
+          "ground_truth": 346,
+          "ignored_predictions": 126,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6040462427745664,
+          "ranked_predictions": 3461,
+          "true_positives": 209
+        },
+        "30_50m": {
+          "ap_r40_percent": 6.147571798600139,
+          "false_positives": 742,
+          "ground_truth": 181,
+          "ignored_predictions": 25,
+          "iou_threshold": 0.5,
+          "max_recall": 0.3259668508287293,
+          "ranked_predictions": 826,
+          "true_positives": 59
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.06097560975609756,
+          "false_positives": 137,
+          "ground_truth": 17,
+          "ignored_predictions": 1,
+          "iou_threshold": 0.5,
+          "max_recall": 0.058823529411764705,
+          "ranked_predictions": 139,
+          "true_positives": 1
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 49.605875534675356,
+          "false_positives": 4754,
+          "ground_truth": 1589,
+          "ignored_predictions": 229,
+          "iou_threshold": 0.5,
+          "max_recall": 0.685336689741976,
+          "ranked_predictions": 6072,
+          "true_positives": 1089
+        },
+        "30_50m": {
+          "ap_r40_percent": 2.0931852648735467,
+          "false_positives": 986,
+          "ground_truth": 137,
+          "ignored_predictions": 0,
+          "iou_threshold": 0.5,
+          "max_recall": 0.18248175182481752,
+          "ranked_predictions": 1011,
+          "true_positives": 25
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.0,
+          "false_positives": 381,
+          "ground_truth": 13,
+          "ignored_predictions": 2,
+          "iou_threshold": 0.5,
+          "max_recall": 0.0,
+          "ranked_predictions": 383,
+          "true_positives": 0
+        }
+      }
+    },
+    "parameters": 650041,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 631200,
+      "criterion_train_only": 0,
+      "heads": 18841,
+      "neck": 26336,
+      "total_detector": 650041
+    },
+    "latency_mean_ms": {
+      "decode_nms": 6.433555796752558,
+      "host_to_device": 12.273379635385897,
+      "input_to_detections": 77.39085984969837,
+      "model": 5.916983126706029,
+      "preprocess": 52.427685503325826
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "9c453f12b6090f5da931989a1565eea936ac90ab",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/evaluation_ap_local_bev.json",
+    "logged_total_hours": 3.109617138278054,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 48.53880703234278
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 49.00050932389717
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 50.142748907657484
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 48.90830548719783
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 48.23801962545017
+      }
+    ]
+  },
+  {
+    "run_id": "R10",
+    "run_name": "mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "FPN ungated",
+    "augmentation": "legacy OneOf",
+    "sampler_probability": null,
+    "sampler_quotas": null,
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 30,
+    "map_moderate": 51.29592789996303,
+    "ap9": 53.95548630942371,
+    "map_loss_checkpoint": 49.203731829861965,
+    "class_ap": {
+      "Car": {
+        "Easy": 85.26970242009003,
+        "Moderate": 77.54011133237434,
+        "Hard": 74.3154829826887
+      },
+      "Cyclist": {
+        "Easy": 53.638576149110825,
+        "Moderate": 33.30440554757396,
+        "Hard": 31.229199476226043
+      },
+      "Pedestrian": {
+        "Easy": 47.53960100804973,
+        "Moderate": 43.043266819940804,
+        "Hard": 39.719031048758964
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 46.99487703142583,
+          "false_positives": 1969,
+          "ground_truth": 346,
+          "ignored_predictions": 139,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6589595375722543,
+          "ranked_predictions": 2336,
+          "true_positives": 228
+        },
+        "30_50m": {
+          "ap_r40_percent": 8.852398562667908,
+          "false_positives": 1076,
+          "ground_truth": 181,
+          "ignored_predictions": 32,
+          "iou_threshold": 0.5,
+          "max_recall": 0.40331491712707185,
+          "ranked_predictions": 1181,
+          "true_positives": 73
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.020242914979757085,
+          "false_positives": 282,
+          "ground_truth": 17,
+          "ignored_predictions": 1,
+          "iou_threshold": 0.5,
+          "max_recall": 0.058823529411764705,
+          "ranked_predictions": 284,
+          "true_positives": 1
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 48.092895170569506,
+          "false_positives": 3014,
+          "ground_truth": 1589,
+          "ignored_predictions": 236,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6544996853366898,
+          "ranked_predictions": 4290,
+          "true_positives": 1040
+        },
+        "30_50m": {
+          "ap_r40_percent": 0.14178118393234673,
+          "false_positives": 910,
+          "ground_truth": 137,
+          "ignored_predictions": 1,
+          "iou_threshold": 0.5,
+          "max_recall": 0.072992700729927,
+          "ranked_predictions": 921,
+          "true_positives": 10
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.013227513227513225,
+          "false_positives": 657,
+          "ground_truth": 13,
+          "ignored_predictions": 2,
+          "iou_threshold": 0.5,
+          "max_recall": 0.07692307692307693,
+          "ranked_predictions": 660,
+          "true_positives": 1
+        }
+      }
+    },
+    "parameters": 668831,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 631200,
+      "criterion_train_only": 0,
+      "heads": 37631,
+      "neck": 26336,
+      "total_detector": 668831
+    },
+    "latency_mean_ms": {
+      "decode_nms": 9.679016762166437,
+      "host_to_device": 6.633940325420123,
+      "input_to_detections": 34.90563184249786,
+      "model": 6.916349447544156,
+      "preprocess": 11.438511298494443
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_bdf3f53ecbc7-grouped_ff947e4c9cc2-s42/evaluation_ap_local_bev.json",
+    "logged_total_hours": 2.276629920591387,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 45.25084547941455
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 51.265178038328
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 51.29592789996303
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 51.251265952799365
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 51.227057564936
+      }
+    ]
+  },
+  {
+    "run_id": "R11",
+    "run_name": "mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "binary_slices",
+    "stage_depths": [
+      2,
+      4,
+      2
+    ],
+    "head_mode": "legacy_single",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "FPN ungated",
+    "augmentation": "legacy OneOf",
+    "sampler_probability": null,
+    "sampler_quotas": null,
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 100,
+    "epochs_configured": 100,
+    "complete_history": true,
+    "selection": "loss",
+    "selected_epoch": 13,
+    "map_moderate": 47.59953624865946,
+    "ap9": 49.08130091536408,
+    "map_loss_checkpoint": 47.59953624865946,
+    "class_ap": {
+      "Car": {
+        "Easy": 79.77365953420758,
+        "Moderate": 75.2412397442695,
+        "Hard": 71.38609966481518
+      },
+      "Cyclist": {
+        "Easy": 37.27087379571192,
+        "Moderate": 23.196061000565148,
+        "Hard": 21.773929189186628
+      },
+      "Pedestrian": {
+        "Easy": 48.2102247477331,
+        "Moderate": 44.36130800114373,
+        "Hard": 40.51831256064394
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 31.542603320580138,
+          "false_positives": 5383,
+          "ground_truth": 346,
+          "ignored_predictions": 131,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5606936416184971,
+          "ranked_predictions": 5708,
+          "true_positives": 194
+        },
+        "30_50m": {
+          "ap_r40_percent": 9.496651749173038,
+          "false_positives": 3743,
+          "ground_truth": 181,
+          "ignored_predictions": 63,
+          "iou_threshold": 0.5,
+          "max_recall": 0.430939226519337,
+          "ranked_predictions": 3884,
+          "true_positives": 78
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.1437456373028061,
+          "false_positives": 1512,
+          "ground_truth": 17,
+          "ignored_predictions": 19,
+          "iou_threshold": 0.5,
+          "max_recall": 0.29411764705882354,
+          "ranked_predictions": 1536,
+          "true_positives": 5
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 48.93767871009685,
+          "false_positives": 8323,
+          "ground_truth": 1589,
+          "ignored_predictions": 214,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6947765890497168,
+          "ranked_predictions": 9641,
+          "true_positives": 1104
+        },
+        "30_50m": {
+          "ap_r40_percent": 2.391436524713663,
+          "false_positives": 6053,
+          "ground_truth": 137,
+          "ignored_predictions": 5,
+          "iou_threshold": 0.5,
+          "max_recall": 0.31386861313868614,
+          "ranked_predictions": 6101,
+          "true_positives": 43
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.15957446808510636,
+          "false_positives": 2375,
+          "ground_truth": 13,
+          "ignored_predictions": 2,
+          "iou_threshold": 0.5,
+          "max_recall": 0.07692307692307693,
+          "ranked_predictions": 2378,
+          "true_positives": 1
+        }
+      }
+    },
+    "parameters": 641977,
+    "parameter_counts": {
+      "backbone_body": 596800,
+      "backbone_including_neck": 623136,
+      "criterion_train_only": 0,
+      "heads": 18841,
+      "neck": 26336,
+      "total_detector": 641977
+    },
+    "latency_mean_ms": {
+      "decode_nms": 17.232160770184247,
+      "host_to_device": 41.870376655921625,
+      "input_to_detections": 80.79723059537321,
+      "model": 5.883464276140502,
+      "preprocess": 15.45947189356853
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/selected/best_loss.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+    "logged_total_hours": 8.052783178310007,
+    "ap_curve": []
+  },
+  {
+    "run_id": "R12",
+    "run_name": "mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "rich8",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "legacy_single",
+    "head_width": 16,
+    "fusion_width": 24,
+    "neck": "FPN ungated",
+    "augmentation": "legacy OneOf",
+    "sampler_probability": null,
+    "sampler_quotas": null,
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 20,
+    "map_moderate": 47.37393148031416,
+    "ap9": 48.950355774433746,
+    "map_loss_checkpoint": 45.252621465931725,
+    "class_ap": {
+      "Car": {
+        "Easy": 85.74027652333434,
+        "Moderate": 78.34861312700426,
+        "Hard": 74.78416920314054
+      },
+      "Cyclist": {
+        "Easy": 37.93368843175915,
+        "Moderate": 25.29172583853408,
+        "Hard": 23.137804233196764
+      },
+      "Pedestrian": {
+        "Easy": 41.86443958203206,
+        "Moderate": 38.481455475404154,
+        "Hard": 34.971029555498376
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 32.28689956568192,
+          "false_positives": 4089,
+          "ground_truth": 346,
+          "ignored_predictions": 123,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5780346820809249,
+          "ranked_predictions": 4412,
+          "true_positives": 200
+        },
+        "30_50m": {
+          "ap_r40_percent": 13.278688415681012,
+          "false_positives": 1955,
+          "ground_truth": 181,
+          "ignored_predictions": 47,
+          "iou_threshold": 0.5,
+          "max_recall": 0.39226519337016574,
+          "ranked_predictions": 2073,
+          "true_positives": 71
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 7.03910447761194,
+          "false_positives": 615,
+          "ground_truth": 17,
+          "ignored_predictions": 13,
+          "iou_threshold": 0.5,
+          "max_recall": 0.35294117647058826,
+          "ranked_predictions": 634,
+          "true_positives": 6
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 42.52314246290817,
+          "false_positives": 10257,
+          "ground_truth": 1589,
+          "ignored_predictions": 241,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6651982378854625,
+          "ranked_predictions": 11555,
+          "true_positives": 1057
+        },
+        "30_50m": {
+          "ap_r40_percent": 0.7450477192709951,
+          "false_positives": 4085,
+          "ground_truth": 137,
+          "ignored_predictions": 2,
+          "iou_threshold": 0.5,
+          "max_recall": 0.2116788321167883,
+          "ranked_predictions": 4116,
+          "true_positives": 29
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 0.12313807913734809,
+          "false_positives": 1206,
+          "ground_truth": 13,
+          "ignored_predictions": 2,
+          "iou_threshold": 0.5,
+          "max_recall": 0.15384615384615385,
+          "ranked_predictions": 1210,
+          "true_positives": 2
+        }
+      }
+    },
+    "parameters": 648313,
+    "parameter_counts": {
+      "backbone_body": 603136,
+      "backbone_including_neck": 629472,
+      "criterion_train_only": 0,
+      "heads": 18841,
+      "neck": 26336,
+      "total_detector": 648313
+    },
+    "latency_mean_ms": {
+      "decode_nms": 9.106324015950062,
+      "host_to_device": 4.102711575942713,
+      "input_to_detections": 40.666621341314205,
+      "model": 6.059708790374455,
+      "preprocess": 21.072647859797655
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/evaluation_ap_local_bev.json",
+    "logged_total_hours": 1.804710516377222,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 44.592349529686494
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 47.37393148031416
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 45.87661034290264
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 46.7779965588528
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 46.707381531273235
+      }
+    ]
+  }
+]

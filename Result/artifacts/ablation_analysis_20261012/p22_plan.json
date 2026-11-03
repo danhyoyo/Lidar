@@ -1,0 +1,15 @@
+{
+  "status": "planned; not trained",
+  "id": "P22",
+  "compare_with": "P16",
+  "changes": {
+    "loss.name": {
+      "P16": "oga",
+      "P22": "baseline"
+    }
+  },
+  "configuration_validation": "passed",
+  "config": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/ablation_analysis_20261012/configs/p22_focal-baseline-iqa-simam.json",
+  "command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_analysis_20261012/configs/p22_focal-baseline-iqa-simam.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p22-focal-baseline-iqa-simam-s42",
+  "purpose": "Measure whole OGA objective on the selected focal+IQA+SimAM architecture"
+}

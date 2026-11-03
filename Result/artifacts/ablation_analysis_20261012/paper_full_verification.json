@@ -1,0 +1,179 @@
+{
+  "workbook": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/ablation_analysis_20261012/ablation_paper_full.xlsx",
+  "sheets": [
+    "Tong_hop",
+    "01_Backbone",
+    "02_Encoding",
+    "03_Head_Width",
+    "04_Augmentation",
+    "05_Neck",
+    "06_Loss_IQA",
+    "07_Focal",
+    "08_Attention_Detail",
+    "Speed",
+    "Ten_run"
+  ],
+  "total_runs": 21,
+  "all_runs_covered_in_component_tables": true,
+  "numeric_cells_verified": 774,
+  "table_cells_verified": 1029,
+  "source_file_hashes_checked": 42,
+  "checkpoint_policy": {
+    "B0": "loss",
+    "B1": "loss",
+    "E8": "ap",
+    "E14": "ap",
+    "G16": "ap",
+    "O24G16": "ap",
+    "O32G16": "ap",
+    "O24G32": "ap",
+    "O32": "ap",
+    "H32": "ap",
+    "S32": "ap",
+    "RC24": "ap",
+    "P1": "ap",
+    "P2": "ap",
+    "P3": "ap",
+    "P4": "ap",
+    "P5": "ap",
+    "P11": "ap",
+    "P14": "ap",
+    "P15": "ap",
+    "P16": "ap"
+  },
+  "sections": [
+    {
+      "sheet": "Tong_hop",
+      "title": "Backbone → encoding/head → augmentation → neck → loss/IQA → focal → attention",
+      "run_ids": [
+        "B0",
+        "B1",
+        "E8",
+        "E14",
+        "G16",
+        "O24G16",
+        "O32G16",
+        "O24G32",
+        "O32",
+        "H32",
+        "S32",
+        "RC24",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P11",
+        "P14",
+        "P15",
+        "P16"
+      ]
+    },
+    {
+      "sheet": "01_Backbone",
+      "title": "MobilePIXOR vs MobilePixorNeXt",
+      "run_ids": [
+        "B0",
+        "B1"
+      ]
+    },
+    {
+      "sheet": "02_Encoding",
+      "title": "Binary35 / Rich8 / Hist14",
+      "run_ids": [
+        "B1",
+        "E8",
+        "E14"
+      ]
+    },
+    {
+      "sheet": "03_Head_Width",
+      "title": "Single head vs grouped head",
+      "run_ids": [
+        "E14",
+        "G16"
+      ]
+    },
+    {
+      "sheet": "03_Head_Width",
+      "title": "Feature vào head H16 vs H32",
+      "run_ids": [
+        "O24G16",
+        "O24G32"
+      ]
+    },
+    {
+      "sheet": "04_Augmentation",
+      "title": "Standard → simplified GT → hybrid GT (FPN không gate)",
+      "run_ids": [
+        "G16",
+        "O32",
+        "H32"
+      ]
+    },
+    {
+      "sheet": "04_Augmentation",
+      "title": "Simplified GT → hybrid GT (SG-FPN)",
+      "run_ids": [
+        "O24G32",
+        "S32"
+      ]
+    },
+    {
+      "sheet": "05_Neck",
+      "title": "Ungated FPN / SG-FPN / RC-SGFPN",
+      "run_ids": [
+        "H32",
+        "O24G32",
+        "S32",
+        "RC24"
+      ]
+    },
+    {
+      "sheet": "05_Neck",
+      "title": "Fusion width F24 vs F32",
+      "run_ids": [
+        "O24G16",
+        "O32G16"
+      ]
+    },
+    {
+      "sheet": "06_Loss_IQA",
+      "title": "Baseline / OGA / Q-OGA; IQA off/on",
+      "run_ids": [
+        "P1",
+        "P2",
+        "P11",
+        "P3",
+        "P4"
+      ]
+    },
+    {
+      "sheet": "07_Focal",
+      "title": "Baseline loss, không IQA",
+      "run_ids": [
+        "S32",
+        "P1"
+      ]
+    },
+    {
+      "sheet": "07_Focal",
+      "title": "OGA + IQA",
+      "run_ids": [
+        "P5",
+        "P4"
+      ]
+    },
+    {
+      "sheet": "08_Attention_Detail",
+      "title": "None / detail / ECA / SimAM",
+      "run_ids": [
+        "P4",
+        "P14",
+        "P15",
+        "P16"
+      ]
+    }
+  ],
+  "workbook_sha256": "865954b1131ef3a0bd341b9936b562447b1f77e48d585ef7de02ba959189d0b1"
+}

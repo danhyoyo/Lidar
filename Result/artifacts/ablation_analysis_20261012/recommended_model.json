@@ -1,0 +1,207 @@
+{
+  "winner": {
+    "run_id": "P16",
+    "name": "mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32",
+    "directory": "/home/duyennh/Downloads/drive-download-20261011T184106Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32",
+    "config": "/home/duyennh/Downloads/drive-download-20261011T184106Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/config.resolved.json",
+    "checkpoint": "/home/duyennh/Downloads/drive-download-20261011T184106Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/drive-download-20261011T184106Z-1-001/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_simam_f32_detail0_8f04a8fa523a-grouped_e02c0e499671-s42-P16-h32/evaluation_ap_local_bev.json",
+    "selection": "ap",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete": true,
+    "selected_epoch": 50,
+    "loss": "oga",
+    "focal": "focal",
+    "iqa": true,
+    "detail": false,
+    "local_attention": "simam",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "head_mode": "grouped",
+    "header_width": 32,
+    "fusion_width": 32,
+    "neck": "scale_gated_fpn",
+    "scale_gated_fpn": true,
+    "map_moderate": 70.99283403233265,
+    "mean_ap9": 73.17337825483476,
+    "class_ap": {
+      "Car": {
+        "Easy": 89.74800645308882,
+        "Moderate": 84.72400095386392,
+        "Hard": 83.40463628102327
+      },
+      "Pedestrian": {
+        "Easy": 67.79981657763943,
+        "Moderate": 60.658065302764385,
+        "Hard": 55.85533499935108
+      },
+      "Cyclist": {
+        "Easy": 84.37493356030517,
+        "Moderate": 67.59643584036965,
+        "Hard": 64.39917432510714
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 65.08606301816747,
+          "false_positives": 24179,
+          "ground_truth": 1589,
+          "ignored_predictions": 354,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7992448080553808,
+          "ranked_predictions": 25803,
+          "true_positives": 1270
+        },
+        "30_50m": {
+          "ap_r40_percent": 9.767506627223497,
+          "false_positives": 19663,
+          "ground_truth": 137,
+          "ignored_predictions": 10,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5182481751824818,
+          "ranked_predictions": 19744,
+          "true_positives": 71
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 2.664506506832402,
+          "false_positives": 8727,
+          "ground_truth": 13,
+          "ignored_predictions": 5,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5384615384615384,
+          "ranked_predictions": 8739,
+          "true_positives": 7
+        }
+      },
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 74.635781930837,
+          "false_positives": 11214,
+          "ground_truth": 346,
+          "ignored_predictions": 147,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8208092485549133,
+          "ranked_predictions": 11645,
+          "true_positives": 284
+        },
+        "30_50m": {
+          "ap_r40_percent": 52.029881249104314,
+          "false_positives": 13169,
+          "ground_truth": 181,
+          "ignored_predictions": 53,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8397790055248618,
+          "ranked_predictions": 13374,
+          "true_positives": 152
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 22.830718857549343,
+          "false_positives": 4221,
+          "ground_truth": 17,
+          "ignored_predictions": 19,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5294117647058824,
+          "ranked_predictions": 4249,
+          "true_positives": 9
+        }
+      }
+    },
+    "loss_checkpoint_map": 69.82616542408965,
+    "loss_checkpoint_epoch": 28,
+    "params": 852930,
+    "model_hz": 116.89825710055902,
+    "end_to_end_hz": 17.59704466757499,
+    "latency_ms": {
+      "decode_nms": 29.513330260450353,
+      "host_to_device": 6.7486772000646935,
+      "input_to_detections": 56.82772413726036,
+      "model": 8.554447472555328,
+      "preprocess": 11.738188902343385
+    },
+    "runtime": {
+      "cuda": "13.0",
+      "elapsed_seconds": 243.387145280838,
+      "gpu": "NVIDIA L4",
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "torch_peak_memory_mb": 105.32177734375
+    },
+    "source": {
+      "commit": "54636593f6026ea2f28f50c2713b8c6c69c41f9f",
+      "dirty": false
+    },
+    "detections_per_frame": 43.739984080658,
+    "total_logged_hours": 3.1209873579008303,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 54.52588354823096,
+        "per_class_moderate": {
+          "Car": 78.02904261254467,
+          "Cyclist": 42.843875228836566,
+          "Pedestrian": 42.704732803311636
+        }
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 66.28068231504865,
+        "per_class_moderate": {
+          "Car": 82.56751035576262,
+          "Cyclist": 60.111256425632334,
+          "Pedestrian": 56.16328016375102
+        }
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 68.50161878253101,
+        "per_class_moderate": {
+          "Car": 84.07840838805967,
+          "Cyclist": 61.75671359864599,
+          "Pedestrian": 59.66973436088738
+        }
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 70.642742379788,
+        "per_class_moderate": {
+          "Car": 85.21538084163055,
+          "Cyclist": 67.45572418617898,
+          "Pedestrian": 59.257122111554494
+        }
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 70.99283403233265,
+        "per_class_moderate": {
+          "Car": 84.72400095386392,
+          "Cyclist": 67.59643584036965,
+          "Pedestrian": 60.658065302764385
+        }
+      }
+    ]
+  },
+  "checkpoint_sha256": "5224f786b661e494fec5d585119a8951aaa6dcc0933492e3985d9c34d1eec081",
+  "notebook_controls": {
+    "PRESET": "custom",
+    "BACKBONE": "mobilepixornext",
+    "BEV_ENCODING": "hist14",
+    "HEAD_MODE": "grouped",
+    "NECK_TYPE": "scale_gated_fpn",
+    "NECK_FUSION_CHANNELS": 32,
+    "BACKBONE_OUT_DIM": 32,
+    "C4_CONTEXT": "focal",
+    "LOSS_NAME": "oga",
+    "HEADER_USE_IOU": true,
+    "NMS_ALPHA": 0.5,
+    "DETAIL_PATH": false,
+    "LOCAL_ATTENTION": "simam",
+    "LOCAL_ATTENTION_SIMAM_LAMBDA": 0.0001,
+    "LOCAL_ATTENTION_LAYER_SCALE_INIT": 0.001,
+    "USE_REPARAM": false
+  },
+  "selection_scope": "Best observed validation AP among supplied completed runs, seed42"
+}

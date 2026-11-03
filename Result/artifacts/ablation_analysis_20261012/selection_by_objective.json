@@ -1,0 +1,16 @@
+{
+  "protocol": "local rotated BEV AP R40, score>0.05, NMS IoU0.1, L4 FP32, seed42",
+  "best_ap": {
+    "run_id": "P16",
+    "rationale": "Highest Moderate mAP and Mean AP-9 among measured runs"
+  },
+  "qoga_low_fp_fast_pipeline": {
+    "run_id": "P11",
+    "rationale": "Fewer local-evaluator FP at current score threshold, higher recorded pipeline Hz than P02/P04/P16"
+  },
+  "baseline_iqa_comparator": {
+    "run_id": "P03",
+    "rationale": "High AP and faster pipeline than OGA+IQA; essential comparator"
+  },
+  "qoga_caveat": "P11 bestAP epoch40; no matched-recall FP comparison or repeated benchmark or multi-seed significance test"
+}

@@ -1,0 +1,156 @@
+{
+  "official_devkit_url": "https://s3.eu-central-1.amazonaws.com/avg-kitti/devkit_object.zip",
+  "official_devkit_sha256": "ce0b76b69c0c5f89690a0d65b7302bbbdb962a0c7e8aba6efc7050d1b04b4cf1",
+  "mapping_formula": "mapping_lines[permutation[int(object_id)] - 1]",
+  "available_bins": 7481,
+  "mapped_drives": 141,
+  "selected_frame": {
+    "object_id": "005663",
+    "date": "2011_09_28",
+    "drive": "2011_09_28_drive_0021_sync",
+    "raw_frame": 127,
+    "bin_exists": true
+  },
+  "nearby_same_drive": [
+    {
+      "object_id": "000535",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 90,
+      "bin_exists": true
+    },
+    {
+      "object_id": "000764",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 101,
+      "bin_exists": true
+    },
+    {
+      "object_id": "002487",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 111,
+      "bin_exists": true
+    },
+    {
+      "object_id": "004747",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 120,
+      "bin_exists": true
+    },
+    {
+      "object_id": "005663",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 127,
+      "bin_exists": true
+    },
+    {
+      "object_id": "003398",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 134,
+      "bin_exists": true
+    },
+    {
+      "object_id": "001785",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 141,
+      "bin_exists": true
+    },
+    {
+      "object_id": "004283",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 149,
+      "bin_exists": true
+    },
+    {
+      "object_id": "001648",
+      "date": "2011_09_28",
+      "drive": "2011_09_28_drive_0021_sync",
+      "raw_frame": 157,
+      "bin_exists": true
+    }
+  ],
+  "selected_drive_available_frames": 20,
+  "selected_drive_gap_counts": {
+    "11": 4,
+    "10": 4,
+    "9": 4,
+    "7": 3,
+    "8": 3,
+    "12": 1
+  },
+  "longest_consecutive_run": {
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame_start": 77,
+    "raw_frame_end": 250,
+    "count": 174
+  },
+  "top_runs": [
+    {
+      "drive": "2011_09_26_drive_0014_sync",
+      "start": 77,
+      "end": 250,
+      "count": 174
+    },
+    {
+      "drive": "2011_09_26_drive_0015_sync",
+      "start": 182,
+      "end": 291,
+      "count": 110
+    },
+    {
+      "drive": "2011_09_26_drive_0056_sync",
+      "start": 68,
+      "end": 170,
+      "count": 103
+    },
+    {
+      "drive": "2011_09_26_drive_0101_sync",
+      "start": 524,
+      "end": 609,
+      "count": 86
+    },
+    {
+      "drive": "2011_09_26_drive_0009_sync",
+      "start": 1,
+      "end": 77,
+      "count": 77
+    },
+    {
+      "drive": "2011_10_03_drive_0047_sync",
+      "start": 440,
+      "end": 512,
+      "count": 73
+    },
+    {
+      "drive": "2011_09_26_drive_0028_sync",
+      "start": 255,
+      "end": 314,
+      "count": 60
+    },
+    {
+      "drive": "2011_09_26_drive_0101_sync",
+      "start": 201,
+      "end": 257,
+      "count": 57
+    },
+    {
+      "drive": "2011_09_26_drive_0095_sync",
+      "start": 85,
+      "end": 140,
+      "count": 56
+    },
+    {
+      "drive": "2011_09_26_drive_0096_sync",
+      "start": 108,
+      "end": 161,
+      "count": 54
+    }
+  ]
+}

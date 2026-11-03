@@ -1,0 +1,19 @@
+id,scope,change,comparison,when_needed
+A_global,augmentation,global queue without GT,isolate adding sampling to same global transforms,if claiming sampling contribution independent of global recipe
+A_ground_off,hybrid_mechanism,disable ground only from hybrid winner,hybrid winner,if claiming individual ground component
+A_static_off,hybrid_mechanism,disable static only from hybrid winner,hybrid winner,if claiming individual static component
+A_density_off,hybrid_mechanism,disable density only from hybrid winner,hybrid winner,if claiming individual density component
+A_los,hybrid_extension,add LOS only,hybrid winner,if using/claiming LOS
+A_shadow,hybrid_extension,add shadow only,hybrid winner,if using/claiming shadow
+A_radiometric,hybrid_extension,add radiometric only,hybrid winner,if using/claiming radiometric
+A_full,hybrid_extension,add LOS+shadow+radiometric,hybrid winner and individual extensions,if using all three
+LG1,loss_mechanism,SmoothL1 without geometry/adaptive weighting,baseline/OGA,requires implementation controls if OGA mechanism is claimed
+LG2,loss_mechanism,SmoothL1+corner fixed weights,LG1,requires implementation controls if corner component is claimed
+LG3,loss_mechanism,SmoothL1+MGIoU fixed weights,LG1,requires implementation controls if MGIoU component is claimed
+LG4,loss_mechanism,SmoothL1+corner+MGIoU fixed weights,LG2/LG3 and P09 adaptive,requires implementation controls if adaptive weighting is claimed
+LQ,loss_strategy,q_oga IQAoff,L0/P08/P09,optional extra loss strategy
+W_proxy,width_factorial,SG F32/H32 with N5 proxy settings,N4/N5/N7,if completing full proxy-width factorial; X02 supplies it when U*=proxy
+B_head,backbone_control,MobilePIXOR BN/SiLU head with same schedule,B01/B02,if claiming extractor gain independently of head change
+B_depth,backbone_control,NeXt legacy35 depth342 with same schedule,B02,if stage-depth gain is claimed
+F_single,focal_mechanism,c4_context_dilations=[1]; same D64 and hook,"P07 dilations[1,2,3]",if claiming benefit of multiscale focal design
+F_two,focal_mechanism,"c4_context_dilations=[1,2]; same D64 and hook","P07 dilations[1,2,3]",if claiming benefit of multiscale focal design

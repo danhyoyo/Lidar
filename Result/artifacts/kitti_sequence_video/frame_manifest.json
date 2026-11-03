@@ -1,0 +1,3873 @@
+[
+  {
+    "object_id": "002425",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 77,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002425.bin",
+    "video_index": 0,
+    "video_time_seconds": 0.0,
+    "nominal_source_time_seconds": 0.0,
+    "source_bin_sha256": "65c88f28286d0fb2b9b843978ebe6fa25fa72bf5310191f0a761e26e084f3f5a",
+    "original_point_count": 121772,
+    "scene_point_count": 51623,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "41fd0296eccd3d23e9f86d458d96ca25080bb777b550c184a249875dc59921e2",
+    "inference_seconds": 0.47982956500027285
+  },
+  {
+    "object_id": "006794",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 78,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006794.bin",
+    "video_index": 1,
+    "video_time_seconds": 0.1,
+    "nominal_source_time_seconds": 0.1,
+    "source_bin_sha256": "0b42b4b6e55ae24c4cd4a02ba3bd1b9baf73fc56af4ec384a2a94195ff8b4893",
+    "original_point_count": 121735,
+    "scene_point_count": 51779,
+    "detection_counts": {
+      "Car": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "599197da18995cad3500210767cdfbfa8d8f9c55b7c948e6c749edd2cabf0754",
+    "inference_seconds": 0.12402977299962004
+  },
+  {
+    "object_id": "006759",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 79,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006759.bin",
+    "video_index": 2,
+    "video_time_seconds": 0.2,
+    "nominal_source_time_seconds": 0.2,
+    "source_bin_sha256": "87f69021694cd49fddf49f6cbead6806424db2027da296435bb876b135156c08",
+    "original_point_count": 121803,
+    "scene_point_count": 51796,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "09ba9d518b9f97fa5679b5434f726d74c541c6a7df60701ad49d59b6acbddcb0",
+    "inference_seconds": 0.13411612400022932
+  },
+  {
+    "object_id": "003318",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 80,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003318.bin",
+    "video_index": 3,
+    "video_time_seconds": 0.3,
+    "nominal_source_time_seconds": 0.3,
+    "source_bin_sha256": "0741e0727a5a2cd5bff9b97c648c7a1fa5ffb518228dbc9d8e8caba9e63e04e2",
+    "original_point_count": 122082,
+    "scene_point_count": 52279,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "0556b4946dab6ef40373a8f7d493ed6495d07833c91147bddedca5e85dac2211",
+    "inference_seconds": 0.13939486899971598
+  },
+  {
+    "object_id": "000533",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 81,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000533.bin",
+    "video_index": 4,
+    "video_time_seconds": 0.4,
+    "nominal_source_time_seconds": 0.4,
+    "source_bin_sha256": "f03027f6488ea144daea97dbf4fc98361234aae3e4911f217684c430d529048f",
+    "original_point_count": 122160,
+    "scene_point_count": 53832,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "f05f07bfb4cdbb72c737b6a62cfdfdb93e78707d0cbf94d754f71b12c1e69d38",
+    "inference_seconds": 0.13541307700006655
+  },
+  {
+    "object_id": "004864",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 82,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004864.bin",
+    "video_index": 5,
+    "video_time_seconds": 0.5,
+    "nominal_source_time_seconds": 0.5,
+    "source_bin_sha256": "51103a2630ea8ff66694cdbdb3d86d21c9fd59b71942d13cc89fdc7caa9f446f",
+    "original_point_count": 121954,
+    "scene_point_count": 54889,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "132ac12e729caedf0c9c52459d9be7364ca723eea0fb126b10964559c8d55e74",
+    "inference_seconds": 0.13937161500007278
+  },
+  {
+    "object_id": "006288",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 83,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006288.bin",
+    "video_index": 6,
+    "video_time_seconds": 0.6,
+    "nominal_source_time_seconds": 0.6,
+    "source_bin_sha256": "f9da5bcbdb1be2d80e84a4fdefa63863b297f1090d35169f97a6582329524f2c",
+    "original_point_count": 121978,
+    "scene_point_count": 55299,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "973dff2541cdfbde0f5fbb07bb32cf74a87145acd2ff16ed40cb6ecd6ea6244a",
+    "inference_seconds": 0.1510839190000297
+  },
+  {
+    "object_id": "006786",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 84,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006786.bin",
+    "video_index": 7,
+    "video_time_seconds": 0.7,
+    "nominal_source_time_seconds": 0.7,
+    "source_bin_sha256": "c139980d77e8e103b4063ad42db49a3de66817976957c4beac13f6b0c6b071d3",
+    "original_point_count": 122222,
+    "scene_point_count": 55189,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "50a0c2fcee2924c0e3b35ea23a65747e7666fdf60eb9e1490c148c31d4d14068",
+    "inference_seconds": 0.133658892999847
+  },
+  {
+    "object_id": "004687",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 85,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004687.bin",
+    "video_index": 8,
+    "video_time_seconds": 0.8,
+    "nominal_source_time_seconds": 0.8,
+    "source_bin_sha256": "599ac94043be3182811c09d609cc8b3dcc34597ab0858caedede4bd0b071c18f",
+    "original_point_count": 122433,
+    "scene_point_count": 54633,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "e9f81217bbb4a06c23346e2b08452299de90432ac447bd22dc4573cf51b324cb",
+    "inference_seconds": 0.13140253200026564
+  },
+  {
+    "object_id": "003259",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 86,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003259.bin",
+    "video_index": 9,
+    "video_time_seconds": 0.9,
+    "nominal_source_time_seconds": 0.9,
+    "source_bin_sha256": "0aadc1ded9639ebae607657950f166f588c7e5e3d0b051f793dfa5db669c2b53",
+    "original_point_count": 122739,
+    "scene_point_count": 54060,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "b3a11ff65765071b94f3627fe77a78d99d99146b4dfd4dbe5977ca551bb98598",
+    "inference_seconds": 0.1432032830002754
+  },
+  {
+    "object_id": "000042",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 87,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000042.bin",
+    "video_index": 10,
+    "video_time_seconds": 1.0,
+    "nominal_source_time_seconds": 1.0,
+    "source_bin_sha256": "0c75cac42062a5d781e58244d489e1c900ff72a8a7aa9a9c3e5643704d782f73",
+    "original_point_count": 122897,
+    "scene_point_count": 53969,
+    "detection_counts": {
+      "Car": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "b0981b24478657906f4261fc030498c39a09a725e57b762adcf86b8d59345245",
+    "inference_seconds": 0.13382860299998356
+  },
+  {
+    "object_id": "007262",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 88,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007262.bin",
+    "video_index": 11,
+    "video_time_seconds": 1.1,
+    "nominal_source_time_seconds": 1.1,
+    "source_bin_sha256": "956bd00bb0b78d19d2dbde20102322efd38cbff550796b8329b16fb74780388f",
+    "original_point_count": 123076,
+    "scene_point_count": 53982,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "4e334870ca7c03616d9746dbe688efb4279a1b7e85ab3a495ad86f63e2425def",
+    "inference_seconds": 0.13598550500000783
+  },
+  {
+    "object_id": "004000",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 89,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004000.bin",
+    "video_index": 12,
+    "video_time_seconds": 1.2,
+    "nominal_source_time_seconds": 1.2,
+    "source_bin_sha256": "f1941ba6280739951f395ae0727e984815eae954cfe5ebafca644c5f91494b6b",
+    "original_point_count": 123267,
+    "scene_point_count": 54162,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "fad635ee16ad23b653a000c9731475d96fc515437d73679cb9163981554d66f1",
+    "inference_seconds": 0.13331298100001732
+  },
+  {
+    "object_id": "002619",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 90,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002619.bin",
+    "video_index": 13,
+    "video_time_seconds": 1.3,
+    "nominal_source_time_seconds": 1.3,
+    "source_bin_sha256": "fca792768873606525d030d7e06586cd4adf6600d977ba2d16c45580830743ec",
+    "original_point_count": 123464,
+    "scene_point_count": 54719,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "c91c2bdbfc09f8e016cb814ea7e290792ea7f3f713f2dce815a23b939b189ca5",
+    "inference_seconds": 0.135961812000005
+  },
+  {
+    "object_id": "004460",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 91,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004460.bin",
+    "video_index": 14,
+    "video_time_seconds": 1.4,
+    "nominal_source_time_seconds": 1.4,
+    "source_bin_sha256": "51be78a7a785fca96ae5ce9d5377adce333adcd4fc52c957862becfbac059993",
+    "original_point_count": 123684,
+    "scene_point_count": 55348,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "e84e601ecf7ad25fc9dabfe8ed29277ffaca26f468437036167eeb701db04e79",
+    "inference_seconds": 0.13853194200009966
+  },
+  {
+    "object_id": "006698",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 92,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006698.bin",
+    "video_index": 15,
+    "video_time_seconds": 1.5,
+    "nominal_source_time_seconds": 1.5,
+    "source_bin_sha256": "b87edd6511c8ac15eb85bc885a85e64fc25178bc2e0d8decd30eac5975aa0716",
+    "original_point_count": 123780,
+    "scene_point_count": 55308,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "ed0b5a571285dca6dde3abc94d0b419eb00150d7968bd63761755e93625e110a",
+    "inference_seconds": 0.13393415100017592
+  },
+  {
+    "object_id": "003447",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 93,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003447.bin",
+    "video_index": 16,
+    "video_time_seconds": 1.6,
+    "nominal_source_time_seconds": 1.6,
+    "source_bin_sha256": "11517003de77aefe43bcd6b9981b20e607eb34e2bddb7e32e94fe62c630f8d9f",
+    "original_point_count": 123747,
+    "scene_point_count": 54926,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "7cc4d594d55faaf1f5773471ca7aac30deb24edecd448b655c58aae34a8cf367",
+    "inference_seconds": 0.13582767800016882
+  },
+  {
+    "object_id": "005262",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 94,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005262.bin",
+    "video_index": 17,
+    "video_time_seconds": 1.7,
+    "nominal_source_time_seconds": 1.7,
+    "source_bin_sha256": "e95ff98c99fa0e3b175998284b20a3d37b840dafab9bae63a17105ee61641bcc",
+    "original_point_count": 123676,
+    "scene_point_count": 54858,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "7990d59b14dde8d40bed9f46ea8b6c2954cb03a096d6ed0a3372dc2749fa5dbc",
+    "inference_seconds": 0.13489461100016342
+  },
+  {
+    "object_id": "006884",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 95,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006884.bin",
+    "video_index": 18,
+    "video_time_seconds": 1.8,
+    "nominal_source_time_seconds": 1.8,
+    "source_bin_sha256": "3c8e9aa9fb892af357ef273c3fcc3c2638a00b1b31fca92ae4370662f8dbd35d",
+    "original_point_count": 123753,
+    "scene_point_count": 54382,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "6b91252fb2dcda92edfc575a80aba5fadb6955221d945e9602ff868d1ef48c11",
+    "inference_seconds": 0.13711565399989922
+  },
+  {
+    "object_id": "000881",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 96,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000881.bin",
+    "video_index": 19,
+    "video_time_seconds": 1.9,
+    "nominal_source_time_seconds": 1.9,
+    "source_bin_sha256": "90afbf1a30fa796b4dd7eee0e09be2b9b289a8399935f76db9dc7f5d7540bbca",
+    "original_point_count": 123733,
+    "scene_point_count": 54804,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "a60b820adb975d54d9ca85afe81fca59e0db82f1281f9f1ca0c6faa712e46d6f",
+    "inference_seconds": 0.1339399820003564
+  },
+  {
+    "object_id": "001719",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 97,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001719.bin",
+    "video_index": 20,
+    "video_time_seconds": 2.0,
+    "nominal_source_time_seconds": 2.0,
+    "source_bin_sha256": "8b8769d2a70ee18de6aafc4a1d7090ddaffd7c0cd4235964b3a27aea39fb158b",
+    "original_point_count": 123694,
+    "scene_point_count": 55066,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "7febf0b0989db92dbac1944aadb93d14c5d28047a61829076a87e0f8597a4a3c",
+    "inference_seconds": 0.13686823899979572
+  },
+  {
+    "object_id": "003689",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 98,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003689.bin",
+    "video_index": 21,
+    "video_time_seconds": 2.1,
+    "nominal_source_time_seconds": 2.1,
+    "source_bin_sha256": "2df3e2cb93eca1cb07333830351db6e110fd76b8821cbcbd1f69580d59cd1ded",
+    "original_point_count": 123640,
+    "scene_point_count": 55297,
+    "detection_counts": {
+      "Car": 1,
+      "Pedestrian": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 2,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "d1dec16437411a7f96a4129554a672863143b91e1682000130033046384b8b83",
+    "inference_seconds": 0.1322101739997379
+  },
+  {
+    "object_id": "006012",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 99,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006012.bin",
+    "video_index": 22,
+    "video_time_seconds": 2.2,
+    "nominal_source_time_seconds": 2.2,
+    "source_bin_sha256": "b30ce5a5519215dd8f0b083679c3c7d2aa9441d1728a09130f18b50caf8373e3",
+    "original_point_count": 123640,
+    "scene_point_count": 55318,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "a2badbfeb8e8ed976e3c7b01fd737b6e430e969c76984792fb134ced4e16365e",
+    "inference_seconds": 0.13500817400017695
+  },
+  {
+    "object_id": "003365",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 100,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003365.bin",
+    "video_index": 23,
+    "video_time_seconds": 2.3,
+    "nominal_source_time_seconds": 2.3,
+    "source_bin_sha256": "6fefdf018bd71a571e0ea7fb1fec6f74d378816c9874e8c6676158575156dfab",
+    "original_point_count": 123878,
+    "scene_point_count": 55677,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "8398febeab9ca7ea7487251de8f340686b25114a6765782ac54d528bc37223dd",
+    "inference_seconds": 0.1359700069997416
+  },
+  {
+    "object_id": "001329",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 101,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001329.bin",
+    "video_index": 24,
+    "video_time_seconds": 2.4,
+    "nominal_source_time_seconds": 2.4,
+    "source_bin_sha256": "6982a568d5bfc3f591f4b8cac9d927a351ac4c1a5b3893fa8cac9f9623728f5e",
+    "original_point_count": 123812,
+    "scene_point_count": 55746,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "d9264635a1ea25708fba4cb7b7de131a27284fcb3cb745a0b1f50cd9c614f502",
+    "inference_seconds": 0.13409284999988813
+  },
+  {
+    "object_id": "006636",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 102,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006636.bin",
+    "video_index": 25,
+    "video_time_seconds": 2.5,
+    "nominal_source_time_seconds": 2.5,
+    "source_bin_sha256": "ad1b8bac823e1e71bf6eddeb663ae92d13ef1b06acbe2ffdbb548994cf35b998",
+    "original_point_count": 123784,
+    "scene_point_count": 55840,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "5a3bd76608bb43eff0589478b9554d87458e98b8bd82073f061a959caf42b3c4",
+    "inference_seconds": 0.14638177100005123
+  },
+  {
+    "object_id": "000229",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 103,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000229.bin",
+    "video_index": 26,
+    "video_time_seconds": 2.6,
+    "nominal_source_time_seconds": 2.6,
+    "source_bin_sha256": "20e00743bdfef6964a1b12fb61244c34175b3b295268cfc73706edeaa140665e",
+    "original_point_count": 123640,
+    "scene_point_count": 55696,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "7329f7d74984d3405efd4696b79228e221626a12c3d7fcb23cca87a8c3942bb4",
+    "inference_seconds": 0.13776249300008203
+  },
+  {
+    "object_id": "002749",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 104,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002749.bin",
+    "video_index": 27,
+    "video_time_seconds": 2.7,
+    "nominal_source_time_seconds": 2.7,
+    "source_bin_sha256": "d57dfa26529f44825dddbf14b6022a3d99fd87a342def29fadea36b8f7ae10bc",
+    "original_point_count": 123436,
+    "scene_point_count": 55424,
+    "detection_counts": {
+      "Car": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "e1f4f90f9ca3c81957591a82bf2394b54828e9d8ab60e46d231ad1f7ee9a2083",
+    "inference_seconds": 0.13706013999990319
+  },
+  {
+    "object_id": "006484",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 105,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006484.bin",
+    "video_index": 28,
+    "video_time_seconds": 2.8,
+    "nominal_source_time_seconds": 2.8,
+    "source_bin_sha256": "8e20bc2c1e91490149a89bddd58467edb505d98cfe44e5730dc19b66a824e810",
+    "original_point_count": 123452,
+    "scene_point_count": 55307,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "0212060f32f0249e4c1ac1acfd919686003dec87bb7fe4046ace0cc462903dcf",
+    "inference_seconds": 0.139477695000096
+  },
+  {
+    "object_id": "005555",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 106,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005555.bin",
+    "video_index": 29,
+    "video_time_seconds": 2.9,
+    "nominal_source_time_seconds": 2.9,
+    "source_bin_sha256": "f72460a8631bb9f893b04b4a9d304324d96f7ed6f31109d7bce70ec66f723dde",
+    "original_point_count": 123359,
+    "scene_point_count": 55226,
+    "detection_counts": {
+      "Car": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "625917e174b888495f767c49920ab54d68be019429c414c2e8ee930f1ee8abdd",
+    "inference_seconds": 0.13961744699963674
+  },
+  {
+    "object_id": "004947",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 107,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004947.bin",
+    "video_index": 30,
+    "video_time_seconds": 3.0,
+    "nominal_source_time_seconds": 3.0,
+    "source_bin_sha256": "b826524f4e6d3da8ca042c5613a69c52c163867a7049e275c612df73d0f73fa8",
+    "original_point_count": 123237,
+    "scene_point_count": 55114,
+    "detection_counts": {
+      "Car": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "edfd6e6bebc8db415ecee69ba940c484a338d628f57f18fd48bebb1a0d897da2",
+    "inference_seconds": 0.14124816999992618
+  },
+  {
+    "object_id": "003750",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 108,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003750.bin",
+    "video_index": 31,
+    "video_time_seconds": 3.1,
+    "nominal_source_time_seconds": 3.1,
+    "source_bin_sha256": "ddcb886066cd991b0f910568791d622ce380eadb7aedc517c3b15cc9ce6a90b2",
+    "original_point_count": 123109,
+    "scene_point_count": 55086,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "2f5364dcb16384e17e8048dcfa42c1b722b044f4ddbb25af42cdf37a6e3bb051",
+    "inference_seconds": 0.13441113999988374
+  },
+  {
+    "object_id": "000773",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 109,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000773.bin",
+    "video_index": 32,
+    "video_time_seconds": 3.2,
+    "nominal_source_time_seconds": 3.2,
+    "source_bin_sha256": "bd9321c43686b1451058b3b8569d4d10c32951cbb9e612884dffe0dc0056d658",
+    "original_point_count": 122939,
+    "scene_point_count": 55155,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "677a7e91d150cc6f6ebb8165fa6a34aa264dcfb1a7852a908222746cfdbcaa86",
+    "inference_seconds": 0.13678081399984876
+  },
+  {
+    "object_id": "002025",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 110,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002025.bin",
+    "video_index": 33,
+    "video_time_seconds": 3.3,
+    "nominal_source_time_seconds": 3.3,
+    "source_bin_sha256": "df0239c6f1e9605120a867867a1ac4d18d0d6158c6919213a00779c7bba09e67",
+    "original_point_count": 122906,
+    "scene_point_count": 55309,
+    "detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "55ea077a6f71269a22bcc082d3719151cfc8e5680f193d9afdef9e9a75516588",
+    "inference_seconds": 0.13298316000009436
+  },
+  {
+    "object_id": "003530",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 111,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003530.bin",
+    "video_index": 34,
+    "video_time_seconds": 3.4,
+    "nominal_source_time_seconds": 3.4,
+    "source_bin_sha256": "3a64d439befc79ddd9c834d2ec970b715aadd9167129febe0a4fb243cf5d9f5e",
+    "original_point_count": 122863,
+    "scene_point_count": 55661,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "52668b693edb885149a1f2b913baebbedb445eeaefa2933fc46dfa8775c59189",
+    "inference_seconds": 0.1467677270002241
+  },
+  {
+    "object_id": "003869",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 112,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003869.bin",
+    "video_index": 35,
+    "video_time_seconds": 3.5,
+    "nominal_source_time_seconds": 3.5,
+    "source_bin_sha256": "d1c7b66d789eb08d1fe59ad4b2fabefe8c6bd1e1e94d77cb8d9d13ab1543c797",
+    "original_point_count": 122634,
+    "scene_point_count": 55841,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 1
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "1255ae1627384a7278b4998ec074a990ce581783cc9cc4d6839d293ba2e96e40",
+    "inference_seconds": 0.1381101580000177
+  },
+  {
+    "object_id": "004485",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 113,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004485.bin",
+    "video_index": 36,
+    "video_time_seconds": 3.6,
+    "nominal_source_time_seconds": 3.6,
+    "source_bin_sha256": "68dbfdcfe1b1d1de18d14166f7370950a2d3fe4eab7ad20c75e4f168d5208eec",
+    "original_point_count": 122373,
+    "scene_point_count": 56265,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "ee579deaecc5c7374e49721ca4a7841a190c6917ae43dae08b18a76e1c6486b5",
+    "inference_seconds": 0.1322987909998119
+  },
+  {
+    "object_id": "003583",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 114,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003583.bin",
+    "video_index": 37,
+    "video_time_seconds": 3.7,
+    "nominal_source_time_seconds": 3.7,
+    "source_bin_sha256": "f49aa7b35e143a6579aa108f7e353decc18a986fb0040ab9bde1c2379afc95e4",
+    "original_point_count": 122310,
+    "scene_point_count": 57200,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "84a86f4dd933c0b190b61bd0914c6464fa99cf07fad7a7cdf21b61f2c5d4acb5",
+    "inference_seconds": 0.13572460399973352
+  },
+  {
+    "object_id": "003179",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 115,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003179.bin",
+    "video_index": 38,
+    "video_time_seconds": 3.8,
+    "nominal_source_time_seconds": 3.8,
+    "source_bin_sha256": "bb8b3047a9deb1b707fca01ea897d64e5bd01dc1de8805c545b15b52a2efae92",
+    "original_point_count": 122070,
+    "scene_point_count": 58408,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "a746f0c4a348b554d8afe9ad11fffe5dbb4abf9dee38fbf66266a942b5065bf1",
+    "inference_seconds": 0.1355467079997652
+  },
+  {
+    "object_id": "003878",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 116,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003878.bin",
+    "video_index": 39,
+    "video_time_seconds": 3.9,
+    "nominal_source_time_seconds": 3.9,
+    "source_bin_sha256": "7de0dd7005ce556f2daa9a17a8b27b30479d3597d325a7a0467b1b20780c4e95",
+    "original_point_count": 121739,
+    "scene_point_count": 58940,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "3b57854a4feadcf18c3e8229105f845b0a696dbcd18bcece3a237e1e878bed33",
+    "inference_seconds": 0.13197831600018617
+  },
+  {
+    "object_id": "001216",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 117,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001216.bin",
+    "video_index": 40,
+    "video_time_seconds": 4.0,
+    "nominal_source_time_seconds": 4.0,
+    "source_bin_sha256": "7c7a74dcca9dada0e0ff1bcb254be696ab5e61994e2043586836db1461bc00a9",
+    "original_point_count": 121384,
+    "scene_point_count": 59464,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "27feb0385a0ae3b31dfaf3bfbdaa44cebf8eccb366c70181d8a6759bde30d4da",
+    "inference_seconds": 0.1457360350000272
+  },
+  {
+    "object_id": "001863",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 118,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001863.bin",
+    "video_index": 41,
+    "video_time_seconds": 4.1,
+    "nominal_source_time_seconds": 4.1,
+    "source_bin_sha256": "c20acd889a0124fe2a29dc0031e0e53539e61cbf839407e5994fd2fd9f80e860",
+    "original_point_count": 121059,
+    "scene_point_count": 59682,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1,
+      "Car": 1
+    },
+    "heatmap_sha256": "4c00280a73571e2a71895f5e1c915277092ba2367bb9f4d881bff601b8a51a3b",
+    "inference_seconds": 0.12308632499980376
+  },
+  {
+    "object_id": "001517",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 119,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001517.bin",
+    "video_index": 42,
+    "video_time_seconds": 4.2,
+    "nominal_source_time_seconds": 4.2,
+    "source_bin_sha256": "63164c4f8023b60f4c57850de5ce286ab731592aa65f7bac471c53a8f4a71fc0",
+    "original_point_count": 121136,
+    "scene_point_count": 59870,
+    "detection_counts": {
+      "Car": 3,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "461f7fcd399f89a88e92f4614a1e757735880eaa0cfaa7c79bade633b8efead7",
+    "inference_seconds": 0.14248186400027407
+  },
+  {
+    "object_id": "005297",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 120,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005297.bin",
+    "video_index": 43,
+    "video_time_seconds": 4.3,
+    "nominal_source_time_seconds": 4.3,
+    "source_bin_sha256": "b3c644d70ef081bcc9fb7f3af1328f61b2bd8cd7af29438156a66e2b949e154b",
+    "original_point_count": 120867,
+    "scene_point_count": 59625,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "2e6c6fee1539c4404e11dabb72a796cbe0110342c87efaed651751f5aafe0ae6",
+    "inference_seconds": 0.13770810100004383
+  },
+  {
+    "object_id": "004131",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 121,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004131.bin",
+    "video_index": 44,
+    "video_time_seconds": 4.4,
+    "nominal_source_time_seconds": 4.4,
+    "source_bin_sha256": "894e5f85e4b4c7bfac751ed0a9973d9f2c8acee8dfd66b00eda5f87c71f48920",
+    "original_point_count": 120879,
+    "scene_point_count": 59022,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "6dd7f4c66875e1f0aed3c33917712cf3557d9005b69452492f53a7eabd74d5fd",
+    "inference_seconds": 0.13698755299992627
+  },
+  {
+    "object_id": "000792",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 122,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000792.bin",
+    "video_index": 45,
+    "video_time_seconds": 4.5,
+    "nominal_source_time_seconds": 4.5,
+    "source_bin_sha256": "223804dc62b2bc3a080f98f09be2752d15e7b4402b51f8c4d0e43babf276d70f",
+    "original_point_count": 120931,
+    "scene_point_count": 58378,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "808ab0f83cf6fdf664234794195212dba6b7e329f2f1c727112a7c28949a7f8f",
+    "inference_seconds": 0.139807545000167
+  },
+  {
+    "object_id": "002661",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 123,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002661.bin",
+    "video_index": 46,
+    "video_time_seconds": 4.6,
+    "nominal_source_time_seconds": 4.6,
+    "source_bin_sha256": "f4744152254ff3380f94fa30571206422e2ccfbdba07f5072c130c86251dad6e",
+    "original_point_count": 120959,
+    "scene_point_count": 58301,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "f914522b0ad00fb1e1397a6effc8846015e193f69dc41409705a398797c80642",
+    "inference_seconds": 0.14524892600002204
+  },
+  {
+    "object_id": "006643",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 124,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006643.bin",
+    "video_index": 47,
+    "video_time_seconds": 4.7,
+    "nominal_source_time_seconds": 4.7,
+    "source_bin_sha256": "44721a4e75248e9d8d9700b6841bad4dc9eaf394512c76c9a53cbab2ca52a583",
+    "original_point_count": 120842,
+    "scene_point_count": 57451,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "c6c398261f6c7e641f1758e74700ae84461f8465aa7aee360e6c9660bc92eb8f",
+    "inference_seconds": 0.14109259599990764
+  },
+  {
+    "object_id": "000916",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 125,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000916.bin",
+    "video_index": 48,
+    "video_time_seconds": 4.8,
+    "nominal_source_time_seconds": 4.8,
+    "source_bin_sha256": "90154d381b9154b7793a910feb18117f3881c01cf5795f9ad3e3abf22e5172ac",
+    "original_point_count": 120580,
+    "scene_point_count": 56369,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "da903c8fad86664751e8048c9c0f049b92ae526dd101a57c0ac028d983b68d49",
+    "inference_seconds": 0.14086067899961563
+  },
+  {
+    "object_id": "006533",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 126,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006533.bin",
+    "video_index": 49,
+    "video_time_seconds": 4.9,
+    "nominal_source_time_seconds": 4.9,
+    "source_bin_sha256": "a16c023d9721d5fe52dce4b89658cda445864c3e21823d0840aeae67cefda443",
+    "original_point_count": 120733,
+    "scene_point_count": 55690,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "510b2b5995e90fd4c6f79a0664d1bc7e62e70ebd3dbf871dc9ae93f63ffab14f",
+    "inference_seconds": 0.14141633700000966
+  },
+  {
+    "object_id": "005405",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 127,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005405.bin",
+    "video_index": 50,
+    "video_time_seconds": 5.0,
+    "nominal_source_time_seconds": 5.0,
+    "source_bin_sha256": "2ad8804598b50fbf8ce9a30ed1b6785f1383729764e6cf0bdc7743b30c1462bc",
+    "original_point_count": 120787,
+    "scene_point_count": 55313,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "449ec10b6a22f487f6ad455197ab22c484bd1136bd0072d053aca8e2f7781183",
+    "inference_seconds": 0.13766765499985922
+  },
+  {
+    "object_id": "001318",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 128,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001318.bin",
+    "video_index": 51,
+    "video_time_seconds": 5.1,
+    "nominal_source_time_seconds": 5.1,
+    "source_bin_sha256": "7acb144c36f09f65f2d877f4dcd6c5c39d8c3c2bdf5074349c88cb2b30bdb96c",
+    "original_point_count": 120901,
+    "scene_point_count": 54001,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "c3f3d79b65f12f1e0b8203261e9ddc9641eb5edc99e410ef72db6a06b4dcc50a",
+    "inference_seconds": 0.13451842099993883
+  },
+  {
+    "object_id": "006633",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 129,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006633.bin",
+    "video_index": 52,
+    "video_time_seconds": 5.2,
+    "nominal_source_time_seconds": 5.2,
+    "source_bin_sha256": "d58f148a93fd26f9e40fb7eb2a06072f837bbdddba64273689529a58b75c4812",
+    "original_point_count": 121242,
+    "scene_point_count": 54076,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "bbf2857da1f5cfbf457d912d68a8ccc449396104d82f3ef1db52d5526355a1ad",
+    "inference_seconds": 0.13655825500018182
+  },
+  {
+    "object_id": "000589",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 130,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000589.bin",
+    "video_index": 53,
+    "video_time_seconds": 5.3,
+    "nominal_source_time_seconds": 5.3,
+    "source_bin_sha256": "1b3218716f1dcb8e060c565f0eb33ba738035ad582f3728a17760f3eea5a0e80",
+    "original_point_count": 121240,
+    "scene_point_count": 53771,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "f329816be728ddc6524bf9896f166952f98d93f77160db8958028363f267530c",
+    "inference_seconds": 0.1376163780000752
+  },
+  {
+    "object_id": "005322",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 131,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005322.bin",
+    "video_index": 54,
+    "video_time_seconds": 5.4,
+    "nominal_source_time_seconds": 5.4,
+    "source_bin_sha256": "66a5f7f67d6f3d8bdec6feb29162dc27cd2c123658acd411f6953e94144d98cd",
+    "original_point_count": 121146,
+    "scene_point_count": 53744,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "3fe23d15c994f5606575aed3e5bcf50cee44ac39b2f51054634f5b9c5e751cea",
+    "inference_seconds": 0.13303568799983623
+  },
+  {
+    "object_id": "005062",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 132,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005062.bin",
+    "video_index": 55,
+    "video_time_seconds": 5.5,
+    "nominal_source_time_seconds": 5.5,
+    "source_bin_sha256": "d3ee3e06fdac6c3dd724e5ebf8c2e3088735f66c75d85557dd05f3020c074ab6",
+    "original_point_count": 120969,
+    "scene_point_count": 53610,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "9f89ff5f83e8b988d62d83e0cf433b2ecd47c65da91f85e085b15071daa939c0",
+    "inference_seconds": 0.13761928299982173
+  },
+  {
+    "object_id": "005222",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 133,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005222.bin",
+    "video_index": 56,
+    "video_time_seconds": 5.6,
+    "nominal_source_time_seconds": 5.6,
+    "source_bin_sha256": "9352457f137a540ace7bc9915e747f28b8c43f72c7dc50a7a5160f3faf6997cb",
+    "original_point_count": 120651,
+    "scene_point_count": 53523,
+    "detection_counts": {
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "08a3e6a91e3e135d99f042316c62bb45bed0f0ba502d66eae59a9c60204d4cdb",
+    "inference_seconds": 0.13883671700023115
+  },
+  {
+    "object_id": "007391",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 134,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007391.bin",
+    "video_index": 57,
+    "video_time_seconds": 5.7,
+    "nominal_source_time_seconds": 5.7,
+    "source_bin_sha256": "786c318222c35fc88a50b0e3f46bba11bcb992d320e802118984f8b781374678",
+    "original_point_count": 120156,
+    "scene_point_count": 53430,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "6ca15944fe7205602fc4ae854efa8739a8d033214bc83ee0ecf77803abcd612f",
+    "inference_seconds": 0.13714215500021965
+  },
+  {
+    "object_id": "000452",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 135,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000452.bin",
+    "video_index": 58,
+    "video_time_seconds": 5.8,
+    "nominal_source_time_seconds": 5.8,
+    "source_bin_sha256": "44bb98d9a0b37860be7ce8fd862b627b066fcdb261c1a82e3600355b694dd8aa",
+    "original_point_count": 120023,
+    "scene_point_count": 54652,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "3695749b7009d24f19065b3f552b5ff06862e1353d88386e9067a78e0095e935",
+    "inference_seconds": 0.13803941500009387
+  },
+  {
+    "object_id": "004697",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 136,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004697.bin",
+    "video_index": 59,
+    "video_time_seconds": 5.9,
+    "nominal_source_time_seconds": 5.9,
+    "source_bin_sha256": "1690375521b577f75ffc9065a75bcf445a2df64ad8e1f74c2bf5dfadfe0672e6",
+    "original_point_count": 120193,
+    "scene_point_count": 55482,
+    "detection_counts": {
+      "Car": 2
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "ce5232a1a2b81886bf876548ac49dd54237b551a59743c86434d71aab8fcf1cf",
+    "inference_seconds": 0.14263214699985838
+  },
+  {
+    "object_id": "003679",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 137,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003679.bin",
+    "video_index": 60,
+    "video_time_seconds": 6.0,
+    "nominal_source_time_seconds": 6.0,
+    "source_bin_sha256": "6ba2bf341b329a2aa7a7e096cb6d6f2811cedb153635b14c2b2bf1e79a3e3793",
+    "original_point_count": 120968,
+    "scene_point_count": 55185,
+    "detection_counts": {
+      "Car": 2
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "f3dd8951954f8596c884d9933325ab815bd3e4f0105388d320497576a2588a53",
+    "inference_seconds": 0.1244600739996713
+  },
+  {
+    "object_id": "002356",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 138,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002356.bin",
+    "video_index": 61,
+    "video_time_seconds": 6.1,
+    "nominal_source_time_seconds": 6.1,
+    "source_bin_sha256": "d202b89429a7089ea1f1a107f4f6cffb6f77e2603bcc9b4ae9349cc2e290a5e5",
+    "original_point_count": 121372,
+    "scene_point_count": 55475,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "b98a795db51d1855a89de4f0dee42c29b5700bd8a15158d27f946dce1b7dc3b3",
+    "inference_seconds": 0.14314491300001464
+  },
+  {
+    "object_id": "001131",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 139,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001131.bin",
+    "video_index": 62,
+    "video_time_seconds": 6.2,
+    "nominal_source_time_seconds": 6.2,
+    "source_bin_sha256": "2ad0af5eed5e8b94645461a378f4bd41dbe2cf8bc82639122ffa0ba9cfca2031",
+    "original_point_count": 121739,
+    "scene_point_count": 55664,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "42da7f49bb4cdd12ae9e4dd6130192b1ab34ca979a0a080935eb6cff30ff7e5d",
+    "inference_seconds": 0.14514805699991484
+  },
+  {
+    "object_id": "007164",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 140,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007164.bin",
+    "video_index": 63,
+    "video_time_seconds": 6.3,
+    "nominal_source_time_seconds": 6.3,
+    "source_bin_sha256": "e85d120cbdc02e4e9676af255519ed2eaad7ffa529fc7437b202cb726acf1943",
+    "original_point_count": 121969,
+    "scene_point_count": 55534,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {},
+    "heatmap_sha256": "335697900f59a010141ae12813d37db6332f9970ae32f288ea8c8fbadc571217",
+    "inference_seconds": 0.12976764099994398
+  },
+  {
+    "object_id": "007205",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 141,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007205.bin",
+    "video_index": 64,
+    "video_time_seconds": 6.4,
+    "nominal_source_time_seconds": 6.4,
+    "source_bin_sha256": "a6782c550d4c97564033bdc0e54b60870e9ea2e68e853ff4ebf852385a2686c4",
+    "original_point_count": 122314,
+    "scene_point_count": 55505,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "9115ac543b65c772448ce00c85e61ad560d15dbeafb291e3724d1cefddb35c87",
+    "inference_seconds": 0.13274685399983355
+  },
+  {
+    "object_id": "006561",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 142,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006561.bin",
+    "video_index": 65,
+    "video_time_seconds": 6.5,
+    "nominal_source_time_seconds": 6.5,
+    "source_bin_sha256": "7bb5ff9c509b2ac64e1a1385eb1f1edcd63c34eefd9bb4c3953c422d25cb3383",
+    "original_point_count": 122476,
+    "scene_point_count": 55979,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "8db0a35c9966a5569aa2883f2312515960969016ce8cfa359d6dd6dac031edd9",
+    "inference_seconds": 0.1453780699998788
+  },
+  {
+    "object_id": "005649",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 143,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005649.bin",
+    "video_index": 66,
+    "video_time_seconds": 6.6,
+    "nominal_source_time_seconds": 6.6,
+    "source_bin_sha256": "614e2c8dea22d4c97269e823e75bcecabe0e27ccc0a725d8d84545dd9d7fce01",
+    "original_point_count": 122401,
+    "scene_point_count": 56484,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "bf90cb3b668aa5d0b2b2e4f91afdc47b8b094381cb7bfe8044d35ff5d84caeac",
+    "inference_seconds": 0.12741875799974878
+  },
+  {
+    "object_id": "002919",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 144,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002919.bin",
+    "video_index": 67,
+    "video_time_seconds": 6.7,
+    "nominal_source_time_seconds": 6.7,
+    "source_bin_sha256": "b3363aa1717ae5a4ab83044b6dcfc2060ea14671c7ab784354070c917b8d69fe",
+    "original_point_count": 122214,
+    "scene_point_count": 57112,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "09aba8dce46874edb2ff121cdd1091c4301672cfc83e84a92c48f48fcc5b4e1e",
+    "inference_seconds": 0.1358538680001402
+  },
+  {
+    "object_id": "004669",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 145,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004669.bin",
+    "video_index": 68,
+    "video_time_seconds": 6.8,
+    "nominal_source_time_seconds": 6.8,
+    "source_bin_sha256": "54baaceccc8d27c7f6187c4124af96584c460a85b8c910679e82ac4c9536e004",
+    "original_point_count": 122175,
+    "scene_point_count": 57833,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "ad73324d5e77e8835813a55ea8ac9b58cd3d3efac1c21bc6e384fb66072a9b12",
+    "inference_seconds": 0.14302984599999036
+  },
+  {
+    "object_id": "005375",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 146,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005375.bin",
+    "video_index": 69,
+    "video_time_seconds": 6.9,
+    "nominal_source_time_seconds": 6.9,
+    "source_bin_sha256": "32b645b78e9aff5f95f80f6d9a0cae40a2b27f7792f460f61d54b99a887299ce",
+    "original_point_count": 122329,
+    "scene_point_count": 58413,
+    "detection_counts": {
+      "Car": 3,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "83d578ea57ca95121258f0a1f4b609791de1f0113c0d4531e2c1ee84284f2bf6",
+    "inference_seconds": 0.13749598200001856
+  },
+  {
+    "object_id": "000440",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 147,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000440.bin",
+    "video_index": 70,
+    "video_time_seconds": 7.0,
+    "nominal_source_time_seconds": 7.0,
+    "source_bin_sha256": "1cb2bbd827ab8eb9edecf1904a9284f035d76afbd03cd4d2459dd8597bff3af7",
+    "original_point_count": 122492,
+    "scene_point_count": 56591,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "bedd57b2c2a30676e0ad16c6c28cb939ccdfa07c295b24dc4968926696089eec",
+    "inference_seconds": 0.13264931100002286
+  },
+  {
+    "object_id": "004256",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 148,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004256.bin",
+    "video_index": 71,
+    "video_time_seconds": 7.1,
+    "nominal_source_time_seconds": 7.1,
+    "source_bin_sha256": "f2e240d596659efdee405fa6dd3998a4553ec7b753016c061b1a29b612a2e9b8",
+    "original_point_count": 122152,
+    "scene_point_count": 54967,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "11551b5a903955ba972bce8e30db2d6250f9f265fd7a9c6c2a788c5fcb828969",
+    "inference_seconds": 0.13635914899987256
+  },
+  {
+    "object_id": "004108",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 149,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004108.bin",
+    "video_index": 72,
+    "video_time_seconds": 7.2,
+    "nominal_source_time_seconds": 7.2,
+    "source_bin_sha256": "14e5c1a7272ac0fad863c77678e8ceef7f38c56ad7c6aa283a1c90423e281c88",
+    "original_point_count": 122124,
+    "scene_point_count": 54637,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "13e66bd46e4a02ebe7b6bec26e91256e6f5da536b13cdce02d9916c5a7a6c300",
+    "inference_seconds": 0.13122299399992698
+  },
+  {
+    "object_id": "007292",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 150,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007292.bin",
+    "video_index": 73,
+    "video_time_seconds": 7.3,
+    "nominal_source_time_seconds": 7.3,
+    "source_bin_sha256": "304295904b42beae46b32e0d517d33dd9963ff3f50c2035c5cce276f1755df18",
+    "original_point_count": 122147,
+    "scene_point_count": 54542,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "6bcca95763409749d3de4b257351a0d9c435cc811a23d6296c8ebb3a2af67dcf",
+    "inference_seconds": 0.15054010399990148
+  },
+  {
+    "object_id": "000939",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 151,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000939.bin",
+    "video_index": 74,
+    "video_time_seconds": 7.4,
+    "nominal_source_time_seconds": 7.4,
+    "source_bin_sha256": "408c2f74a802f4e1c93bed73039bc80dd57881a2c494e01ecfcc2f7de185eb90",
+    "original_point_count": 122263,
+    "scene_point_count": 54607,
+    "detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "9dda7c6a168f5298c03a03d854a1bc20c780fc527bf6b32602369073bd24b9e4",
+    "inference_seconds": 0.13748133399985818
+  },
+  {
+    "object_id": "004792",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 152,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004792.bin",
+    "video_index": 75,
+    "video_time_seconds": 7.5,
+    "nominal_source_time_seconds": 7.5,
+    "source_bin_sha256": "013b61249bad9654dc39cfaf0d3abf5a75c89fbb8b9cdee2e621a8bafd8e3744",
+    "original_point_count": 122441,
+    "scene_point_count": 54962,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "bb340f0e75aa1651031ca35208772fe0324dd6aebd7b167a3f5fa89c8582da95",
+    "inference_seconds": 0.13863469599982636
+  },
+  {
+    "object_id": "001143",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 153,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001143.bin",
+    "video_index": 76,
+    "video_time_seconds": 7.6,
+    "nominal_source_time_seconds": 7.6,
+    "source_bin_sha256": "a8bf34ab9ea7c09859a5ab143a033210ad868af55a3c3ef11c5023d048e7b158",
+    "original_point_count": 122594,
+    "scene_point_count": 55455,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "c23eb0bc4edae3f462790729bb648f564923d90b008ecc57613ae22d14c8834e",
+    "inference_seconds": 0.12859499400019558
+  },
+  {
+    "object_id": "001658",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 154,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001658.bin",
+    "video_index": 77,
+    "video_time_seconds": 7.7,
+    "nominal_source_time_seconds": 7.7,
+    "source_bin_sha256": "855112544a27c5d0f99216a54fba882a6457cede417edfcd4a475c1c6baa28ce",
+    "original_point_count": 122647,
+    "scene_point_count": 55479,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "30e7d9a2633a927b1a1604af8919772487c4de759a0067af61c5ee1c6f0e81be",
+    "inference_seconds": 0.14112566800031345
+  },
+  {
+    "object_id": "000270",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 155,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000270.bin",
+    "video_index": 78,
+    "video_time_seconds": 7.8,
+    "nominal_source_time_seconds": 7.8,
+    "source_bin_sha256": "a2b8b8781d0db9a5239262c1be2859167aa6a5dd4d6a2198533a44229792500c",
+    "original_point_count": 122550,
+    "scene_point_count": 54978,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "9b610b5106f2d3ce3d46f3899d1ccf8aa7ee27e6135934cfacd33612cc7f8d70",
+    "inference_seconds": 0.14494710799999666
+  },
+  {
+    "object_id": "005827",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 156,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005827.bin",
+    "video_index": 79,
+    "video_time_seconds": 7.9,
+    "nominal_source_time_seconds": 7.9,
+    "source_bin_sha256": "02646dbc894211de1513c2e4b4a199e4967521a264a3030d7615ce5c8637e57e",
+    "original_point_count": 122424,
+    "scene_point_count": 54072,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "3b867a51b7ef400639dde0e1dbd9e3786ca74d561e41e01bbec0ef548bba6d1f",
+    "inference_seconds": 0.12452678900035608
+  },
+  {
+    "object_id": "001978",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 157,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001978.bin",
+    "video_index": 80,
+    "video_time_seconds": 8.0,
+    "nominal_source_time_seconds": 8.0,
+    "source_bin_sha256": "3804a609f6a156b2014150cef82c973e0e0443c348d62383157e0250652af04d",
+    "original_point_count": 122054,
+    "scene_point_count": 53224,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "e09bef92d1fd6edba5567b07baa49f31dfeb633faced03d03e10af2087b8f36f",
+    "inference_seconds": 0.14589282899987666
+  },
+  {
+    "object_id": "005926",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 158,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005926.bin",
+    "video_index": 81,
+    "video_time_seconds": 8.1,
+    "nominal_source_time_seconds": 8.1,
+    "source_bin_sha256": "d7313f5939bc5ca54d5b7ccc4ac2da31ed9eae30a0d0db4784d030dc7227365e",
+    "original_point_count": 121867,
+    "scene_point_count": 53149,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "cf5c3e1d7408cdee0c336c72abc83ccd48b880466f9113365cc0a97dab266a02",
+    "inference_seconds": 0.13602581100030875
+  },
+  {
+    "object_id": "004599",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 159,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004599.bin",
+    "video_index": 82,
+    "video_time_seconds": 8.2,
+    "nominal_source_time_seconds": 8.2,
+    "source_bin_sha256": "ba1d84e4ba58297267628e59fcd9009a9c6f2971d10a92890e4afa0aae7c3d51",
+    "original_point_count": 121906,
+    "scene_point_count": 53133,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "a48b7ac15e1d8973e6cf40205326e1a3d5ccfc4bdee6dbe7dc7994ba929e3e59",
+    "inference_seconds": 0.13740055199968992
+  },
+  {
+    "object_id": "000235",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 160,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000235.bin",
+    "video_index": 83,
+    "video_time_seconds": 8.3,
+    "nominal_source_time_seconds": 8.3,
+    "source_bin_sha256": "076ca8f592d84456cbac57edf2765a5c94bc0f1ae6d604f9e722c9ed42ce3468",
+    "original_point_count": 121847,
+    "scene_point_count": 53752,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "2d1bdbc44180f6d750c1389a28c5ce03c492db2a5d70cc643150064e22343b2a",
+    "inference_seconds": 0.14597276000040438
+  },
+  {
+    "object_id": "006836",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 161,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006836.bin",
+    "video_index": 84,
+    "video_time_seconds": 8.4,
+    "nominal_source_time_seconds": 8.4,
+    "source_bin_sha256": "48b5d68d0e659dd32fbc4cc865589d33541e82ea055323ca80b82ce73d6d3697",
+    "original_point_count": 121925,
+    "scene_point_count": 54755,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "4a7ac75209ed1a7191d42945914abc96a3941af2645d1ffa02dc13b3c3827169",
+    "inference_seconds": 0.13059432899990497
+  },
+  {
+    "object_id": "002866",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 162,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002866.bin",
+    "video_index": 85,
+    "video_time_seconds": 8.5,
+    "nominal_source_time_seconds": 8.5,
+    "source_bin_sha256": "6d1b949b193b889d5e6500ecfebb627cb244e877909e3951076780b4b018f370",
+    "original_point_count": 122095,
+    "scene_point_count": 55549,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "26ee2d3f26cf684ea342ee1d751237a7d1a30941da6708288e32291ca974f1f0",
+    "inference_seconds": 0.14223974800006545
+  },
+  {
+    "object_id": "003181",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 163,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003181.bin",
+    "video_index": 86,
+    "video_time_seconds": 8.6,
+    "nominal_source_time_seconds": 8.6,
+    "source_bin_sha256": "13a0e91b9865179600551a1377d4d5330f32ef1d5dbdf9b744a71134b1b3f0dd",
+    "original_point_count": 122003,
+    "scene_point_count": 55522,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "4d688631ae2e01b377fb208b0260bb1441faf9d6ba6fcbd5c58bf79a50c3b896",
+    "inference_seconds": 0.141186774000289
+  },
+  {
+    "object_id": "006954",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 164,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006954.bin",
+    "video_index": 87,
+    "video_time_seconds": 8.7,
+    "nominal_source_time_seconds": 8.7,
+    "source_bin_sha256": "0c9490882a1f53c474acdda541786ea9a63478c69e3fbf7e8816343dba0c40c4",
+    "original_point_count": 122144,
+    "scene_point_count": 55243,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "3b27f79d25cb90bd7c0fecd6615ab07701962ab8db5912d8195ef93c83672983",
+    "inference_seconds": 0.13629125099987505
+  },
+  {
+    "object_id": "003470",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 165,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003470.bin",
+    "video_index": 88,
+    "video_time_seconds": 8.8,
+    "nominal_source_time_seconds": 8.8,
+    "source_bin_sha256": "5c93617ae344bdfda9343f5179ae836fd75a13cec27bba102b6e3e719d583ba0",
+    "original_point_count": 122236,
+    "scene_point_count": 55041,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "c0c7d0d61f62615040d1e5bb37b9363c800688bb75435998ace6ee23d94d5093",
+    "inference_seconds": 0.14121668999996473
+  },
+  {
+    "object_id": "007247",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 166,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007247.bin",
+    "video_index": 89,
+    "video_time_seconds": 8.9,
+    "nominal_source_time_seconds": 8.9,
+    "source_bin_sha256": "a08ffcd4625371d47681a52fe03655d98fceb6e0f55605948bcdfb8490794cdb",
+    "original_point_count": 122199,
+    "scene_point_count": 54982,
+    "detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 1
+    },
+    "heatmap_sha256": "9a4bd1b3ff28dc67deef2ccbe51edd1573aaceeff08372c0ef37712efa3483f5",
+    "inference_seconds": 0.1430372400000124
+  },
+  {
+    "object_id": "001536",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 167,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001536.bin",
+    "video_index": 90,
+    "video_time_seconds": 9.0,
+    "nominal_source_time_seconds": 9.0,
+    "source_bin_sha256": "a3b7f8c4a508a22cb6b8077b023a90903e0b61d82803c72773e03076afc1d284",
+    "original_point_count": 122174,
+    "scene_point_count": 54670,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "be07acbe14ceabea453f7dc376246e7f58318bad23a5cf4b0e95808a961922e8",
+    "inference_seconds": 0.14110946900018462
+  },
+  {
+    "object_id": "005923",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 168,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005923.bin",
+    "video_index": 91,
+    "video_time_seconds": 9.1,
+    "nominal_source_time_seconds": 9.1,
+    "source_bin_sha256": "714a9dd63e430ee3af780a7b33ec035222415bc26dae7180466127aa2bdb2552",
+    "original_point_count": 122207,
+    "scene_point_count": 54964,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "e2d200678de937ce220950dea361f0f6ec9f384d0cf2dab480c7c600cd98bd5a",
+    "inference_seconds": 0.13883041500002946
+  },
+  {
+    "object_id": "006286",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 169,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006286.bin",
+    "video_index": 92,
+    "video_time_seconds": 9.2,
+    "nominal_source_time_seconds": 9.2,
+    "source_bin_sha256": "eadc00ca9853dcacc807934445fa35a1cd3c95334252a023c24e94586faeedfa",
+    "original_point_count": 122349,
+    "scene_point_count": 55173,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "b450f15e8e9c83d7f8818e5de7cb2c62601b589de926c366a94bddd10da47cee",
+    "inference_seconds": 0.14184525499968004
+  },
+  {
+    "object_id": "005807",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 170,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005807.bin",
+    "video_index": 93,
+    "video_time_seconds": 9.3,
+    "nominal_source_time_seconds": 9.3,
+    "source_bin_sha256": "530aabb65582a593648ea18c84f4a403539a213038fa144ce669c9890a44040f",
+    "original_point_count": 122255,
+    "scene_point_count": 55203,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 4
+    },
+    "heatmap_sha256": "5bc920426f265730d7e71424a001010b738e9d1f4de3a9f10d9ba1a547115346",
+    "inference_seconds": 0.14471584200009602
+  },
+  {
+    "object_id": "002985",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 171,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002985.bin",
+    "video_index": 94,
+    "video_time_seconds": 9.4,
+    "nominal_source_time_seconds": 9.4,
+    "source_bin_sha256": "74f13839f16b84469fe45b049a787a9ff7ed0f439956c41c5c9c00a1a2c0c94c",
+    "original_point_count": 122127,
+    "scene_point_count": 54876,
+    "detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "cfef085a8b69baae5a8626e10accafce0b40f661e372cc9e87a958f30f0e67d8",
+    "inference_seconds": 0.1278158860000076
+  },
+  {
+    "object_id": "007119",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 172,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007119.bin",
+    "video_index": 95,
+    "video_time_seconds": 9.5,
+    "nominal_source_time_seconds": 9.5,
+    "source_bin_sha256": "a55c11edfa0b508a1cb951624e21c0618f7029b779bea58e5ca2ef56083f15e4",
+    "original_point_count": 121843,
+    "scene_point_count": 55002,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "26793bb9366f883104b6a9a0b6b5649db4890bde8b06098b99919c64d6eb80a8",
+    "inference_seconds": 0.14008164300003045
+  },
+  {
+    "object_id": "004064",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 173,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004064.bin",
+    "video_index": 96,
+    "video_time_seconds": 9.6,
+    "nominal_source_time_seconds": 9.6,
+    "source_bin_sha256": "e2207e4ebc85be08eeb9d5773bffda62bc19de8ad9a799c8540cbc2bb30730c9",
+    "original_point_count": 121843,
+    "scene_point_count": 54703,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 4
+    },
+    "heatmap_sha256": "42fe279c52fb95babaf82ffefced65741956a4f326b9f5365fa98604092dfc41",
+    "inference_seconds": 0.13707972699967286
+  },
+  {
+    "object_id": "004124",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 174,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004124.bin",
+    "video_index": 97,
+    "video_time_seconds": 9.7,
+    "nominal_source_time_seconds": 9.7,
+    "source_bin_sha256": "626e5f78b4f9df48ee9afffc57c1789a5881d91a15235c1c445ee26cb0ea6c97",
+    "original_point_count": 121613,
+    "scene_point_count": 54840,
+    "detection_counts": {
+      "Car": 6
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "528a6d16f8f089a4efe1d7db06fdb5e262bc72a5402fdba2977296db44c9b735",
+    "inference_seconds": 0.1395272369995837
+  },
+  {
+    "object_id": "002292",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 175,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002292.bin",
+    "video_index": 98,
+    "video_time_seconds": 9.8,
+    "nominal_source_time_seconds": 9.8,
+    "source_bin_sha256": "8eca7632839a292d5cab60e4b92d87746ed1a81d647704b052ccae0ef77dde65",
+    "original_point_count": 121446,
+    "scene_point_count": 55371,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "8713bd3c1f450a4aa3f77ed4fbc5a9bc92203006d8edacfd32bf7edf29b8bb83",
+    "inference_seconds": 0.1508099930001663
+  },
+  {
+    "object_id": "005642",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 176,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005642.bin",
+    "video_index": 99,
+    "video_time_seconds": 9.9,
+    "nominal_source_time_seconds": 9.9,
+    "source_bin_sha256": "c6249ad06528df67a399b544cbc7ad161c76b5640be8f2098ff8906c2b2dadbf",
+    "original_point_count": 121672,
+    "scene_point_count": 55912,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "598eabd04b5b760f0b9b6aac226f77159a8c191b58c3dc95963d87cc71347c16",
+    "inference_seconds": 0.1304077579998193
+  },
+  {
+    "object_id": "000938",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 177,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000938.bin",
+    "video_index": 100,
+    "video_time_seconds": 10.0,
+    "nominal_source_time_seconds": 10.0,
+    "source_bin_sha256": "e2e0584263f47d954101639464f7b46a62e36fd5838847b729fd8eb76fdc8711",
+    "original_point_count": 121924,
+    "scene_point_count": 55949,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "5737fb54406a509a444f430209c7da54af854d3fc06c1b9a92549a39eee4adb7",
+    "inference_seconds": 0.14132929199968203
+  },
+  {
+    "object_id": "001296",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 178,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001296.bin",
+    "video_index": 101,
+    "video_time_seconds": 10.1,
+    "nominal_source_time_seconds": 10.1,
+    "source_bin_sha256": "9580906d3acd01f1862d36600cd68997afbb302dfdeaf96e6c3f67146ee13baf",
+    "original_point_count": 122058,
+    "scene_point_count": 56010,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 1,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 1,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "97f24571942dcda03dcb14d5a3786955867471ff84c6e8717b908595c80046d9",
+    "inference_seconds": 0.141417840000031
+  },
+  {
+    "object_id": "007415",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 179,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007415.bin",
+    "video_index": 102,
+    "video_time_seconds": 10.2,
+    "nominal_source_time_seconds": 10.2,
+    "source_bin_sha256": "f228d8b217b7df1feb8f229fa9343c08ad91b1d72c884ca1e5c9543c692e87e8",
+    "original_point_count": 122005,
+    "scene_point_count": 56075,
+    "detection_counts": {
+      "Car": 6,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 5,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "7ebf3b683edac2a99f43aa8dadc3b28b6b035a6896e011f808369371af412427",
+    "inference_seconds": 0.12549748799983718
+  },
+  {
+    "object_id": "000506",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 180,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000506.bin",
+    "video_index": 103,
+    "video_time_seconds": 10.3,
+    "nominal_source_time_seconds": 10.3,
+    "source_bin_sha256": "9f477f7a86bec103f92108331cc0bc9ed7508bd9edeb98cfa80a7d1fe9a6a442",
+    "original_point_count": 122055,
+    "scene_point_count": 56137,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "79946ed0026c54277d875abc8c70e6dae755a89c314232a83ff8cc4a2d41facf",
+    "inference_seconds": 0.14303618800022377
+  },
+  {
+    "object_id": "005712",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 181,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005712.bin",
+    "video_index": 104,
+    "video_time_seconds": 10.4,
+    "nominal_source_time_seconds": 10.4,
+    "source_bin_sha256": "fb98e5eff56fcd3a3cbd9e6d0e41f64ce6ef57b6d9cd8b4c139cd358724ce399",
+    "original_point_count": 121826,
+    "scene_point_count": 55518,
+    "detection_counts": {
+      "Car": 6,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "7bccdcc972fde430eb27d2d18c2bc537a8d30ffd2ddc33d522cf263b0bcb2da6",
+    "inference_seconds": 0.14205216400023346
+  },
+  {
+    "object_id": "003300",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 182,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003300.bin",
+    "video_index": 105,
+    "video_time_seconds": 10.5,
+    "nominal_source_time_seconds": 10.5,
+    "source_bin_sha256": "770d82c3e2a3c69f707de1f345f4ff3bb08b0a095139edf0bc9a672717bbb53c",
+    "original_point_count": 122083,
+    "scene_point_count": 55207,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "6aab021b797200b4a334a2574bb3511a3fb18fddc1dc77eb113b07a203a65f55",
+    "inference_seconds": 0.1447127559999899
+  },
+  {
+    "object_id": "001094",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 183,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001094.bin",
+    "video_index": 106,
+    "video_time_seconds": 10.6,
+    "nominal_source_time_seconds": 10.6,
+    "source_bin_sha256": "7836fe70114f4c2e8d79dff07a934cdc879075e7337b43ba80def5c134de83ac",
+    "original_point_count": 122015,
+    "scene_point_count": 55204,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "2ef91c64e695e642f1010d5e9bb9fcf1f16628283e2b794ffb7dcd9a3e54db8c",
+    "inference_seconds": 0.15682793999985734
+  },
+  {
+    "object_id": "000376",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 184,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000376.bin",
+    "video_index": 107,
+    "video_time_seconds": 10.7,
+    "nominal_source_time_seconds": 10.7,
+    "source_bin_sha256": "1ef985e9937efbed5a4db8715cdf3965f1daa454325949c4e651c0166c88a45b",
+    "original_point_count": 121842,
+    "scene_point_count": 55720,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Cyclist": 2,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "20c5b04f5aa5163d58a1d5cf19ef0bf9dcf24647d277b2bb06ad37cebe0ae09f",
+    "inference_seconds": 0.13545317299985982
+  },
+  {
+    "object_id": "007240",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 185,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007240.bin",
+    "video_index": 108,
+    "video_time_seconds": 10.8,
+    "nominal_source_time_seconds": 10.8,
+    "source_bin_sha256": "ee4ba854e73fc3749798f28ff35f0e99ab48c26f44576e818d9bee4199b4031b",
+    "original_point_count": 121824,
+    "scene_point_count": 56561,
+    "detection_counts": {
+      "Car": 7,
+      "Cyclist": 1,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 6,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "52e2009f0cb8ae0b3190d5459d7b1960d86961fd026d98d01ad4b20df0d715cf",
+    "inference_seconds": 0.1412859010001739
+  },
+  {
+    "object_id": "001755",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 186,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001755.bin",
+    "video_index": 109,
+    "video_time_seconds": 10.9,
+    "nominal_source_time_seconds": 10.9,
+    "source_bin_sha256": "6c85457221fb206fb14adbffc8daf42937c56b7b7e5741b39f5f8816eb58e95d",
+    "original_point_count": 121927,
+    "scene_point_count": 56540,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 3,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 3,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "d63d6456d4491a678630e013246236016cd85ddf99f131b2f2cb8b27c1ac728d",
+    "inference_seconds": 0.13695876900010262
+  },
+  {
+    "object_id": "002991",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 187,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002991.bin",
+    "video_index": 110,
+    "video_time_seconds": 11.0,
+    "nominal_source_time_seconds": 11.0,
+    "source_bin_sha256": "770bec2ef05a691759acab2b0eac9b02ca20db9d810bb1293ce14e10217de384",
+    "original_point_count": 121926,
+    "scene_point_count": 55651,
+    "detection_counts": {
+      "Car": 6,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "f1b598598976edcaca4c3cb079209fde5d6558cddb029b394c7f10b5e2dd6c90",
+    "inference_seconds": 0.13552733200003786
+  },
+  {
+    "object_id": "001145",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 188,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001145.bin",
+    "video_index": 111,
+    "video_time_seconds": 11.1,
+    "nominal_source_time_seconds": 11.1,
+    "source_bin_sha256": "331720a36802a83ac74e8bbb73e7977712fa8d413ce5f37a9e5188d383848e48",
+    "original_point_count": 121700,
+    "scene_point_count": 55577,
+    "detection_counts": {
+      "Car": 6,
+      "Cyclist": 2,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Car": 6,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "b0570a4f92a33b95eb29639d868f0a38b1c245033de5cd0b3aaa936dd4adb410",
+    "inference_seconds": 0.1408757180001885
+  },
+  {
+    "object_id": "004383",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 189,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004383.bin",
+    "video_index": 112,
+    "video_time_seconds": 11.2,
+    "nominal_source_time_seconds": 11.2,
+    "source_bin_sha256": "2b21d7a2a23a2b13483b948337992ad41ee82c0bf23db88d86a8779469468b7e",
+    "original_point_count": 121691,
+    "scene_point_count": 55586,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 3,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 5,
+      "Cyclist": 3,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "5d02bf8fc11addc457a391c2277f8b4298f8bca547da0f8d09d93314c11ee910",
+    "inference_seconds": 0.1347196309998253
+  },
+  {
+    "object_id": "003302",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 190,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003302.bin",
+    "video_index": 113,
+    "video_time_seconds": 11.3,
+    "nominal_source_time_seconds": 11.3,
+    "source_bin_sha256": "08d8b42690e89af10a04f61a54dfdb747429bf54124592528af3a7dad6734718",
+    "original_point_count": 121608,
+    "scene_point_count": 55635,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 1,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "386d4d2235b2d06b13c6876cdadc82a99e8154321e8bd8053852cd37aa3da500",
+    "inference_seconds": 0.1370497909997539
+  },
+  {
+    "object_id": "000804",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 191,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000804.bin",
+    "video_index": 114,
+    "video_time_seconds": 11.4,
+    "nominal_source_time_seconds": 11.4,
+    "source_bin_sha256": "f07953911c866085591856fff3ff3f3914c429b0729885fbdccd6a516cea8007",
+    "original_point_count": 121821,
+    "scene_point_count": 55852,
+    "detection_counts": {
+      "Car": 9,
+      "Cyclist": 2,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 7,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "f541a831a2bfd35ee2f1764f41d998b42bcb917975191b17b66bd758ee83751c",
+    "inference_seconds": 0.1415925590004008
+  },
+  {
+    "object_id": "000035",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 192,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000035.bin",
+    "video_index": 115,
+    "video_time_seconds": 11.5,
+    "nominal_source_time_seconds": 11.5,
+    "source_bin_sha256": "5b399a241f02db4f34ddb7dc7ce1d88af27117d1e73b3dae43062ef59308ae4d",
+    "original_point_count": 121784,
+    "scene_point_count": 56020,
+    "detection_counts": {
+      "Car": 7,
+      "Cyclist": 3,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Car": 6,
+      "Cyclist": 3,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "1326f20169521293d33c5cc38ada72fc03d32febcfecca1aef0741136a17d36e",
+    "inference_seconds": 0.1362168720002046
+  },
+  {
+    "object_id": "003042",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 193,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003042.bin",
+    "video_index": 116,
+    "video_time_seconds": 11.6,
+    "nominal_source_time_seconds": 11.6,
+    "source_bin_sha256": "d83a57b33702297bff16c9159ba12e65422809ae1177ce61a91d88a7c578aec1",
+    "original_point_count": 121559,
+    "scene_point_count": 55971,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 4,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 3,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "f0849bf65aabeeee7f8f1b08d01529a566f9f22fffb4788e906580b3daa6ecc8",
+    "inference_seconds": 0.1351214180003808
+  },
+  {
+    "object_id": "006623",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 194,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006623.bin",
+    "video_index": 117,
+    "video_time_seconds": 11.7,
+    "nominal_source_time_seconds": 11.7,
+    "source_bin_sha256": "2b2bbc135731554135da57a56ace870ff776aac8922d1d3182964ac83c5c2411",
+    "original_point_count": 121339,
+    "scene_point_count": 55277,
+    "detection_counts": {
+      "Car": 6,
+      "Cyclist": 3,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Car": 5,
+      "Cyclist": 3,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "22dd4c0a57aef10c8a0bbc805337bfb860e5a226711e659533f56ca84c527122",
+    "inference_seconds": 0.13653078300012567
+  },
+  {
+    "object_id": "002266",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 195,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002266.bin",
+    "video_index": 118,
+    "video_time_seconds": 11.8,
+    "nominal_source_time_seconds": 11.8,
+    "source_bin_sha256": "355e9d187ac7ac0a02cbed2de204550949f73d8f8ece46ad9ae64f448614ff00",
+    "original_point_count": 120885,
+    "scene_point_count": 54553,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 3,
+      "Pedestrian": 6
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 4
+    },
+    "heatmap_sha256": "40b8d174f94b8f6b72a909b5944446251689d5702bffdd9bd132784c65337c4d",
+    "inference_seconds": 0.14256627299982938
+  },
+  {
+    "object_id": "005213",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 196,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005213.bin",
+    "video_index": 119,
+    "video_time_seconds": 11.9,
+    "nominal_source_time_seconds": 11.9,
+    "source_bin_sha256": "64ae7144df6c09f4cda38b0343b04f67491912d8153268666264d26f052c0dff",
+    "original_point_count": 120561,
+    "scene_point_count": 54059,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 3,
+      "Pedestrian": 5
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Cyclist": 3,
+      "Pedestrian": 4
+    },
+    "heatmap_sha256": "3335a5795619c26c0e77deb98ab2dbf1a9772359b5d6d9053831a12c50cc84a6",
+    "inference_seconds": 0.13928200600003038
+  },
+  {
+    "object_id": "005571",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 197,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005571.bin",
+    "video_index": 120,
+    "video_time_seconds": 12.0,
+    "nominal_source_time_seconds": 12.0,
+    "source_bin_sha256": "d60b87bbf7f8a46a57a1f2f5500b47256d6319ac420afbdbb45c76994295ab83",
+    "original_point_count": 120382,
+    "scene_point_count": 53867,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 3,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "fa3b7635610b676869d4b9898f55ca85eef884db6e0ba0b7a5d5b2d2d503b364",
+    "inference_seconds": 0.13498920900019584
+  },
+  {
+    "object_id": "006785",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 198,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006785.bin",
+    "video_index": 121,
+    "video_time_seconds": 12.1,
+    "nominal_source_time_seconds": 12.1,
+    "source_bin_sha256": "519e1cf98fd212448a198f2ac5fdde54bc220050bd5b9c4909a32d3c6f3571a5",
+    "original_point_count": 119600,
+    "scene_point_count": 53375,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 5,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 5,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "9e514e2c7ea771f7f2c95849bd09d767bb880b1ce461c2af108b73ebc26ee2b8",
+    "inference_seconds": 0.13441668999985268
+  },
+  {
+    "object_id": "005448",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 199,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005448.bin",
+    "video_index": 122,
+    "video_time_seconds": 12.2,
+    "nominal_source_time_seconds": 12.2,
+    "source_bin_sha256": "b5c5425a5e5fc2d4e956b32800b6da75bb6cbcfc6ddc70e587703868ff2fba96",
+    "original_point_count": 118905,
+    "scene_point_count": 52504,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 1,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "c92345fe41dfaa503fdb02f1d6f28d3d23a99e65c3540e3b700221c7f25d7523",
+    "inference_seconds": 0.13390122900000279
+  },
+  {
+    "object_id": "004850",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 200,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004850.bin",
+    "video_index": 123,
+    "video_time_seconds": 12.3,
+    "nominal_source_time_seconds": 12.3,
+    "source_bin_sha256": "876baec189f1e92123ec18a0a2a0b183582842f9518dd2db88bd083ed36b1a12",
+    "original_point_count": 117084,
+    "scene_point_count": 50172,
+    "detection_counts": {
+      "Cyclist": 5,
+      "Car": 4,
+      "Pedestrian": 4
+    },
+    "visible_detection_counts": {
+      "Cyclist": 4,
+      "Car": 4,
+      "Pedestrian": 4
+    },
+    "heatmap_sha256": "53f30588ab319f80659f62dc6f392ebbd086301b20090fad9455fa04d9b14e04",
+    "inference_seconds": 0.13848241000005146
+  },
+  {
+    "object_id": "005133",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 201,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005133.bin",
+    "video_index": 124,
+    "video_time_seconds": 12.4,
+    "nominal_source_time_seconds": 12.4,
+    "source_bin_sha256": "7852dee26600e341a74008118204c541e9558b86c439e52c939496a05a2c6613",
+    "original_point_count": 114427,
+    "scene_point_count": 46927,
+    "detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Cyclist": 2,
+      "Pedestrian": 3
+    },
+    "heatmap_sha256": "71dcea4ee88bb6f5617f30c8abad22048cbf0fa971dc917fd58c53a4b23ff0ff",
+    "inference_seconds": 0.1361719369997445
+  },
+  {
+    "object_id": "005528",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 202,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005528.bin",
+    "video_index": 125,
+    "video_time_seconds": 12.5,
+    "nominal_source_time_seconds": 12.5,
+    "source_bin_sha256": "80521a9b115cecd7686a76da3e82922deb4f0d09fc69699d70cc8afbaf870cb7",
+    "original_point_count": 111447,
+    "scene_point_count": 44116,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 4,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 4,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "fd3f7484315549b4d21c24c58cdf7f467f7d56f6f94df939d72eef129b031b51",
+    "inference_seconds": 0.13451476499994897
+  },
+  {
+    "object_id": "006761",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 203,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006761.bin",
+    "video_index": 126,
+    "video_time_seconds": 12.6,
+    "nominal_source_time_seconds": 12.6,
+    "source_bin_sha256": "7d83128cf1f2677eb9b5ab9da09bb72eadfebfe92cc37c1820338776adc4b0c6",
+    "original_point_count": 111063,
+    "scene_point_count": 44987,
+    "detection_counts": {
+      "Cyclist": 2,
+      "Car": 5,
+      "Pedestrian": 5
+    },
+    "visible_detection_counts": {
+      "Cyclist": 2,
+      "Car": 4,
+      "Pedestrian": 5
+    },
+    "heatmap_sha256": "bc6211b5b03860cc655afe073efc6901b4ae555aad6b3e1fa702260cfef81107",
+    "inference_seconds": 0.1361929960003181
+  },
+  {
+    "object_id": "007016",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 204,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007016.bin",
+    "video_index": 127,
+    "video_time_seconds": 12.7,
+    "nominal_source_time_seconds": 12.7,
+    "source_bin_sha256": "9f98597eacc5b8df4c3cdd438a75f14d8b2a758229c52161120f0eb627486d4e",
+    "original_point_count": 110465,
+    "scene_point_count": 50446,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 4,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 4,
+      "Cyclist": 2
+    },
+    "heatmap_sha256": "35fcd93fe4a278eb5471c883fe929ebec5f7e4b776d6f2069d0968a6022d82eb",
+    "inference_seconds": 0.13530779900020207
+  },
+  {
+    "object_id": "003367",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 205,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003367.bin",
+    "video_index": 128,
+    "video_time_seconds": 12.8,
+    "nominal_source_time_seconds": 12.8,
+    "source_bin_sha256": "c85b7ac100ac99d1c9741b78259d984629b3a45c8727fc3808e4abf3283fe83b",
+    "original_point_count": 110695,
+    "scene_point_count": 52052,
+    "detection_counts": {
+      "Cyclist": 1,
+      "Car": 5,
+      "Pedestrian": 5
+    },
+    "visible_detection_counts": {
+      "Cyclist": 1,
+      "Car": 4,
+      "Pedestrian": 4
+    },
+    "heatmap_sha256": "d59d2cad9fb00f1cef2d2d54670fbe87d42d7fa1078772700e3e01c514a33688",
+    "inference_seconds": 0.1351689369998894
+  },
+  {
+    "object_id": "002690",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 206,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002690.bin",
+    "video_index": 129,
+    "video_time_seconds": 12.9,
+    "nominal_source_time_seconds": 12.9,
+    "source_bin_sha256": "8cc35fff18ebda465abfa2cb5ddf2127b7eddfcc6830a339f1e621a7783bb012",
+    "original_point_count": 110977,
+    "scene_point_count": 53700,
+    "detection_counts": {
+      "Pedestrian": 4,
+      "Car": 2,
+      "Cyclist": 2
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 4,
+      "Car": 2,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "04e0f1252a78c7ddacb9300e3e184cae90fb6878fe1332436269a20f80ef37cb",
+    "inference_seconds": 0.13898624800003745
+  },
+  {
+    "object_id": "006997",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 207,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006997.bin",
+    "video_index": 130,
+    "video_time_seconds": 13.0,
+    "nominal_source_time_seconds": 13.0,
+    "source_bin_sha256": "a088905fb08962ebea43664de5acd40c9dfc9f486799a3d8f6c2031a628b0d27",
+    "original_point_count": 113575,
+    "scene_point_count": 54397,
+    "detection_counts": {
+      "Pedestrian": 4,
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 4,
+      "Car": 3
+    },
+    "heatmap_sha256": "96395d68f48bea5963319bc54726065675f1fe2565a75cc0b7d1a1d1bd70b577",
+    "inference_seconds": 0.1442668469999262
+  },
+  {
+    "object_id": "007157",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 208,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007157.bin",
+    "video_index": 131,
+    "video_time_seconds": 13.1,
+    "nominal_source_time_seconds": 13.1,
+    "source_bin_sha256": "e36d2cd8bcc6584fa474e3d9e1d586421172c831275921d528aad02d6428e6f4",
+    "original_point_count": 116241,
+    "scene_point_count": 55645,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "39359bccc412af0588de8d40c53f852b98956dcc63c99a89d12a7242b1e63612",
+    "inference_seconds": 0.1433328969997092
+  },
+  {
+    "object_id": "000521",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 209,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000521.bin",
+    "video_index": 132,
+    "video_time_seconds": 13.2,
+    "nominal_source_time_seconds": 13.2,
+    "source_bin_sha256": "219bbd4716a2c86c194e6dbaf9f0d3203a4e62448c57a46f8f62a31711a82980",
+    "original_point_count": 118109,
+    "scene_point_count": 56052,
+    "detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "e4b4674017d7521d5dd3602829a116f1d051d166d44c63ba8b0e519a7b2b25ec",
+    "inference_seconds": 0.14899395099973844
+  },
+  {
+    "object_id": "002625",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 210,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002625.bin",
+    "video_index": 133,
+    "video_time_seconds": 13.3,
+    "nominal_source_time_seconds": 13.3,
+    "source_bin_sha256": "95a549541eb80c1b20696865eebe0dd53a3c5928fd32100174913b90caf2af24",
+    "original_point_count": 118874,
+    "scene_point_count": 55993,
+    "detection_counts": {
+      "Car": 5,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "adc91846c641ca0ad399b1cd3c03c93be9ec5e780735c9c26a679075f1585b5c",
+    "inference_seconds": 0.13673563699967417
+  },
+  {
+    "object_id": "000106",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 211,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000106.bin",
+    "video_index": 134,
+    "video_time_seconds": 13.4,
+    "nominal_source_time_seconds": 13.4,
+    "source_bin_sha256": "7d240092a90b642b6a1cea80d84d1db9adc4576a085d518048ab798b6824a56a",
+    "original_point_count": 119514,
+    "scene_point_count": 55891,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "7a34353f15ffbf033120afd8f43048b8e2d02b0a101bbbc67981d5632a970fcf",
+    "inference_seconds": 0.1345409949999521
+  },
+  {
+    "object_id": "003058",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 212,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003058.bin",
+    "video_index": 135,
+    "video_time_seconds": 13.5,
+    "nominal_source_time_seconds": 13.5,
+    "source_bin_sha256": "0f414cd9a618bf81f8dabd9ad429f1aeb9092651524011c64ffabf2c39a22656",
+    "original_point_count": 119927,
+    "scene_point_count": 55808,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "2534acd54e74252bbd1efa980187c8a62e69102aab0dbb073befb31937cac21b",
+    "inference_seconds": 0.1376894249997349
+  },
+  {
+    "object_id": "004556",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 213,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004556.bin",
+    "video_index": 136,
+    "video_time_seconds": 13.6,
+    "nominal_source_time_seconds": 13.6,
+    "source_bin_sha256": "454dd56d7a42bd27a4f00a675614f45603aefe7156de5a0c0cd7ecab8d89ea03",
+    "original_point_count": 120131,
+    "scene_point_count": 55705,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "01594139c6b9a6fe61c31f274c4930d24f21e196e71d85d467101bdfebc81440",
+    "inference_seconds": 0.14285988600022392
+  },
+  {
+    "object_id": "001133",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 214,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001133.bin",
+    "video_index": 137,
+    "video_time_seconds": 13.7,
+    "nominal_source_time_seconds": 13.7,
+    "source_bin_sha256": "93a793ce69bf3528cb3e307fb9f2605018c80bfdc7ea87a2b64e51cd3d30899f",
+    "original_point_count": 120168,
+    "scene_point_count": 56297,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "b8d410bb868a97cd018a411078741f652fb267bd85b634a8709a7d8ea971ee6c",
+    "inference_seconds": 0.12775187499983076
+  },
+  {
+    "object_id": "003129",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 215,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/003129.bin",
+    "video_index": 138,
+    "video_time_seconds": 13.8,
+    "nominal_source_time_seconds": 13.8,
+    "source_bin_sha256": "a1364e8f33e188d5b1529b43fa8b4c06e978529d257f478ad75a42ec36ace131",
+    "original_point_count": 119877,
+    "scene_point_count": 56653,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "5a3b9c25507d3d0a34a0ac573ca87ac4a0a8859f8c5255c9997085c51af8836c",
+    "inference_seconds": 0.14038318999973853
+  },
+  {
+    "object_id": "000569",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 216,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000569.bin",
+    "video_index": 139,
+    "video_time_seconds": 13.9,
+    "nominal_source_time_seconds": 13.9,
+    "source_bin_sha256": "e8954dc4b8f870448d458bc6adeebd4082bbefb20ed1085e77508662b15a6e7d",
+    "original_point_count": 119664,
+    "scene_point_count": 56342,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "a1faaa754db820f70b61342c7c29a8816efd6cbee5ec556aa6810c0724a73f2a",
+    "inference_seconds": 0.1425756309999997
+  },
+  {
+    "object_id": "004649",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 217,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004649.bin",
+    "video_index": 140,
+    "video_time_seconds": 14.0,
+    "nominal_source_time_seconds": 14.0,
+    "source_bin_sha256": "54588d98c47f37b0a81cddfdf492573a9e83a929d20d6f8ab817609b693311da",
+    "original_point_count": 119747,
+    "scene_point_count": 56327,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "24cbb62850031e8efb6c77399141a67a91007c7f77ddf6757eb0cf893915e5ca",
+    "inference_seconds": 0.13330241099993145
+  },
+  {
+    "object_id": "002556",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 218,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002556.bin",
+    "video_index": 141,
+    "video_time_seconds": 14.1,
+    "nominal_source_time_seconds": 14.1,
+    "source_bin_sha256": "a00443501001a215e74f3313370d15271f777e9f45e72a65ffc9fbed394d0348",
+    "original_point_count": 119864,
+    "scene_point_count": 56011,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "10408bba071f7c87f7c5656ad734173af3281bdc8e7b06ea692ace3b1ded0132",
+    "inference_seconds": 0.14670211500015284
+  },
+  {
+    "object_id": "000650",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 219,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000650.bin",
+    "video_index": 142,
+    "video_time_seconds": 14.2,
+    "nominal_source_time_seconds": 14.2,
+    "source_bin_sha256": "6b41eb8a20c5a88d7c375fa04a40d429f8d0c912c70f73f8b8646f2bca5545ee",
+    "original_point_count": 120057,
+    "scene_point_count": 55976,
+    "detection_counts": {
+      "Car": 2,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "0d6c2df24c0b67acb06d56121e99ec630c155bffb9822a3cfd091d9c5d46f0ad",
+    "inference_seconds": 0.12728043599963712
+  },
+  {
+    "object_id": "005656",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 220,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005656.bin",
+    "video_index": 143,
+    "video_time_seconds": 14.3,
+    "nominal_source_time_seconds": 14.3,
+    "source_bin_sha256": "f21d21a3c71e08bfcf82905dfdfcb45355013ffc8e4bdf120ff27d0213347477",
+    "original_point_count": 120107,
+    "scene_point_count": 55925,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "c344a1cdd573a82b3ffe602c95d5aa9244491abc0eb780f1a4b46ef0d6c6faae",
+    "inference_seconds": 0.14408717900005286
+  },
+  {
+    "object_id": "005619",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 221,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005619.bin",
+    "video_index": 144,
+    "video_time_seconds": 14.4,
+    "nominal_source_time_seconds": 14.4,
+    "source_bin_sha256": "d5d03c2f92bd0261afb62eec35de4b26ee6ec65511cc38281f2610ef5cba0f27",
+    "original_point_count": 120425,
+    "scene_point_count": 56306,
+    "detection_counts": {
+      "Car": 3,
+      "Pedestrian": 2,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "090e7155a62e787fa0192e3ed7d08ed2b5e61a99241db0aecc11694ff2ec5307",
+    "inference_seconds": 0.13407148199985386
+  },
+  {
+    "object_id": "001786",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 222,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001786.bin",
+    "video_index": 145,
+    "video_time_seconds": 14.5,
+    "nominal_source_time_seconds": 14.5,
+    "source_bin_sha256": "f1013ac82117a4aa575a6ceb374026bd67722a1dded111542114a0477fbf429a",
+    "original_point_count": 120305,
+    "scene_point_count": 56211,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "a75f3d148182a223d6b3300994cb4ec1f18e4132d602a1a281b1c0fb526fae7d",
+    "inference_seconds": 0.15094852399988667
+  },
+  {
+    "object_id": "002420",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 223,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002420.bin",
+    "video_index": 146,
+    "video_time_seconds": 14.6,
+    "nominal_source_time_seconds": 14.6,
+    "source_bin_sha256": "a5cf14537eef2d6d01037c6f9c86a819275b2fce01785a3b70d94e1199a8ef57",
+    "original_point_count": 119928,
+    "scene_point_count": 55889,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "d7efc59e2c396c40b09697e72dc3e79a97b49362a23eda466a8296a38ae43d40",
+    "inference_seconds": 0.1440208630001507
+  },
+  {
+    "object_id": "001263",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 224,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001263.bin",
+    "video_index": 147,
+    "video_time_seconds": 14.7,
+    "nominal_source_time_seconds": 14.7,
+    "source_bin_sha256": "616d21ba1c00c403dec52fd207eb8d620ae901bf5614db4cea1964c5f81e1a7f",
+    "original_point_count": 119829,
+    "scene_point_count": 55651,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2,
+      "Pedestrian": 2
+    },
+    "heatmap_sha256": "b057c96c8f21bcf60d11ec971e34c77d78ab520312de2bccd189aaef31a2b2c4",
+    "inference_seconds": 0.13874229900011414
+  },
+  {
+    "object_id": "000329",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 225,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000329.bin",
+    "video_index": 148,
+    "video_time_seconds": 14.8,
+    "nominal_source_time_seconds": 14.8,
+    "source_bin_sha256": "772ed10760e1dbb4da46bcf7f4b827e3084475861293561e32b0c319f2c46b90",
+    "original_point_count": 120095,
+    "scene_point_count": 55868,
+    "detection_counts": {
+      "Pedestrian": 3,
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 2,
+      "Car": 1
+    },
+    "heatmap_sha256": "514305e1f3932fe2f237da00532e88624803f77ce93a7f40b6b5d18dd57d9bd5",
+    "inference_seconds": 0.14319714100020065
+  },
+  {
+    "object_id": "004173",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 226,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004173.bin",
+    "video_index": 149,
+    "video_time_seconds": 14.9,
+    "nominal_source_time_seconds": 14.9,
+    "source_bin_sha256": "70e46445d4854f1f8bac7ff53f6b463abb706ca6f56b67fa02a14e962c26ee8f",
+    "original_point_count": 120236,
+    "scene_point_count": 56183,
+    "detection_counts": {
+      "Pedestrian": 1,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 1,
+      "Car": 1
+    },
+    "heatmap_sha256": "d5826be44f0ef2432fcb73bff4a7b49473a3888bbd385c229a81ea808b77555d",
+    "inference_seconds": 0.14345221199982916
+  },
+  {
+    "object_id": "005077",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 227,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005077.bin",
+    "video_index": 150,
+    "video_time_seconds": 15.0,
+    "nominal_source_time_seconds": 15.0,
+    "source_bin_sha256": "19be6ba61e2a2985d5d17cca91d52da205e043b16d2f48edefc0362887af0224",
+    "original_point_count": 120226,
+    "scene_point_count": 55950,
+    "detection_counts": {
+      "Pedestrian": 1,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 1,
+      "Car": 1
+    },
+    "heatmap_sha256": "858145d34af7fee739208655e09bb9b8eda7bc3037686db4398e6bb62304984c",
+    "inference_seconds": 0.13702413200007868
+  },
+  {
+    "object_id": "007385",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 228,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007385.bin",
+    "video_index": 151,
+    "video_time_seconds": 15.1,
+    "nominal_source_time_seconds": 15.1,
+    "source_bin_sha256": "3173ef574fae5b3c53dadb87aa4dd5de4fd1492a73e0166f30dfbde6a8ce19f6",
+    "original_point_count": 120255,
+    "scene_point_count": 55549,
+    "detection_counts": {
+      "Pedestrian": 1,
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 1,
+      "Car": 1
+    },
+    "heatmap_sha256": "3fa37cc8a6b819914c0f0d2b7db74e393724ec2cbe418982311087ab065e026b",
+    "inference_seconds": 0.14284937599995828
+  },
+  {
+    "object_id": "006762",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 229,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006762.bin",
+    "video_index": 152,
+    "video_time_seconds": 15.2,
+    "nominal_source_time_seconds": 15.2,
+    "source_bin_sha256": "9d1be963ef534458cc40f5253230ef24b1efab65da9907fbeb7701ebf6dc86bf",
+    "original_point_count": 120231,
+    "scene_point_count": 55289,
+    "detection_counts": {
+      "Pedestrian": 2,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 2,
+      "Car": 1
+    },
+    "heatmap_sha256": "dd1cd204be27a34b7fd1f713db1e5a044e93cd7f2114cc61baa84b4a3d101b9c",
+    "inference_seconds": 0.12995692899994538
+  },
+  {
+    "object_id": "001148",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 230,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001148.bin",
+    "video_index": 153,
+    "video_time_seconds": 15.3,
+    "nominal_source_time_seconds": 15.3,
+    "source_bin_sha256": "0cbf15dcf5374e15cc2232235ce5e40fd33b324bd29a8edc786777f21c260934",
+    "original_point_count": 120299,
+    "scene_point_count": 55330,
+    "detection_counts": {
+      "Pedestrian": 3,
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Pedestrian": 2,
+      "Car": 2
+    },
+    "heatmap_sha256": "2a813b92ec9c179d40314b9ebddc3869517620ff569e521925447afff9db8d65",
+    "inference_seconds": 0.13497311799983436
+  },
+  {
+    "object_id": "000683",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 231,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000683.bin",
+    "video_index": 154,
+    "video_time_seconds": 15.4,
+    "nominal_source_time_seconds": 15.4,
+    "source_bin_sha256": "bdabbf6c9458362d0be3b3c73612c417cf293ede1c49328ce9f50ac2039e0f05",
+    "original_point_count": 120213,
+    "scene_point_count": 55617,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 5
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "def845066370f6d33fd336a55572cff231dc92187cf8c245d22ea029955bce28",
+    "inference_seconds": 0.13058102400009375
+  },
+  {
+    "object_id": "002702",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 232,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002702.bin",
+    "video_index": 155,
+    "video_time_seconds": 15.5,
+    "nominal_source_time_seconds": 15.5,
+    "source_bin_sha256": "6cb0ced9b2a3722046d7c141e4b568194e8a5565dd964bcb8a272c757ea486fa",
+    "original_point_count": 120120,
+    "scene_point_count": 55509,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "bd58746c176aea0666ba807bfaee73a952e4481629610ccce65cdd248d93d28b",
+    "inference_seconds": 0.14349782799990862
+  },
+  {
+    "object_id": "006385",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 233,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006385.bin",
+    "video_index": 156,
+    "video_time_seconds": 15.6,
+    "nominal_source_time_seconds": 15.6,
+    "source_bin_sha256": "b828a232f88efa6db68af0281ffa1d20392621e574fa33659e8d7b09ed5216ee",
+    "original_point_count": 120233,
+    "scene_point_count": 55735,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "37c40b4c4aef0c54eaab50f6098b8923159cccd368d1c2b6561e357a7b5096b7",
+    "inference_seconds": 0.1403182070002913
+  },
+  {
+    "object_id": "005325",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 234,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005325.bin",
+    "video_index": 157,
+    "video_time_seconds": 15.7,
+    "nominal_source_time_seconds": 15.7,
+    "source_bin_sha256": "28e0a281cbcaac730521b6a550b4900e96dc88de2dc353d6f04cf38164dee2e3",
+    "original_point_count": 120295,
+    "scene_point_count": 55587,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1,
+      "Cyclist": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Cyclist": 1
+    },
+    "heatmap_sha256": "bdae1d223ad300a24dac6ac70f5c60c55f7d31a44810a9e87c17c66b880f0df8",
+    "inference_seconds": 0.1409921879999274
+  },
+  {
+    "object_id": "001275",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 235,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001275.bin",
+    "video_index": 158,
+    "video_time_seconds": 15.8,
+    "nominal_source_time_seconds": 15.8,
+    "source_bin_sha256": "046cb5774f333ab6b38bec2409a92c9094f7b226d882279152ebabdb6f7b77f9",
+    "original_point_count": 120244,
+    "scene_point_count": 55165,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "e6289716589e09fc3246a286072a3587c5be2a255b3350aca97385e51049f203",
+    "inference_seconds": 0.1439376859998447
+  },
+  {
+    "object_id": "001542",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 236,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001542.bin",
+    "video_index": 159,
+    "video_time_seconds": 15.9,
+    "nominal_source_time_seconds": 15.9,
+    "source_bin_sha256": "9e3875a26b5c9cd82d8d409fdd528ecf37e2c2da99623f808288bb435162af80",
+    "original_point_count": 120092,
+    "scene_point_count": 54919,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "09d9e0a178e500e60763c7004d42d5ebc9a23b3dc212bfb890202d95e65e1bd3",
+    "inference_seconds": 0.13098221099971852
+  },
+  {
+    "object_id": "007038",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 237,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007038.bin",
+    "video_index": 160,
+    "video_time_seconds": 16.0,
+    "nominal_source_time_seconds": 16.0,
+    "source_bin_sha256": "f27cd87d039884f820bbd8c2bb74bb4da8231cd2d81cfbeecd985306ad5dc53e",
+    "original_point_count": 119906,
+    "scene_point_count": 54525,
+    "detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 3,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "9b79277579b3fc9b9a998e5a7acf629edeb6b450d1397cc4e315a7709b45e554",
+    "inference_seconds": 0.12872749300004216
+  },
+  {
+    "object_id": "002021",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 238,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002021.bin",
+    "video_index": 161,
+    "video_time_seconds": 16.1,
+    "nominal_source_time_seconds": 16.1,
+    "source_bin_sha256": "289f4bf249be10bf30e5738e21b03a09dad38694bd452e1d79a6d4d052dbf553",
+    "original_point_count": 119775,
+    "scene_point_count": 54525,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "19f48337e838969e3332a1af9913441cff0a31e167daa4bab6532f086bf19852",
+    "inference_seconds": 0.13631756099994163
+  },
+  {
+    "object_id": "000319",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 239,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000319.bin",
+    "video_index": 162,
+    "video_time_seconds": 16.2,
+    "nominal_source_time_seconds": 16.2,
+    "source_bin_sha256": "eccc0ecc308b599da476fc422acfbe6a26464dd95a71496fa40aebc7cda10554",
+    "original_point_count": 119813,
+    "scene_point_count": 54300,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 5
+    },
+    "heatmap_sha256": "b8c39768905c428f99d081b3be430ccc1270f550f232e6adf393e45e7a0c0af1",
+    "inference_seconds": 0.1405700719997185
+  },
+  {
+    "object_id": "004891",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 240,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/004891.bin",
+    "video_index": 163,
+    "video_time_seconds": 16.3,
+    "nominal_source_time_seconds": 16.3,
+    "source_bin_sha256": "89385b54227d2242374d295a744252a4622fa55af8f5cfe434d877509682012f",
+    "original_point_count": 119884,
+    "scene_point_count": 54275,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 5,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "3fa061e5a9ea04488901e0b68dbda3c51a8cbfdf2e87e50840a0d0d7c0d8602f",
+    "inference_seconds": 0.14142129600031694
+  },
+  {
+    "object_id": "002988",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 241,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002988.bin",
+    "video_index": 164,
+    "video_time_seconds": 16.4,
+    "nominal_source_time_seconds": 16.4,
+    "source_bin_sha256": "38eb3afa87f65b5d7cf95827d383c4f3f95c49d7ac71d528489229ba8ca3c7c1",
+    "original_point_count": 119848,
+    "scene_point_count": 54128,
+    "detection_counts": {
+      "Car": 5,
+      "Pedestrian": 2
+    },
+    "visible_detection_counts": {
+      "Car": 4,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "785adadc48c281f03c341665b91e387930dba6dec8554c2914a67ca203c67248",
+    "inference_seconds": 0.13447233500028233
+  },
+  {
+    "object_id": "005334",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 242,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005334.bin",
+    "video_index": 165,
+    "video_time_seconds": 16.5,
+    "nominal_source_time_seconds": 16.5,
+    "source_bin_sha256": "2f6c64b074067dd8e7497b231486f53fa2d3188a2e5c520702e30c1d323a0e00",
+    "original_point_count": 119613,
+    "scene_point_count": 53858,
+    "detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "visible_detection_counts": {
+      "Car": 6,
+      "Pedestrian": 1
+    },
+    "heatmap_sha256": "1f1425589cb316b46279e217bd5448bfa77e40f968eceb65540fc6ddbf532bf8",
+    "inference_seconds": 0.1462385509998967
+  },
+  {
+    "object_id": "000524",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 243,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/000524.bin",
+    "video_index": 166,
+    "video_time_seconds": 16.6,
+    "nominal_source_time_seconds": 16.6,
+    "source_bin_sha256": "0e501303798a8be458bea57b456ef45647138ea7feb6457a424739e0fe3de27e",
+    "original_point_count": 119262,
+    "scene_point_count": 53420,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 4
+    },
+    "heatmap_sha256": "7863bddb0c8e1b1bc66754f82a979b6cfd073679c6742eb182b149cf7462b901",
+    "inference_seconds": 0.1390836919999856
+  },
+  {
+    "object_id": "006999",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 244,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/006999.bin",
+    "video_index": 167,
+    "video_time_seconds": 16.7,
+    "nominal_source_time_seconds": 16.7,
+    "source_bin_sha256": "7cd6a6aa369b457693a5644740a8ecd07861f0e24ab0115a8cb1342a315f5b8a",
+    "original_point_count": 118599,
+    "scene_point_count": 52539,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 4
+    },
+    "heatmap_sha256": "8d29105b38f43d4c7ad765301fb4cda6f7db0ebe4c3c4757589b4009a5d39c65",
+    "inference_seconds": 0.13611601200000223
+  },
+  {
+    "object_id": "001952",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 245,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001952.bin",
+    "video_index": 168,
+    "video_time_seconds": 16.8,
+    "nominal_source_time_seconds": 16.8,
+    "source_bin_sha256": "822cd98d5b1863ca713e8e236b7c260fcd786c762a0a4febb4224dfb18e59c91",
+    "original_point_count": 118384,
+    "scene_point_count": 52349,
+    "detection_counts": {
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "9f3dda35ae52ef219fc1187a18bf7b7962a72ae84ffdc5170dd7850664a2dcef",
+    "inference_seconds": 0.14267577000009624
+  },
+  {
+    "object_id": "005081",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 246,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005081.bin",
+    "video_index": 169,
+    "video_time_seconds": 16.9,
+    "nominal_source_time_seconds": 16.9,
+    "source_bin_sha256": "475db025bc7efb4434cb6abeace39ce96d344a1d873d3e42da4d8bd7856cf899",
+    "original_point_count": 118396,
+    "scene_point_count": 53020,
+    "detection_counts": {
+      "Car": 2
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "81cd5c8db819f3d577a0972cd9398fd37cc7f5caa7d9cc2e49ed1764176b470f",
+    "inference_seconds": 0.1505306069998369
+  },
+  {
+    "object_id": "001936",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 247,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/001936.bin",
+    "video_index": 170,
+    "video_time_seconds": 17.0,
+    "nominal_source_time_seconds": 17.0,
+    "source_bin_sha256": "d925755156f6e0aff9213744d6b7d58598e57cf594887e42c6c769836b9deef2",
+    "original_point_count": 118080,
+    "scene_point_count": 53118,
+    "detection_counts": {
+      "Car": 3
+    },
+    "visible_detection_counts": {
+      "Car": 2
+    },
+    "heatmap_sha256": "0abb02cfd2e7ae755573ae1e5884df25aa0b33046a26006c65e8593b678e2da5",
+    "inference_seconds": 0.14382466400002158
+  },
+  {
+    "object_id": "007083",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 248,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007083.bin",
+    "video_index": 171,
+    "video_time_seconds": 17.1,
+    "nominal_source_time_seconds": 17.1,
+    "source_bin_sha256": "294cee59902f4bfd8bc6f289f0bc4511a9d87d203ae5b17457c54f28f432b62b",
+    "original_point_count": 117970,
+    "scene_point_count": 53093,
+    "detection_counts": {
+      "Car": 5
+    },
+    "visible_detection_counts": {
+      "Car": 4
+    },
+    "heatmap_sha256": "c83d77fd06e4833e576c44b448f202207cff295bb4e6f1f3dad14f44dd141af8",
+    "inference_seconds": 0.14960613500034015
+  },
+  {
+    "object_id": "002506",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 249,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/002506.bin",
+    "video_index": 172,
+    "video_time_seconds": 17.2,
+    "nominal_source_time_seconds": 17.2,
+    "source_bin_sha256": "8c8d009d0b31cdf9d22f44553e72e182a3e77298b2b023137d0d847744b88365",
+    "original_point_count": 118262,
+    "scene_point_count": 53019,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "5ec7a9813685e8ad045f075e1f93b5f2cd241c850f4b0f5ff2c2158e52f4cd57",
+    "inference_seconds": 0.14043591900008323
+  },
+  {
+    "object_id": "007030",
+    "date": "2011_09_26",
+    "drive": "2011_09_26_drive_0014_sync",
+    "raw_frame": 250,
+    "source_bin": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/007030.bin",
+    "video_index": 173,
+    "video_time_seconds": 17.3,
+    "nominal_source_time_seconds": 17.3,
+    "source_bin_sha256": "02014d39daeda498320e214cdc78fe30937f3c8e53445bc094a58b576f9d3384",
+    "original_point_count": 118357,
+    "scene_point_count": 53357,
+    "detection_counts": {
+      "Car": 4
+    },
+    "visible_detection_counts": {
+      "Car": 3
+    },
+    "heatmap_sha256": "47badc76b52a2cbed828e2a444648b8196fb6d89318d5ac61c481f92582ca9db",
+    "inference_seconds": 0.1327384589999383
+  }
+]

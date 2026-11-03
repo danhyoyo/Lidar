@@ -1,0 +1,32 @@
+{
+  "status": "prepared and configuration verified; not trained",
+  "id": "P23",
+  "compare_with": "P11",
+  "changes": {
+    "model.local_attention": {
+      "P11": "none",
+      "P23": "simam"
+    },
+    "model.local_attention_layer_scale_init": {
+      "P11": null,
+      "P23": 0.001
+    },
+    "model.local_attention_simam_lambda": {
+      "P11": null,
+      "P23": 0.0001
+    }
+  },
+  "config": "/home/duyennh/AI_projects/research_lidar/Lidar/artifacts/ablation_analysis_20261012/configs/p23_qoga-focal-simam.json",
+  "command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_analysis_20261012/configs/p23_qoga-focal-simam.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p23-focal-qoga-simam-s42",
+  "parameter_counts": {
+    "backbone_including_neck": 666769,
+    "heads": 148975,
+    "total_detector": 815744,
+    "criterion_train_only": null,
+    "backbone_body": 629985,
+    "neck": 36784
+  },
+  "configuration_validation": "passed",
+  "initialization": "fresh training; no resume or warm start",
+  "purpose": "Measure SimAM on the existing focal + Q-OGA architecture at seed42, unchanged training/decode/augmentation recipe"
+}

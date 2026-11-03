@@ -1,0 +1,11 @@
+{
+  "accumulation_steps": 1,
+  "config_sha256": "73c3f92fb02252012beb0d7e74ba005a0bda4e2678c5410346ab228f29df9bc6",
+  "epochs": 50,
+  "physical_batch_size": 16,
+  "precision": "bf16",
+  "run_name": "mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42",
+  "seed": 42,
+  "target_backend": "numba",
+  "variant": "mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42"
+}

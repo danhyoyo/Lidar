@@ -1,0 +1,1 @@
+python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_analysis_20261012/configs/p23_qoga-focal-simam.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p23-focal-qoga-simam-s42

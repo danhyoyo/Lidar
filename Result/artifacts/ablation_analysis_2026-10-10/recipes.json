@@ -1,0 +1,57 @@
+[
+  {
+    "id": "A0_rich8_hybrid_f32_h32",
+    "description": "Anchor: rich8 hybrid grouped fusion32/out32",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A0_rich8_hybrid_f32_h32.json"
+  },
+  {
+    "id": "A1_hist14_hybrid_f32_h32",
+    "description": "Encoding comparison under hybrid",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A1_hist14_hybrid_f32_h32.json"
+  },
+  {
+    "id": "A2_rich8_standard_f32_h32",
+    "description": "Augmentation bundle comparison",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A2_rich8_standard_f32_h32.json"
+  },
+  {
+    "id": "A3_rich8_global_f32_h32",
+    "description": "Same global transformations, remove GT sampling",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A3_rich8_global_f32_h32.json"
+  },
+  {
+    "id": "A4_rich8_standard_gt_matched_f32_h32",
+    "description": "Standard GT sampler, matched quotas/probability/global transforms",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A4_rich8_standard_gt_matched_f32_h32.json"
+  },
+  {
+    "id": "A5_rich8_hybrid_single_f32_h32",
+    "description": "Single/grouped comparison at same schedule and widths",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A5_rich8_hybrid_single_f32_h32.json"
+  },
+  {
+    "id": "A6_rich8_hybrid_f24_h16",
+    "description": "Combined width ablation",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A6_rich8_hybrid_f24_h16.json"
+  },
+  {
+    "id": "A7_rich8_hybrid_f24_h32",
+    "description": "Fusion-width isolation against A0",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A7_rich8_hybrid_f24_h32.json"
+  },
+  {
+    "id": "A8_rich8_hybrid_f32_h16",
+    "description": "Output/head-width isolation against A0",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A8_rich8_hybrid_f32_h16.json"
+  },
+  {
+    "id": "A9_rich8_standard_grouped_f24_h16",
+    "description": "Repair grouped run: 50/warmup4, compare existing single rich8",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A9_rich8_standard_grouped_f24_h16.json"
+  },
+  {
+    "id": "A10_rich8_hybrid_gate_f32_h32",
+    "description": "Optional scale-gate on/off, if claimed in paper",
+    "config": "artifacts/ablation_analysis_2026-10-10/configs/A10_rich8_hybrid_gate_f32_h32.json"
+  }
+]

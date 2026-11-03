@@ -1,0 +1,254 @@
+[
+  {
+    "reference": "B0",
+    "candidate": "P01",
+    "purpose": "Focal / baseline loss, IQA off",
+    "delta_map": -1.0812637034962052,
+    "delta_ap9": -0.8231318905035181,
+    "delta_class_moderate": {
+      "Car": -0.3369099541684335,
+      "Pedestrian": -1.3362311630139345,
+      "Cyclist": -1.5706499933062474
+    },
+    "changes": {
+      "model.c4_context": {
+        "B0": "none",
+        "P01": "focal"
+      },
+      "model.c4_context_bottleneck": {
+        "B0": null,
+        "P01": 64
+      },
+      "model.c4_context_dilations": {
+        "B0": null,
+        "P01": [
+          1,
+          2,
+          3
+        ]
+      },
+      "model.c4_context_layer_scale_init": {
+        "B0": null,
+        "P01": 0.001
+      },
+      "model.c4_context_version": {
+        "B0": null,
+        "P01": 1
+      }
+    }
+  },
+  {
+    "reference": "P01",
+    "candidate": "P02",
+    "purpose": "OGA / focal, IQA off",
+    "delta_map": 1.5884310343215162,
+    "delta_ap9": 1.6565749401386256,
+    "delta_class_moderate": {
+      "Car": 1.1163082041000507,
+      "Pedestrian": 0.9415729375414941,
+      "Cyclist": 2.7074119613229826
+    },
+    "changes": {
+      "loss.name": {
+        "P01": "baseline",
+        "P02": "oga"
+      }
+    }
+  },
+  {
+    "reference": "P01",
+    "candidate": "P03",
+    "purpose": "IQA training + score calibration / focal, baseline loss",
+    "delta_map": 2.9304764294534493,
+    "delta_ap9": 3.118592154986189,
+    "delta_class_moderate": {
+      "Car": 1.1603212867915431,
+      "Pedestrian": 2.4623630318227114,
+      "Cyclist": 5.168744969746079
+    },
+    "changes": {
+      "data.kitti.nms_alpha": {
+        "P01": 0.0,
+        "P03": 0.5
+      },
+      "loss.use_iou": {
+        "P01": false,
+        "P03": true
+      },
+      "model.header_use_iou": {
+        "P01": false,
+        "P03": true
+      }
+    }
+  },
+  {
+    "reference": "P03",
+    "candidate": "P04",
+    "purpose": "OGA / focal, IQA on",
+    "delta_map": 0.26947101097783843,
+    "delta_ap9": 0.08167525063029757,
+    "delta_class_moderate": {
+      "Car": 0.7352263029006423,
+      "Pedestrian": 0.17713005786632863,
+      "Cyclist": -0.10394332783346272
+    },
+    "changes": {
+      "loss.name": {
+        "P03": "baseline",
+        "P04": "oga"
+      }
+    }
+  },
+  {
+    "reference": "P02",
+    "candidate": "P04",
+    "purpose": "IQA training + score calibration / focal, OGA",
+    "delta_map": 1.6115164061097715,
+    "delta_ap9": 1.5436924654778608,
+    "delta_class_moderate": {
+      "Car": 0.7792393855921347,
+      "Pedestrian": 1.697920152147546,
+      "Cyclist": 2.357389680589634
+    },
+    "changes": {
+      "data.kitti.nms_alpha": {
+        "P02": 0.0,
+        "P04": 0.5
+      },
+      "loss.use_iou": {
+        "P02": false,
+        "P04": true
+      },
+      "model.header_use_iou": {
+        "P02": false,
+        "P04": true
+      }
+    }
+  },
+  {
+    "reference": "P05",
+    "candidate": "P04",
+    "purpose": "Focal / OGA + IQA",
+    "delta_map": 1.8560782753849452,
+    "delta_ap9": 2.0130556354130675,
+    "delta_class_moderate": {
+      "Car": 0.7670446235698165,
+      "Pedestrian": 1.3190024902759916,
+      "Cyclist": 3.4821877123089706
+    },
+    "changes": {
+      "model.c4_context": {
+        "P05": "none",
+        "P04": "focal"
+      },
+      "model.c4_context_bottleneck": {
+        "P05": null,
+        "P04": 64
+      },
+      "model.c4_context_dilations": {
+        "P05": null,
+        "P04": [
+          1,
+          2,
+          3
+        ]
+      },
+      "model.c4_context_layer_scale_init": {
+        "P05": null,
+        "P04": 0.001
+      },
+      "model.c4_context_version": {
+        "P05": null,
+        "P04": 1
+      }
+    }
+  },
+  {
+    "reference": "P02",
+    "candidate": "P11",
+    "purpose": "Whole Q-OGA objective / focal, IQA off",
+    "delta_map": 0.23360458347772806,
+    "delta_ap9": 0.15742597835797767,
+    "delta_class_moderate": {
+      "Car": 0.8064770958772414,
+      "Pedestrian": -0.7883861901668254,
+      "Cyclist": 0.6827228447227611
+    },
+    "changes": {
+      "loss.name": {
+        "P02": "oga",
+        "P11": "q_oga"
+      }
+    }
+  },
+  {
+    "reference": "P04",
+    "candidate": "P14",
+    "purpose": "Detail path / focal + OGA + IQA",
+    "delta_map": -0.567558924679318,
+    "delta_ap9": -0.6285897557988562,
+    "delta_class_moderate": {
+      "Car": -0.5706244597433425,
+      "Pedestrian": 0.06438817249351558,
+      "Cyclist": -1.1964404867881342
+    },
+    "changes": {
+      "model.detail_path": {
+        "P04": false,
+        "P14": true
+      }
+    }
+  },
+  {
+    "reference": "P04",
+    "candidate": "P15",
+    "purpose": "ECA / focal + OGA + IQA",
+    "delta_map": -0.6750649364445991,
+    "delta_ap9": -0.6364735362200094,
+    "delta_class_moderate": {
+      "Car": -1.2215068420322979,
+      "Pedestrian": 0.140301345927206,
+      "Cyclist": -0.9439893132287125
+    },
+    "changes": {
+      "model.local_attention": {
+        "P04": "none",
+        "P15": "eca"
+      },
+      "model.local_attention_eca_kernel_size": {
+        "P04": null,
+        "P15": 3
+      },
+      "model.local_attention_layer_scale_init": {
+        "P04": null,
+        "P15": 0.001
+      }
+    }
+  },
+  {
+    "reference": "P04",
+    "candidate": "P16",
+    "purpose": "SimAM / focal + OGA + IQA",
+    "delta_map": 0.41420978693064114,
+    "delta_ap9": 0.5130816129898506,
+    "delta_class_moderate": {
+      "Car": -0.14177862525846763,
+      "Pedestrian": 1.0265164684599029,
+      "Cyclist": 0.35789151759051663
+    },
+    "changes": {
+      "model.local_attention": {
+        "P04": "none",
+        "P16": "simam"
+      },
+      "model.local_attention_layer_scale_init": {
+        "P04": null,
+        "P16": 0.001
+      },
+      "model.local_attention_simam_lambda": {
+        "P04": null,
+        "P16": 0.0001
+      }
+    }
+  }
+]

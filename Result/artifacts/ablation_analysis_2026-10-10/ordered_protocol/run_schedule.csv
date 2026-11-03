@@ -1,0 +1,44 @@
+id,phase,variant,change,control,status,scope
+B0,1_backbone,MobilePIXOR legacy35 original head,50ep/AP policy; original topology,historical R0 exploratory,new,core
+B1,1_backbone,MobilePIXOR legacy35 BN+SiLU head,head normalization and activation only,B0,new,core
+B2,1_backbone,NeXt legacy35 depth242,extractor including integrated neck only; same head,B1,new,core
+B3,1_backbone,NeXt legacy35 depth342,local stage depth only,B2,new,core
+R0_ref,reference,NeXt rich8 single F24/H16 standard,reference encoding bridge; not winner claim,B3,existing R4 conditional,core
+U0,2_augmentation,none,disable augmentation,U1,new,core
+U1,2_augmentation,standard,alias R0_ref; OneOf recipe,U0,alias; no new training,core
+U2,2_augmentation,openpcdet_gt preset,complete standard GT recipe,U1,new,core
+U3,2_augmentation,hybrid_gt preset,complete hybrid recipe,U1/U2,new,core
+E0,3_encoder,rich8 + selected augmentation U*,alias selected U row,U*,alias; no new training,core
+E1,3_encoder,binary_slices legacy35 + U*,encoding only,E0,new or old encoder run conditional if U*=standard,core
+E2,3_encoder,rich10 + U*,encoding only,E0,new or old encoder run conditional if U*=standard,core
+E3,3_encoder,rich12 + U*,encoding only,E0,new or old encoder run conditional if U*=standard,core
+E4,3_encoder,hist14 + U*,encoding only,E0,new or old encoder run conditional if U*=standard,core
+N0,4_neck,F24/H16 additive FPN,alias selected E row,E*,alias; no new training,core
+N1,4_neck,F24/H16 gated FPN,scale_gated_fpn true,N0,new,core
+N2,4_neck,"F32/H16, selected gate",fusion width only,selected N0/N1,new,core
+N3,4_neck,"F24/H32, selected gate",output projection and head input width,selected N0/N1,new,core
+N4,4_neck,"F32/H32, selected gate","combined widths, factorial control","N2,N3",new,core
+H0,5_head,single head on selected neck,alias selected N row,N*,alias; no new training,core
+H1,5_head,Car / Pedestrian+Cyclist,grouped head/targets/group weights package,H0,new,core
+F0,6_context,context none on selected head,alias selected H row,H*,alias; no new training,core
+F1,6_context,"focal D64,dilations[1,2,3]",C4/stride8 context only,F0,new,core
+L0,7_loss,baseline IQA off,alias selected F row,F*,alias; no new training,core
+L1,7_loss,UWAG IQA off,loss strategy package only,L0,new,core
+L2,7_loss,OGA IQA off,loss strategy package only,L0,new,core
+L3,7_loss,Q-OGA IQA off,loss strategy package only,L0,new,core
+Q0,8_iqa,baseline IQA off,alias L0,L0,alias; no new training,core
+Q1,8_iqa,OGA IQA off,alias L2,L2,alias; no new training,core
+Q2,8_iqa,baseline IQA on,quality branch and auxiliary supervision; alpha0 selection,Q0,new,core
+Q3,8_iqa,OGA IQA on,quality branch and auxiliary supervision; alpha0 selection,Q1,new,core
+Qeval,8_iqa,same Q2/Q3 checkpoint alpha sweep,"alpha[0,.25,.5,.75,1]","Q2,Q3",evaluate only; no training,core
+LG1,loss_mechanism,SmoothL1 without geometry,loss term or weighting isolation,"L0,L2",requires implementation controls then training,required if OGA novelty claimed
+LG2,loss_mechanism,SmoothL1+corner fixed weights,loss term or weighting isolation,"L0,L2",requires implementation controls then training,required if OGA novelty claimed
+LG3,loss_mechanism,SmoothL1+MGIoU fixed weights,loss term or weighting isolation,"L0,L2",requires implementation controls then training,required if OGA novelty claimed
+LG4,loss_mechanism,SmoothL1+both fixed weights,loss term or weighting isolation,"L0,L2",requires implementation controls then training,required if OGA novelty claimed
+Nrc,neck_optional,SG-FPN / RC mul / RC add / RC-Bi,neck topology/range conditioning,"same F24,H*,same inputs",new; no F32 in RC configs,if these necks are claimed
+H3,head_optional,three class-specific groups,group partition/capacity,H1,new,if grouping design is claimed
+Flevels,context_optional,single dilation / two levels / three levels,context scales,F1,new,if multiscale design claimed
+FINAL,9_confirmation,final vs baseline and leave-one-out,"matched training conditions, seeds and augmentation interaction",frozen final recipe,new seeds/replacement runs as needed,paper confirmation
+G1,augmentation_mechanism,openpcdet_global no GT,matched common sampler settings for G2/G3,U1,new,if GT/hybrid mechanism claimed
+G2,augmentation_mechanism,matched standard GT,matched common sampler settings for G2/G3,G1,new,if GT/hybrid mechanism claimed
+G3,augmentation_mechanism,matched hybrid GT,matched common sampler settings for G2/G3,G2,new,if GT/hybrid mechanism claimed

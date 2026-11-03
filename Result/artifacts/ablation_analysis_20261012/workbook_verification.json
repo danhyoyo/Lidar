@@ -1,0 +1,13 @@
+{
+  "sheets": 20,
+  "source_evaluations_checked": 41,
+  "numeric_source_cells_checked": 1230,
+  "source_files_sha256_checked": 144,
+  "numeric_formulas_checked": 851,
+  "charts": 9,
+  "operating_summary_rows_checked": 10,
+  "excel_error_cells": 0,
+  "config_sha_mismatches": 0,
+  "validation_gt_counts_match": true,
+  "workbook_sha256": "3e7bc3d5982ce4ed73eb2d907b07cfd632cddbad0aedf8a1cbca160f22bafdc3"
+}

@@ -1,0 +1,739 @@
+{
+  "anchor": "R07",
+  "status": "planned, not trained",
+  "protocol": {
+    "seed": 42,
+    "epochs": 50,
+    "warmup_epochs": 4,
+    "train_batch": 16,
+    "val_batch": 32,
+    "train_precision": "bf16",
+    "evaluation_precision": "fp32",
+    "selection": "maximum Moderate macro AP R40, every 10 epochs plus final",
+    "metric": "local loader-aligned ROI BEV R40"
+  },
+  "runs": [
+    {
+      "id": "P01",
+      "run_name": "ablation-p01-focal-baseline-noiqa-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p01_focal-baseline-noiqa.json",
+      "phase": 1,
+      "purpose": "Focal effect with baseline objective",
+      "compare_with": [
+        "R07"
+      ],
+      "changes_from_R07": {
+        "model.c4_context": {
+          "R07": "none",
+          "planned": "focal"
+        },
+        "model.c4_context_bottleneck": {
+          "R07": null,
+          "planned": 64
+        },
+        "model.c4_context_dilations": {
+          "R07": null,
+          "planned": [
+            1,
+            2,
+            3
+          ]
+        },
+        "model.c4_context_layer_scale_init": {
+          "R07": null,
+          "planned": 0.001
+        },
+        "model.c4_context_version": {
+          "R07": null,
+          "planned": 1
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p01_focal-baseline-noiqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p01-focal-baseline-noiqa-s42"
+    },
+    {
+      "id": "P02",
+      "run_name": "ablation-p02-focal-oga-noiqa-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p02_focal-oga-noiqa.json",
+      "phase": 1,
+      "purpose": "OGA effect without IQA; focal held fixed",
+      "compare_with": [
+        "P01"
+      ],
+      "changes_from_R07": {
+        "loss.name": {
+          "R07": "baseline",
+          "planned": "oga"
+        },
+        "model.c4_context": {
+          "R07": "none",
+          "planned": "focal"
+        },
+        "model.c4_context_bottleneck": {
+          "R07": null,
+          "planned": 64
+        },
+        "model.c4_context_dilations": {
+          "R07": null,
+          "planned": [
+            1,
+            2,
+            3
+          ]
+        },
+        "model.c4_context_layer_scale_init": {
+          "R07": null,
+          "planned": 0.001
+        },
+        "model.c4_context_version": {
+          "R07": null,
+          "planned": 1
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p02_focal-oga-noiqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p02-focal-oga-noiqa-s42"
+    },
+    {
+      "id": "P03",
+      "run_name": "ablation-p03-focal-baseline-iqa-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p03_focal-baseline-iqa.json",
+      "phase": 1,
+      "purpose": "IQA effect with baseline objective; focal held fixed",
+      "compare_with": [
+        "P01"
+      ],
+      "changes_from_R07": {
+        "data.kitti.nms_alpha": {
+          "R07": 0.0,
+          "planned": 0.5
+        },
+        "loss.use_iou": {
+          "R07": false,
+          "planned": true
+        },
+        "model.c4_context": {
+          "R07": "none",
+          "planned": "focal"
+        },
+        "model.c4_context_bottleneck": {
+          "R07": null,
+          "planned": 64
+        },
+        "model.c4_context_dilations": {
+          "R07": null,
+          "planned": [
+            1,
+            2,
+            3
+          ]
+        },
+        "model.c4_context_layer_scale_init": {
+          "R07": null,
+          "planned": 0.001
+        },
+        "model.c4_context_version": {
+          "R07": null,
+          "planned": 1
+        },
+        "model.header_use_iou": {
+          "R07": false,
+          "planned": true
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p03_focal-baseline-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p03-focal-baseline-iqa-s42"
+    },
+    {
+      "id": "P04",
+      "run_name": "ablation-p04-focal-oga-iqa-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p04_focal-oga-iqa.json",
+      "phase": 1,
+      "purpose": "Full candidate; OGA/IQA interaction",
+      "compare_with": [
+        "P02",
+        "P03",
+        "P05"
+      ],
+      "changes_from_R07": {
+        "data.kitti.nms_alpha": {
+          "R07": 0.0,
+          "planned": 0.5
+        },
+        "loss.name": {
+          "R07": "baseline",
+          "planned": "oga"
+        },
+        "loss.use_iou": {
+          "R07": false,
+          "planned": true
+        },
+        "model.c4_context": {
+          "R07": "none",
+          "planned": "focal"
+        },
+        "model.c4_context_bottleneck": {
+          "R07": null,
+          "planned": 64
+        },
+        "model.c4_context_dilations": {
+          "R07": null,
+          "planned": [
+            1,
+            2,
+            3
+          ]
+        },
+        "model.c4_context_layer_scale_init": {
+          "R07": null,
+          "planned": 0.001
+        },
+        "model.c4_context_version": {
+          "R07": null,
+          "planned": 1
+        },
+        "model.header_use_iou": {
+          "R07": false,
+          "planned": true
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p04_focal-oga-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p04-focal-oga-iqa-s42"
+    },
+    {
+      "id": "P05",
+      "run_name": "ablation-p05-none-oga-iqa-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p05_none-oga-iqa.json",
+      "phase": 1,
+      "purpose": "Remove focal from full candidate",
+      "compare_with": [
+        "P04",
+        "R07"
+      ],
+      "changes_from_R07": {
+        "data.kitti.nms_alpha": {
+          "R07": 0.0,
+          "planned": 0.5
+        },
+        "loss.name": {
+          "R07": "baseline",
+          "planned": "oga"
+        },
+        "loss.use_iou": {
+          "R07": false,
+          "planned": true
+        },
+        "model.header_use_iou": {
+          "R07": false,
+          "planned": true
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p05_none-oga-iqa.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p05-none-oga-iqa-s42"
+    },
+    {
+      "id": "P06",
+      "run_name": "ablation-p06-sgfpn-f24-h32-hybrid-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p06_sgfpn-f24-h32-hybrid.json",
+      "phase": 2,
+      "purpose": "Matched SGFPN versus RC-SGFPN; fusion24 versus fusion32",
+      "compare_with": [
+        "R04",
+        "R07"
+      ],
+      "changes_from_R07": {
+        "model.neck_fusion_channels": {
+          "R07": 32,
+          "planned": 24
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p06_sgfpn-f24-h32-hybrid.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p06-sgfpn-f24-h32-hybrid-s42"
+    },
+    {
+      "id": "P07",
+      "run_name": "ablation-p07-fpn-f32-h32-hybrid-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p07_fpn-f32-h32-hybrid.json",
+      "phase": 2,
+      "purpose": "Gate on/off under identical quotas and full hybrid augmentation",
+      "compare_with": [
+        "R07"
+      ],
+      "changes_from_R07": {
+        "model.scale_gated_fpn": {
+          "R07": true,
+          "planned": false
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p07_fpn-f32-h32-hybrid.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p07-fpn-f32-h32-hybrid-s42"
+    },
+    {
+      "id": "P08",
+      "run_name": "ablation-p08-global-only-no-gt-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p08_global-only-no-gt.json",
+      "phase": 2,
+      "purpose": "Global transforms only; remove GT sampler, preserve flip/rot/scale/translation",
+      "compare_with": [
+        "R07",
+        "P09",
+        "P10"
+      ],
+      "changes_from_R07": {
+        "augmentation.AUG_CONFIG_LIST": {
+          "R07": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": true,
+              "ENABLE_GROUND_VALIDATION": true,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": true,
+              "ENABLE_VISIBILITY_PROTECTION": true,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:15",
+                "Pedestrian:10",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ],
+          "planned": [
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ]
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p08_global-only-no-gt.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p08-global-only-no-gt-s42"
+    },
+    {
+      "id": "P09",
+      "run_name": "ablation-p09-simplified-hybrid-matched-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p09_simplified-hybrid-matched.json",
+      "phase": 2,
+      "purpose": "Four enabled hybrid heuristics removed as a bundle; same P=.5, quotas, neck and widths",
+      "compare_with": [
+        "R07"
+      ],
+      "changes_from_R07": {
+        "augmentation.AUG_CONFIG_LIST": {
+          "R07": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": true,
+              "ENABLE_GROUND_VALIDATION": true,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": true,
+              "ENABLE_VISIBILITY_PROTECTION": true,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:15",
+                "Pedestrian:10",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ],
+          "planned": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": false,
+              "ENABLE_GROUND_VALIDATION": false,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": false,
+              "ENABLE_VISIBILITY_PROTECTION": false,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:15",
+                "Pedestrian:10",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ]
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p09_simplified-hybrid-matched.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p09-simplified-hybrid-matched-s42"
+    },
+    {
+      "id": "P10",
+      "run_name": "ablation-p10-standard-gt-sampling-s42",
+      "config": "artifacts/ablation_audit_20261011/configs/p10_standard-gt-sampling.json",
+      "phase": 2,
+      "purpose": "Actual repository standard GT sampler versus hybrid; keep global transforms, P=.5 and quotas",
+      "compare_with": [
+        "R07",
+        "P08",
+        "P09"
+      ],
+      "changes_from_R07": {
+        "augmentation.AUG_CONFIG_LIST": {
+          "R07": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": true,
+              "ENABLE_GROUND_VALIDATION": true,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": true,
+              "ENABLE_VISIBILITY_PROTECTION": true,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:15",
+                "Pedestrian:10",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ],
+          "planned": [
+            {
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "LIMIT_WHOLE_SCENE": true,
+              "NAME": "gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:15",
+                "Pedestrian:10",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ]
+        }
+      },
+      "validation": "pure detection/encoding/backbone contracts passed",
+      "training_command": "python3 tools/kitti_training_pipeline/train.py --config artifacts/ablation_audit_20261011/configs/p10_standard-gt-sampling.json --detector-root detector --output-root artifacts/kitti --run-name ablation-p10-standard-gt-sampling-s42"
+    }
+  ]
+}

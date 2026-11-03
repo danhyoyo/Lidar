@@ -1,0 +1,82 @@
+[
+  {
+    "run_id": "B0",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P01",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P02",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P03",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P04",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P05",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P11",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P14",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P15",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  },
+  {
+    "run_id": "P16",
+    "prediction_sha256_verified": true,
+    "frame_count": 3769,
+    "tp_fp_ignored_reconcile": true,
+    "map_recomputed": true,
+    "predictions_numeric_finite": true
+  }
+]

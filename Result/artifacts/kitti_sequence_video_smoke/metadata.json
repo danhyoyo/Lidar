@@ -1,0 +1,358 @@
+{
+  "drive": "2011_09_26_drive_0014_sync",
+  "frame_count": 4,
+  "raw_frame_range": [
+    77,
+    80
+  ],
+  "consecutive_raw_frames_verified": true,
+  "source_nominal_hz": 10,
+  "absolute_timestamps_available": false,
+  "fps": 10,
+  "duration_seconds": 0.4,
+  "video": {
+    "codec_name": "h264",
+    "width": 1920,
+    "height": 800,
+    "r_frame_rate": "10/1",
+    "duration": "0.400000",
+    "nb_read_frames": "4"
+  },
+  "video_sha256": "a58fca1310d427bbca9bb5cd3298a16469b6a43d5433e40c6fe8353ff8ceeab8",
+  "inference": {
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-oga_loss-hist14-iqa-sgfpn-ctx_focal_local_none_f32_detail0_e45d83922c52-grouped_e02c0e499671-s42-P4-h32/selected/best.pt",
+    "checkpoint_sha256": "c9ae020384f171cc52512b00deb015948429f19eed0a1cdbb3dba88114c66d36",
+    "config_source": "embedded checkpoint config",
+    "config_sha256": "c7a72845cb362844428f55d379ae58ede1ccf4f6169272518501728fc3a03545",
+    "checkpoint_epoch": 50,
+    "box_mode": "bev",
+    "strict_state_dict": true,
+    "checkpoint_identity_validated": true,
+    "vertical_prediction": false,
+    "ground_truth_used_for_inference": false,
+    "torch_version": "2.11.0",
+    "device": "cpu",
+    "precision": "fp32",
+    "encoding": "hist14",
+    "encoding_backend": "numba",
+    "score_threshold": 0.3,
+    "nms_threshold": 0.1,
+    "max_detections": 500,
+    "use_iou": true,
+    "nms_alpha": 0.5,
+    "checkpoint_identity": {
+      "box_mode": "bev",
+      "class_order": [
+        "Car",
+        "Pedestrian",
+        "Cyclist"
+      ],
+      "encoding": {
+        "metadata": {
+          "bin_edges": [
+            -2.5,
+            -1.625,
+            -0.75,
+            0.125,
+            1.0
+          ],
+          "boundary": {
+            "epsilon": 0.001,
+            "interval": "open"
+          },
+          "channel_names": [
+            "height_count_b0",
+            "height_count_b1",
+            "height_count_b2",
+            "height_count_b3",
+            "z_max",
+            "z_mean",
+            "z_span",
+            "z_std",
+            "intensity_max",
+            "intensity_mean",
+            "log_density",
+            "occupancy",
+            "point_offset_x",
+            "point_offset_y"
+          ],
+          "channels": 14,
+          "density_norm": 32.0,
+          "finite_filter": "first_four_columns",
+          "geometry": {
+            "x_max": 70.4,
+            "x_min": 0.0,
+            "x_res": 0.1,
+            "y_max": 40.0,
+            "y_min": -40.0,
+            "y_res": 0.1,
+            "z_max": 1.0,
+            "z_min": -2.5,
+            "z_res": 0.1
+          },
+          "grid_shape_xyz": [
+            704,
+            800,
+            35
+          ],
+          "height_bin_ties": "upper",
+          "intensity_scale": 1.0,
+          "layout": {
+            "encoding": "YXC",
+            "model": "BCYX"
+          },
+          "name": "hist14",
+          "precision": {
+            "accumulation": "float64",
+            "coordinates": "float64",
+            "index": "int64",
+            "output": "float32"
+          },
+          "version": 1
+        },
+        "sha256": "9cde0e2ecf089de6bb252270657503b48503a5a76818270afff860759c3a66b0"
+      },
+      "group_weights": [
+        [
+          "car",
+          0.5
+        ],
+        [
+          "ped_cyc",
+          0.5
+        ]
+      ],
+      "groups": [
+        {
+          "classes": [
+            "Car"
+          ],
+          "global_ids": [
+            0
+          ],
+          "name": "car"
+        },
+        {
+          "classes": [
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "global_ids": [
+            1,
+            2
+          ],
+          "name": "ped_cyc"
+        }
+      ],
+      "model": {
+        "backbone": "mobilepixornext",
+        "backbone_out_dim": 32,
+        "cls_encoding": "gaussian",
+        "deploy": false,
+        "expansion": 2.5,
+        "features": {
+          "config": {
+            "c4_attention": "none",
+            "c4_attention_qk_norm": "none",
+            "c4_attention_scales": [],
+            "c4_context": "focal",
+            "c4_context_bottleneck": 64,
+            "c4_context_dilations": [
+              1,
+              2,
+              3
+            ],
+            "c4_context_layer_scale_init": 0.001,
+            "c4_context_version": 1,
+            "detail_path": false,
+            "local_attention": "none",
+            "neck_fusion_channels": 32
+          },
+          "placement": {
+            "context_stride": 8,
+            "local_attention_stride": 4
+          },
+          "resolver_version": 1
+        },
+        "head_mode": "grouped",
+        "header_act": "silu",
+        "header_use_bn": true,
+        "header_use_iou": true,
+        "neck_type": "scale_gated_fpn",
+        "num_range_bands": 4,
+        "scale_gated_fpn": true,
+        "stage_depths": [
+          3,
+          4,
+          2
+        ],
+        "use_reparam": false
+      },
+      "objective": {
+        "iou_loss_weight": 1.0,
+        "iou_target_type": "mgiou",
+        "name": "oga",
+        "use_iou": true
+      },
+      "output_stride": 4,
+      "training": {
+        "accumulation_steps": 1,
+        "checkpoint_selection": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "policy": "maximum validation AP",
+          "primary": "ap",
+          "sampling": "R40"
+        },
+        "epochs": 50,
+        "grad_clip_norm": 10.0,
+        "learning_rate": 0.0007,
+        "min_lr": 1e-06,
+        "optimizer": "adamw",
+        "physical_batch_size": 16,
+        "precision": "bf16",
+        "scheduler": "cosine",
+        "selection_decode": {
+          "max_detections": 500,
+          "nms_alpha": 0.5,
+          "nms_threshold": 0.1,
+          "peak_mode": "per_class",
+          "score_threshold": 0.05
+        },
+        "warmup_epochs": 4,
+        "weight_decay": 0.001
+      },
+      "version": 1
+    }
+  },
+  "model_load_count": 1,
+  "ground_truth_used": false,
+  "temporal_smoothing_applied": false,
+  "generated_points": false,
+  "panels": [
+    "Measured XYZ LiDAR orthographic 3D view",
+    "Predicted BEV boxes",
+    "Predicted classification heatmap"
+  ],
+  "requested_roi": [
+    -2,
+    45,
+    -24,
+    24,
+    -2.8,
+    4
+  ],
+  "display_roi": [
+    0.0,
+    45.2,
+    -24.0,
+    24.0,
+    -2.8,
+    4.0
+  ],
+  "camera": {
+    "elevation": 28,
+    "azimuth": -145
+  },
+  "fixed_height_colour_range_metres": [
+    -2.5,
+    2.5
+  ],
+  "heatmap_colour_range": [
+    0,
+    1
+  ],
+  "heatmap_axes": [
+    "class",
+    "y",
+    "x"
+  ],
+  "class_order": [
+    "Car",
+    "Pedestrian",
+    "Cyclist"
+  ],
+  "heatmap_crop_cell_indices": {
+    "x": [
+      0,
+      113
+    ],
+    "y": [
+      40,
+      160
+    ]
+  },
+  "heatmap_merged_operator": "max across classes",
+  "mapping_sources": {
+    "train_rand.txt": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_temporal_mapping/train_rand.txt",
+      "sha256": "0976b8b4f876f538010a9690249b60c0766d852e23acd5e07b4c3e0bd70f305f"
+    },
+    "train_mapping.txt": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_temporal_mapping/train_mapping.txt",
+      "sha256": "ca9a80524adbfbebc3179987e70a8dab1488a88ba368e77715d561c901196a54"
+    }
+  },
+  "frame_list": {
+    "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_temporal_mapping/longest_consecutive_object_ids.txt",
+    "sha256": "3ccf9cb8525af02cea8bbce486deeba85b09b60ecd487e1fd5e128814bcdbd77"
+  },
+  "split_membership": {
+    "train": {
+      "frame_count": 0,
+      "manifest": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/splits/kitti/train.txt",
+      "sha256": "040e6b83709797dcb8637370affda638f4338c4b942053c74ca347a4b1f1a887"
+    },
+    "val": {
+      "frame_count": 4,
+      "manifest": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/splits/kitti/val.txt",
+      "sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+    }
+  },
+  "ffmpeg_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-framerate",
+    "10",
+    "-start_number",
+    "0",
+    "-i",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video_smoke/frames/frame_%06d.png",
+    "-frames:v",
+    "4",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "18",
+    "-threads",
+    "4",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Result/artifacts/kitti_sequence_video_smoke/visualization.mp4"
+  ],
+  "elapsed_seconds": 3.2309479089999513,
+  "reproduce_command": [
+    "/home/duyennh/miniconda3/envs/AI_env/bin/python",
+    "Code/tools/visualization/export_kitti_sequence_video.py",
+    "--limit",
+    "4",
+    "--device",
+    "cpu",
+    "--output-dir",
+    "Result/artifacts/kitti_sequence_video_smoke"
+  ]
+}

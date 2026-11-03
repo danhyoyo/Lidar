@@ -1,0 +1,20 @@
+batch,id,status,anchor,change,comparison,config_or_generation,selection_after_batch,AP_moderate,Car_AP,Pedestrian_AP,Cyclist_AP,best_epoch,notes
+1_augmentation,N5,reuse,existing N5,"GT baseline/proxy, SG F24/H32, hist14, grouped",P01/P02/P03,existing checkpoint,select U*,67.28026335332615,84.88063152107905,54.88179316100611,62.078365377893284,50,AP67.2803; proxy is hybrid sampler with checks off
+1_augmentation,P01,ready,N5,ground/static/density enabled; visibility flag enabled,N5,../configs/P01_hybrid_f24_h32.json,select U*,,,,,,same sampling p0.5 quotas15/10/10 attempts6; visibility branch inactive with current settings
+1_augmentation,P02,ready,N5,standard OneOf augmentation,N5/P01/P03,../configs/P02_standard_f24_h32.json,select U*,,,,,,
+1_augmentation,P03,ready,N5,none: augmentation p0,P02/N5/P01,../configs/P03_none_f24_h32.json,select U*,,,,,,
+2_neck,X02,conditional_new,U* on SG F24/H32,SG gate on F32/H32,U* F24/H32,generate_stage.py --stage neck_candidates,select strongest gated SG,,,,,,reuse N6 if hybrid wins and full protocol matches; otherwise train
+2_neck,X03,conditional_new,U* on SG F24/H32,RC-SGFPN mul F24/H32,U* SG F24/H32,generate_stage.py --stage neck_candidates,retain RC candidate,,,,,,reuse N3 if hybrid wins and full protocol matches; otherwise train
+2_neck,P04,after_selection,strongest gated SG with U*,scale_gated_fpn=false; same F/H,strongest gated SG,generate_stage.py --stage gate,select A* from gated SG / ungated SG / RC,,,,,,do not use RC anchor for this boolean toggle
+3_encoder,P05,after_selection,A* hist14/grouped/baseline/IQAoff,"rich8, out_channels8",A* hist14,generate_stage.py --stage encoder,select E*,,,,,,same augmentation and model except input encoding/channels
+4_head,P06,after_selection,E* grouped/baseline/IQAoff,single head; remove head_groups/group_weights,E* grouped,generate_stage.py --stage head,select H*,,,,,,same neck widths; grouped package includes target/loss aggregation
+5_context,P07,after_selection,H* contextnone/baseline/IQAoff,focal v1 D64 dilations1/2/3 LS0.001,H* contextnone,generate_stage.py --stage context,select F*,,,,,,local attention stays fixed; do not add ECA simultaneously
+6_loss,L0,reuse,F*,baseline IQAoff,P08/P09,selected F* checkpoint,compare losses,,,,,,
+6_loss,P08,after_selection,F* baseline/IQAoff,loss.name=uwag,L0/P09,generate_stage.py --stage loss,compare losses,,,,,,
+6_loss,P09,after_selection,same F* baseline/IQAoff,loss.name=oga,L0/P08,generate_stage.py --stage loss,retain OGA for IQA factorial,,,,,,
+7_iqa,P10,after_selection,F* baseline/IQAoff,baseline IQAon; rotated_iou target weight1; alpha0,L0,generate_stage.py --stage iqa,select loss/IQA after scoring evaluation,,,,,,
+7_iqa,P11,after_selection,same F* baseline/IQAoff,OGA IQAon; rotated_iou target weight1; alpha0,P09,generate_stage.py --stage iqa,select loss/IQA after scoring evaluation,,,,,,
+7_iqa,Qeval,evaluate_only,P10/P11 selected checkpoint,alpha0/.25/.5/.75/1,same checkpoint across alpha,evaluate_kitti_bev.py --nms-alpha,freeze alpha on validation,,,,,,no new training; scoring changes threshold/peaks as well as NMS
+8_baseline,B01,ready_later,old N0 recipe,"MobilePIXOR standard legacy35, 50ep warmup4 AP selection",B02 and final,configs/B01_mobilepixor_50ep.json,matched budget baseline,,,,,,original head; package comparison unless matched-head controls added
+8_baseline,B02,ready_later,old N10 recipe,"NeXt depth242 standard legacy35, 50ep warmup4 AP selection",B01 and final,configs/B02_next_legacy35_50ep.json,matched budget baseline,,,,,,head BN/SiLU differs from MobilePIXOR original
+9_confirmation,FINAL,after_selection,frozen final recipe,paired seeds42/43/44 and leave-one-out claimed contributions,matched baseline and final,generate after final freeze,report means/std and negative results,,,,,,additional budget; individual choices do not replace final-model ablations

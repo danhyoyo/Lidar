@@ -1,0 +1,48 @@
+{
+  "rows": [
+    {
+      "Car_Easy": 85.08435572151214,
+      "Car_Hard": 69.88988713784423,
+      "Car_Moderate": 74.09736492985377,
+      "Cyclist_Easy": 34.00894059844898,
+      "Cyclist_Hard": 20.004366951539414,
+      "Cyclist_Moderate": 21.124642028681613,
+      "Pedestrian_Easy": 42.355944282359175,
+      "Pedestrian_Hard": 34.337692324978924,
+      "Pedestrian_Moderate": 38.05293965398972,
+      "best_epoch": 10,
+      "checkpoint_epoch": 10,
+      "checkpoint_path": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42/selected/best_ap.pt",
+      "checkpoint_selection": "ap",
+      "checkpoint_winner": "ap",
+      "map_moderate_percent": 44.42498220417503,
+      "mean_ap_9_percent": 46.55068151435644,
+      "metric": "local_bev",
+      "name": "mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42",
+      "sampling": "R40",
+      "val_loss": 1.2368320226669312
+    },
+    {
+      "Car_Easy": 81.13954286907432,
+      "Car_Hard": 71.05734744825509,
+      "Car_Moderate": 74.44079084662926,
+      "Cyclist_Easy": 31.889435007254164,
+      "Cyclist_Hard": 18.277314263356246,
+      "Cyclist_Moderate": 19.221319823542277,
+      "Pedestrian_Easy": 31.14212808608881,
+      "Pedestrian_Hard": 27.654135420381277,
+      "Pedestrian_Moderate": 29.956282206643703,
+      "best_epoch": 12,
+      "checkpoint_epoch": 12,
+      "checkpoint_path": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42/selected/best_loss.pt",
+      "checkpoint_selection": "loss",
+      "checkpoint_winner": "loss",
+      "map_moderate_percent": 41.20613095893841,
+      "mean_ap_9_percent": 42.75314399680279,
+      "metric": "local_bev",
+      "name": "mobilepixornext-standard_aug-baseline_loss-triband-f24_TRIBAND-s42",
+      "sampling": "R40",
+      "val_loss": 1.2352913618087769
+    }
+  ]
+}

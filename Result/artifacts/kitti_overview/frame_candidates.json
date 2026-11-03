@@ -1,0 +1,547 @@
+{
+  "frames_with_three_classes": 284,
+  "selected_frame": "005663",
+  "candidates": [
+    {
+      "frame_id": "005663",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 4,
+        "Pedestrian": 13
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 4,
+        "Pedestrian": 11
+      },
+      "best_point_counts": {
+        "Car": 160,
+        "Cyclist": 530,
+        "Pedestrian": 606
+      }
+    },
+    {
+      "frame_id": "003398",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 11
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 11
+      },
+      "best_point_counts": {
+        "Car": 86,
+        "Cyclist": 153,
+        "Pedestrian": 602
+      }
+    },
+    {
+      "frame_id": "004283",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 8
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 8
+      },
+      "best_point_counts": {
+        "Car": 158,
+        "Cyclist": 346,
+        "Pedestrian": 471
+      }
+    },
+    {
+      "frame_id": "001785",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 9
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 7
+      },
+      "best_point_counts": {
+        "Car": 163,
+        "Cyclist": 230,
+        "Pedestrian": 463
+      }
+    },
+    {
+      "frame_id": "004338",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 6
+      },
+      "best_point_counts": {
+        "Car": 564,
+        "Cyclist": 159,
+        "Pedestrian": 86
+      }
+    },
+    {
+      "frame_id": "001648",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 8
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 6
+      },
+      "best_point_counts": {
+        "Car": 163,
+        "Cyclist": 482,
+        "Pedestrian": 510
+      }
+    },
+    {
+      "frame_id": "003114",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 4
+      },
+      "best_point_counts": {
+        "Car": 271,
+        "Cyclist": 129,
+        "Pedestrian": 48
+      }
+    },
+    {
+      "frame_id": "006682",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 4
+      },
+      "best_point_counts": {
+        "Car": 425,
+        "Cyclist": 136,
+        "Pedestrian": 62
+      }
+    },
+    {
+      "frame_id": "002095",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 5
+      },
+      "best_point_counts": {
+        "Car": 73,
+        "Cyclist": 622,
+        "Pedestrian": 512
+      }
+    },
+    {
+      "frame_id": "004747",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 13
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 2,
+        "Pedestrian": 13
+      },
+      "best_point_counts": {
+        "Car": 93,
+        "Cyclist": 66,
+        "Pedestrian": 523
+      }
+    },
+    {
+      "frame_id": "000134",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 5,
+        "Pedestrian": 6
+      },
+      "best_point_counts": {
+        "Car": 523,
+        "Cyclist": 160,
+        "Pedestrian": 91
+      }
+    },
+    {
+      "frame_id": "000145",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 2,
+        "Pedestrian": 9
+      },
+      "usable_counts": {
+        "Car": 3,
+        "Cyclist": 2,
+        "Pedestrian": 7
+      },
+      "best_point_counts": {
+        "Car": 113,
+        "Cyclist": 417,
+        "Pedestrian": 205
+      }
+    },
+    {
+      "frame_id": "004065",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 5,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 5
+      },
+      "best_point_counts": {
+        "Car": 615,
+        "Cyclist": 120,
+        "Pedestrian": 103
+      }
+    },
+    {
+      "frame_id": "001366",
+      "counts": {
+        "Car": 4,
+        "Cyclist": 3,
+        "Pedestrian": 6
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 2,
+        "Pedestrian": 5
+      },
+      "best_point_counts": {
+        "Car": 89,
+        "Cyclist": 500,
+        "Pedestrian": 529
+      }
+    },
+    {
+      "frame_id": "006813",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 5
+      },
+      "best_point_counts": {
+        "Car": 269,
+        "Cyclist": 105,
+        "Pedestrian": 58
+      }
+    },
+    {
+      "frame_id": "006431",
+      "counts": {
+        "Car": 10,
+        "Cyclist": 2,
+        "Pedestrian": 4
+      },
+      "usable_counts": {
+        "Car": 5,
+        "Cyclist": 2,
+        "Pedestrian": 3
+      },
+      "best_point_counts": {
+        "Car": 1156,
+        "Cyclist": 791,
+        "Pedestrian": 272
+      }
+    },
+    {
+      "frame_id": "006396",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 4,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 3,
+        "Pedestrian": 5
+      },
+      "best_point_counts": {
+        "Car": 767,
+        "Cyclist": 131,
+        "Pedestrian": 112
+      }
+    },
+    {
+      "frame_id": "003982",
+      "counts": {
+        "Car": 8,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 6,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 932,
+        "Cyclist": 253,
+        "Pedestrian": 20
+      }
+    },
+    {
+      "frame_id": "000266",
+      "counts": {
+        "Car": 7,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 6,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 1138,
+        "Cyclist": 360,
+        "Pedestrian": 17
+      }
+    },
+    {
+      "frame_id": "001221",
+      "counts": {
+        "Car": 7,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 6,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 1823,
+        "Cyclist": 641,
+        "Pedestrian": 21
+      }
+    },
+    {
+      "frame_id": "002822",
+      "counts": {
+        "Car": 9,
+        "Cyclist": 2,
+        "Pedestrian": 4
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 2,
+        "Pedestrian": 3
+      },
+      "best_point_counts": {
+        "Car": 927,
+        "Cyclist": 440,
+        "Pedestrian": 256
+      }
+    },
+    {
+      "frame_id": "002465",
+      "counts": {
+        "Car": 7,
+        "Cyclist": 2,
+        "Pedestrian": 3
+      },
+      "usable_counts": {
+        "Car": 4,
+        "Cyclist": 2,
+        "Pedestrian": 3
+      },
+      "best_point_counts": {
+        "Car": 761,
+        "Cyclist": 293,
+        "Pedestrian": 190
+      }
+    },
+    {
+      "frame_id": "001640",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 4
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 3
+      },
+      "best_point_counts": {
+        "Car": 267,
+        "Cyclist": 100,
+        "Pedestrian": 58
+      }
+    },
+    {
+      "frame_id": "004788",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 3
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 3
+      },
+      "best_point_counts": {
+        "Car": 183,
+        "Cyclist": 81,
+        "Pedestrian": 47
+      }
+    },
+    {
+      "frame_id": "001714",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 4,
+        "Pedestrian": 7
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 4
+      },
+      "best_point_counts": {
+        "Car": 1070,
+        "Cyclist": 52,
+        "Pedestrian": 130
+      }
+    },
+    {
+      "frame_id": "006496",
+      "counts": {
+        "Car": 3,
+        "Cyclist": 2,
+        "Pedestrian": 5
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 4
+      },
+      "best_point_counts": {
+        "Car": 28,
+        "Cyclist": 345,
+        "Pedestrian": 464
+      }
+    },
+    {
+      "frame_id": "001295",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 3,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 3,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 232,
+        "Cyclist": 39,
+        "Pedestrian": 22
+      }
+    },
+    {
+      "frame_id": "000448",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 3,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 184,
+        "Cyclist": 33,
+        "Pedestrian": 19
+      }
+    },
+    {
+      "frame_id": "004692",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 3,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 203,
+        "Cyclist": 41,
+        "Pedestrian": 21
+      }
+    },
+    {
+      "frame_id": "005902",
+      "counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "usable_counts": {
+        "Car": 2,
+        "Cyclist": 2,
+        "Pedestrian": 2
+      },
+      "best_point_counts": {
+        "Car": 1351,
+        "Cyclist": 159,
+        "Pedestrian": 194
+      }
+    }
+  ],
+  "ranking": "class diversity, minimum usable count per class, total usable count, total count; require minimum point support in all three classes"
+}

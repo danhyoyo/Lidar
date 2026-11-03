@@ -1,0 +1,3719 @@
+{
+  "source": "/home/duyennh/Downloads/Runs_Lidar",
+  "runs": [
+    {
+      "id": "R0",
+      "variant": "MobilePIXOR/35",
+      "mAP_moderate": 41.399044634156304,
+      "AP9": 42.27369345603039,
+      "parameters": 597817,
+      "model_ms": 11.041014147933794,
+      "e2e_ms": 88.01660410269821,
+      "preprocess_ms": 15.612412003977798,
+      "checkpoint_epoch": 30,
+      "selection_actual": "minimum mean validation loss",
+      "scheduled_epochs": 100,
+      "logged_epochs": 38,
+      "ap_every": 1,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Backbone/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Backbone/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 80.99681623919815,
+      "Car_Moderate": 75.51541782859535,
+      "Car_Hard": 71.44091806203085,
+      "Pedestrian_Easy": 31.606367226058406,
+      "Pedestrian_Moderate": 28.15624617351215,
+      "Pedestrian_Hard": 25.035696052444074,
+      "Cyclist_Easy": 28.13498455359078,
+      "Cyclist_Moderate": 20.525469900361415,
+      "Cyclist_Hard": 19.051325068482335,
+      "loss_selected_mAP": 41.399044634156304,
+      "ap_minus_loss": 0.0
+    },
+    {
+      "id": "R1",
+      "variant": "NeXt/35",
+      "mAP_moderate": 47.59953624865946,
+      "AP9": 49.08130091536408,
+      "parameters": 641977,
+      "model_ms": 5.883464276140502,
+      "e2e_ms": 80.79723059537321,
+      "preprocess_ms": 15.45947189356853,
+      "checkpoint_epoch": 13,
+      "selection_actual": "minimum mean validation loss",
+      "scheduled_epochs": 100,
+      "logged_epochs": 100,
+      "ap_every": 1,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Backbone/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Backbone/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/evaluation_loss_local_bev.json",
+      "Car_Easy": 79.77365953420758,
+      "Car_Moderate": 75.2412397442695,
+      "Car_Hard": 71.38609966481518,
+      "Pedestrian_Easy": 48.2102247477331,
+      "Pedestrian_Moderate": 44.36130800114373,
+      "Pedestrian_Hard": 40.51831256064394,
+      "Cyclist_Easy": 37.27087379571192,
+      "Cyclist_Moderate": 23.196061000565148,
+      "Cyclist_Hard": 21.773929189186628,
+      "loss_selected_mAP": 47.59953624865946,
+      "ap_minus_loss": 0.0
+    },
+    {
+      "id": "R2",
+      "variant": "NeXt/rich10",
+      "mAP_moderate": 46.819205239080965,
+      "AP9": 48.8471524612127,
+      "parameters": 648889,
+      "model_ms": 6.066930318899883,
+      "e2e_ms": 59.30265187923783,
+      "preprocess_ms": 41.81142357619947,
+      "checkpoint_epoch": 30,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich10-baseline_iou-ctx_none_local_none_f24_detail0_1b5368065ff6-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich10-baseline_iou-ctx_none_local_none_f24_detail0_1b5368065ff6-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 83.28379067727354,
+      "Car_Moderate": 77.30101362287331,
+      "Car_Hard": 72.82260810886591,
+      "Pedestrian_Easy": 40.32633532879332,
+      "Pedestrian_Moderate": 35.612581526254964,
+      "Pedestrian_Hard": 32.09357929210306,
+      "Cyclist_Easy": 44.81039709368552,
+      "Cyclist_Moderate": 27.54402056811463,
+      "Cyclist_Hard": 25.830045932950057,
+      "loss_selected_mAP": 37.35311458785905,
+      "ap_minus_loss": 9.466090651221919
+    },
+    {
+      "id": "R3",
+      "variant": "NeXt/rich12",
+      "mAP_moderate": 46.98206427792525,
+      "AP9": 49.06459936260339,
+      "parameters": 649465,
+      "model_ms": 6.167838697136638,
+      "e2e_ms": 69.97750525432953,
+      "preprocess_ms": 51.415740208827664,
+      "checkpoint_epoch": 50,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich12-baseline_iou-ctx_none_local_none_f24_detail0_00fa491ec0e9-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich12-baseline_iou-ctx_none_local_none_f24_detail0_00fa491ec0e9-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 83.64739387653213,
+      "Car_Moderate": 78.78134385935034,
+      "Car_Hard": 75.29601276744211,
+      "Pedestrian_Easy": 39.05930168927242,
+      "Pedestrian_Moderate": 34.631911793508365,
+      "Pedestrian_Hard": 32.253959961727105,
+      "Cyclist_Easy": 44.438489127802384,
+      "Cyclist_Moderate": 27.532937180917028,
+      "Cyclist_Hard": 25.940044006878672,
+      "loss_selected_mAP": 42.76952288407502,
+      "ap_minus_loss": 4.212541393850223
+    },
+    {
+      "id": "R4",
+      "variant": "NeXt/rich8",
+      "mAP_moderate": 47.37393148031416,
+      "AP9": 48.950355774433746,
+      "parameters": 648313,
+      "model_ms": 6.059708790374455,
+      "e2e_ms": 40.666621341314205,
+      "preprocess_ms": 21.072647859797655,
+      "checkpoint_epoch": 20,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "d3a46c98a8c80aeb1c722079d276d2aade1f7f55",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Encoder/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 85.74027652333434,
+      "Car_Moderate": 78.34861312700426,
+      "Car_Hard": 74.78416920314054,
+      "Pedestrian_Easy": 41.86443958203206,
+      "Pedestrian_Moderate": 38.481455475404154,
+      "Pedestrian_Hard": 34.971029555498376,
+      "Cyclist_Easy": 37.93368843175915,
+      "Cyclist_Moderate": 25.29172583853408,
+      "Cyclist_Hard": 23.137804233196764,
+      "loss_selected_mAP": 45.252621465931725,
+      "ap_minus_loss": 2.1213100143824377
+    },
+    {
+      "id": "R5",
+      "variant": "rich8/grouped",
+      "mAP_moderate": 49.00594498262535,
+      "AP9": 51.456326633864336,
+      "parameters": 667103,
+      "model_ms": 7.5385644347720335,
+      "e2e_ms": 47.67788793748633,
+      "preprocess_ms": 24.96695953578473,
+      "checkpoint_epoch": 30,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 100,
+      "logged_epochs": 70,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "4d98ddb92e9fc8ae9929ef38f05be4bf6dbf639f",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/Heads/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_cca8df84de85-grouped_ff947e4c9cc2-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/Heads/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_cca8df84de85-grouped_ff947e4c9cc2-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 82.65988334502885,
+      "Car_Moderate": 76.03511775723389,
+      "Car_Hard": 72.52240493513365,
+      "Pedestrian_Easy": 44.57377881776854,
+      "Pedestrian_Moderate": 38.87883844045278,
+      "Pedestrian_Hard": 35.05830137594256,
+      "Cyclist_Easy": 51.073671123929756,
+      "Cyclist_Moderate": 32.10387875018938,
+      "Cyclist_Hard": 30.20106515909956,
+      "loss_selected_mAP": 47.19340171451768,
+      "ap_minus_loss": 1.8125432681076745
+    },
+    {
+      "id": "R6",
+      "variant": "hist14/hybrid/W32",
+      "mAP_moderate": 67.13341737958233,
+      "AP9": 68.82321386867054,
+      "parameters": 789823,
+      "model_ms": 6.84374480007747,
+      "e2e_ms": 92.83429375922526,
+      "preprocess_ms": 52.884825002377056,
+      "checkpoint_epoch": 50,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "9c453f12b6090f5da931989a1565eea936ac90ab",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+      "Car_Easy": 89.03479279328387,
+      "Car_Moderate": 83.74231224224253,
+      "Car_Hard": 81.351673008121,
+      "Pedestrian_Easy": 61.2760374118398,
+      "Pedestrian_Moderate": 54.49911672199816,
+      "Pedestrian_Hard": 49.78318144859373,
+      "Cyclist_Easy": 76.82604350763607,
+      "Cyclist_Moderate": 63.15882317450626,
+      "Cyclist_Hard": 59.73694450981334,
+      "loss_selected_mAP": 66.79232006981171,
+      "ap_minus_loss": 0.3410973097706176
+    },
+    {
+      "id": "R7",
+      "variant": "rich8/hybrid/W32",
+      "mAP_moderate": 66.79414221181177,
+      "AP9": 68.72366926589449,
+      "parameters": 788095,
+      "model_ms": 6.97393618888378,
+      "e2e_ms": 56.295547590030935,
+      "preprocess_ms": 23.44751175788651,
+      "checkpoint_epoch": 50,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "4d98ddb92e9fc8ae9929ef38f05be4bf6dbf639f",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-hybrid_gt_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f32_detail0_5cce6850d68a-grouped_e02c0e499671-s42-h32",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-hybrid_gt_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f32_detail0_5cce6850d68a-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+      "Car_Easy": 87.826966482381,
+      "Car_Moderate": 83.35243135347714,
+      "Car_Hard": 81.00805189437834,
+      "Pedestrian_Easy": 59.935377574723525,
+      "Pedestrian_Moderate": 54.34798865850578,
+      "Pedestrian_Hard": 49.76563063439728,
+      "Cyclist_Easy": 79.9911929310937,
+      "Cyclist_Moderate": 62.68200662345238,
+      "Cyclist_Hard": 59.60337724064133,
+      "loss_selected_mAP": 65.9494915983379,
+      "ap_minus_loss": 0.844650613473874
+    },
+    {
+      "id": "R8",
+      "variant": "NeXt/hist14",
+      "mAP_moderate": 50.142748907657484,
+      "AP9": 52.002394640438816,
+      "parameters": 650041,
+      "model_ms": 5.916983126706029,
+      "e2e_ms": 77.39085984969837,
+      "preprocess_ms": 52.427685503325826,
+      "checkpoint_epoch": 30,
+      "selection_actual": "maximum validation AP",
+      "scheduled_epochs": 50,
+      "logged_epochs": 50,
+      "ap_every": 10,
+      "gpu": "NVIDIA L4",
+      "precision_eval": "fp32",
+      "commit_eval": "9c453f12b6090f5da931989a1565eea936ac90ab",
+      "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0",
+      "input_assets_hash": "40852de30129f19c8fc3587c6f82896013ff3274df85692204bbe1f49414772b",
+      "path": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42",
+      "evaluation": "/home/duyennh/Downloads/Runs_Lidar/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/evaluation_ap_local_bev.json",
+      "Car_Easy": 86.72036726520066,
+      "Car_Moderate": 79.966754012406,
+      "Car_Hard": 75.5578199332306,
+      "Pedestrian_Easy": 49.49814728362948,
+      "Pedestrian_Moderate": 45.357645507336805,
+      "Pedestrian_Hard": 41.41115961313256,
+      "Cyclist_Easy": 40.341879184166956,
+      "Cyclist_Moderate": 25.103847203229662,
+      "Cyclist_Hard": 24.063931761616573,
+      "loss_selected_mAP": 49.83065351191746,
+      "ap_minus_loss": 0.3120953957400232
+    }
+  ],
+  "details": [
+    {
+      "id": "R0",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "binary_slices",
+            "out_channels": null
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixor",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "none",
+          "header_use_bn": false,
+          "header_use_iou": false,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 1,
+            "metric_mode": "auto",
+            "primary": "loss"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 100,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 8,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 8,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixor-standard_aug-baseline_loss-legacy35-baseline_iou-s42/best_checkpoints/30epoch.pt",
+        "criterion": "minimum mean validation loss",
+        "epoch": 30,
+        "validation_objective": 1.2037937641143799
+      },
+      "ap_curve": [],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 25.553037975648618,
+            "false_positives": 4027,
+            "ground_truth": 346,
+            "ignored_predictions": 91,
+            "iou_threshold": 0.5,
+            "max_recall": 0.49421965317919075,
+            "ranked_predictions": 4289,
+            "true_positives": 171
+          },
+          "30_50m": {
+            "ap_r40_percent": 12.610933108402838,
+            "false_positives": 2804,
+            "ground_truth": 181,
+            "ignored_predictions": 39,
+            "iou_threshold": 0.5,
+            "max_recall": 0.48066298342541436,
+            "ranked_predictions": 2930,
+            "true_positives": 87
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.5561797752808988,
+            "false_positives": 569,
+            "ground_truth": 17,
+            "ignored_predictions": 7,
+            "iou_threshold": 0.5,
+            "max_recall": 0.23529411764705882,
+            "ranked_predictions": 580,
+            "true_positives": 4
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 30.448746847366014,
+            "false_positives": 8611,
+            "ground_truth": 1589,
+            "ignored_predictions": 136,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5166771554436753,
+            "ranked_predictions": 9568,
+            "true_positives": 821
+          },
+          "30_50m": {
+            "ap_r40_percent": 3.7460632872013178,
+            "false_positives": 4424,
+            "ground_truth": 137,
+            "ignored_predictions": 3,
+            "iou_threshold": 0.5,
+            "max_recall": 0.29927007299270075,
+            "ranked_predictions": 4468,
+            "true_positives": 41
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.9874288323263736,
+            "false_positives": 1477,
+            "ground_truth": 13,
+            "ignored_predictions": 6,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5384615384615384,
+            "ranked_predictions": 1490,
+            "true_positives": 7
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_including_neck": 579232,
+        "criterion_train_only": 0,
+        "heads": 18585,
+        "total_detector": 597817
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R1",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "binary_slices",
+            "out_channels": null
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            2,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 1,
+            "metric_mode": "auto",
+            "primary": "loss"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 100,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 8,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 8,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-legacy35-baseline_iou-s42/best_checkpoints/13epoch.pt",
+        "criterion": "minimum mean validation loss",
+        "epoch": 13,
+        "validation_objective": 1.1810672283172607
+      },
+      "ap_curve": [],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 31.542603320580138,
+            "false_positives": 5383,
+            "ground_truth": 346,
+            "ignored_predictions": 131,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5606936416184971,
+            "ranked_predictions": 5708,
+            "true_positives": 194
+          },
+          "30_50m": {
+            "ap_r40_percent": 9.496651749173038,
+            "false_positives": 3743,
+            "ground_truth": 181,
+            "ignored_predictions": 63,
+            "iou_threshold": 0.5,
+            "max_recall": 0.430939226519337,
+            "ranked_predictions": 3884,
+            "true_positives": 78
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.1437456373028061,
+            "false_positives": 1512,
+            "ground_truth": 17,
+            "ignored_predictions": 19,
+            "iou_threshold": 0.5,
+            "max_recall": 0.29411764705882354,
+            "ranked_predictions": 1536,
+            "true_positives": 5
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 48.93767871009685,
+            "false_positives": 8323,
+            "ground_truth": 1589,
+            "ignored_predictions": 214,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6947765890497168,
+            "ranked_predictions": 9641,
+            "true_positives": 1104
+          },
+          "30_50m": {
+            "ap_r40_percent": 2.391436524713663,
+            "false_positives": 6053,
+            "ground_truth": 137,
+            "ignored_predictions": 5,
+            "iou_threshold": 0.5,
+            "max_recall": 0.31386861313868614,
+            "ranked_predictions": 6101,
+            "true_positives": 43
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.15957446808510636,
+            "false_positives": 2375,
+            "ground_truth": 13,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.07692307692307693,
+            "ranked_predictions": 2378,
+            "true_positives": 1
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 596800,
+        "backbone_including_neck": 623136,
+        "criterion_train_only": 0,
+        "heads": 18841,
+        "neck": 26336,
+        "total_detector": 641977
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R2",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich10",
+            "out_channels": 10
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 32,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-rich10-baseline_iou-ctx_none_local_none_f24_detail0_1b5368065ff6-s42/best_checkpoints/30epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 30,
+        "score": 46.819205239080965,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.26468536007526,
+            "Cyclist": 9.486913579072086,
+            "Pedestrian": 33.819454471076696
+          },
+          "sampling": "R40",
+          "score": 39.85701780340801,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.67043729528666,
+            "Cyclist": 22.13351319497948,
+            "Pedestrian": 33.59223205122347
+          },
+          "sampling": "R40",
+          "score": 44.46539418049654,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.30101362287331,
+            "Cyclist": 27.54402056811463,
+            "Pedestrian": 35.612581526254964
+          },
+          "sampling": "R40",
+          "score": 46.819205239080965,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.4303705657764,
+            "Cyclist": 24.39849661697438,
+            "Pedestrian": 35.919607971468814
+          },
+          "sampling": "R40",
+          "score": 45.916158384739866,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.99706546723371,
+            "Cyclist": 24.58676748107374,
+            "Pedestrian": 38.394810631617766
+          },
+          "sampling": "R40",
+          "score": 46.65954785997507,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 38.38057525741393,
+            "false_positives": 2190,
+            "ground_truth": 346,
+            "ignored_predictions": 115,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6473988439306358,
+            "ranked_predictions": 2529,
+            "true_positives": 224
+          },
+          "30_50m": {
+            "ap_r40_percent": 9.223118920932452,
+            "false_positives": 508,
+            "ground_truth": 181,
+            "ignored_predictions": 7,
+            "iou_threshold": 0.5,
+            "max_recall": 0.292817679558011,
+            "ranked_predictions": 568,
+            "true_positives": 53
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.11627906976744186,
+            "false_positives": 82,
+            "ground_truth": 17,
+            "ignored_predictions": 0,
+            "iou_threshold": 0.5,
+            "max_recall": 0.058823529411764705,
+            "ranked_predictions": 83,
+            "true_positives": 1
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 38.865578786657416,
+            "false_positives": 3210,
+            "ground_truth": 1589,
+            "ignored_predictions": 187,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5877910635619886,
+            "ranked_predictions": 4331,
+            "true_positives": 934
+          },
+          "30_50m": {
+            "ap_r40_percent": 0.9582557385538759,
+            "false_positives": 714,
+            "ground_truth": 137,
+            "ignored_predictions": 0,
+            "iou_threshold": 0.5,
+            "max_recall": 0.19708029197080293,
+            "ranked_predictions": 741,
+            "true_positives": 27
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.10714285714285715,
+            "false_positives": 214,
+            "ground_truth": 13,
+            "ignored_predictions": 1,
+            "iou_threshold": 0.5,
+            "max_recall": 0.07692307692307693,
+            "ranked_predictions": 216,
+            "true_positives": 1
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 603712,
+        "backbone_including_neck": 630048,
+        "criterion_train_only": 0,
+        "heads": 18841,
+        "neck": 26336,
+        "total_detector": 648889
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R3",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich12",
+            "out_channels": 12
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 32,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-rich12-baseline_iou-ctx_none_local_none_f24_detail0_00fa491ec0e9-s42/best_checkpoints/50epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 50,
+        "score": 46.98206427792525,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.98835494994097,
+            "Cyclist": 22.304928923070513,
+            "Pedestrian": 39.182169539031314
+          },
+          "sampling": "R40",
+          "score": 46.49181780401427,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 78.02442997716749,
+            "Cyclist": 27.06844468618214,
+            "Pedestrian": 33.822694851677575
+          },
+          "sampling": "R40",
+          "score": 46.30518983834241,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.43216840096416,
+            "Cyclist": 27.854374154840357,
+            "Pedestrian": 32.565813961812076
+          },
+          "sampling": "R40",
+          "score": 45.950785505872204,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 79.29044727360296,
+            "Cyclist": 26.305835172502384,
+            "Pedestrian": 34.28165712131828
+          },
+          "sampling": "R40",
+          "score": 46.62597985580788,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 78.78134385935034,
+            "Cyclist": 27.532937180917028,
+            "Pedestrian": 34.631911793508365
+          },
+          "sampling": "R40",
+          "score": 46.98206427792525,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 38.70644527908663,
+            "false_positives": 2038,
+            "ground_truth": 346,
+            "ignored_predictions": 97,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6213872832369942,
+            "ranked_predictions": 2350,
+            "true_positives": 215
+          },
+          "30_50m": {
+            "ap_r40_percent": 7.020395924013259,
+            "false_positives": 759,
+            "ground_truth": 181,
+            "ignored_predictions": 22,
+            "iou_threshold": 0.5,
+            "max_recall": 0.30386740331491713,
+            "ranked_predictions": 836,
+            "true_positives": 55
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.48446327683615825,
+            "false_positives": 132,
+            "ground_truth": 17,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.17647058823529413,
+            "ranked_predictions": 137,
+            "true_positives": 3
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 38.22346394845866,
+            "false_positives": 3937,
+            "ground_truth": 1589,
+            "ignored_predictions": 206,
+            "iou_threshold": 0.5,
+            "max_recall": 0.604153555695406,
+            "ranked_predictions": 5103,
+            "true_positives": 960
+          },
+          "30_50m": {
+            "ap_r40_percent": 1.9049532923432386,
+            "false_positives": 1211,
+            "ground_truth": 137,
+            "ignored_predictions": 4,
+            "iou_threshold": 0.5,
+            "max_recall": 0.21897810218978103,
+            "ranked_predictions": 1245,
+            "true_positives": 30
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.7427536231884058,
+            "false_positives": 218,
+            "ground_truth": 13,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.15384615384615385,
+            "ranked_predictions": 222,
+            "true_positives": 2
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 604288,
+        "backbone_including_neck": 630624,
+        "criterion_train_only": 0,
+        "heads": 18841,
+        "neck": 26336,
+        "total_detector": 649465
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R4",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich8",
+            "out_channels": 8
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 16,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_d7919995bdf4-s42/best_checkpoints/20epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 20,
+        "score": 47.37393148031416,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 79.55593391192404,
+            "Cyclist": 21.093975837237743,
+            "Pedestrian": 33.12713883989771
+          },
+          "sampling": "R40",
+          "score": 44.592349529686494,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 78.34861312700426,
+            "Cyclist": 25.29172583853408,
+            "Pedestrian": 38.481455475404154
+          },
+          "sampling": "R40",
+          "score": 47.37393148031416,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.03324529373263,
+            "Cyclist": 22.856786249555967,
+            "Pedestrian": 37.73979948541932
+          },
+          "sampling": "R40",
+          "score": 45.87661034290264,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.79239590707748,
+            "Cyclist": 25.252482415145334,
+            "Pedestrian": 37.28911135433558
+          },
+          "sampling": "R40",
+          "score": 46.7779965588528,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.91093946074942,
+            "Cyclist": 24.85401204026208,
+            "Pedestrian": 38.3571930928082
+          },
+          "sampling": "R40",
+          "score": 46.707381531273235,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 32.28689956568192,
+            "false_positives": 4089,
+            "ground_truth": 346,
+            "ignored_predictions": 123,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5780346820809249,
+            "ranked_predictions": 4412,
+            "true_positives": 200
+          },
+          "30_50m": {
+            "ap_r40_percent": 13.278688415681012,
+            "false_positives": 1955,
+            "ground_truth": 181,
+            "ignored_predictions": 47,
+            "iou_threshold": 0.5,
+            "max_recall": 0.39226519337016574,
+            "ranked_predictions": 2073,
+            "true_positives": 71
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 7.03910447761194,
+            "false_positives": 615,
+            "ground_truth": 17,
+            "ignored_predictions": 13,
+            "iou_threshold": 0.5,
+            "max_recall": 0.35294117647058826,
+            "ranked_predictions": 634,
+            "true_positives": 6
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 42.52314246290817,
+            "false_positives": 10257,
+            "ground_truth": 1589,
+            "ignored_predictions": 241,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6651982378854625,
+            "ranked_predictions": 11555,
+            "true_positives": 1057
+          },
+          "30_50m": {
+            "ap_r40_percent": 0.7450477192709951,
+            "false_positives": 4085,
+            "ground_truth": 137,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.2116788321167883,
+            "ranked_predictions": 4116,
+            "true_positives": 29
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.12313807913734809,
+            "false_positives": 1206,
+            "ground_truth": 13,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.15384615384615385,
+            "ranked_predictions": 1210,
+            "true_positives": 2
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 603136,
+        "backbone_including_neck": 629472,
+        "criterion_train_only": 0,
+        "heads": 18841,
+        "neck": 26336,
+        "total_detector": 648313
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R5",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich8",
+            "out_channels": 8
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "head_groups": [
+            {
+              "classes": [
+                "Car"
+              ],
+              "name": "car"
+            },
+            {
+              "classes": [
+                "Pedestrian",
+                "Cyclist"
+              ],
+              "name": "ped_cyc"
+            }
+          ],
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "grouped",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 100,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 8,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 16,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f24_detail0_cca8df84de85-grouped_ff947e4c9cc2-s42/best_checkpoints/30epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 30,
+        "score": 49.00594498262535,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 71.78626432850992,
+            "Cyclist": 16.310954061438963,
+            "Pedestrian": 41.4101415295037
+          },
+          "sampling": "R40",
+          "score": 43.169119973150856,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 75.78016304723751,
+            "Cyclist": 26.004315182336203,
+            "Pedestrian": 43.62773588037862
+          },
+          "sampling": "R40",
+          "score": 48.47073803665078,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.03511775723389,
+            "Cyclist": 32.10387875018938,
+            "Pedestrian": 38.87883844045278
+          },
+          "sampling": "R40",
+          "score": 49.00594498262535,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.14087796313846,
+            "Cyclist": 30.343026542238583,
+            "Pedestrian": 38.125747793404024
+          },
+          "sampling": "R40",
+          "score": 48.536550766260355,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.13053050739254,
+            "Cyclist": 28.183546361444495,
+            "Pedestrian": 34.953881283619914
+          },
+          "sampling": "R40",
+          "score": 46.42265271748565,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 60,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.78577379753746,
+            "Cyclist": 30.097385395957204,
+            "Pedestrian": 34.750343832829344
+          },
+          "sampling": "R40",
+          "score": 47.21116767544134,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 70,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 76.11963922984626,
+            "Cyclist": 29.567579159127504,
+            "Pedestrian": 34.3091516146163
+          },
+          "sampling": "R40",
+          "score": 46.66545666786336,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 45.840922578973796,
+            "false_positives": 2311,
+            "ground_truth": 346,
+            "ignored_predictions": 134,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6473988439306358,
+            "ranked_predictions": 2669,
+            "true_positives": 224
+          },
+          "30_50m": {
+            "ap_r40_percent": 8.237778079805569,
+            "false_positives": 1102,
+            "ground_truth": 181,
+            "ignored_predictions": 48,
+            "iou_threshold": 0.5,
+            "max_recall": 0.34806629834254144,
+            "ranked_predictions": 1213,
+            "true_positives": 63
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.052083333333333336,
+            "false_positives": 264,
+            "ground_truth": 17,
+            "ignored_predictions": 1,
+            "iou_threshold": 0.5,
+            "max_recall": 0.058823529411764705,
+            "ranked_predictions": 266,
+            "true_positives": 1
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 43.28692184494855,
+            "false_positives": 4161,
+            "ground_truth": 1589,
+            "ignored_predictions": 198,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6261799874134676,
+            "ranked_predictions": 5354,
+            "true_positives": 995
+          },
+          "30_50m": {
+            "ap_r40_percent": 1.1094636308472623,
+            "false_positives": 1300,
+            "ground_truth": 137,
+            "ignored_predictions": 1,
+            "iou_threshold": 0.5,
+            "max_recall": 0.145985401459854,
+            "ranked_predictions": 1321,
+            "true_positives": 20
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.0,
+            "false_positives": 830,
+            "ground_truth": 13,
+            "ignored_predictions": 1,
+            "iou_threshold": 0.5,
+            "max_recall": 0.0,
+            "ranked_predictions": 831,
+            "true_positives": 0
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 603136,
+        "backbone_including_neck": 629472,
+        "criterion_train_only": 0,
+        "heads": 37631,
+        "neck": 26336,
+        "total_detector": 667103
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [
+          [
+            "car",
+            0.5
+          ],
+          [
+            "ped_cyc",
+            0.5
+          ]
+        ],
+        "head_mode": "grouped",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "within each group",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [
+          {
+            "classes": [
+              "Car"
+            ],
+            "global_ids": [
+              0
+            ],
+            "name": "car"
+          },
+          {
+            "classes": [
+              "Pedestrian",
+              "Cyclist"
+            ],
+            "global_ids": [
+              1,
+              2
+            ],
+            "name": "ped_cyc"
+          }
+        ],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R6",
+      "config": {
+        "augmentation": {
+          "AUG_CONFIG_LIST": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": true,
+              "ENABLE_GROUND_VALIDATION": true,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": true,
+              "ENABLE_VISIBILITY_PROTECTION": true,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:6",
+                "Pedestrian:8",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ],
+          "DISABLE_AUG_LIST": [],
+          "mode": "openpcdet"
+        },
+        "data": {
+          "bev_encoding": {
+            "backend": "numba",
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "hist14",
+            "out_channels": 14,
+            "version": 1
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "head_groups": [
+            {
+              "classes": [
+                "Car"
+              ],
+              "name": "car"
+            },
+            {
+              "classes": [
+                "Pedestrian",
+                "Cyclist"
+              ],
+              "name": "ped_cyc"
+            }
+          ],
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 32,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "grouped",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 32,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 16,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f32_detail0_766fef4e6653-grouped_e02c0e499671-s42-h32/best_checkpoints/50epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 50,
+        "score": 67.13341737958233,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.75596691091995,
+            "Cyclist": 51.37122356316113,
+            "Pedestrian": 46.72341340608052
+          },
+          "sampling": "R40",
+          "score": 58.61686796005387,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 79.89010125983815,
+            "Cyclist": 59.97820814539382,
+            "Pedestrian": 52.189015300427634
+          },
+          "sampling": "R40",
+          "score": 64.01910823521986,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 83.58711599483122,
+            "Cyclist": 64.37601377982469,
+            "Pedestrian": 53.0282871545255
+          },
+          "sampling": "R40",
+          "score": 66.9971389763938,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 83.19721903040389,
+            "Cyclist": 62.54753910206385,
+            "Pedestrian": 52.0568282209642
+          },
+          "sampling": "R40",
+          "score": 65.93386211781065,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 83.74231224224253,
+            "Cyclist": 63.15882317450626,
+            "Pedestrian": 54.49911672199816
+          },
+          "sampling": "R40",
+          "score": 67.13341737958233,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 71.49323784862526,
+            "false_positives": 13078,
+            "ground_truth": 346,
+            "ignored_predictions": 140,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8236994219653179,
+            "ranked_predictions": 13503,
+            "true_positives": 285
+          },
+          "30_50m": {
+            "ap_r40_percent": 48.032577823611625,
+            "false_positives": 13843,
+            "ground_truth": 181,
+            "ignored_predictions": 62,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8232044198895028,
+            "ranked_predictions": 14054,
+            "true_positives": 149
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 12.97006766809862,
+            "false_positives": 4035,
+            "ground_truth": 17,
+            "ignored_predictions": 12,
+            "iou_threshold": 0.5,
+            "max_recall": 0.47058823529411764,
+            "ranked_predictions": 4055,
+            "true_positives": 8
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 58.73695110636504,
+            "false_positives": 25933,
+            "ground_truth": 1589,
+            "ignored_predictions": 331,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7470106985525488,
+            "ranked_predictions": 27451,
+            "true_positives": 1187
+          },
+          "30_50m": {
+            "ap_r40_percent": 5.91954681974344,
+            "false_positives": 20035,
+            "ground_truth": 137,
+            "ignored_predictions": 11,
+            "iou_threshold": 0.5,
+            "max_recall": 0.48905109489051096,
+            "ranked_predictions": 20113,
+            "true_positives": 67
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 1.2200454728586598,
+            "false_positives": 8886,
+            "ground_truth": 13,
+            "ignored_predictions": 5,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6923076923076923,
+            "ranked_predictions": 8900,
+            "true_positives": 9
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 604864,
+        "backbone_including_neck": 640848,
+        "criterion_train_only": 0,
+        "heads": 148975,
+        "neck": 35984,
+        "total_detector": 789823
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [
+          [
+            "car",
+            0.5
+          ],
+          [
+            "ped_cyc",
+            0.5
+          ]
+        ],
+        "head_mode": "grouped",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "within each group",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [
+          {
+            "classes": [
+              "Car"
+            ],
+            "global_ids": [
+              0
+            ],
+            "name": "car"
+          },
+          {
+            "classes": [
+              "Pedestrian",
+              "Cyclist"
+            ],
+            "global_ids": [
+              1,
+              2
+            ],
+            "name": "ped_cyc"
+          }
+        ],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R7",
+      "config": {
+        "augmentation": {
+          "AUG_CONFIG_LIST": [
+            {
+              "AZIMUTH_JITTER_DEG": 5,
+              "CACHE_SIZE_MB": 256,
+              "CANDIDATE_MULTIPLIER": 3,
+              "COLLISION_MARGIN": 0.1,
+              "DB_INFO_PATH": [
+                "gt_database/dbinfos_train.json"
+              ],
+              "ENABLE_DENSITY_SUBSAMPLE": true,
+              "ENABLE_GROUND_VALIDATION": true,
+              "ENABLE_LINE_OF_SIGHT": false,
+              "ENABLE_RADIOMETRIC_CALIBRATION": false,
+              "ENABLE_SHADOW_MASKING": false,
+              "ENABLE_STATIC_COLLISION": true,
+              "ENABLE_VISIBILITY_PROTECTION": true,
+              "GEOMETRY_BACKEND": "auto",
+              "LIMIT_WHOLE_SCENE": true,
+              "MAX_PLACEMENT_ATTEMPTS": 6,
+              "MIN_SAMPLE_POINTS": 5,
+              "MIN_VISIBLE_POINTS": 5,
+              "MIN_VISIBLE_RATIO": 0.5,
+              "NAME": "hybrid_gt_sampling",
+              "NUM_POINT_FEATURES": 4,
+              "PLACEMENT_MODE": "source_relative",
+              "PREPARE": {
+                "filter_by_min_points": [
+                  "Car:5",
+                  "Pedestrian:5",
+                  "Cyclist:5"
+                ]
+              },
+              "PROBABILITY": 0.5,
+              "RANGE_SCALE": [
+                0.9,
+                1.1
+              ],
+              "REMOVE_EXTRA_WIDTH": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "SAMPLE_GROUPS": [
+                "Car:6",
+                "Pedestrian:8",
+                "Cyclist:10"
+              ],
+              "SAMPLE_RATE": 1.0,
+              "USE_ROAD_PLANE": false
+            },
+            {
+              "ALONG_AXIS_LIST": [
+                "x"
+              ],
+              "NAME": "random_world_flip",
+              "PROBABILITY": 0.5
+            },
+            {
+              "NAME": "random_world_rotation",
+              "WORLD_ROT_ANGLE": [
+                -0.78539816,
+                0.78539816
+              ]
+            },
+            {
+              "NAME": "random_world_scaling",
+              "WORLD_SCALE_RANGE": [
+                0.95,
+                1.05
+              ]
+            },
+            {
+              "NAME": "random_world_translation",
+              "NOISE_TRANSLATE_STD": [
+                0.2,
+                0.2,
+                0.1
+              ],
+              "PROBABILITY": 0.5
+            }
+          ],
+          "DISABLE_AUG_LIST": [],
+          "mode": "openpcdet"
+        },
+        "data": {
+          "bev_encoding": {
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "rich8",
+            "out_channels": 8
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "head_groups": [
+            {
+              "classes": [
+                "Car"
+              ],
+              "name": "car"
+            },
+            {
+              "classes": [
+                "Pedestrian",
+                "Cyclist"
+              ],
+              "name": "ped_cyc"
+            }
+          ],
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 32,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "grouped",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 32,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 16,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-rich8-baseline_iou-ctx_none_local_none_f32_detail0_5cce6850d68a-grouped_e02c0e499671-s42-h32/best_checkpoints/50epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 50,
+        "score": 66.79414221181177,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 77.58405853720991,
+            "Cyclist": 51.824614864727536,
+            "Pedestrian": 43.78499568517917
+          },
+          "sampling": "R40",
+          "score": 57.73122302903888,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 78.56799113258451,
+            "Cyclist": 58.17912896958495,
+            "Pedestrian": 50.35698723765907
+          },
+          "sampling": "R40",
+          "score": 62.36803577994285,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 82.3275309850388,
+            "Cyclist": 59.16868916615228,
+            "Pedestrian": 51.00334169394628
+          },
+          "sampling": "R40",
+          "score": 64.16652061504578,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 82.96957980612135,
+            "Cyclist": 62.66007859888909,
+            "Pedestrian": 53.60528425430656
+          },
+          "sampling": "R40",
+          "score": 66.41164755310567,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 83.35243135347714,
+            "Cyclist": 62.68200662345238,
+            "Pedestrian": 54.34798865850578
+          },
+          "sampling": "R40",
+          "score": 66.79414221181177,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 73.0672637066181,
+            "false_positives": 14715,
+            "ground_truth": 346,
+            "ignored_predictions": 149,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8410404624277457,
+            "ranked_predictions": 15155,
+            "true_positives": 291
+          },
+          "30_50m": {
+            "ap_r40_percent": 42.049322528345485,
+            "false_positives": 16325,
+            "ground_truth": 181,
+            "ignored_predictions": 66,
+            "iou_threshold": 0.5,
+            "max_recall": 0.8287292817679558,
+            "ranked_predictions": 16541,
+            "true_positives": 150
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 5.309146617626244,
+            "false_positives": 4796,
+            "ground_truth": 17,
+            "ignored_predictions": 25,
+            "iou_threshold": 0.5,
+            "max_recall": 0.5294117647058824,
+            "ranked_predictions": 4830,
+            "true_positives": 9
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 59.457998546650735,
+            "false_positives": 26686,
+            "ground_truth": 1589,
+            "ignored_predictions": 323,
+            "iou_threshold": 0.5,
+            "max_recall": 0.7595972309628697,
+            "ranked_predictions": 28216,
+            "true_positives": 1207
+          },
+          "30_50m": {
+            "ap_r40_percent": 6.4884250006936925,
+            "false_positives": 20678,
+            "ground_truth": 137,
+            "ignored_predictions": 8,
+            "iou_threshold": 0.5,
+            "max_recall": 0.48175182481751827,
+            "ranked_predictions": 20752,
+            "true_positives": 66
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 1.5775009053500588,
+            "false_positives": 8479,
+            "ground_truth": 13,
+            "ignored_predictions": 4,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6923076923076923,
+            "ranked_predictions": 8492,
+            "true_positives": 9
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 603136,
+        "backbone_including_neck": 639120,
+        "criterion_train_only": 0,
+        "heads": 148975,
+        "neck": 35984,
+        "total_detector": 788095
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [
+          [
+            "car",
+            0.5
+          ],
+          [
+            "ped_cyc",
+            0.5
+          ]
+        ],
+        "head_mode": "grouped",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "within each group",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [
+          {
+            "classes": [
+              "Car"
+            ],
+            "global_ids": [
+              0
+            ],
+            "name": "car"
+          },
+          {
+            "classes": [
+              "Pedestrian",
+              "Cyclist"
+            ],
+            "global_ids": [
+              1,
+              2
+            ],
+            "name": "ped_cyc"
+          }
+        ],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    },
+    {
+      "id": "R8",
+      "config": {
+        "augmentation": {
+          "mode": "one_of",
+          "p": 0.5,
+          "rotation": {
+            "limit_angle": 20,
+            "p": 1,
+            "use": true
+          },
+          "scaling": {
+            "p": 1,
+            "range": [
+              0.95,
+              1.05
+            ],
+            "use": true
+          },
+          "translation": {
+            "p": 1,
+            "scale": 0.4,
+            "scale_z": 0.4,
+            "use": true
+          }
+        },
+        "data": {
+          "bev_encoding": {
+            "backend": "numba",
+            "density_norm": 32,
+            "intensity_scale": 1,
+            "name": "hist14",
+            "out_channels": 14,
+            "version": 1
+          },
+          "box_mode": "bev",
+          "gaussian_overlap": 0.1,
+          "kitti": {
+            "geometry": {
+              "x_max": 70.4,
+              "x_min": 0,
+              "x_res": 0.1,
+              "y_max": 40,
+              "y_min": -40,
+              "y_res": 0.1,
+              "z_max": 1,
+              "z_min": -2.5,
+              "z_res": 0.1
+            },
+            "location": "/content/kitti_processed",
+            "nms_alpha": 0.0,
+            "objects": {
+              "Car": 0,
+              "Cyclist": 2,
+              "Pedestrian": 1
+            },
+            "peak_mode": "per_class"
+          },
+          "min_radius": 4,
+          "num_classes": 3,
+          "out_size_factor": 4,
+          "regression_assignment": "nearest_center"
+        },
+        "date": "reproducible",
+        "device": "cuda",
+        "evaluation": {
+          "kitti_root": "/content/kitti_raw",
+          "max_detections": 500,
+          "modes": [
+            "local_bev"
+          ],
+          "nms_threshold": 0.1,
+          "score_threshold": 0.05
+        },
+        "experiment": {
+          "name": "default"
+        },
+        "loss": {
+          "iou_loss_weight": 1.0,
+          "iou_target_type": "mgiou",
+          "name": "baseline",
+          "use_iou": false
+        },
+        "model": {
+          "backbone": "mobilepixornext",
+          "backbone_out_dim": 16,
+          "c4_attention": "none",
+          "c4_attention_qk_norm": "none",
+          "c4_attention_scales": [],
+          "c4_context": "none",
+          "cls_encoding": "gaussian",
+          "deploy": false,
+          "detail_path": false,
+          "expansion": 2.5,
+          "head_mode": "legacy_single",
+          "header_act": "silu",
+          "header_use_bn": true,
+          "header_use_iou": false,
+          "local_attention": "none",
+          "neck_fusion_channels": 24,
+          "neck_type": "scale_gated_fpn",
+          "scale_gated_fpn": false,
+          "stage_depths": [
+            3,
+            4,
+            2
+          ],
+          "use_reparam": false
+        },
+        "note": "Master Unified Configuration for 3D LiDAR Object Detection",
+        "seed": 42,
+        "train": {
+          "accumulation_steps": 1,
+          "checkpoint_selection": {
+            "ap_every": 10,
+            "metric_mode": "auto",
+            "primary": "ap"
+          },
+          "compile_model": false,
+          "data": "splits/kitti/train.txt",
+          "epochs": 50,
+          "grad_clip_norm": 10.0,
+          "learning_rate": 0.0007,
+          "min_lr": 1e-06,
+          "num_workers": 6,
+          "optimizer": "adamw",
+          "physical_batch_size": 16,
+          "precision": "bf16",
+          "save_every": 5,
+          "target_backend": "numba",
+          "warmup_epochs": 4,
+          "weight_decay": 0.001
+        },
+        "val": {
+          "data": "splits/kitti/val.txt",
+          "physical_batch_size": 16,
+          "val_every": 1
+        },
+        "ver": 1
+      },
+      "selection": {
+        "checkpoint": "/content/drive/MyDrive/lidar_project/artifacts/mobilepixornext-standard_aug-baseline_loss-hist14-baseline_iou-ctx_none_local_none_f24_detail0_a94403319241-s42/best_checkpoints/30epoch.pt",
+        "criterion": "maximum validation AP",
+        "epoch": 30,
+        "score": 50.142748907657484,
+        "settings": {
+          "ap_every": 10,
+          "classes": [
+            "Car",
+            "Pedestrian",
+            "Cyclist"
+          ],
+          "difficulty": "Moderate",
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "primary": "ap",
+          "sampling": "R40"
+        }
+      },
+      "ap_curve": [
+        {
+          "epoch": 10,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 78.23545306437573,
+            "Cyclist": 22.531987633133703,
+            "Pedestrian": 44.8489803995189
+          },
+          "sampling": "R40",
+          "score": 48.53880703234278,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 20,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 80.65607313172893,
+            "Cyclist": 22.12540390666012,
+            "Pedestrian": 44.220050933302446
+          },
+          "sampling": "R40",
+          "score": 49.00050932389717,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 30,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 79.966754012406,
+            "Cyclist": 25.103847203229662,
+            "Pedestrian": 45.357645507336805
+          },
+          "sampling": "R40",
+          "score": 50.142748907657484,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 40,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 80.23781687719365,
+            "Cyclist": 25.149231862207284,
+            "Pedestrian": 41.33786772219258
+          },
+          "sampling": "R40",
+          "score": 48.90830548719783,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        },
+        {
+          "epoch": 50,
+          "frames": 3769,
+          "metric": "map_moderate_percent",
+          "metric_mode": "local_bev",
+          "per_class_moderate_percent": {
+            "Car": 79.41518424702426,
+            "Cyclist": 24.27402962554014,
+            "Pedestrian": 41.024845003786105
+          },
+          "sampling": "R40",
+          "score": 48.23801962545017,
+          "split_sha256": "2f76fc0f69b5d9786f008694274baaa49d878ba076b96529c488939fd83564c0"
+        }
+      ],
+      "distance_bands": {
+        "Car": {},
+        "Cyclist": {
+          "0_30m": {
+            "ap_r40_percent": 36.49265614527103,
+            "false_positives": 3126,
+            "ground_truth": 346,
+            "ignored_predictions": 126,
+            "iou_threshold": 0.5,
+            "max_recall": 0.6040462427745664,
+            "ranked_predictions": 3461,
+            "true_positives": 209
+          },
+          "30_50m": {
+            "ap_r40_percent": 6.147571798600139,
+            "false_positives": 742,
+            "ground_truth": 181,
+            "ignored_predictions": 25,
+            "iou_threshold": 0.5,
+            "max_recall": 0.3259668508287293,
+            "ranked_predictions": 826,
+            "true_positives": 59
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.06097560975609756,
+            "false_positives": 137,
+            "ground_truth": 17,
+            "ignored_predictions": 1,
+            "iou_threshold": 0.5,
+            "max_recall": 0.058823529411764705,
+            "ranked_predictions": 139,
+            "true_positives": 1
+          }
+        },
+        "Pedestrian": {
+          "0_30m": {
+            "ap_r40_percent": 49.605875534675356,
+            "false_positives": 4754,
+            "ground_truth": 1589,
+            "ignored_predictions": 229,
+            "iou_threshold": 0.5,
+            "max_recall": 0.685336689741976,
+            "ranked_predictions": 6072,
+            "true_positives": 1089
+          },
+          "30_50m": {
+            "ap_r40_percent": 2.0931852648735467,
+            "false_positives": 986,
+            "ground_truth": 137,
+            "ignored_predictions": 0,
+            "iou_threshold": 0.5,
+            "max_recall": 0.18248175182481752,
+            "ranked_predictions": 1011,
+            "true_positives": 25
+          },
+          "50_70.4m": {
+            "ap_r40_percent": 0.0,
+            "false_positives": 381,
+            "ground_truth": 13,
+            "ignored_predictions": 2,
+            "iou_threshold": 0.5,
+            "max_recall": 0.0,
+            "ranked_predictions": 383,
+            "true_positives": 0
+          }
+        }
+      },
+      "parameter_counts": {
+        "backbone_body": 604864,
+        "backbone_including_neck": 631200,
+        "criterion_train_only": 0,
+        "heads": 18841,
+        "neck": 26336,
+        "total_detector": 650041
+      },
+      "protocol": {
+        "box_mode": "bev",
+        "class_ids": {
+          "Car": 0,
+          "Cyclist": 2,
+          "Pedestrian": 1
+        },
+        "classes": [
+          "Car",
+          "Pedestrian",
+          "Cyclist"
+        ],
+        "cls_encoding": "gaussian",
+        "difficulty_rules": {
+          "Easy": {
+            "max_occlusion": 0,
+            "max_truncation": 0.15,
+            "min_height": 40.0
+          },
+          "Hard": {
+            "max_occlusion": 2,
+            "max_truncation": 0.5,
+            "min_height": 25.0
+          },
+          "Moderate": {
+            "max_occlusion": 1,
+            "max_truncation": 0.3,
+            "min_height": 25.0
+          }
+        },
+        "group_weights": [],
+        "head_mode": "legacy_single",
+        "iou_thresholds": {
+          "Car": 0.7,
+          "Cyclist": 0.5,
+          "Pedestrian": 0.5
+        },
+        "latency_boundary": "Sequential offline bin load + voxelization + H2D + model + decode/NMS; excludes ROS, tracking and HMI.",
+        "max_detections_per_frame": 500,
+        "max_detections_scope": "global after classwise NMS",
+        "name": "local loader-aligned KITTI-style rotated BEV AP R40",
+        "neighbour_class_ignores": {
+          "Car": [
+            "Van"
+          ],
+          "Cyclist": [],
+          "Pedestrian": [
+            "Person_sitting"
+          ]
+        },
+        "nms_alpha": 0.0,
+        "nms_threshold": 0.1,
+        "official_hidden_test_submission": false,
+        "peak_mode": "per_class",
+        "peak_scope": "single flat head",
+        "quality_target": null,
+        "quality_warmup_epochs": 0,
+        "roi_rule": "strict LiDAR-frame center inside configured x/y ROI",
+        "score_threshold": 0.05,
+        "task_groups": [],
+        "warmup_frames_excluded_from_latency_only": 10
+      }
+    }
+  ]
+}

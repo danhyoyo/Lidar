@@ -1,0 +1,431 @@
+{
+  "run_count": 12,
+  "evaluations_verified": 23,
+  "same_validation_assets": true,
+  "complete_runs": 11,
+  "selected_best": {
+    "run_id": "R07",
+    "run_name": "mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32",
+    "run_directory": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32",
+    "config": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/config.resolved.json",
+    "backbone": "mobilepixornext",
+    "encoding": "hist14",
+    "stage_depths": [
+      3,
+      4,
+      2
+    ],
+    "head_mode": "grouped",
+    "head_width": 32,
+    "fusion_width": 32,
+    "neck": "SGFPN",
+    "augmentation": "hybrid",
+    "sampler_probability": 0.5,
+    "sampler_quotas": [
+      "Car:15",
+      "Pedestrian:10",
+      "Cyclist:10"
+    ],
+    "loss": "baseline",
+    "iqa": false,
+    "context": "none",
+    "seed": 42,
+    "epochs_completed": 50,
+    "epochs_configured": 50,
+    "complete_history": true,
+    "selection": "ap",
+    "selected_epoch": 50,
+    "map_moderate": 68.45994050846693,
+    "ap9": 70.28316112673194,
+    "map_loss_checkpoint": 67.8929244874907,
+    "class_ap": {
+      "Car": {
+        "Easy": 89.25626056873193,
+        "Moderate": 83.30714194359864,
+        "Hard": 81.14756195665692
+      },
+      "Cyclist": {
+        "Easy": 78.94375613418333,
+        "Moderate": 63.744392674172765,
+        "Hard": 60.84649995032845
+      },
+      "Pedestrian": {
+        "Easy": 64.38401745695327,
+        "Moderate": 58.328286907629376,
+        "Hard": 52.59053254833279
+      }
+    },
+    "distance_ap": {
+      "Car": {},
+      "Cyclist": {
+        "0_30m": {
+          "ap_r40_percent": 70.9198994135231,
+          "false_positives": 9428,
+          "ground_truth": 346,
+          "ignored_predictions": 136,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8034682080924855,
+          "ranked_predictions": 9842,
+          "true_positives": 278
+        },
+        "30_50m": {
+          "ap_r40_percent": 52.427719003954266,
+          "false_positives": 9644,
+          "ground_truth": 181,
+          "ignored_predictions": 48,
+          "iou_threshold": 0.5,
+          "max_recall": 0.8066298342541437,
+          "ranked_predictions": 9838,
+          "true_positives": 146
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 9.081063635663234,
+          "false_positives": 3465,
+          "ground_truth": 17,
+          "ignored_predictions": 14,
+          "iou_threshold": 0.5,
+          "max_recall": 0.4117647058823529,
+          "ranked_predictions": 3486,
+          "true_positives": 7
+        }
+      },
+      "Pedestrian": {
+        "0_30m": {
+          "ap_r40_percent": 62.87157723334001,
+          "false_positives": 18785,
+          "ground_truth": 1589,
+          "ignored_predictions": 332,
+          "iou_threshold": 0.5,
+          "max_recall": 0.7809943360604154,
+          "ranked_predictions": 20358,
+          "true_positives": 1241
+        },
+        "30_50m": {
+          "ap_r40_percent": 6.480592073206407,
+          "false_positives": 13777,
+          "ground_truth": 137,
+          "ignored_predictions": 7,
+          "iou_threshold": 0.5,
+          "max_recall": 0.5036496350364964,
+          "ranked_predictions": 13853,
+          "true_positives": 69
+        },
+        "50_70.4m": {
+          "ap_r40_percent": 1.4140899691621456,
+          "false_positives": 7810,
+          "ground_truth": 13,
+          "ignored_predictions": 5,
+          "iou_threshold": 0.5,
+          "max_recall": 0.6153846153846154,
+          "ranked_predictions": 7823,
+          "true_positives": 8
+        }
+      }
+    },
+    "parameters": 790623,
+    "parameter_counts": {
+      "backbone_body": 604864,
+      "backbone_including_neck": 641648,
+      "criterion_train_only": 0,
+      "heads": 148975,
+      "neck": 36784,
+      "total_detector": 790623
+    },
+    "latency_mean_ms": {
+      "decode_nms": 19.765791031140456,
+      "host_to_device": 6.771922041996263,
+      "input_to_detections": 45.51932020428996,
+      "model": 6.936692776468149,
+      "preprocess": 11.774705965940967
+    },
+    "gpu": "NVIDIA L4",
+    "evaluation_precision": "fp32",
+    "evaluation_source_commit": "b635f0e179110fa02d591b18bfdb285a2b38c212",
+    "checkpoint": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/selected/best_ap.pt",
+    "evaluation": "/home/duyennh/Downloads/artifacts-20261011T082304Z-1-001/artifacts/mobilepixornext-hybrid_gt_aug-baseline_loss-hist14-baseline_iou-sgfpn-ctx_none_local_none_f32_detail0_a56fc07332a7-grouped_e02c0e499671-s42-h32/evaluation_ap_local_bev.json",
+    "logged_total_hours": 3.039564525961666,
+    "ap_curve": [
+      {
+        "epoch": 10,
+        "map_moderate": 51.13219207374582
+      },
+      {
+        "epoch": 20,
+        "map_moderate": 57.88914724474469
+      },
+      {
+        "epoch": 30,
+        "map_moderate": 67.80789624733738
+      },
+      {
+        "epoch": 40,
+        "map_moderate": 67.03310583300389
+      },
+      {
+        "epoch": 50,
+        "map_moderate": 68.45994050846693
+      }
+    ]
+  },
+  "checks": [
+    {
+      "run_id": "R01",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R01",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R02",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R02",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R03",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R03",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R04",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R04",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R05",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R05",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R06",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R06",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R07",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R07",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R08",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R08",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R09",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R09",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R10",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R10",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R11",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R12",
+      "file": "evaluation_ap_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    },
+    {
+      "run_id": "R12",
+      "file": "evaluation_loss_local_bev.json",
+      "status": "verified",
+      "config_hash": true,
+      "checkpoint_hash": true,
+      "prediction_hash": true,
+      "macro_recomputed": true,
+      "checkpoint_epoch_matches_history": true,
+      "assets_hash": "c6886373ce7d45cafb1edef4343d4b289c85a5e79e7d4aa07a81321d9b5197db"
+    }
+  ],
+  "limitations": [
+    "No training was run.",
+    "Training data/GT database bytes are absent from the supplied archive.",
+    "Checkpoint payloads were not executed or tensor-loaded; artifact byte hashes and recorded epochs were checked.",
+    "Pure config contracts were checked; no PyTorch/GPU runtime validation was performed."
+  ]
+}

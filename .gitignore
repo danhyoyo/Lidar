@@ -1,70 +1,30 @@
-# ROS 2 workspace output
-/build/
-/install/
-/log/
-
-# Python bytecode and test output
+# Python bytecode
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .coverage
 htmlcov/
 
-# Editors and operating systems
+# Editor & OS temporary files
 .idea/
 .vscode/
 *.swp
 *.swo
-tempCodeRunnerFile.py
 .DS_Store
+*~
+.~lock.*
+.~lock*
 
-# Local backups
-*.bak
-
-# Node.js dependencies (optional tooling only)
-node_modules/
-
-# Local training artifacts
-outputs/
-
-# Local datasets, reports, and experiment results
-/artifacts/
+# Datasets and raw point clouds (keep heavy raw datasets out)
 /data/
 /Kitti_Raw/
-/docs/*
-!/docs/superpowers/
-!/docs/plans/
-!/docs/*.md
-/evaluation/
-/outputs/
-/result/
-/results/
 /splits/
 
-*.pdf
-!/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
-*.xlsx
-*.dot
+# Pure code & paper are kept in their dedicated branches
+/Code/
+/paper/
 
-# AI Agents
-.agents/
-e2e_demo/
-
-# Local upstream checkout for architecture drawing
-/third_party/PlotNeuralNet/
-/diagrams/plotneuralnet/*_latex.aux
-/diagrams/plotneuralnet/*_latex.log
-
-# Reorganized project tree
-/Code/data/
-/Code/Kitti_Raw/
-/Code/splits/
-/Code/evaluation/
-/Code/docs/*
-!/Code/docs/superpowers/
-!/Code/docs/plans/
-!/Code/docs/*.md
-/Code/third_party/PlotNeuralNet/
-/Code/diagrams/plotneuralnet/*_latex.aux
-/Code/diagrams/plotneuralnet/*_latex.log
-/Result/artifacts/
+# Allow results, documents, and reference PDFs
+!Result/*.xlsx
+!Result/*.docx
+!References/*.pdf

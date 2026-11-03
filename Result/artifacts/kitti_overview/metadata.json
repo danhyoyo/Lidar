@@ -1,0 +1,253 @@
+{
+  "frame_id": "005663",
+  "box_source": "KITTI ground truth",
+  "counts": {
+    "Car": 4,
+    "Cyclist": 4,
+    "Pedestrian": 13
+  },
+  "visible_box_counts": {
+    "Car": 4,
+    "Cyclist": 4,
+    "Pedestrian": 13
+  },
+  "source_files": {
+    "velodyne": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/velodyne/training/velodyne/005663.bin",
+      "sha256": "b15d603075a60099bc7303f578b2ccd124b4dcff2de0a720d450f6380e45b9c7"
+    },
+    "calibration": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/calib/training/calib/005663.txt",
+      "sha256": "29b89ca9fa49b2cad778bf73910ff7210c7998badae39796cf29666081992d7f"
+    },
+    "ground_truth_labels": {
+      "path": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw/label_2/training/label_2/005663.txt",
+      "sha256": "b7da452c187efc65fff265c32d24a880e67e1ae7d3f269244b84934f7744f98c"
+    }
+  },
+  "coordinate_system": "Velodyne XYZ in metres: x forward, y left, z up",
+  "box_transform": "inverse(R0_rect @ Tr_velo_to_cam) applied to exact KITTI camera corners",
+  "original_point_count": 123465,
+  "scene_point_count": 66203,
+  "roi_xyz": [
+    -2,
+    45,
+    -24,
+    24,
+    -2.8,
+    4
+  ],
+  "projection": "3D orthographic",
+  "point_sampling": "all original samples within ROI/crop; no subsampling",
+  "generated_points": 0,
+  "zoom_objects": {
+    "Car": {
+      "label_index_zero_based": 1,
+      "points_inside_exact_box": 160,
+      "points_rendered_with_padding": 160,
+      "padding_m": 0.0,
+      "occluded": 1,
+      "truncated": 0.0,
+      "score": null,
+      "corners_lidar_xyz": [
+        [
+          22.47406560395223,
+          -17.32214033684258,
+          -2.0108925956941426
+        ],
+        [
+          25.814584755216668,
+          -16.961079885116987,
+          -2.023861383583294
+        ],
+        [
+          25.640599163316725,
+          -15.350594819972178,
+          -2.002249650634926
+        ],
+        [
+          22.300080012052288,
+          -15.71165527169777,
+          -1.9892808627457748
+        ],
+        [
+          22.481813453694837,
+          -17.34102790629109,
+          -0.541034347965165
+        ],
+        [
+          25.822332604959275,
+          -16.979967454565497,
+          -0.5540031358543167
+        ],
+        [
+          25.648347013059333,
+          -15.369482389420687,
+          -0.5323914029059486
+        ],
+        [
+          22.307827861794895,
+          -15.73054284114628,
+          -0.519422615016797
+        ]
+      ],
+      "view": {
+        "elevation": 14.0,
+        "azimuth": -143.83112616289398
+      }
+    },
+    "Cyclist": {
+      "label_index_zero_based": 9,
+      "points_inside_exact_box": 530,
+      "points_rendered_with_padding": 530,
+      "padding_m": 0.0,
+      "occluded": 1,
+      "truncated": 0.0,
+      "score": null,
+      "corners_lidar_xyz": [
+        [
+          9.197266425206243,
+          -4.441253663663479,
+          -1.7653890230295037
+        ],
+        [
+          8.0429234602749,
+          -5.835331372561036,
+          -1.777218111067746
+        ],
+        [
+          8.612885061084112,
+          -6.307201688203997,
+          -1.7862859692759825
+        ],
+        [
+          9.767228026015456,
+          -4.91312397930644,
+          -1.77445688123774
+        ],
+        [
+          9.208282075520563,
+          -4.46810741886578,
+          0.3244094380273419
+        ],
+        [
+          8.05393911058922,
+          -5.862185127763337,
+          0.3125803499890994
+        ],
+        [
+          8.62390071139843,
+          -6.334055443406298,
+          0.3035124917808631
+        ],
+        [
+          9.778243676329776,
+          -4.939977734508741,
+          0.3153415798191056
+        ]
+      ],
+      "view": {
+        "elevation": 14.0,
+        "azimuth": -279.62589336897486
+      }
+    },
+    "Pedestrian": {
+      "label_index_zero_based": 17,
+      "points_inside_exact_box": 606,
+      "points_rendered_with_padding": 606,
+      "padding_m": 0.0,
+      "occluded": 0,
+      "truncated": 0.02,
+      "score": null,
+      "corners_lidar_xyz": [
+        [
+          6.8567674837320896,
+          -2.116033674011483,
+          -1.7031710380779805
+        ],
+        [
+          6.092035624341844,
+          -2.934289899470816,
+          -1.7096545577653326
+        ],
+        [
+          6.661895703272184,
+          -3.4667958515464696,
+          -1.7195010448109058
+        ],
+        [
+          7.426627562662429,
+          -2.6485396260871363,
+          -1.713017525123554
+        ],
+        [
+          6.866465472525557,
+          -2.1396752575388676,
+          0.13665153050795062
+        ],
+        [
+          6.101733613135312,
+          -2.957931482998201,
+          0.13016801082059865
+        ],
+        [
+          6.671593692065652,
+          -3.4904374350738543,
+          0.12032152377502539
+        ],
+        [
+          7.436325551455897,
+          -2.672181209614521,
+          0.12680504346237734
+        ]
+      ],
+      "view": {
+        "elevation": 14.0,
+        "azimuth": -283.06343938176826
+      }
+    }
+  },
+  "render_settings": {
+    "kitti_root": "/home/duyennh/AI_projects/research_lidar/Lidar/Code/Kitti_Raw",
+    "output_dir": "Result/artifacts/kitti_overview",
+    "frame": "005663",
+    "predictions_dir": null,
+    "score_threshold": 0.3,
+    "scan_top_k": 30,
+    "max_object_distance": 45.0,
+    "min_object_points": 20,
+    "roi": [
+      -2,
+      45,
+      -24,
+      24,
+      -2.8,
+      4
+    ],
+    "elevation": 28.0,
+    "azimuth": -145.0,
+    "zoom_elevation": 14.0,
+    "zoom_azimuth": -150.0,
+    "zoom_padding": 0.0,
+    "dpi": 300,
+    "scene_size": [
+      1800,
+      1200
+    ],
+    "zoom_size": 1000,
+    "point_size": 0.28,
+    "zoom_point_size": 1.8,
+    "class_colors": false,
+    "labels": false
+  },
+  "reproduce_command": [
+    "/usr/bin/python3",
+    "/home/duyennh/AI_projects/research_lidar/Lidar/Code/tools/visualization/export_kitti_overview.py",
+    "--frame",
+    "005663",
+    "--zoom-padding",
+    "0",
+    "--output-dir",
+    "Result/artifacts/kitti_overview"
+  ]
+}
