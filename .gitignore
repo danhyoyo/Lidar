@@ -1,91 +1,50 @@
-# ROS 2 workspace output
-/build/
-/install/
-/log/
+# TeX / LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.out
+*.log
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.dvi
+*.ps
 
-# Python bytecode and test output
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Editors and operating systems
+# Editor & OS files
 .idea/
 .vscode/
 *.swp
 *.swo
-tempCodeRunnerFile.py
 .DS_Store
-
-# Local backups
-*.bak
-
-# Node.js dependencies (optional tooling only)
-node_modules/
-
-# Local training artifacts
-outputs/
-
-# Local datasets, reports, and experiment results
-/artifacts/
-/Code/artifacts/
-/data/
-/Kitti_Raw/
-/docs/*
-!/docs/superpowers/
-!/docs/plans/
-!/docs/*.md
-/evaluation/
-/outputs/
-/result/
-/results/
-/splits/
-
-*.pdf
-!/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
-!paper/figures/*.pdf
-!paper/figures/*.png
-*.xlsx
-*.dot
-
-# AI Agents
-.agents/
-e2e_demo/
-
-# Local upstream checkout for architecture drawing
-/third_party/PlotNeuralNet/
-/diagrams/plotneuralnet/*_latex.aux
-/diagrams/plotneuralnet/*_latex.log
-
-# Reorganized project tree
-/Code/data/
-/Code/Kitti_Raw/
-/Code/splits/
-/Code/evaluation/
-/Code/docs/*
-!/Code/docs/superpowers/
-!/Code/docs/plans/
-!/Code/docs/*.md
-/Code/third_party/PlotNeuralNet/
-/Code/diagrams/plotneuralnet/*_latex.aux
-/Code/diagrams/plotneuralnet/*_latex.log
-/Result/artifacts/
-/Code/artifacts/
-
-
-/Result
-/References
-/Demo
-
-# LaTeX build artifacts
-paper/*.aux
-paper/*.bbl
-paper/*.blg
-paper/*.fls
-paper/*.fdb_latexmk
-paper/*.out
-paper/*.log
-paper/*.synctex.gz
+*~
 .~lock.*
 .~lock*
+
+# Ignore generated root PDFs if desired, but whitelist figures
+*.pdf
+!figures/**
+
+# Python bytecode for plotting scripts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Ignore non-paper assets
+Demo/
+Result/
+References/
+artifacts/
+data/
+detector/
+tests/
+tools/
+e2e_demo/
+splits/
+*.7z
+*.zip
