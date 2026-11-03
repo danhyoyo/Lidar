@@ -49,4 +49,4 @@ jobs:
 
       - name: Run Smoke Tests
         run: |
-          pytest tests/test_ci_smoke.py -v
+          pytest tests/ -v
