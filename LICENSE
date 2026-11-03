@@ -1,0 +1,72 @@
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License
+
+Copyright (c) 2026 DuyenNH2401 <duyennhce200017@gmail.com>
+FPT University Can Tho Campus (Trường Đại học FPT Cần Thơ)
+All Rights Reserved.
+
+================================================================================
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+================================================================================
+
+This work (including source code, model architectures, configuration files,
+trained weights, and documentation) is licensed under the Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+
+To view a copy of this license, visit:
+https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+--------------------------------------------------------------------------------
+SUMMARY OF PERMISSIONS AND RESTRICTIONS
+--------------------------------------------------------------------------------
+
+Under this license, you are free to:
+
+  * Share / Copy / Run: Download, run, reproduce, benchmark, and redistribute
+    the material in any medium or format in its exact, original, unmodified form.
+
+Under the following conditions:
+
+  1. Attribution (BY):
+     You must give appropriate credit to the author (DuyenNH2401) and institution
+     (FPT University Can Tho Campus), provide a link to the license, and indicate
+     if any references are made. You may do so in any reasonable manner, but not
+     in any way that suggests the licensor endorses you or your use.
+
+  2. NonCommercial (NC):
+     You may NOT use the material, code, architecture, or model weights for
+     commercial purposes, monetization, proprietary deployment, or revenue-generating
+     activities without prior explicit written authorization from the copyright holder.
+
+  3. NoDerivatives (ND) — STRICT RESTRICTION:
+     If you remix, transform, modify, adapt, alter, or build upon the material or source
+     code, you MAY NOT distribute, publish, or release the modified material.
+     You may ONLY use and redistribute the software as provided ("AS-IS").
+
+--------------------------------------------------------------------------------
+SOFTWARE AND MODEL WEIGHTS ADDENDUM
+--------------------------------------------------------------------------------
+
+For the avoidance of doubt, the following explicit terms apply to the software:
+
+1. Permitted Uses:
+   - Downloading, compiling, executing, and evaluating the codebase in its original form.
+   - Performing academic research, reproduction experiments, and benchmarks as-is.
+   - Using the standalone Colab notebooks and visualization tools in their unmodified form.
+
+2. Prohibited Actions (Without Prior Written Consent):
+   - Modifying, altering, refactoring, or adapting any portion of the source code for redistribution.
+   - Distributing forked or altered versions of this repository.
+   - Removing, obscuring, or modifying any copyright, author attribution, or license notices.
+   - Reverse engineering, extracting, or repurposing model weights for commercial products.
+
+--------------------------------------------------------------------------------
+DISCLAIMER OF WARRANTIES ("AS-IS")
+--------------------------------------------------------------------------------
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS, COPYRIGHT
+HOLDERS, OR FPT UNIVERSITY CAN THO CAMPUS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.

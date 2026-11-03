@@ -1,61 +1,178 @@
-# LiDAR BEV object detection
+# LiDAR BEV 3D Object Detection: MobilePixorNeXt
 
-This directory contains the preparation, training, evaluation, ONNX export and
-TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
+<div align="center">
 
-For pretrained KITTI baselines, open the standalone
-[OpenPCDet validation notebook](OpenPCDet_KITTI_Validation_Benchmark.ipynb).
-It runs PointPillars, SECOND, PointRCNN, Part-A²-Anchor and PV-RCNN with reference R11/R40 BEV/3D AP and
-explicit GPU profiling; see the [Vietnamese guide](docs/openpcdet_benchmark.md).
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.1+-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![CUDA](https://img.shields.io/badge/CUDA-12.x-76B900?logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
+[![CI](https://github.com/danhyoyo/Lidar/actions/workflows/ci.yml/badge.svg)](https://github.com/danhyoyo/Lidar/actions/workflows/ci.yml)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](LICENSE)
+[![Institution](https://img.shields.io/badge/Institution-FPT%20University%20Can%20Tho-F27023.svg)](https://cantho.fpt.edu.vn/)
 
-For a from-scratch Car/BEV baseline, open the standalone
-[PIXOR 50-epoch training notebook](PIXOR_KITTI_Train_50Epochs.ipynb), using the
-canonical 3,712/3,769 split, resumable checkpoints and R40 evaluation. See the
-[PIXOR guide](docs/pixor_training_notebook.md) for the reproduction recipe.
-Both notebooks accept the Robust notebook's `KITTI_DATASET_ZIP` RAR/ZIP/TAR
-layout, prepare data on local disk, and include per-frame image-size metadata.
+**Ultra-Lightweight (<1M Parameters), Real-Time Bird's-Eye View (BEV) 3D LiDAR Object Detection for Autonomous Driving and Robotics**
 
-## Backbone diagrams
+*Developed at FPT University Can Tho Campus (Trường Đại học FPT Cần Thơ)*
 
-Open [NN-SVG Backbone Studio](tools/visualization/nn_svg/Backbone.html) locally to
-draw and customize the current MobilePixorNeXt backbone in editable **2D paper style**
-or 3D tensor style. Add/remove/duplicate blocks, edit labels/shapes/colors, move/resize,
-connect branches, group blocks, undo/redo and save portable JSON. The
-[reference-style figure](diagrams/reference_2d/README.md) follows `diagrams/other_paper*.png`
-and includes SVG, vector PDF, 600-dpi PNG and its editable source. The [two-column paper figure](diagrams/paper_2d/README.md)
-includes vector PDF, editable SVG and a 600-dpi PNG. [3D figures](diagrams/nn_svg/README.md)
-and [configuration export instructions](tools/visualization/nn_svg/README.md)
-are included; the backbone viewer runs offline without a build step.
+[Overview](#-overview) •
+[Key Innovations](#-key-innovations) •
+[Architecture](#-system-architecture) •
+[Quickstart](#-quickstart--installation) •
+[KITTI Pipeline](#-kitti-dataset-pipeline) •
+[Training](#-training) •
+[Evaluation](#-evaluation) •
+[Deployment](#-deployment--tensorrt) •
+[Contributing](#-contributing) •
+[License](#-license)
 
-## Environment
+</div>
 
-The reproduced run used Python 3.10, PyTorch 2.11.0+cu128, CUDA 12.8 and an
-NVIDIA RTX 5060 Ti. Install a CUDA-compatible PyTorch build first, then run:
+---
 
-```bash
-python3 -m pip install -r requirements-kitti.txt
+## 🌟 Overview
+
+This repository provides an end-to-end framework for high-precision, real-time 3D object detection from LiDAR point clouds using 2D Bird's-Eye View (BEV) representations. Centered around **MobilePixorNeXt** and **MobilePIXOR**, this project pushes the boundaries of edge-compute efficiency:
+
+- **Ultra-Compact Footprint**: Backbones engineered with fewer than **1 Million parameters**, making high-rate 3D inference feasible on resource-constrained embedded platforms (e.g., NVIDIA Jetson, edge robotic computers).
+- **Structural Reparameterization**: Multi-branch training topologies (3×3 depthwise + 1×1 depthwise + identity) collapsed into a single equivalent 7×7 depthwise convolution at deployment via `--deploy`, achieving zero architectural overhead during inference.
+- **Unified Master Configuration**: Seamless ablation studies, loss scheduling, and augmentation recipes managed centrally via `configs/config.json`.
+- **Production-Ready Deployment**: Direct paths to ONNX and high-throughput NVIDIA TensorRT engines with FP16/INT8 execution.
+
+---
+
+## 🚀 Key Innovations
+
+### 1. Backbones & Multiscale Features
+- **MobilePixorNeXt**: Modernized inverted-bottleneck BEV backbone with structural reparameterization and large effective receptive field.
+- **Scale-Gated Feature Pyramid Network (SG-FPN)**: Dynamic scale-aware feature routing (`sgfpn`, `rc_sgfpn`, `rc_bisgfpn`) to effectively resolve small objects (Pedestrians, Cyclists) alongside large objects (Cars).
+- **Parameter-Free Attention**: Stage-level and block-level **SimAM** (Simple Attention Mechanism) providing 3D energy-based attention maps without introducing learnable weights.
+
+### 2. Detection Head & Quality Assessment
+- **Decoupled Quality Head**: IoU-aware quality estimator trained alongside classification to prevent high-confidence/low-overlap false positives during Joint NMS.
+- **Anchor-Free Regressor**: Direct regression of bounding box centers $(x, y, z)$, dimensions $(l, w, h)$, and heading angle $\theta$ from dense BEV feature grids.
+
+### 3. Advanced Loss Strategies
+- **Orientation-Guided Anchor-Free Loss (OGA)**: Custom orientation-aligned geometric loss mitigating angle discontinuity.
+- **Quality-Aware OGA (Q-OGA)**: Synergistic loss coupling IoU quality scores with classification confidence.
+- **Uncertainty-Weighted Loss (UWAG)**: Dynamic multi-task uncertainty weighting across classification, regression, and quality branches.
+
+### 4. Rich BEV Encodings
+- **`rich8` (8 channels)**: High-resolution height slicing, intensity encoding, and point density normalization.
+- **`hist14` (14 channels)**: Extended vertical histogram slices for complex elevation profiles.
+- **`binary_slices` (35 channels)**: High-granularity occupancy slices for legacy PIXOR compatibility.
+
+---
+
+## 📐 System Architecture
+
+```mermaid
+flowchart LR
+    A["Raw Point Cloud\n(x, y, z, intensity)"] --> B["BEV Preprocessing\n(Rich8 / Hist14 / Slices)"]
+    B --> C["MobilePixorNeXt Backbone\n(Reparam Depthwise + SimAM)"]
+    C --> D["Scale-Gated FPN\n(SG-FPN / RC-BiSGFPN)"]
+    D --> E["Decoupled Detection Heads"]
+    E --> F["Classification Head\n(Gaussian Heatmap)"]
+    E --> G["Regression Head\n(x, y, z, l, w, h, heading)"]
+    E --> H["Quality Head\n(IoU-Aware Score)"]
+    F & G & H --> I["Joint NMS & Postprocessing\n(Rotated 3D/BEV Boxes)"]
 ```
 
-The ONNX package is included for export validation. TensorRT is optional and is
-only required for engine export/evaluation.
+---
 
-## Download KITTI
-
-Download the KITTI Object Detection Velodyne, calibration and training-label
-archives yourself. Do not commit the dataset to this repository. Expected layout:
+## 📂 Repository Layout
 
 ```text
-/path/to/KITTI/object/training/
-├── velodyne/
-├── calib/
-└── label_2/
+├── detector/                      # Core detection algorithms
+│   ├── core/
+│   │   ├── models/                # Backbones (MobilePixorNeXt, MobilePIXOR), Necks (SG-FPN), Heads
+│   │   ├── losses/                # Loss strategies (Baseline, OGA, Q-OGA, UWAG)
+│   │   ├── datasets/              # Dataset loaders, GT database samplers, and BEV augments
+│   │   ├── bev_encoding.py        # Rich8, Hist14, and binary slice encodings
+│   │   ├── backbone_config.py     # Backbone and neck parameter resolution
+│   │   └── detection_config.py    # Runtime configuration and hardware bindings
+│   └── postprocess.py             # Rotated BEV decode, IoU-guided Joint NMS
+├── tools/
+│   ├── kitti_training_pipeline/   # End-to-end training, evaluation & export suite
+│   │   ├── prepare_kitti.py       # Point cloud voxelization and BEV map pre-generation
+│   │   ├── build_gt_database.py   # Ground-truth sampling database creation
+│   │   ├── train.py               # Main training engine with AMP and validation
+│   │   ├── evaluate_kitti_bev.py  # Local loader-aligned KITTI rotated BEV AP R40
+│   │   ├── export_onnx.py         # ONNX exporter with structural reparam fusion
+│   │   ├── build_tensorrt.py      # TensorRT FP16/INT8 engine builder
+│   │   └── deploy_engine.py       # High-speed TensorRT benchmark runner
+│   ├── visualization/             # NN-SVG Backbone Studio and visual inspection
+│   └── benchmarks/                # Latency, memory, and FLOPS profiling
+├── configs/
+│   ├── config.json                # Master unified configuration file
+│   └── augmentation/              # Augmentation recipes (OneOf, Compose, OpenPCDet GT, Hybrid GT)
+├── splits/
+│   └── kitti/                     # Canonical KITTI train (3,712) and val (3,769) splits
+├── notebooks/                     # Standalone Colab reproduction notebooks
+├── tests/                         # Pytest unit and regression test suite
+├── CONTRIBUTING.md                # Development setup and contribution guidelines
+├── LICENSE                        # CC BY-NC-ND 4.0 License terms
+└── AGENTS.md                      # Repository rules and architectural standards
 ```
 
-## Prepare the data
+---
 
-Run commands from the repository root. The committed manifests reproduce the
-canonical KITTI 3,712 train / 3,769 validation frame split.
+## ⚡ Quickstart & Installation
 
+### Environment Requirements
+- Linux (Ubuntu 20.04/22.04/24.04)
+- Python 3.10 or 3.11
+- NVIDIA GPU with CUDA 12.x support (RTX 30-series, 40-series, 50-series or Data Center GPUs)
+
+### Step 1: Clone Repository
+```bash
+git clone https://github.com/danhyoyo/Lidar.git
+cd Lidar
+```
+
+### Step 2: Set Up Virtual Environment
+```bash
+conda create -n lidar_env python=3.10 -y
+conda activate lidar_env
+```
+
+### Step 3: Install PyTorch and Dependencies
+```bash
+# Install PyTorch with CUDA 12 support
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+
+# Install project dependencies
+pip install -r requirements-kitti.txt
+pip install pytest
+```
+
+### Step 4: Verify Installation
+```bash
+PYTHONPATH=. pytest tests/ -q
+```
+
+---
+
+## 📊 KITTI Dataset Pipeline
+
+### 1. Download Dataset
+Download the standard KITTI 3D Object Detection dataset archives from the [KITTI Vision Benchmark Suite](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d):
+- `data_object_velodyne.zip` (Point clouds)
+- `data_object_calib.zip` (Camera & LiDAR calibration matrices)
+- `data_object_label_2.zip` (Training labels)
+
+Organize them into the following directory layout:
+```text
+/path/to/KITTI/object/
+├── training/
+│   ├── velodyne/       # *.bin files
+│   ├── calib/          # *.txt files
+│   └── label_2/        # *.txt files
+└── testing/
+    ├── velodyne/
+    └── calib/
+```
+
+### 2. Preprocess Point Clouds into BEV Maps
+Generate processed BEV maps for accelerated training:
 ```bash
 python3 tools/kitti_training_pipeline/prepare_kitti.py \
   --kitti-root /path/to/KITTI/object \
@@ -65,28 +182,51 @@ python3 tools/kitti_training_pipeline/prepare_kitti.py \
   --val-ids splits/kitti/val.txt
 ```
 
-## Train
+### 3. Build Ground-Truth Database (for GT-Augmentation)
+```bash
+python3 tools/kitti_training_pipeline/build_gt_database.py \
+  --kitti-root /path/to/KITTI/object \
+  --split splits/kitti/train.txt \
+  --output-dir data/kitti/processed/gt_database
+```
+
+---
+
+## 🏋️ Training
+
+Train the model using the centralized configuration file:
 
 ```bash
 python3 tools/kitti_training_pipeline/train.py \
   --config configs/config.json \
   --detector-root detector \
   --output-root artifacts/kitti \
-  --run-name mobilepixornext_rich8_baseline_s42 \
+  --run-name mobilepixornext_rich8_baseline \
   --num-workers 4
 ```
 
-The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, optional SimAM), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `uwag`), and data augmentation.
+### Key Training Options:
+- **Resume Training**: Append `--resume artifacts/kitti/mobilepixornext_rich8_baseline/checkpoints/checkpoint_epoch_25.pt`.
+- **Dynamic CLI Overrides**: Override configuration parameters on the fly without modifying `configs/config.json`:
+  ```bash
+  python3 tools/kitti_training_pipeline/train.py \
+    --config configs/config.json \
+    --override-json '{"loss": {"name": "q_oga"}, "model": {"header_use_iou": true}}' \
+    --detector-root detector \
+    --output-root artifacts/kitti
+  ```
 
-Resume with `--resume /path/to/checkpoint.pt`.
+---
 
-## Evaluate
+## 📈 Evaluation
+
+Evaluate model predictions on the canonical validation split (3,769 frames) using rotated BEV AP R40:
 
 ```bash
 python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --name mobilepixornext_evaluation \
   --backend pytorch \
-  --model /path/to/best.pt \
+  --model artifacts/kitti/mobilepixornext_rich8_baseline/checkpoints/best_ap.pt \
   --config configs/config.json \
   --detector-root detector \
   --kitti-root /path/to/KITTI/object \
@@ -95,101 +235,93 @@ python3 tools/kitti_training_pipeline/evaluate_kitti_bev.py \
   --device cuda
 ```
 
-PyTorch evaluation also supports `--device cpu` for functional checks, although
-CPU and CUDA latency numbers should not be compared directly.
+> [!NOTE]
+> PyTorch evaluation supports `--device cpu` for functional and integration checks. Latency benchmarks must always be conducted under consistent GPU hardware conditions.
 
-This reports local loader-aligned KITTI-style rotated BEV AP R40, not a
-submission to KITTI's hidden official test server.
+---
 
-Use `export_onnx.py`, `build_tensorrt.py`, `compare_models.py` and
-`deploy_engine.py` for deployment experiments.
+## 🚀 Deployment & TensorRT
 
-## Unified Configuration & Fast Notebook Setup
+### 1. Structural Reparameterization & ONNX Export
+Fuse multi-branch reparameterized blocks into a single 7×7 depthwise layer for ultra-fast deployment:
 
-The repository utilizes **a single master configuration file** (`configs/config.json`).
-Experiments, ablation studies, and benchmarks are customized directly through the standard Colab notebook (`3D_Lidar_Object_Detection_Notebook_standard.ipynb`) or CLI overrides:
-
-- **Backbones**: `mobilepixornext`, `mobilepixor`, `mobilepixor_coordatt`
-- **BEV Encodings**: `rich8` (8ch), `hist14` (14ch), and `binary_slices` (35ch)
-- **Necks**: `scale_gated_fpn` (SG-FPN), `neck_type` (`sgfpn`, `rc_sgfpn`, `rc_bisgfpn`)
-- **Attention**: optional stage-level `local_attention: "simam"` or parameter-free SimAM inside the blocks selected by `block_simam_stages`
-- **Structural Reparameterization**: `use_reparam: true` (fused into 7x7 depthwise at deployment via `--deploy`)
-- **Decoupled Quality Head**: `header_use_iou: true` (IoU-aware quality header with Joint NMS)
-- **Loss Strategies**: `baseline`, `oga`, `q_oga`, `uwag`
-
-Retired C4 attention settings are accepted only as `none`, empty scales, and
-`none` QK normalization. Old checkpoints containing C4 attention weights require
-the earlier code revision. Reports under `docs/plans/` preserve historical
-experiment results; they are not the current list of supported options.
-
-The notebook resolves a fresh configuration every time its configuration cell runs.
-You can switch experiments by editing notebook options without changing
-`configs/config.json`:
-
-```python
-# Model options in the configuration cell
-PRESET = "custom"                 # Or a named preset; "config" keeps the base model/loss/BEV
-BEV_ENCODING = "rich8"
-BACKBONE_OUT_DIM = 32              # Neck output / head input channels; MobilePixorNeXt only
-LOSS_NAME = "oga"
-HEADER_USE_IOU = True
-AUGMENTATION = "openpcdet_gt"
-CUSTOM_RUN_NAME = None             # Automatic name is recalculated on every execution
-EXPERIMENT_TAG = "head32_gt"       # Separate runs with other settings sharing the same name
-CONFIG_OVERRIDE = None
-```
-
-`AUGMENTATION` is independent of the model preset and supports:
-
-| Selection | Effective augmentation |
-| --- | --- |
-| `standard` | Legacy OneOf, probability 0.5 |
-| `compose` | Legacy rotation, scaling and translation in sequence, probability 0.5 |
-| `none` | Legacy augmentation disabled, probability 0 |
-| `openpcdet_global` | Ordered world flip, rotation, scaling and translation |
-| `openpcdet_gt` | Train-only GT database sampling followed by world transforms |
-| `hybrid_gt` | Cached/JIT GT sampling with source-relative placement and optional scene physics |
-| `config` | Keep the augmentation recipe from `CONFIG_BASE` |
-
-Selecting a recipe replaces the previous augmentation dictionary. Named presets
-set their model/loss/BEV options explicitly, including neck, quality head and BEV
-channels. Custom model options apply only when `PRESET = "custom"`.
-Set both `PRESET = "config"` and `AUGMENTATION = "config"` to keep those sections
-from the base file.
-
-Precedence is **base configuration → model preset/custom → augmentation selection
-→ `CONFIG_OVERRIDE` → notebook runtime settings**. The last stage sets seed,
-dataset location, epochs, warmup, learning rate, batch sizes, precision, workers
-and acceleration from the notebook. Edit `WARMUP_EPOCHS` and `VAL_BATCH_SIZE`
-alongside `EPOCHS` in the setup cell. For example, use 100 epochs and 8 warmup
-epochs; `VAL_BATCH_SIZE = None` defaults to twice the physical training batch.
-
-The summary prints effective settings and the active OpenPCDet queue. Dataset
-preparation automatically builds the GT database from the configured train
-split when needed. Each run writes its resolved `config.json` into its artifact
-directory. If that directory already contains training metadata or checkpoints,
-an incompatible config is rejected before the old config is overwritten; choose
-a different `EXPERIMENT_TAG` or `CUSTOM_RUN_NAME`. Resume uses the same options
-and run name. Output stride remains 4 for the supported backbones; changing
-`out_size_factor` alone cannot change neck resolution.
-
-After updating the repository, reopen the updated notebook in Colab: checking
-out new source does not replace code already displayed in an old notebook cell.
-
-The `feature/hybrid-gt-augmentation` branch includes `AUGMENTATION = "hybrid_gt"`
-and a `HYBRID_OPTIONS` dictionary in the notebook configuration cell. It reuses
-the existing train-only GT database, adds bounded per-worker caching and batched
-NumPy/Numba geometry, and supports PCU-inspired placement and visibility checks.
-The optional preview cell shows the original scene, sampled scene and final world
-transforms, with inserted points colored accurately even after shadow removal.
-See [hybrid augmentation usage and limits](docs/hybrid_gt_augmentation.md) and
-[the synthetic CPU benchmark](docs/plans/2026-10-06-hybrid-gt-benchmark.md).
-
-To run custom configurations via CLI, pass `--override-json`:
 ```bash
-python3 tools/kitti_training_pipeline/train.py \
+python3 tools/kitti_training_pipeline/export_onnx.py \
+  --model artifacts/kitti/mobilepixornext_rich8_baseline/checkpoints/best_ap.pt \
   --config configs/config.json \
-  --override-json '{"loss": {"name": "q_oga"}, "model": {"use_reparam": true}}' \
-  --detector-root detector \
-  --output-root artifacts/kitti
+  --output artifacts/kitti/mobilepixornext.onnx \
+  --deploy \
+  --opset 17
 ```
+
+### 2. Build High-Throughput TensorRT Engine
+Compile the ONNX graph into an optimized TensorRT engine with FP16 precision:
+
+```bash
+python3 tools/kitti_training_pipeline/build_tensorrt.py \
+  --onnx artifacts/kitti/mobilepixornext.onnx \
+  --output artifacts/kitti/mobilepixornext_fp16.engine \
+  --fp16
+```
+
+### 3. High-Speed Inference Benchmarking
+Profile end-to-end latency, GPU memory, and FPS:
+
+```bash
+python3 tools/kitti_training_pipeline/deploy_engine.py \
+  --engine artifacts/kitti/mobilepixornext_fp16.engine \
+  --iterations 1000 \
+  --warmup 100
+```
+
+---
+
+## 🎨 Interactive Tools & Notebooks
+
+### 1. NN-SVG Backbone Studio
+Open [NN-SVG Backbone Studio](tools/visualization/nn_svg/Backbone.html) in any modern browser to interactively view, customize, and export MobilePixorNeXt diagrams in publication-ready 2D vector format or 3D tensor style.
+
+### 2. Standalone Google Colab Notebooks
+Complete, ready-to-run experiments are located in `notebooks/`:
+- `01_RUN_MobilePIXORNeXt_NoSimAM_100ep.ipynb`
+- `02_RUN_MobilePIXOR_Baseline_Seed42_100ep.ipynb`
+- `05_RUN_MobilePIXORNeXt_FullOGA_NoIQA_50ep.ipynb`
+- `06_RUN_MobilePIXORNeXt_Q_OGA_50ep.ipynb`
+- `OpenPCDet_KITTI_Validation_Benchmark.ipynb` (Comparison with PointPillars, SECOND, PointRCNN, PV-RCNN)
+
+---
+
+## 🤝 Contributing
+
+Contributions to improve documentation, add synthetic tests, or fix issues are warmly welcomed. Please read our [**Contributing Guidelines (CONTRIBUTING.md)**](CONTRIBUTING.md) for environment setup, code style conventions, and pull request procedures.
+
+---
+
+## 📄 License & Terms of Use
+
+This project and its associated model architectures, source code, and configurations are released under the **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)** with an explicit software addendum.
+
+- **Permitted**: You are free to download, run, reproduce, evaluate, and benchmark the software and models in their unmodified form for educational and academic research purposes.
+- **Prohibited**: You **MAY NOT** modify, adapt, alter, or create derivative works from the code or models for redistribution. Commercial use, monetization, or distribution of altered forks is strictly prohibited without prior written authorization from the copyright holders.
+
+See the full legal terms in [`LICENSE`](LICENSE).
+
+---
+
+## 🎓 Citation & Contact
+
+If you find this repository or MobilePixorNeXt helpful in your academic research or projects, please cite:
+
+```bibtex
+@misc{duyen2026mobilepixornext,
+  author       = {Nguyen Huu Duyen (DuyenNH2401)},
+  title        = {MobilePixorNeXt: Ultra-Lightweight Real-Time 3D LiDAR Object Detection from Bird's-Eye View},
+  year         = {2026},
+  institution  = {FPT University Can Tho Campus},
+  howpublished = {\url{https://github.com/danhyoyo/Lidar}},
+  note         = {Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License}
+}
+```
+
+- **Primary Contact**: DuyenNH2401 (`duyennhce200017@gmail.com`)
+- **Affiliation**: FPT University Can Tho Campus (Trường Đại học FPT Cần Thơ), Vietnam
