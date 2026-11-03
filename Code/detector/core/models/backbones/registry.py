@@ -27,7 +27,7 @@ def build_backbone(name: str, cfg: Dict[str, Any], input_channels: int = 35) -> 
         available = ", ".join(sorted(_BACKBONE_REGISTRY.keys()))
         raise ValueError(f"Unsupported backbone: {name!r}. Available backbones: {available}")
     builder = _BACKBONE_REGISTRY[key]
-    if key in {"mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}:
+    if key in {"mobilepixornext", "mobilepixor", "pixor"}:
         normalized = dict(cfg, backbone=key)
         if normalized.get("neck_type") in (None, "sgfpn"):
             normalized["neck_type"] = "scale_gated_fpn"
@@ -44,25 +44,13 @@ def get_available_backbones() -> List[str]:
 # Default Backbone Registrations
 # ---------------------------------------------------------------------------
 from core.models.backbones.mobilepixor import MobilePixorBackBone
-from core.models.backbones.mobilepixor_coordinate_attention import (
-    MobilePixorBackBone as MobilePixorCoordAttBackBone,
-)
 from core.models.backbones.pixor import PixorBackBone
-from core.models.backbones.rpn import RPN
 from core.models.backbones.mobilepixornext import MobilePixorNeXtBackbone
 
 
 @register_backbone("mobilepixor")
 def _build_mobilepixor(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
     return MobilePixorBackBone(
-        input_channels=input_channels,
-        scale_gated_fpn=cfg.get("scale_gated_fpn", False),
-    )
-
-
-@register_backbone("mobilepixor_coordatt")
-def _build_mobilepixor_coordatt(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
-    return MobilePixorCoordAttBackBone(
         input_channels=input_channels,
         scale_gated_fpn=cfg.get("scale_gated_fpn", False),
     )
@@ -98,8 +86,3 @@ def _build_mobilepixornext(cfg: Dict[str, Any], input_channels: int = 35) -> nn.
 @register_backbone("pixor")
 def _build_pixor(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
     return PixorBackBone()
-
-
-@register_backbone("rpn")
-def _build_rpn(cfg: Dict[str, Any], input_channels: int = 35) -> nn.Module:
-    return RPN()

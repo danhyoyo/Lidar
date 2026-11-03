@@ -31,6 +31,14 @@ def encode_bev(points, geometry, bev_encoding=None):
         from .bev_backend import encode_hist14
 
         return encode_hist14(points, resolve_bev_encoding(encoding, geometry))
+    if name == "triband":
+        try:
+            from core.bev_encoding import resolve_bev_encoding
+        except ImportError:
+            from detector.core.bev_encoding import resolve_bev_encoding
+        from .bev_backend import encode_triband
+
+        return encode_triband(points, resolve_bev_encoding(encoding, geometry))
     valid_names = {"rich8"}
     if name not in valid_names:
         raise ValueError(f"unsupported BEV encoding: {name!r}. Supported: {sorted(valid_names)}")

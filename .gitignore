@@ -29,6 +29,7 @@ outputs/
 
 # Local datasets, reports, and experiment results
 /artifacts/
+/Code/artifacts/
 /data/
 /Kitti_Raw/
 /docs/*
@@ -43,6 +44,8 @@ outputs/
 
 *.pdf
 !/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
+!paper/figures/*.pdf
+!paper/figures/*.png
 *.xlsx
 *.dot
 
@@ -68,3 +71,21 @@ e2e_demo/
 /Code/diagrams/plotneuralnet/*_latex.aux
 /Code/diagrams/plotneuralnet/*_latex.log
 /Result/artifacts/
+/Code/artifacts/
+
+
+/Result
+/References
+/Demo
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/*.log
+paper/*.synctex.gz
+.~lock.*
+.~lock*

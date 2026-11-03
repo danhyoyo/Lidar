@@ -21,13 +21,12 @@ from tools.kitti_training_pipeline.common import (backbone_feature_spec, build_m
                                                  detection_spec, model_parameter_report)
 
 VARIANT_OVERRIDES = {
-    "reference": {}, "focal": {"c4_context": "focal"},
-    "focal_eca": {"c4_context": "focal", "local_attention": "eca"},
-    "focal_simam": {"c4_context": "focal", "local_attention": "simam"},
-    "focal_fusion32": {"c4_context": "focal", "neck_fusion_channels": 32},
-    "focal_detail": {"c4_context": "focal", "detail_path": True},
-    "focal_fusion32_detail_eca": {"c4_context": "focal", "local_attention": "eca",
-                                   "neck_fusion_channels": 32, "detail_path": True},
+    "reference": {},
+    "simam": {"local_attention": "simam"},
+    "fusion32": {"neck_fusion_channels": 32},
+    "detail": {"detail_path": True},
+    "fusion32_detail_simam": {"local_attention": "simam",
+                              "neck_fusion_channels": 32, "detail_path": True},
 }
 
 
@@ -64,9 +63,6 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
         raise ValueError("body/neck profiling currently requires mobilepixornext")
     detection = detection_spec(config)
     schema = bev_encoding_spec(config)
-    if schema.is_packed:
-        raise ValueError(f"{schema.name} requires packed points; this dense-shape profiler is unsupported. "
-                         "Use model_parameter_report(build_model(config)) for parameter counts.")
     features = backbone_feature_spec(config["model"], geometry=config["data"]["kitti"]["geometry"])
     config["model"].update(features.to_dict())
     input_dims = tuple(schema.input_shape if shape is None else shape)
@@ -88,12 +84,7 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
     local = model.backbone.c3_light_attention
     local_total = sum(p.numel() for p in local.parameters())
     local_core = sum(p.numel() for p in local.core.parameters()) if hasattr(local, "core") else 0
-    context_total = sum(p.numel() for p in model.backbone.c4_context.parameters())
-    context_scale = (model.backbone.c4_context.gamma.numel()
-                     if hasattr(model.backbone.c4_context, "gamma") else 0)
     feature_counts = {
-        "context": {"kind": features.c4_context, "total": context_total,
-                    "core": context_total - context_scale, "residual_scale": context_scale},
         "local": {"kind": features.local_attention, "total": local_total,
                   "core": local_core, "residual_scale": local_total - local_core},
         "detail": {"total": parts["detail_branch"] + detail_scale_count,
@@ -143,7 +134,7 @@ def profile_detector(config, *, device="meta", shape=None, max_backbone_paramete
         "input_shape": list(input_dims), "backbone_output_shape": list(feature_shape),
         "output_shapes": output_shapes(outputs),
         "conv2d_mac_estimate": {"total": sum(conv_macs.values()), "by_module": conv_macs,
-                                "excluded_operations": ["attention matmuls", "Conv1d channel correlation", "normalization", "activations",
+                                "excluded_operations": ["normalization", "activations",
                                                         "interpolation", "elementwise operations", "preprocessing"]},
         "limitations": "Shape/count audit only; not measured latency, peak memory, accuracy or 3D readiness",
     }

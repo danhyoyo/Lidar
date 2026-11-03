@@ -19,17 +19,22 @@ ROOT = Path(__file__).resolve().parents[2]
 def source_preflight(repo_root):
     """Fail early when an old remote branch lacks the uploaded implementation."""
     root = Path(repo_root)
-    required = ['configs/config.json', 'tools/kitti_training_pipeline/notebook_config.py',
+    required = [
+        'configs/config.json',
+        'tools/kitti_training_pipeline/notebook_config.py',
         'tools/kitti_training_pipeline/checkpoint_selection.py',
-        'tools/kitti_training_pipeline/notebook_workflow.py', 'tools/benchmarks/audit_kitti_assets.py',
-        'tools/benchmarks/benchmark_evidence.py', 'tools/benchmarks/benchmark_protocol.py',
-        'tools/benchmarks/smoke_detector.py', 'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
+        'tools/kitti_training_pipeline/notebook_workflow.py',
+        'tools/kitti_training_pipeline/evaluate_kitti_3d.py',
         'tools/kitti_training_pipeline/image_metadata.py',
-        'detector/core/models/heads/grouped.py', 'detector/core/models/backbones/focal_context.py']
+        'tools/kitti_training_pipeline/train.py',
+        'detector/core/models/heads/grouped.py',
+        'detector/core/models/backbones/mobilepixornext.py',
+    ]
     missing = [p for p in required if not (root / p).is_file()]
     if missing:
-        raise FileNotFoundError('Selected checkout is missing current tools. Publish the intended branch or '
-                                'upload the complete checkout and use SOURCE_MODE="existing". Missing: '+', '.join(missing))
+        raise FileNotFoundError(
+            'Selected checkout is missing current tools: ' + ', '.join(missing)
+        )
     return True
 
 

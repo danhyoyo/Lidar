@@ -138,12 +138,12 @@ def resolve_detection_config(config):
     if "bev_encoding" in data:
         normalized["bev_encoding"] = copy.deepcopy(data["bev_encoding"])
     # Preserve registered custom builders; their own options are validated by them.
-    builtins = {"mobilepixornext", "mobilepixor", "mobilepixor_coordatt", "pixor", "rpn"}
+    builtins = {"mobilepixornext", "mobilepixor", "pixor"}
     if str(normalized["backbone"]).lower() in builtins:
         features = resolve_backbone_features(normalized, geometry=kitti.get("geometry"))
     else:
         features = None
-        if any(k.startswith(("c4_context", "local_attention", "neck_fusion", "detail_path")) for k in model):
+        if any(k.startswith(("c4_context", "focal_", "attention_", "local_attention", "block_simam", "neck_fusion", "detail_path")) for k in model):
             raise ValueError("New backbone features require MobilePixorNeXt")
     return DetectionConfig(mode, classification, box_mode, use_iou, groups, weights, quality, features,
                            vertical_weight, header_architecture)

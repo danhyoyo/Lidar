@@ -3,6 +3,18 @@
 This directory contains the preparation, training, evaluation, ONNX export and
 TensorRT utilities for MobilePIXOR and MobilePixorNeXt in `detector/core`.
 
+For pretrained KITTI baselines, open the standalone
+[OpenPCDet validation notebook](OpenPCDet_KITTI_Validation_Benchmark.ipynb).
+It runs PointPillars, SECOND, PointRCNN, Part-A²-Anchor and PV-RCNN with reference R11/R40 BEV/3D AP and
+explicit GPU profiling; see the [Vietnamese guide](docs/openpcdet_benchmark.md).
+
+For a from-scratch Car/BEV baseline, open the standalone
+[PIXOR 50-epoch training notebook](PIXOR_KITTI_Train_50Epochs.ipynb), using the
+canonical 3,712/3,769 split, resumable checkpoints and R40 evaluation. See the
+[PIXOR guide](docs/pixor_training_notebook.md) for the reproduction recipe.
+Both notebooks accept the Robust notebook's `KITTI_DATASET_ZIP` RAR/ZIP/TAR
+layout, prepare data on local disk, and include per-frame image-size metadata.
+
 ## Backbone diagrams
 
 Open [NN-SVG Backbone Studio](tools/visualization/nn_svg/Backbone.html) locally to
@@ -42,7 +54,7 @@ archives yourself. Do not commit the dataset to this repository. Expected layout
 ## Prepare the data
 
 Run commands from the repository root. The committed manifests reproduce the
-same 5,984/1,497 frame split used by the reported experiment.
+canonical KITTI 3,712 train / 3,769 validation frame split.
 
 ```bash
 python3 tools/kitti_training_pipeline/prepare_kitti.py \
@@ -64,7 +76,7 @@ python3 tools/kitti_training_pipeline/train.py \
   --num-workers 4
 ```
 
-The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, optional Focal Context), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `uwag`), and data augmentation.
+The master configuration (`configs/config.json`) centrally manages model architecture (`mobilepixornext`, SG-FPN, optional SimAM), BEV representation (`rich8`), loss strategies (`baseline`, `oga`, `q_oga`, `uwag`), and data augmentation.
 
 Resume with `--resume /path/to/checkpoint.pt`.
 
@@ -98,9 +110,9 @@ The repository utilizes **a single master configuration file** (`configs/config.
 Experiments, ablation studies, and benchmarks are customized directly through the standard Colab notebook (`3D_Lidar_Object_Detection_Notebook_standard.ipynb`) or CLI overrides:
 
 - **Backbones**: `mobilepixornext`, `mobilepixor`, `mobilepixor_coordatt`
-- **BEV Encodings**: `rich8` (8ch), `hist14` (14ch), `binary_slices` (35ch), and pillar encoders (32ch)
+- **BEV Encodings**: `rich8` (8ch), `hist14` (14ch), and `binary_slices` (35ch)
 - **Necks**: `scale_gated_fpn` (SG-FPN), `neck_type` (`sgfpn`, `rc_sgfpn`, `rc_bisgfpn`)
-- **Context and Attention**: optional `c4_context: "focal"` and `local_attention: "eca"` or `"simam"`; C4 uses convolution by default
+- **Attention**: optional stage-level `local_attention: "simam"` or parameter-free SimAM inside the blocks selected by `block_simam_stages`
 - **Structural Reparameterization**: `use_reparam: true` (fused into 7x7 depthwise at deployment via `--deploy`)
 - **Decoupled Quality Head**: `header_use_iou: true` (IoU-aware quality header with Joint NMS)
 - **Loss Strategies**: `baseline`, `oga`, `q_oga`, `uwag`

@@ -148,7 +148,7 @@ AUGMENTATION_PROFILES = {'hybrid_gt': {'mode': 'openpcdet',
                                     'PREPARE': {'filter_by_min_points': ['Car:5',
                                                                          'Pedestrian:5',
                                                                          'Cyclist:5']},
-                                    'SAMPLE_GROUPS': ['Car:8', 'Pedestrian:6', 'Cyclist:6'],
+                                    'SAMPLE_GROUPS': ['Car:15', 'Pedestrian:10', 'Cyclist:10'],
                                     'LIMIT_WHOLE_SCENE': True,
                                     'SAMPLE_RATE': 1.0,
                                     'REMOVE_EXTRA_WIDTH': [0.0, 0.0, 0.0],
@@ -321,12 +321,18 @@ def attention_placement_summary(config):
     features = backbone_feature_spec(model)
     placement = features.effective_placement()
     lines = []
-    entries = [("focal", "Focal"), ("local_attention", features.local_attention.upper())]
-    if features.attention_order == "local_then_focal":
+    local_att = getattr(features, "local_attention", "none")
+    entries = []
+    if "focal" in placement:
+        entries.append(("focal", "Focal"))
+    if "local_attention" in placement and local_att != "none":
+        entries.append(("local_attention", local_att.upper()))
+    order = getattr(features, "attention_order", None)
+    if order == "local_then_focal":
         entries.reverse()
-    entries.sort(key=lambda item: placement[item[0]]["stride"] if placement[item[0]] else float("inf"))
+    entries.sort(key=lambda item: placement[item[0]]["stride"] if placement.get(item[0]) else float("inf"))
     for kind, title in entries:
-        entry = placement[kind]
+        entry = placement.get(kind)
         if entry is not None:
             stage = entry["stage"]
             lines.append(f"{title}: {stage.upper()} (Stage {int(stage[1:])-1}, "
@@ -339,11 +345,11 @@ def attention_placement_summary(config):
         lines.append(f"Block SimAM: {stage.upper()} (Stage {int(stage[1:])-1}, "
                      f"stride {entry['stride']}, {entry['channels']} channels, "
                      f"{depths[int(stage[1:])-3]} blocks; after projection BN)")
-    if features.attention_order:
-        order = ["Focal", features.local_attention.upper()]
-        if features.attention_order == "local_then_focal":
-            order.reverse()
-        lines.append("Shared-stage order: " + " -> ".join(order))
+    if order and entries:
+        order_list = ["Focal", local_att.upper()]
+        if order == "local_then_focal":
+            order_list.reverse()
+        lines.append("Shared-stage order: " + " -> ".join(order_list))
     lines.append("Feature semantic hash: " + features.semantic_hash)
     return "\n".join(lines)
 
@@ -567,6 +573,12 @@ ENCODER_COMPARISON_MODEL = {
 }
 
 PRESET_CONFIGS = {
+    "ENCODER_TRIBAND": {
+        "experiment": {"name": "encoder_comparison"},
+        "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
+        "loss": {"name": "baseline", "use_iou": False},
+        "data": {"bev_encoding": {"name": "triband"}},
+    },
     "ENCODER_RICH8": {
         "experiment": {"name": "encoder_comparison"},
         "model": copy.deepcopy(ENCODER_COMPARISON_MODEL),
