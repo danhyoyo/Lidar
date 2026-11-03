@@ -6,7 +6,7 @@ import pytest
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CODE_DIR = REPO_ROOT / "Code"
+CODE_DIR = REPO_ROOT if (REPO_ROOT / "configs/config.json").exists() else REPO_ROOT / "Code"
 
 # Setup sys.path for detector modules
 sys.path.insert(0, str(CODE_DIR / "tools/kitti_training_pipeline"))

@@ -29,8 +29,8 @@ outputs/
 
 # Local datasets, reports, and experiment results
 /artifacts/
-/Code/artifacts/
-/data/
+/data/*
+!/data/.gitignore
 /Kitti_Raw/
 /docs/*
 !/docs/superpowers/
@@ -40,7 +40,9 @@ outputs/
 /outputs/
 /result/
 /results/
-/splits/
+/splits/*
+!/splits/kitti/
+/splits/kitti/archived_*
 
 *.pdf
 !/diagrams/plotneuralnet/mobilepixornext_backbone.pdf
@@ -58,25 +60,9 @@ e2e_demo/
 /diagrams/plotneuralnet/*_latex.aux
 /diagrams/plotneuralnet/*_latex.log
 
-# Reorganized project tree
-/Code/data/
-/Code/Kitti_Raw/
-/Code/splits/
-/Code/evaluation/
-/Code/docs/*
-!/Code/docs/superpowers/
-!/Code/docs/plans/
-!/Code/docs/*.md
-/Code/third_party/PlotNeuralNet/
-/Code/diagrams/plotneuralnet/*_latex.aux
-/Code/diagrams/plotneuralnet/*_latex.log
-/Result/artifacts/
-/Code/artifacts/
-
-
-/Result
-/References
-/Demo
+/Result/
+/References/
+/Demo/
 
 # LaTeX build artifacts
 paper/*.aux
